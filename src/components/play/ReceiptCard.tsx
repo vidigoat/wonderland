@@ -1,11 +1,20 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { paintReceipt, paletteFor, receiptCopy, type ReceiptModel } from "./receipt";
+import { paintReceipt, paletteFor, receiptArtPaths, receiptCopy, type ReceiptModel, type ReceiptPicture } from "./receipt";
 
 function fontStack(variable: string, fallback: string): string {
   const value = getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
   return value || fallback;
+}
+
+function loadImage(src: string): Promise<HTMLImageElement | null> {
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.onload = () => resolve(image.naturalWidth > 0 ? image : null);
+    image.onerror = () => resolve(null);
+    image.src = src;
+  });
 }
 
 function downloadCanvas(canvas: HTMLCanvasElement, filename: string) {
@@ -28,27 +37,32 @@ function downloadCanvas(canvas: HTMLCanvasElement, filename: string) {
 export function ReceiptCard({ model, worldId }: { model: ReceiptModel; worldId: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const copy = receiptCopy(model);
-  const summary = `${model.title}. First prediction ${copy.before}. ${copy.afterKind} ${copy.after}. Time ${copy.elapsed}.${model.seen ? ` You saw: ${model.seen}` : ""}`;
+  const { title, tagline, concept, before, after, afterKind, elapsedMs, seen } = model;
+  const summary = `${title}. First prediction ${copy.before}. ${copy.afterKind} ${copy.after}. Time ${copy.elapsed}.${seen ? ` You saw: ${seen}` : ""}`;
 
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    const current = { title, tagline, concept, before, after, afterKind, elapsedMs, seen };
     let cancel = false;
-    const draw = () => {
+    const draw = (art: ReceiptPicture | null) => {
       if (cancel) return;
       const display = fontStack("--font-fraunces", "Palatino, serif");
       const ui = fontStack("--font-geist-sans", "sans-serif");
-      paintReceipt(ctx, canvas.width, canvas.height, model, paletteFor(worldId), display, ui);
+      paintReceipt(ctx, canvas.width, canvas.height, current, paletteFor(worldId), display, ui, art);
     };
-    const fonts = document.fonts;
-    if (fonts?.ready) void fonts.ready.then(draw);
-    else draw();
+    const paths = receiptArtPaths(worldId);
+    const pictures = paths
+      ? Promise.all([loadImage(paths.ground), loadImage(paths.figure)]).then(([ground, figure]) => ({ ground, figure }))
+      : Promise.resolve(null);
+    const fonts = document.fonts?.ready ?? Promise.resolve();
+    void Promise.all([fonts, pictures]).then(([, art]) => draw(art));
     return () => {
       cancel = true;
     };
-  }, [model, worldId]);
+  }, [worldId, title, tagline, concept, before, after, afterKind, elapsedMs, seen]);
 
   return (
     <figure className="receipt">

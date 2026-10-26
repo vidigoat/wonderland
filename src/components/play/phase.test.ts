@@ -18,7 +18,7 @@ import {
   toHypothesise,
   TRAIL,
 } from "./phase";
-import { receiptCopy } from "./receipt";
+import { pictureFrame, receiptArtPaths, receiptCopy } from "./receipt";
 import { freshStart, pictureAction, raceLine, raceRows, restageParams, runDuration, runSteps, speakTool } from "./readings";
 import { drainSse, heroHref, toMontageItem } from "./sse";
 import { encodeWav } from "./wav";
@@ -188,6 +188,21 @@ describe("receipt copy", () => {
         elapsedMs: 125_000,
       }),
     ).toMatchObject({ before: "Missed", after: "Held", afterKind: "Second prediction", elapsed: "2m 05s" });
+  });
+
+  it("puts the shelf painting on a hero card and leaves an unknown world as type", () => {
+    expect(receiptArtPaths("gatekeeper")).toEqual({
+      ground: "/art/gatekeeper/background.svg",
+      figure: "/art/gatekeeper/scribe.svg",
+    });
+    expect(receiptArtPaths("made-up")).toBeNull();
+    const open = pictureFrame(1280, false);
+    const pictured = pictureFrame(1280, true);
+    expect(open.textTop).toBe(160);
+    expect(pictured.h).toBeGreaterThan(0);
+    expect(pictured.textTop).toBeGreaterThan(pictured.y + pictured.h);
+    expect(pictured.x).toBeGreaterThan(58);
+    expect(pictured.x + pictured.w).toBeLessThan(1280 - 58);
   });
 });
 

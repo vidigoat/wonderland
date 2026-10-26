@@ -31,7 +31,7 @@ export async function loadWorld(id: string, dir = defaultDir()): Promise<WorldSp
 export async function listPublic(dir = defaultDir()): Promise<PublicWorldSpec[]> {
   let names: string[];
   try {
-    names = await readdir(dir);
+    names = await readdir(/* turbopackIgnore: true */ dir);
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
     throw error;

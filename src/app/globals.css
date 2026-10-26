@@ -1411,6 +1411,13 @@ input[type="range"]::-moz-range-thumb {
   white-space: nowrap;
 }
 
+.race-row .race-label {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  line-height: 1.2;
+}
+
 .race-row span:last-child {
   color: var(--accent, var(--brass));
 }

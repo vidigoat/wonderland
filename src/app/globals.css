@@ -1722,6 +1722,18 @@ input[type="range"]::-moz-range-thumb {
     min-height: 280px;
   }
 
+  .play[data-phase="transfer"] .stage-pane {
+    height: 78vw;
+    min-height: 320px;
+  }
+
+  .situation p:last-child {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
   .notebook {
     display: block;
     overflow: visible;

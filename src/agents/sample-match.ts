@@ -94,7 +94,7 @@ export async function* generateSample(concept: string): AsyncGenerator<SampleEve
   yield {
     type: "stage",
     stage: "scientist",
-    message: scrub("No model call. Matching your sentence to a verified world. The law stays ███.", hero),
+    message: scrub("No model call. Matching your sentence to a verified world. The law is not shown.", hero),
     source,
     notice,
   };

@@ -171,8 +171,8 @@ function Binding({ log, stopped }: { log: LogEntry[]; stopped: boolean }) {
           </div>
         </div>
       ) : (
-        <p className="law-redacted" aria-hidden="true">
-          ███
+        <p className="law-redacted">
+          <span>the law</span>
         </p>
       )}
       {view.choose ? (

@@ -390,11 +390,15 @@ a {
   grid-column: 2;
   grid-row: 2;
   margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 8vw, 6rem);
-  letter-spacing: 0.12em;
-  line-height: 1;
-  opacity: 0.55;
+}
+
+.law-redacted span {
+  display: inline-block;
+  width: 7.5rem;
+  height: 1.15rem;
+  background: #14110e;
+  color: transparent;
+  border-radius: 2px;
 }
 
 @media (max-width: 800px) {

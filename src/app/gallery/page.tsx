@@ -14,7 +14,6 @@ export default function GalleryPage() {
     title: world.title,
     tagline: world.tagline,
     concept: world.concept,
-    archetype: world.archetype,
   }));
 
   return (
@@ -33,7 +32,6 @@ export default function GalleryPage() {
             <Link href={`/w/${card.id}`} className="plate">
               <PlaceScene id={card.id} />
               <div className="plate-copy">
-                <p className="kicker">{card.archetype}</p>
                 <h2>{card.title}</h2>
                 <p className="tagline">{card.tagline}</p>
                 <p className="concept-line">{card.concept}</p>

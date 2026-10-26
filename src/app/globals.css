@@ -193,9 +193,23 @@ a {
   max-width: 14ch;
 }
 
-.landing:has(.choose) .law-line {
+.landing:has(.choose) .law-line,
+.landing:has(.binding) .law-line {
   font-size: clamp(1.8rem, 3.2vw, 2.6rem);
   max-width: none;
+}
+
+.landing:has(.binding) .concept-form,
+.landing:has(.binding) .binding {
+  margin-top: 0.7rem;
+}
+
+.landing:has(.binding) .binding-plate {
+  height: 168px;
+}
+
+.landing:has(.binding) .binding-steps {
+  gap: 0.4rem;
 }
 
 .law-line span {
@@ -414,6 +428,23 @@ a {
   background: var(--ink);
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .binding-marks i.held {
+    animation: mark-ink 420ms ease backwards;
+  }
+}
+
+@keyframes mark-ink {
+  from {
+    background: transparent;
+    transform: scale(0.2);
+  }
+  to {
+    background: var(--ink);
+    transform: none;
+  }
+}
+
 .binding-marks span {
   margin-left: 0.4rem;
   font-variant-numeric: tabular-nums;
@@ -439,13 +470,66 @@ a {
   margin: 0;
 }
 
-.law-redacted span {
-  display: inline-block;
-  width: 7.5rem;
-  height: 1.15rem;
-  background: #14110e;
-  color: transparent;
-  border-radius: 2px;
+.law-redacted {
+  align-self: center;
+  font-size: 0.95rem;
+}
+
+.law-kept {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.law-kept span {
+  letter-spacing: 0.16em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .binding-plate.cutout::after {
+    content: "";
+    position: absolute;
+    z-index: 3;
+    left: 0;
+    right: 0;
+    height: 22%;
+    top: -24%;
+    pointer-events: none;
+    background: linear-gradient(transparent, rgba(231, 194, 122, 0.62), transparent);
+    animation: mask-scan 1.35s ease forwards;
+  }
+
+  .binding-plate.cutout .scene-figure {
+    animation: sprite-reveal 1.55s ease forwards;
+  }
+}
+
+@keyframes mask-scan {
+  0% {
+    top: -24%;
+    opacity: 1;
+  }
+  100% {
+    top: 108%;
+    opacity: 0;
+  }
+}
+
+@keyframes sprite-reveal {
+  0% {
+    opacity: 0;
+    filter: drop-shadow(0 0 16px #e7c27a) brightness(2.2);
+    transform: translateX(-50%) scale(1.06);
+  }
+  42% {
+    opacity: 1;
+    filter: drop-shadow(0 0 18px #e7c27a) brightness(1.45);
+    transform: translateX(-50%) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    filter: drop-shadow(0 12px 14px rgba(20, 17, 14, 0.35));
+    transform: translateX(-50%) scale(1);
+  }
 }
 
 @media (max-width: 800px) {

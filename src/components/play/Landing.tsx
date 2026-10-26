@@ -145,7 +145,7 @@ function Binding({ log, stopped }: { log: LogEntry[]; stopped: boolean }) {
       {marks.length ? (
         <p className="binding-marks" aria-label={`${view.checks?.passed ?? 0} of ${view.checks?.total ?? 0} checks held`}>
           {marks.map((held, index) => (
-            <i key={index} className={held ? "held" : ""} />
+            <i key={index} className={held ? "held" : ""} style={held ? { animationDelay: `${index * 80}ms` } : undefined} />
           ))}
           <span>
             {view.checks?.passed} / {view.checks?.total} held
@@ -154,10 +154,13 @@ function Binding({ log, stopped }: { log: LogEntry[]; stopped: boolean }) {
       ) : null}
       {view.world ? (
         <div className="binding-world">
-          <div className="binding-plate">
+          <div className="binding-plate cutout">
             <PlaceScene id={view.world.id} />
           </div>
           <div>
+            <p className="law-kept">
+              The law stays <span aria-hidden="true">███</span>
+            </p>
             <p className="galley-title">{view.world.title}</p>
             <p>{view.world.tagline}</p>
             <p className="aside">{view.world.concept}</p>
@@ -171,8 +174,8 @@ function Binding({ log, stopped }: { log: LogEntry[]; stopped: boolean }) {
           </div>
         </div>
       ) : (
-        <p className="law-redacted">
-          <span>the law</span>
+        <p className="law-redacted law-kept" aria-label="The law stays hidden">
+          The law stays <span aria-hidden="true">███</span>
         </p>
       )}
       {view.choose ? (

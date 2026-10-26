@@ -2,7 +2,9 @@ import { Container, Graphics } from "pixi.js";
 import type { BodiesView } from "@/engine/view";
 import {
   CANNON_STEP_DT,
+  launchPreview,
   phaseOffset,
+  readNumber,
   readPoint,
   trailGhostPoints,
   type Point2,
@@ -71,7 +73,7 @@ export function createBodiesScene(): Scene {
     const worldTrail = view.trail.map((sample) => readPoint(sample));
     remember(samples, view.ball);
     const path = worldTrail.length >= 2 ? worldTrail : samples;
-    const preview = ghostFrom(path);
+    const preview = path.length >= 8 ? ghostFrom(path) : launchPreview(readNumber(frame.params, "speed", 0.5));
     const focus = Math.max(1.72, targetRadius(view, preview));
     const camera = cameraFor(frame, viewRadius, focus, (next) => {
       viewRadius = next;

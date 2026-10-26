@@ -8,6 +8,7 @@ import {
   injectionHighlightRange,
   phaseOffset,
   smoothstep,
+  launchPreview,
   trailGhostPoints,
 } from "./helpers";
 
@@ -63,6 +64,19 @@ describe("injectionHighlightRange", () => {
     expect(injectionHighlightRange(spell("queen", "crown-of-thorns-9"))).toBeNull();
     expect(injectionHighlightRange(spell("O''Brien", "fine"))).toBeNull();
     expect(injectionHighlightRange("O'Brien")).toBeNull();
+  });
+});
+
+describe("launchPreview", () => {
+  it("drops a slow shot and keeps a circular one off the ground", () => {
+    const slow = launchPreview(0.45);
+    const round = launchPreview(1);
+    expect(slow.length).toBeGreaterThan(4);
+    expect(Math.hypot(slow[slow.length - 1]!.x, slow[slow.length - 1]!.y)).toBeLessThan(1.05);
+    expect(round.length).toBeGreaterThan(40);
+    for (const point of round.slice(0, 40)) {
+      expect(Math.hypot(point.x, point.y)).toBeGreaterThan(0.98);
+    }
   });
 });
 

@@ -260,6 +260,21 @@ export function injectionHighlightRange(query: string): IndexRange | null {
  * Each output point is one cannon step: four velocity-Verlet substeps of 0.01.
  * Stops at the surface (r < 1) or at escape (r > 12). Empty if fewer than two samples.
  */
+/** Ghost from the muzzle at a horizontal launch speed, before the shot has a trail. */
+export function launchPreview(speed: number, steps = 100): Point2[] {
+  const r = 1.02;
+  const v = Number.isFinite(speed) ? Math.max(0, speed) : 0.5;
+  const dt = CANNON_STEP_DT;
+  return trailGhostPoints(
+    [
+      { x: -v * dt, y: r },
+      { x: 0, y: r },
+    ],
+    steps,
+    dt,
+  );
+}
+
 export function trailGhostPoints(trail: readonly TrailSample[], steps = 40, sampleDt = CANNON_STEP_DT): Point2[] {
   if (trail.length < 2 || steps <= 0 || !(sampleDt > 0)) return [];
   const previous = readPoint(trail[trail.length - 2]!);

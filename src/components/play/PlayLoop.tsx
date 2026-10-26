@@ -40,7 +40,7 @@ import {
   type PlaySnapshot,
 } from "./phase";
 import { defaultParams, formatParam, freshStart, runDuration, runSteps, summariseObservation } from "./readings";
-import { mintSession } from "./session";
+import { mintSession, withSeed } from "./session";
 import { startWavCapture, type WavCapture } from "./wav";
 import { armChime, playChime } from "./chime";
 import { rememberSeen, seenOnCard, witnessBeat, witnessLine, type WitnessBeat } from "./witness";
@@ -144,11 +144,16 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     if (!rules) return;
     let cancel = false;
     cancelRef.current = false;
-    void mintSession(spec.id)
+    void mintSession(spec.id, window.location.search)
       .then(async (mint) => {
         if (cancel) return;
         seedRef.current = mint.seed;
-        setSeedNote(mint.notice);
+        setSeedNote(withSeed(mint.notice, mint.seed));
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("seed") !== String(mint.seed)) {
+          params.set("seed", String(mint.seed));
+          window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
+        }
         birthRef.current = { ...paramsRef.current };
         const session = await new WorldSession(rules, { ...paramsRef.current }, mint.seed).start();
         if (cancel) return;

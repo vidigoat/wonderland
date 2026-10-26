@@ -592,9 +592,11 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const lockedNote =
     play.phase === "predict"
       ? "These stay still until the first guess is written down."
-      : play.phase === "transfer" || play.phase === "receipt"
-        ? "The bench is still."
-        : null;
+      : play.phase === "transfer" && Object.keys(spec.transfer.params).length > 0
+        ? "These belong to the new situation."
+        : play.phase === "transfer" || play.phase === "receipt"
+          ? "The bench is still."
+          : null;
   const opening = spec.predictions[0];
   const second = spec.predictions[1];
   const showBench = play.phase !== "intro" && play.phase !== "receipt";

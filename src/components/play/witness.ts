@@ -46,6 +46,7 @@ const BEATS = {
   "The far ridge is burning.": "ridge",
   "The fire stopped.": "held",
   "The moths are not the colour they were.": "moths",
+  "Ada's reading is not yours.": "race",
 } as const;
 
 export type WitnessBeat = (typeof BEATS)[keyof typeof BEATS];

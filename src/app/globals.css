@@ -1298,6 +1298,17 @@ input[type="range"]::-moz-range-thumb {
 
 .race {
   margin: 0.35rem 0 0.7rem;
+  padding-top: 0.15rem;
+}
+
+.race .kicker {
+  margin-bottom: 0.2rem;
+}
+
+.race .num {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
 }
 
 .race-head, .race-row {

@@ -59,6 +59,13 @@ export function raceRows(
     .slice(0, 4);
 }
 
+/** The stage names the split. It does not repeat either reading. */
+export const RACE_LINE = "Ada's reading is not yours.";
+
+export function raceLine(count: number): string | null {
+  return count > 0 ? RACE_LINE : null;
+}
+
 export function summariseObservation(spec: PublicWorldSpec, obs: Record<string, number | string> | undefined): string | null {
   if (!obs) return null;
   const parts = spec.observables.slice(0, 3).flatMap((item) => {

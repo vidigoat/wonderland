@@ -38,6 +38,7 @@ describe("witness", () => {
     ];
     expect(spoken.map(witnessBeat)).toEqual(["vault", "halt", "leave", "land", "orbit", "bank", "ridge", "held", "moths"]);
     expect(witnessBeat(null)).toBeNull();
+    expect(witnessBeat("Ada's reading is not yours.")).toBe("race");
     expect(witnessBeat("quotes end the string")).toBeNull();
   });
 

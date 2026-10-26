@@ -39,7 +39,7 @@ import {
   toHypothesise,
   type PlaySnapshot,
 } from "./phase";
-import { defaultParams, formatParam, freshStart, pictureAction, runDuration, runSteps, summariseObservation } from "./readings";
+import { defaultParams, formatParam, freshStart, pictureAction, raceLine, raceRows, runDuration, runSteps, summariseObservation } from "./readings";
 import { mintSession, withSeed } from "./session";
 import { startWavCapture, type WavCapture } from "./wav";
 import { armChime, playChime } from "./chime";
@@ -114,6 +114,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const [witness, setWitness] = useState<string | null>(null);
   const [seen, setSeen] = useState<string[]>([]);
   const [beat, setBeat] = useState<{ name: WitnessBeat; id: number } | null>(null);
+  const [raceSaid, setRaceSaid] = useState<string | null>(null);
 
   const paramsRef = useRef(params);
   const sessionRef = useRef<WorldSession | null>(null);
@@ -138,6 +139,23 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const wantTalk = useRef(false);
   const rulesMissing = rulesFor(spec) == null;
   if (play.phase === "transfer" && witness !== null) setWitness(null);
+  const split = raceLine(raceRows(spec, obs, adaObs).length);
+  const liveRace = play.phase === "experiment" || play.phase === "hypothesise" || play.phase === "loop";
+  if (split && split !== raceSaid && liveRace) {
+    setRaceSaid(split);
+    setWitness(split);
+    setSeen(rememberSeen(seen, split));
+    setBeat({ name: "race", id: (beat?.id ?? 0) + 1 });
+  }
+
+  useEffect(() => {
+    if (!raceSaid) return;
+    playChime("race");
+    const timer = window.setTimeout(() => {
+      setWitness((current) => (current === raceSaid ? null : current));
+    }, 4200);
+    return () => window.clearTimeout(timer);
+  }, [raceSaid]);
 
   function publish(session: WorldSession) {
     const last = session.history[session.history.length - 1] ?? null;
@@ -735,6 +753,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
                 className="press"
                 disabled={grading || (opening.options ? selected == null : free.trim() === "")}
                 onClick={() => {
+                  armChime();
                   const choice = opening.options ? selected : free.trim();
                   if (choice == null || choice === "") return;
                   void gradePrediction(opening.id, choice, "first");

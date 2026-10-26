@@ -19,7 +19,7 @@ import {
   TRAIL,
 } from "./phase";
 import { receiptCopy } from "./receipt";
-import { freshStart, pictureAction, raceRows, restageParams, runDuration, runSteps, speakTool } from "./readings";
+import { freshStart, pictureAction, raceLine, raceRows, restageParams, runDuration, runSteps, speakTool } from "./readings";
 import { drainSse, heroHref, toMontageItem } from "./sse";
 import { encodeWav } from "./wav";
 
@@ -166,6 +166,12 @@ describe("the race", () => {
     expect(raceRows(spec, { vaultOpen: "shut" }, { vaultOpen: "shut" })).toEqual([]);
     expect(raceRows(spec, null, { vaultOpen: "open" })).toEqual([]);
     expect(raceRows(spec, { vaultOpen: "open" }, null)).toEqual([]);
+  });
+
+  it("names the split without repeating either reading", () => {
+    expect(raceLine(0)).toBeNull();
+    expect(raceLine(2)).toBe("Ada's reading is not yours.");
+    expect(raceLine(2)).not.toContain("open");
   });
 });
 

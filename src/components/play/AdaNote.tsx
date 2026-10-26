@@ -50,6 +50,7 @@ export function AdaNote({
       <div className="ada-scroll">
       {race.length ? (
         <div className="race" aria-label="Where you and Ada differ">
+          <p className="kicker">Not the same</p>
           <div className="race-head">
             <span />
             <span>You</span>

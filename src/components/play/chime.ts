@@ -11,6 +11,7 @@ export const CHIME: Record<WitnessBeat, { freq: number; ms: number }> = {
   ridge: { freq: 311, ms: 160 },
   held: { freq: 220, ms: 200 },
   moths: { freq: 440, ms: 220 },
+  race: { freq: 349, ms: 200 },
 };
 
 let audio: AudioContext | null = null;

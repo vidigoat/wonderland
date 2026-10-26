@@ -140,6 +140,13 @@ export async function* generateSample(concept: string): AsyncGenerator<SampleEve
     return;
   }
 
+  yield {
+    type: "stage",
+    stage: "artist",
+    message: "Using the paintings already on the shelf. Muse Image was not called.",
+    source,
+    notice,
+  };
   yield { type: "world", spec: hero, source, notice };
   yield {
     type: "stage",

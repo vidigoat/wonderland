@@ -91,7 +91,7 @@ describe("sample generation", () => {
     expect(world && world.type === "world" ? world.spec.id : "").toBe("gatekeeper");
     expect(checks && checks.type === "checks" ? checks.results.every((result) => result.passed) : false).toBe(true);
     expect(events.some((event) => event.type === "choose")).toBe(false);
-    expect(events.map((event) => event.type)).toEqual(["stage", "stage", "stage", "checks", "world", "stage"]);
+    expect(events.map((event) => event.type)).toEqual(["stage", "stage", "stage", "checks", "stage", "world", "stage"]);
   });
 
   it("asks for a hero on no match and does not invent a spec", async () => {

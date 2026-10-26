@@ -5,17 +5,8 @@ import { useEffect, useState, type FormEvent } from "react";
 import type { ClientPipelineEvent } from "@/engine/client-event";
 import { errorMessage, statusRibbon } from "./http";
 import { PlaceScene, SampleNote, type PlaceCard } from "./Scenes";
+import { bindingView } from "./binding";
 import { drainSse, toMontageItem, type MontageItem } from "./sse";
-
-const STAGE_LABEL: Record<string, string> = {
-  scientist: "Scientist",
-  designer: "Designer",
-  checker: "Checks",
-  repair: "Repair",
-  artist: "Artist",
-  playtester: "Play",
-  done: "Bound",
-};
 
 type LogEntry = MontageItem & { key: number };
 
@@ -89,15 +80,6 @@ export function Landing({ places }: { places: PlaceCard[] }) {
     }
   }
 
-  const hasDoor = log.some((item) => item.type === "world" || item.type === "choose");
-  const hasError = log.some((item) => item.type === "error");
-  const notices = log.map((item, index) => {
-    const notice = "notice" in item ? item.notice : undefined;
-    if (!notice) return null;
-    const seen = log.slice(0, index).some((earlier) => "notice" in earlier && earlier.notice === notice);
-    return seen ? null : notice;
-  });
-
   return (
     <div className="landing">
       {ribbon ? <p className="sample-ribbon">{ribbon}</p> : null}
@@ -128,74 +110,7 @@ export function Landing({ places }: { places: PlaceCard[] }) {
           </button>
         </form>
 
-        {log.length ? (
-          <div className="montage" aria-live="polite">
-            {log.map((item, index) => {
-              const notice = notices[index];
-              return (
-                <article key={item.key} className="galley">
-                  <div className="galley-row">
-                  {item.type === "stage" ? (
-                    <>
-                      <p className="kicker">{STAGE_LABEL[item.stage] ?? item.stage}</p>
-                      <p>{item.message}</p>
-                    </>
-                  ) : null}
-                  {item.type === "checks" ? (
-                    <>
-                      <p className="kicker">Checks</p>
-                      <p className="num">
-                        {item.passed} / {item.total} held
-                      </p>
-                    </>
-                  ) : null}
-                  {item.type === "world" ? (
-                    <>
-                      <p className="kicker">World</p>
-                      <div>
-                        <p className="galley-title">{item.title}</p>
-                        <p>{item.tagline}</p>
-                        <p className="aside">{item.concept}</p>
-                        {item.href ? (
-                          <Link className="press enter" href={item.href}>
-                            Enter
-                          </Link>
-                        ) : (
-                          <p className="aside">This one is not on the shelf yet.</p>
-                        )}
-                      </div>
-                    </>
-                  ) : null}
-                  {item.type === "choose" ? (
-                    <>
-                      <p className="kicker">Choose</p>
-                      <div>
-                        <p>{item.message}</p>
-                        <ul className="choose-list">
-                          {item.worlds.map((world) => (
-                            <li key={world.id}>
-                              <Link href={world.href}>{world.title}</Link>
-                              <span>{world.concept}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </>
-                  ) : null}
-                  {item.type === "error" ? (
-                    <>
-                      <p className="kicker">Stopped</p>
-                      <p>{item.message}</p>
-                    </>
-                  ) : null}
-                  </div>
-                  {notice ? <SampleNote notice={notice} /> : null}
-                </article>
-              );
-            })}
-            {stopped && !hasDoor && !hasError ? <p className="aside">The build stopped before a world was bound.</p> : null}
-          </div>
-        ) : (
+        {log.length ? <Binding log={log} stopped={stopped} /> : (
           <div className="landing-scenes">
             <p className="scenes-label">Or enter a world already bound</p>
             <div className="scene-row">
@@ -210,5 +125,71 @@ export function Landing({ places }: { places: PlaceCard[] }) {
         )}
       </div>
     </div>
+  );
+}
+
+function Binding({ log, stopped }: { log: LogEntry[]; stopped: boolean }) {
+  const view = bindingView(log);
+  const marks = view.checks ? Array.from({ length: view.checks.total }, (_, index) => index < view.checks!.passed) : [];
+  return (
+    <section className="binding" aria-live="polite">
+      <SampleNote notice={view.notice} />
+      <ol className="binding-steps">
+        {view.steps.map((step) => (
+          <li key={step.stage} className={step.on ? "is-on" : ""}>
+            <span>{step.label}</span>
+            <p>{step.on ? step.message : "Waiting"}</p>
+          </li>
+        ))}
+      </ol>
+      {marks.length ? (
+        <p className="binding-marks" aria-label={`${view.checks?.passed ?? 0} of ${view.checks?.total ?? 0} checks held`}>
+          {marks.map((held, index) => (
+            <i key={index} className={held ? "held" : ""} />
+          ))}
+          <span>
+            {view.checks?.passed} / {view.checks?.total} held
+          </span>
+        </p>
+      ) : null}
+      {view.world ? (
+        <div className="binding-world">
+          <div className="binding-plate">
+            <PlaceScene id={view.world.id} />
+          </div>
+          <div>
+            <p className="galley-title">{view.world.title}</p>
+            <p>{view.world.tagline}</p>
+            <p className="aside">{view.world.concept}</p>
+            {view.world.href ? (
+              <Link className="press enter" href={view.world.href}>
+                Enter
+              </Link>
+            ) : (
+              <p className="aside">This one is not on the shelf yet.</p>
+            )}
+          </div>
+        </div>
+      ) : (
+        <p className="law-redacted" aria-hidden="true">
+          ███
+        </p>
+      )}
+      {view.choose ? (
+        <div>
+          <p>{view.choose.message}</p>
+          <ul className="choose-list">
+            {view.choose.worlds.map((world) => (
+              <li key={world.id}>
+                <Link href={world.href}>{world.title}</Link>
+                <span>{world.concept}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      {view.error ? <p className="slip">{view.error}</p> : null}
+      {stopped && !view.world && !view.choose && !view.error ? <p className="aside">The build stopped before a world was bound.</p> : null}
+    </section>
   );
 }

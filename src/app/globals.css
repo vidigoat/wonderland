@@ -675,6 +675,43 @@ a {
   max-height: min(42vh, 350px);
 }
 
+.legend {
+  position: absolute;
+  z-index: 3;
+  left: 1rem;
+  bottom: 0.85rem;
+  display: flex;
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: #e7e2d4;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.swatch {
+  width: 0.72rem;
+  height: 0.72rem;
+  background: #9a968f;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.swatch.sapling {
+  background: #3e6b45;
+}
+
+.swatch.flame {
+  background: #e15a24;
+}
+
 .witness {
   position: absolute;
   z-index: 4;

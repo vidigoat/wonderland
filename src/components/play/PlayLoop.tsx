@@ -576,6 +576,19 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
             beatId={beat?.id ?? 0}
           />
           {witness && !newSituation ? <p className="witness">{witness}</p> : null}
+          {spec.id === "firebreak" && !newSituation ? (
+            <ul className="legend" aria-label="Valley marks">
+              <li>
+                <i className="swatch sapling" /> Sapling
+              </li>
+              <li>
+                <i className="swatch flame" /> Flame
+              </li>
+              <li>
+                <i className="swatch stump" /> Stump
+              </li>
+            </ul>
+          ) : null}
           {newSituation ? (
             <div className="situation">
               <p className="kicker">A new situation</p>

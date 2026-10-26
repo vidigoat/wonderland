@@ -671,6 +671,10 @@ a {
   max-height: 30%;
 }
 
+.play[data-phase="receipt"] .receipt canvas {
+  max-height: min(42vh, 350px);
+}
+
 .witness {
   position: absolute;
   z-index: 4;

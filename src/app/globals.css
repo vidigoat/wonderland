@@ -1184,6 +1184,34 @@ textarea {
   margin: 0.4rem 0 0.8rem;
 }
 
+.sealed {
+  position: relative;
+  margin: 0 0 0.9rem;
+  padding: 0.15rem 0 0.75rem 1.6rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent, var(--brass)) 45%, transparent);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.2rem;
+  line-height: 1.3;
+}
+
+.sealed::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.15rem;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  background: var(--accent, var(--brass));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--paper, #f7f1e4) 55%, transparent);
+}
+
+.sealed .kicker {
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
 .instruments {
   margin-top: 1.1rem;
 }

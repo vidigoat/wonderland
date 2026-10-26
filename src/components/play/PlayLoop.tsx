@@ -767,6 +767,13 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
             </section>
           ) : null}
 
+          {play.beforeWords && (play.phase === "experiment" || play.phase === "hypothesise" || play.phase === "loop") ? (
+            <p className="sealed">
+              <span className="kicker">Sealed until the card</span>
+              {play.beforeWords}
+            </p>
+          ) : null}
+
           {play.phase === "experiment" ? (
             <section className="phase">
               <p className="kicker">A trial</p>

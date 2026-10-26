@@ -87,3 +87,15 @@ export function runDuration(steps: number): number {
   if (steps <= 1) return 1100;
   return Math.min(3600, Math.max(1400, steps * 20));
 }
+
+const BIRTH_KNOBS: Record<string, readonly string[]> = {
+  "rumour-town": ["rumourSeeds", "reserveRatio"],
+  "peppered-forest": ["startDarkness"],
+};
+
+/** A new shot, a new planting, or a knob that only matters at the beginning. */
+export function freshStart(worldId: string, archetype: string, birth: Params, current: Params): boolean {
+  if (archetype === "bodies" || archetype === "field") return true;
+  const keys = BIRTH_KNOBS[worldId] ?? [];
+  return keys.some((key) => birth[key] !== current[key]);
+}

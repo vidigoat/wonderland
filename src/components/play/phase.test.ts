@@ -17,7 +17,7 @@ import {
   toHypothesise,
 } from "./phase";
 import { receiptCopy } from "./receipt";
-import { runDuration, runSteps } from "./readings";
+import { freshStart, runDuration, runSteps } from "./readings";
 import { drainSse, heroHref, toMontageItem } from "./sse";
 import { encodeWav } from "./wav";
 
@@ -79,6 +79,10 @@ describe("phase machine", () => {
     expect(runSteps("bodies")).toBeGreaterThanOrEqual(100);
     expect(runDuration(runSteps("bodies"))).toBeGreaterThan(runDuration(1));
     expect(runSteps("population")).toBe(30);
+    expect(freshStart("newtons-cannon", "bodies", { speed: 0.5 }, { speed: 0.5 })).toBe(true);
+    expect(freshStart("rumour-town", "population", { rumourSeeds: 1, reserveRatio: 0.1 }, { rumourSeeds: 1, reserveRatio: 0.1 })).toBe(false);
+    expect(freshStart("rumour-town", "population", { rumourSeeds: 1 }, { rumourSeeds: 6 })).toBe(true);
+    expect(freshStart("peppered-forest", "population", { startDarkness: 0.2, barkDarkness: 0.2 }, { startDarkness: 0.2, barkDarkness: 0.9 })).toBe(false);
   });
 });
 

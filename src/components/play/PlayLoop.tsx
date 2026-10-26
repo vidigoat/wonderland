@@ -38,7 +38,7 @@ import {
   toHypothesise,
   type PlaySnapshot,
 } from "./phase";
-import { defaultParams, formatParam, runDuration, runSteps, summariseObservation } from "./readings";
+import { defaultParams, formatParam, freshStart, runDuration, runSteps, summariseObservation } from "./readings";
 import { mintSession } from "./session";
 import { startWavCapture, type WavCapture } from "./wav";
 import { witnessLine } from "./witness";
@@ -117,6 +117,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const adaStarted = useRef(false);
   const openWeightsRef = useRef<"live" | "sample" | null>(null);
   const prevObs = useRef<Observation | null>(null);
+  const birthRef = useRef<Params>(defaultParams(spec));
   const playingRef = useRef(false);
   const cancelRef = useRef(false);
   const rafRef = useRef(0);
@@ -141,6 +142,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
         if (cancel) return;
         seedRef.current = mint.seed;
         setSeedNote(mint.notice);
+        birthRef.current = { ...paramsRef.current };
         const session = await new WorldSession(rules, { ...paramsRef.current }, mint.seed).start();
         if (cancel) return;
         sessionRef.current = session;
@@ -315,11 +317,12 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     playingRef.current = true;
     setPlaying(true);
     setRunError(null);
-    if ((spec.archetype === "bodies" || spec.archetype === "field") && seedRef.current != null) {
+    if (seedRef.current != null && freshStart(spec.id, spec.archetype, birthRef.current, paramsRef.current)) {
       const rules = rulesFor(spec);
       if (rules) {
         session = await new WorldSession(rules, { ...paramsRef.current }, seedRef.current).start();
         sessionRef.current = session;
+        birthRef.current = { ...paramsRef.current };
         if (!cancelRef.current) publish(session);
       }
     }
@@ -362,6 +365,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     const rules = rulesFor(spec);
     const seed = seedRef.current;
     if (!rules || seed == null || playingRef.current) return;
+    birthRef.current = { ...paramsRef.current };
     const session = await new WorldSession(rules, { ...paramsRef.current }, seed).start();
     if (cancelRef.current) return;
     sessionRef.current = session;

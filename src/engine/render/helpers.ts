@@ -82,6 +82,20 @@ export function cssHex(color: number): string {
   return `#${(color & 0xffffff).toString(16).padStart(6, "0")}`;
 }
 
+/** A handful of lines, spread across the square, so one sentence is not stacked on itself. */
+export function spokenIds(agents: { id: string | number; x: number; bubble?: string | null }[], limit = 6): Set<string> {
+  const voiced = agents.filter((agent) => agent.bubble?.trim()).sort((a, b) => a.x - b.x);
+  const ids = new Set<string>();
+  let lastX = -1;
+  for (const agent of voiced) {
+    if (ids.size >= limit) break;
+    if (ids.size > 0 && agent.x - lastX < 0.14) continue;
+    ids.add(String(agent.id));
+    lastX = agent.x;
+  }
+  return ids;
+}
+
 /** Stable 0–1 phase for idle bob. Same id, same phase. */
 export function phaseOffset(id: string | number): number {
   const text = String(id);

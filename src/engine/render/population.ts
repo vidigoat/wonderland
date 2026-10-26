@@ -1,6 +1,6 @@
 import { Container, Graphics, Text } from "pixi.js";
 import type { PopulationAgent } from "@/engine/view";
-import { clamp01, phaseOffset, readNumber, smoothstep } from "./helpers";
+import { clamp01, phaseOffset, readNumber, smoothstep, spokenIds } from "./helpers";
 import { pixelRatio, stageFont } from "./fonts";
 import { barkColor, populationTint } from "./palette";
 import type { Scene, Frame } from "./scene";
@@ -64,6 +64,7 @@ export function createPopulationScene(): Scene {
     });
 
     const seen = new Set<string>();
+    const speakers = spokenIds(agents);
     const unit = Math.min(frame.width, frame.height);
     const figureScale = Math.max(0.85, Math.min(1.55, unit / 640));
 
@@ -125,7 +126,7 @@ export function createPopulationScene(): Scene {
         keepsOwnColor ? 0xffffff : populationTint(frame.worldId, node.drawTint, frame.palette),
         !keepsOwnColor,
       );
-      syncBubble(node, agent.bubble, at.x, at.y + bob, frame, bubbles);
+      syncBubble(node, speakers.has(id) ? agent.bubble : null, at.x, at.y + bob, frame, bubbles, id);
     }
 
     for (const [id, node] of nodes) {
@@ -224,7 +225,7 @@ function drawBankScenery(g: Graphics, x: number, y: number, unit: number): void 
   g.rect(x + 22 * s, y + 10 * s, 6 * s, 34 * s).fill({ color: 0xefe4d4 });
 }
 
-function syncBubble(node: Node, bubble: string | null | undefined, x: number, y: number, frame: Frame, layer: Container): void {
+function syncBubble(node: Node, bubble: string | null | undefined, x: number, y: number, frame: Frame, layer: Container, id: string): void {
   const text = bubble?.trim() ? bubble.trim().slice(0, 90) : "";
   if (!text) {
     node.bubble?.destroy({ children: true });
@@ -240,7 +241,8 @@ function syncBubble(node: Node, bubble: string | null | undefined, x: number, y:
     node.bubbleBelow = below;
     layer.addChild(node.bubble);
   }
-  node.bubble.position.set(x, below ? y + 26 : y - 28);
+  const lift = (phaseOffset(id) - 0.5) * 28;
+  node.bubble.position.set(x, (below ? y + 30 : y - 34) + lift);
 }
 
 function makeBubble(text: string, below: boolean, ink: number, parchment: number, accent: number): Container {

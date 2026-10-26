@@ -324,6 +324,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     playingRef.current = true;
     setPlaying(true);
     setRunError(null);
+    setSuggestion(null);
     if (seedRef.current != null && freshStart(spec.id, spec.archetype, birthRef.current, paramsRef.current)) {
       const rules = rulesFor(spec);
       if (rules) {
@@ -333,7 +334,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
         if (!cancelRef.current) publish(session);
       }
     }
-    session.params = { ...paramsRef.current };
+    for (const [id, value] of Object.entries(paramsRef.current)) session.setParam(id, value);
     originRef.current = session.history[session.history.length - 1] ?? null;
     const steps = runSteps(spec.archetype);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;

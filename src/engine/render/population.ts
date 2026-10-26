@@ -117,7 +117,7 @@ export function createPopulationScene(): Scene {
       node.figure.view.rotation = wobble;
       node.figure.view.scale.set(figureScale * (0.86 + phase * 0.28));
       node.figure.view.zIndex = at.y;
-      node.figure.show(frame.worldId, agent.sprite || "figure", populationTint(frame.worldId, node.drawTint, frame.palette));
+      node.figure.show(frame.worldId, agent.sprite || "figure", populationTint(frame.worldId, node.drawTint, frame.palette), true);
       syncBubble(node, agent.bubble, at.x, at.y + bob, frame, bubbles);
     }
 

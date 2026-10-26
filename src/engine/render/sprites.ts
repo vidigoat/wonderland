@@ -31,7 +31,7 @@ const FIGURE = 86;
 
 export type Figure = {
   view: Container;
-  show(worldId: string, sprite: string, tint: number): void;
+  show(worldId: string, sprite: string, tint: number, tintArt?: boolean): void;
   /** Drop a pending sprite load without destroying the display object. */
   cancel(): void;
   destroy(): void;
@@ -46,16 +46,18 @@ export function createFigure(): Figure {
   let token = 0;
   let alive = true;
   let tint = 0xffffff;
+  let tintArt = false;
 
   const applyTint = () => {
     if (graphic) graphic.tint = tint;
-    if (spriteView) spriteView.tint = tint;
+    if (spriteView) spriteView.tint = tintArt ? tint : 0xffffff;
   };
 
   return {
     view,
-    show(worldId, sprite, nextTint) {
+    show(worldId, sprite, nextTint, paintTint = false) {
       tint = nextTint;
+      tintArt = paintTint;
       const nextKey = `${worldId}/${sprite}`;
       if (key !== nextKey) {
         key = nextKey;
@@ -74,7 +76,7 @@ export function createFigure(): Figure {
           graphic?.destroy();
           graphic = null;
           spriteView = next;
-          next.tint = tint;
+          next.tint = tintArt ? tint : 0xffffff;
           view.addChild(next);
         });
       }

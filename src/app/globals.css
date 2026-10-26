@@ -731,6 +731,10 @@ a {
   line-height: 1.25;
 }
 
+.play[data-phase="transfer"] .ada {
+  max-height: 22%;
+}
+
 .play[data-phase="receipt"] .ada {
   max-height: 30%;
 }

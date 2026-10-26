@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { witnessLine } from "./witness";
+import { witnessBeat, witnessLine } from "./witness";
 
 describe("witness", () => {
   it("names a visible change and stays quiet when nothing new happened", () => {
@@ -12,6 +12,23 @@ describe("witness", () => {
     expect(witnessLine("firebreak", { crossing: "no", stillBurning: "yes", burnedShare: 0.1 }, { crossing: "no", stillBurning: "no", burnedShare: 0.49 })).toBe("The fire stopped.");
     expect(witnessLine("firebreak", { crossing: "no", stillBurning: "no", burnedShare: 0 }, { crossing: "no", stillBurning: "no", burnedShare: 0 })).toBeNull();
     expect(witnessLine("peppered-forest", { meanDarkness: 0.2 }, { meanDarkness: 0.4 })).toBe("The moths are not the colour they were.");
+  });
+
+  it("gives each spoken line a stage beat and ignores anything else", () => {
+    const spoken = [
+      witnessLine("gatekeeper", { vaultOpen: "shut" }, { vaultOpen: "open" }),
+      witnessLine("gatekeeper", { scribeError: "ok" }, { scribeError: "error" }),
+      witnessLine("newtons-cannon", { status: "flying", laps: 0.2 }, { status: "escaped", laps: 0.2 }),
+      witnessLine("newtons-cannon", { status: "flying", laps: 0.2 }, { status: "landed", laps: 0.2 }),
+      witnessLine("newtons-cannon", { status: "flying", laps: 0.2 }, { status: "flying", laps: 0.6 }),
+      witnessLine("rumour-town", { bank: "open" }, { bank: "collapsed" }),
+      witnessLine("firebreak", { crossing: "no" }, { crossing: "yes" }),
+      witnessLine("firebreak", { crossing: "no", stillBurning: "yes", burnedShare: 0.2 }, { crossing: "no", stillBurning: "no", burnedShare: 0.4 }),
+      witnessLine("peppered-forest", { meanDarkness: 0.1 }, { meanDarkness: 0.3 }),
+    ];
+    expect(spoken.map(witnessBeat)).toEqual(["vault", "halt", "leave", "land", "orbit", "bank", "ridge", "held", "moths"]);
+    expect(witnessBeat(null)).toBeNull();
+    expect(witnessBeat("quotes end the string")).toBeNull();
   });
 
   it("does not smuggle a mechanism into the line", () => {

@@ -42,7 +42,7 @@ import {
 import { defaultParams, formatParam, freshStart, runDuration, runSteps, summariseObservation } from "./readings";
 import { mintSession } from "./session";
 import { startWavCapture, type WavCapture } from "./wav";
-import { witnessLine } from "./witness";
+import { witnessBeat, witnessLine, type WitnessBeat } from "./witness";
 
 function rulesFor(spec: PublicWorldSpec): RulesModule | null {
   if (spec.rules.kind !== "builtin") return null;
@@ -108,6 +108,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const [adaBench, setAdaBench] = useState<Params>(() => defaultParams(spec));
   const [townNote, setTownNote] = useState<string | null>(null);
   const [witness, setWitness] = useState<string | null>(null);
+  const [beat, setBeat] = useState<{ name: WitnessBeat; id: number } | null>(null);
 
   const paramsRef = useRef(params);
   const sessionRef = useRef<WorldSession | null>(null);
@@ -190,6 +191,8 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     prevObs.current = obs;
     if (!line) return;
     setWitness(line);
+    const name = witnessBeat(line);
+    if (name) setBeat((current) => ({ name, id: (current?.id ?? 0) + 1 }));
     const timer = window.setTimeout(() => {
       setWitness((current) => (current === line ? null : current));
     }, 4200);
@@ -556,7 +559,16 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
       <PhaseTrail phase={play.phase} />
       <div className="play-body">
         <section className="stage-pane" aria-label={spec.title}>
-          <StageSlot view={view} archetype={spec.archetype} worldId={spec.id} artStyle={spec.art.style} playing={playing} params={params} />
+          <StageSlot
+            view={view}
+            archetype={spec.archetype}
+            worldId={spec.id}
+            artStyle={spec.art.style}
+            playing={playing}
+            params={params}
+            beat={beat?.name ?? null}
+            beatId={beat?.id ?? 0}
+          />
           {witness ? <p className="witness">{witness}</p> : null}
         </section>
         <aside className="notebook">

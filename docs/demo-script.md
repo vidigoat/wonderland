@@ -8,7 +8,7 @@ Three minutes, on the running app. The buttons below are the ones on the screen.
 | 0:08 | Type `Why does SQL injection work?` and press Build. The montage names The Gatekeeper’s Ledger and says the model did not write it. Checks show a count, not the answer. Enter. |
 | 0:40 | Read the mystery. Press **I have a guess**. Choose “Choke — the spell breaks” for O’Brien. Press **Write it down**. The knobs were locked until now. You are not told if you were right. |
 | 1:00 | Set the name to `O'Brien`. Press **Send the scroll**. The scribe stops. The line across the stage says “The scribe stopped.” |
-| 1:15 | Set the name and the password to `' OR '1'='1`. Send the scroll again. The vault lightens. The line says “The vault is open.” Ada’s notebook, on the sample lane, has been trying one knob at a time beside you. |
+| 1:15 | Set the name and the password to `' OR '1'='1`. Send the scroll again. The vault lightens, the room shakes, and the line says “The vault is open.” Ada’s notebook, on the sample lane, has been trying one knob at a time beside you. |
 | 1:35 | Press **I can say it**. Type: a quote ends the words, so the rest of the scroll is run as the spell. Press **Offer this sentence**. The sample judge says a new situation is waiting. It does not repeat the law. |
 | 1:50 | Answer the library search. Press **Offer the proof**. If a second prediction appears, answer it. **Keep this card** downloads the receipt. |
 | 2:10 | The shelf: Peppered Forest, Newton’s Cannon, Rumour Town, The Firebreak. In the forest, move the soot and press **A generation** until the line says the moths are not the colour they were. |

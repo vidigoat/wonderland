@@ -34,3 +34,23 @@ export function witnessLine(worldId: string, previous: Observation | null, next:
   }
   return null;
 }
+
+/** How the stage answers a line. Unknown sentences stay still. */
+const BEATS = {
+  "The vault is open.": "vault",
+  "The scribe stopped.": "halt",
+  "It left.": "leave",
+  "It met the ground.": "land",
+  "It has not come down.": "orbit",
+  "The bank has closed its doors.": "bank",
+  "The far ridge is burning.": "ridge",
+  "The fire stopped.": "held",
+  "The moths are not the colour they were.": "moths",
+} as const;
+
+export type WitnessBeat = (typeof BEATS)[keyof typeof BEATS];
+
+export function witnessBeat(line: string | null): WitnessBeat | null {
+  if (!line) return null;
+  return line in BEATS ? BEATS[line as keyof typeof BEATS] : null;
+}

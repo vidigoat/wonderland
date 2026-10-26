@@ -47,6 +47,7 @@ export function AdaNote({
           </button>
         ) : null}
       </header>
+      <div className="ada-scroll">
       {race.length ? (
         <div className="race" aria-label="Where you and Ada differ">
           <div className="race-head">
@@ -91,6 +92,7 @@ export function AdaNote({
         </p>
       ) : null}
       {seedNote ? <p className="aside">{seedNote}</p> : null}
+      </div>
       <SampleNote notice={notice} />
     </section>
   );

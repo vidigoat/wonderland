@@ -1067,12 +1067,29 @@ input[type="range"]::-moz-range-thumb {
 
 .ada {
   flex: none;
+  display: flex;
+  flex-direction: column;
   max-height: 46%;
-  overflow: auto;
+  overflow: hidden;
   margin: 0;
-  padding: 0.75rem 1.2rem 0.95rem 2.15rem;
+  padding: 0.75rem 1.2rem 0.7rem 2.15rem;
   border-top: 1px solid color-mix(in srgb, var(--notebook-ink) 16%, transparent);
   background: color-mix(in srgb, var(--paper, #f7f1e4) 92%, var(--notebook-ink, #14110e));
+}
+
+.ada-head {
+  flex: none;
+}
+
+.ada-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.ada > .sample-note {
+  flex: none;
+  margin: 0.45rem 0 0;
 }
 
 .ada-head {
@@ -1562,7 +1579,13 @@ input[type="range"]::-moz-range-thumb {
   }
 
   .ada {
+    display: block;
     max-height: none;
+    overflow: visible;
+  }
+
+  .ada-scroll {
+    overflow: visible;
   }
 
   .play-bar h1 {

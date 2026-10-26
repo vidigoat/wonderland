@@ -146,7 +146,8 @@ export function runVerb(worldId: string, archetype: string): string {
 
 export function runSteps(archetype: string): number {
   if (archetype === "pipeline") return 1;
-  if (archetype === "bodies") return 340;
+  // Long enough for a shot above circular speed to leave (escape at 1.4 takes ~550 steps).
+  if (archetype === "bodies") return 560;
   if (archetype === "field") return 48;
   return 30;
 }

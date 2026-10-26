@@ -84,6 +84,7 @@ function strokeValley(frame: Graphics, ground: Graphics, view: Frame, box: Box, 
 
 function drawValley(g: Graphics, grid: number[][], box: Box): void {
   g.clear();
+  g.rect(box.x, box.y, box.w, box.h).fill({ color: FIELD_COLORS.night });
   const rows = grid.length;
   const columns = grid[0]?.length ?? 1;
   const cw = box.w / columns;
@@ -124,7 +125,8 @@ function flame(g: Graphics, x: number, y: number, size: number): void {
 }
 
 function ash(g: Graphics, x: number, y: number, size: number): void {
-  g.circle(x, y + size * 0.08, size * 0.1).fill({ color: FIELD_COLORS.ash });
+  g.rect(x - size * 0.06, y, size * 0.12, size * 0.22).fill({ color: 0x3a342c });
+  g.circle(x, y - size * 0.02, size * 0.1).fill({ color: FIELD_COLORS.ash });
 }
 
 function paintGrid(grid: number[][], scale: FieldScale): Texture {

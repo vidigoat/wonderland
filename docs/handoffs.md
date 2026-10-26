@@ -15,3 +15,4 @@ Requests between workstreams. Format: `- [ ] (from → to) what you need, which 
 ## Open
 
 - [ ] (Lead → C/D) After `saveWorld` exists, the generate route should persist full specs server-side and still stream only `toClientPipelineEvent`.
+- [ ] (E → B) `readRival` in `src/components/play/http.ts` still expects `tool` to be a string. `POST /api/rival` now returns `tool` as an object: `{ name: "set_knob", id, value }` | `{ name: "run", steps }` | `{ name: "observe" }` | `{ name: "hypothesise", statement }`, with `thought`, `params`, and optional `observation` beside it. A display line can be `tool.name`. Until that parse lands, Ada's notebook treats a successful turn as unwired.

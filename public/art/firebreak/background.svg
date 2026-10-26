@@ -1,0 +1,29 @@
+<!-- sample art: not Muse Image output -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" preserveAspectRatio="xMidYMid slice">
+  <rect width="1200" height="750" fill="#14182e"/>
+  <path d="M0 80c160 40 280 20 400-10 180-40 320 10 480 30 120 16 220-10 320-30v80c-140 30-260 10-400-10-180-24-300 20-460 30C220 180 100 160 0 140z" fill="#1c2454"/>
+  <path d="M0 520c200-40 360-20 520 10 200 36 340-10 500-20 80-6 140 8 180 20v220H0z" fill="#10162f"/>
+  <g fill="#3f6b4a" stroke="#0c1024" stroke-width="2">
+    <path d="M40 180l10 16H30zM90 200l12 18H78zM150 170l9 14H141zM210 210l11 16h-22zM270 180l10 16h-20z"/>
+    <path d="M40 260l14 20H26zM110 250l12 18H98zM180 270l10 16h-20zM250 250l13 18h-26z"/>
+    <path d="M360 190l10 16h-20zM420 220l12 18h-24zM490 180l9 14h-18zM560 210l11 16h-22z"/>
+    <path d="M700 180l10 16h-20zM760 210l12 18h-24zM830 170l9 14h-18zM900 200l11 16h-22zM970 180l10 16h-20zM1040 210l12 18h-24zM1120 170l9 14h-18z"/>
+    <path d="M680 270l14 20h-28zM760 250l12 18h-24zM840 280l10 16h-20zM930 250l13 18h-26zM1020 270l11 16h-22z"/>
+    <path d="M40 360l10 16H30zM100 340l12 18H88zM170 370l9 14h-18zM240 350l11 16h-22z"/>
+    <path d="M700 360l10 16h-20zM770 340l12 18h-24zM850 370l9 14h-18zM930 350l11 16h-22zM1020 360l10 16h-20zM1100 340l12 18h-24z"/>
+    <path d="M60 450l14 20H46zM140 430l12 18h-24zM220 460l10 16h-20z"/>
+    <path d="M760 450l14 20h-28zM850 430l12 18h-24zM940 460l10 16h-20zM1040 440l13 18h-26z"/>
+    <path d="M80 560l10 16H70zM160 540l12 18h-24zM240 570l9 14h-18z"/>
+    <path d="M780 560l10 16h-20zM860 540l12 18h-24zM950 570l9 14h-18zM1040 550l11 16h-22zM1120 560l10 16h-20z"/>
+  </g>
+  <path d="M430 140v470" stroke="#2a3358" stroke-width="70"/>
+  <path d="M430 140v470" stroke="#1a2148" stroke-width="36"/>
+  <g fill="#e36a32">
+    <circle cx="70" cy="200" r="3"/>
+    <circle cx="120" cy="250" r="2"/>
+    <circle cx="48" cy="320" r="2.4"/>
+    <circle cx="160" cy="300" r="1.8"/>
+  </g>
+  <path d="M0 640h1200" stroke="#243056" stroke-width="2"/>
+  <path d="M0 700c80-16 140-8 200 4 90 18 160 8 240-8 100-20 180 4 260 12 90 8 160-10 240-6 70 4 140 16 260 4v44H0z" fill="#0c1024"/>
+</svg>

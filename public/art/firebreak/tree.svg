@@ -1,0 +1,11 @@
+<!-- sample art: not Muse Image output -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 132" width="96" height="132">
+  <path d="M48 10l28 36H20z" fill="#3f6b4a" stroke="#14182e" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M48 18l10 14H38z" fill="#f3ead7"/>
+  <path d="M48 38l36 40H12z" fill="#2f5a3e" stroke="#14182e" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M30 62l8 10M66 62l-8 10" stroke="#f3ead7" stroke-width="3"/>
+  <path d="M48 64l40 46H8z" fill="#3f6b4a" stroke="#14182e" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M28 92h12l-6 10zM58 88l10 14H54z" fill="#f3ead7"/>
+  <path d="M42 104h12v20H42z" fill="#6b4a32" stroke="#14182e" stroke-width="3"/>
+  <path d="M36 124h24" stroke="#14182e" stroke-width="3" stroke-linecap="round"/>
+</svg>

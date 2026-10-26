@@ -1,9 +1,36 @@
-import { transcribe } from "@/lib/ai/meta";
+import "server-only";
+import { connection } from "next/server";
+import { metaSource } from "@/lib/ai/mode";
+import { SAMPLE_NOTICE } from "@/lib/samples/mark";
 
-/** POST audio/wav body → { text }. The player says their law out loud; Muse Voice Transcribe turns it into text for the judge. */
+/**
+ * POST audio/wav → { source, text, notice? }.
+ * Live: Muse Voice Transcribe.
+ * Sample: text is null. No invented transcript.
+ */
+function failureMessage(error: unknown): string {
+  const raw = error instanceof Error ? error.message : "The transcript failed.";
+  let message = raw.replace(/\s+/g, " ").trim().slice(0, 240) || "The transcript failed.";
+  for (const name of ["MODEL_API_KEY", "FIREWORKS_API_KEY", "BASETEN_API_KEY"]) {
+    const secret = process.env[name];
+    if (secret) message = message.split(secret).join("[redacted]");
+  }
+  return message;
+}
+
 export async function POST(req: Request) {
+  await connection();
+  if (metaSource() !== "live") {
+    return Response.json({ source: "sample", text: null, notice: SAMPLE_NOTICE });
+  }
   const wav = await req.arrayBuffer();
   if (wav.byteLength === 0) return Response.json({ error: "empty audio" }, { status: 400 });
-  const text = await transcribe(wav);
-  return Response.json({ text });
+  try {
+    const { transcribe } = await import("@/lib/ai/meta");
+    const text = await transcribe(wav);
+    if (typeof text !== "string") return Response.json({ source: "live", message: "The transcript was empty." }, { status: 502 });
+    return Response.json({ source: "live", text });
+  } catch (error) {
+    return Response.json({ source: "live", message: failureMessage(error) }, { status: 502 });
+  }
 }

@@ -1,10 +1,31 @@
 /**
- * pnpm spike — THE key day-1 experiment: can Muse Wonder turn concepts into worlds that pass their own science checks?
+ * pnpm spike — can Muse Wonder turn concepts into worlds that pass their own science checks?
  * Decision rule (see plan.md): ≥ 6/10 verified → "type anything" is the headline. < 6 → hero worlds + variations.
  * Usage: pnpm spike            (all 10)   ·   pnpm spike "How do vaccines…"   (one)
+ *
+ * With no MODEL_API_KEY this writes docs/spike-results.md and exits 0.
+ * It does not call the model and does not invent a verified fraction.
  */
 import fs from "node:fs/promises";
-import { generateWorld } from "@/agents/pipeline";
+import path from "node:path";
+import { metaSource } from "@/lib/ai/mode";
+
+const RESULTS = path.join(process.cwd(), "docs/spike-results.md");
+
+const SAMPLE_RESULTS = `# Spike results
+
+The spike did not run because MODEL_API_KEY is unset.
+
+No verified fraction is reported. Sample mode does not call the model, and a sample world is not a model result.
+`;
+
+if (metaSource() === "sample") {
+  await fs.writeFile(RESULTS, SAMPLE_RESULTS);
+  console.log("Spike did not run because MODEL_API_KEY is unset.");
+  process.exit(0);
+}
+
+const { generateWorld } = await import("@/agents/pipeline");
 
 const CONCEPTS = [
   "Why does SQL injection work?",
@@ -38,3 +59,12 @@ for (const concept of concepts) {
   console.log(`${ok ? "✅" : "❌"} ${concept} — ${((Date.now() - t) / 1000).toFixed(0)}s\n`);
 }
 console.log(`\nVERIFIED ${verified}/${concepts.length}`);
+await fs.writeFile(
+  RESULTS,
+  `# Spike results
+
+MODEL_API_KEY was set. The spike called the model.
+
+VERIFIED ${verified}/${concepts.length}
+`,
+);

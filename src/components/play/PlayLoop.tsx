@@ -125,6 +125,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const openWeightsRef = useRef<"live" | "sample" | null>(null);
   const prevObs = useRef<Observation | null>(null);
   const birthRef = useRef<Params>(defaultParams(spec));
+  const experimentParams = useRef<Params | null>(null);
   const originRef = useRef<Observation | null>(null);
   const playingRef = useRef(false);
   const cancelRef = useRef(false);
@@ -193,17 +194,27 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   }, [play.phase, play.askingPrediction]);
 
   useEffect(() => {
-    if (play.phase !== "transfer" || play.askingPrediction != null) return;
+    if (play.phase !== "transfer") return;
     const rules = rulesFor(spec);
     const seed = seedRef.current;
-    const next = restageParams(paramsRef.current, spec.transfer.params);
-    if (!rules || seed == null || !next) return;
+    if (!rules || seed == null) return;
+    let next: Params | null = null;
+    let fly = false;
+    if (play.askingPrediction == null) {
+      const staged = restageParams(paramsRef.current, spec.transfer.params);
+      if (!staged) return;
+      if (!experimentParams.current) experimentParams.current = { ...paramsRef.current };
+      next = staged;
+      fly = spec.archetype === "bodies";
+    } else if (play.askingPrediction === 1 && experimentParams.current) {
+      next = experimentParams.current;
+    } else return;
     paramsRef.current = next;
     setParams(next);
     let cancel = false;
     void new WorldSession(rules, next, seed).start().then(async (session) => {
       if (cancel) return;
-      if (spec.archetype === "bodies") await session.tick(runSteps("bodies"));
+      if (fly) await session.tick(runSteps("bodies"));
       if (cancel) return;
       sessionRef.current = session;
       birthRef.current = { ...next };
@@ -604,7 +615,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const lockedNote =
     play.phase === "predict"
       ? "These stay still until the first guess is written down."
-      : play.phase === "transfer" && Object.keys(spec.transfer.params).length > 0
+      : play.phase === "transfer" && play.askingPrediction == null && Object.keys(spec.transfer.params).length > 0
         ? "These belong to the new situation."
         : play.phase === "transfer" || play.phase === "receipt"
           ? "The bench is still."

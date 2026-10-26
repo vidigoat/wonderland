@@ -106,6 +106,22 @@ describe("sample judge", () => {
     expectNoLaw(JSON.stringify(colder));
   });
 
+  it("accepts a plain discovery in each world", () => {
+    const said: Record<string, string> = {
+      gatekeeper: "a quote ends the words, so the rest of the scroll is run as the spell",
+      "peppered-forest": "The birds eat the moths that stand out, and not one moth changes colour.",
+      "newtons-cannon": "It is still falling, only sideways, so it misses the ground.",
+      "rumour-town": "Fear makes withdrawing rational, because the bank keeps only a fraction of the cash. Insurance removes the reason.",
+      firebreak: "The fire spreads to neighbouring trees, and a wide gap stops a dense planting from spanning the ridge.",
+    };
+    for (const hero of heroWorlds) {
+      const result = sampleJudge(hero, said[hero.id] ?? "");
+      expect(result.verdict, hero.id).toBe("discovered");
+      expect(result.reply).toBe(SAMPLE_REPLIES.discovered);
+      expectNoLaw(JSON.stringify(result));
+    }
+  });
+
   it("looks for a causal idea in each hero", () => {
     const cases: Record<string, { warmer: string; colder: string }> = {
       gatekeeper: { warmer: "A quote makes the scribe choke.", colder: "You need the password to get in." },

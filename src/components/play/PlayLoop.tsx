@@ -42,6 +42,7 @@ import {
 import { defaultParams, formatParam, freshStart, runDuration, runSteps, summariseObservation } from "./readings";
 import { mintSession } from "./session";
 import { startWavCapture, type WavCapture } from "./wav";
+import { armChime, playChime } from "./chime";
 import { witnessBeat, witnessLine, type WitnessBeat } from "./witness";
 
 function rulesFor(spec: PublicWorldSpec): RulesModule | null {
@@ -193,7 +194,10 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     if (!line) return;
     setWitness(line);
     const name = witnessBeat(line);
-    if (name) setBeat((current) => ({ name, id: (current?.id ?? 0) + 1 }));
+    if (name) {
+      setBeat((current) => ({ name, id: (current?.id ?? 0) + 1 }));
+      playChime(name);
+    }
     const timer = window.setTimeout(() => {
       setWitness((current) => (current === line ? null : current));
     }, 4200);
@@ -327,6 +331,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   async function run() {
     let session = sessionRef.current;
     if (!session || playingRef.current || knobsLocked(play)) return;
+    armChime();
     playingRef.current = true;
     setPlaying(true);
     setRunError(null);

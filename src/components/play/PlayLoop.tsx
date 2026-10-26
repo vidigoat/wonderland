@@ -16,6 +16,7 @@ import { StageSlot } from "./StageSlot";
 import {
   errorMessage,
   predictionRequest,
+  readCitizenDecisions,
   readGrade,
   readJudge,
   readRival,
@@ -104,6 +105,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const [adaNotice, setAdaNotice] = useState<string | null>(null);
   const [adaEntries, setAdaEntries] = useState<AdaEntry[]>([]);
   const [adaBench, setAdaBench] = useState<Params>(() => defaultParams(spec));
+  const [townNote, setTownNote] = useState<string | null>(null);
 
   const paramsRef = useRef(params);
   const sessionRef = useRef<WorldSession | null>(null);
@@ -112,6 +114,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const adaBusy = useRef(false);
   const adaGaveUp = useRef(false);
   const adaStarted = useRef(false);
+  const openWeightsRef = useRef<"live" | "sample" | null>(null);
   const playingRef = useRef(false);
   const cancelRef = useRef(false);
   const rafRef = useRef(0);
@@ -158,6 +161,22 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
       captureRef.current = null;
     };
   }, [spec, retry]);
+
+  useEffect(() => {
+    let live = true;
+    void fetch("/api/status")
+      .then((res) => res.json())
+      .then((data: unknown) => {
+        if (!live || !data || typeof data !== "object") return;
+        const body = data as { openWeights?: unknown; notice?: unknown };
+        if (body.openWeights === "live" || body.openWeights === "sample") openWeightsRef.current = body.openWeights;
+        if (spec.id === "rumour-town" && body.openWeights === "sample" && typeof body.notice === "string") setTownNote(body.notice);
+      })
+      .catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, [spec.id]);
 
   const adaTurn = useCallback(async () => {
     if (adaBusy.current || adaGaveUp.current) return;
@@ -248,6 +267,35 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     });
   }
 
+  async function applyCitizenRound(session: WorldSession) {
+    if (spec.id !== "rumour-town" || openWeightsRef.current !== "live") return;
+    const population = asWorldView(session.view(), "population");
+    if (!population || population.kind !== "population") return;
+    const citizens = population.agents.flatMap((agent) => {
+      const id = typeof agent.id === "number" ? agent.id : Number(agent.id);
+      if (!Number.isInteger(id)) return [];
+      return [{ id, x: agent.x, y: agent.y, worried: agent.tint, says: agent.bubble ?? null }];
+    });
+    const res = await fetch("/api/citizens", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ worldId: spec.id, citizens, params: paramsRef.current }),
+    });
+    if (!res.ok) return;
+    const body = (await res.json()) as { decisions?: unknown; source?: string; notice?: string };
+    if (body.source === "sample") setTownNote(body.notice ?? null);
+    const decisions = readCitizenDecisions(body.decisions);
+    if (!decisions) return;
+    session.setParam("citizenDecisions", JSON.stringify(decisions));
+  }
+
+  function clearCitizenRound(session: WorldSession) {
+    if (!("citizenDecisions" in session.params)) return;
+    const next = { ...session.params };
+    delete next.citizenDecisions;
+    session.params = next;
+  }
+
   async function run() {
     const session = sessionRef.current;
     if (!session || playingRef.current || knobsLocked(play)) return;
@@ -259,7 +307,19 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     const steps = runSteps(spec.archetype);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     try {
-      if (spec.archetype === "pipeline") {
+      if (spec.id === "rumour-town" && openWeightsRef.current === "live") {
+        await applyCitizenRound(session);
+        await session.tick(1);
+        clearCitizenRound(session);
+        if (!cancelRef.current) publish(session);
+        const rest = steps - 1;
+        if (rest > 0 && !cancelRef.current) {
+          if (reduce) {
+            await session.tick(rest);
+            publish(session);
+          } else await spreadTicks(session, rest, 1500);
+        }
+      } else if (spec.archetype === "pipeline") {
         await session.tick(1);
         if (!cancelRef.current) publish(session);
         if (!reduce && !cancelRef.current) await hold(1100);
@@ -468,6 +528,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
         </section>
         <aside className="notebook">
           {rulesMissing ? <p className="slip">This world’s rules are not on the shelf yet.</p> : null}
+          <SampleNote notice={townNote} />
           {seedError ? (
             <p className="slip">
               {seedError}{" "}

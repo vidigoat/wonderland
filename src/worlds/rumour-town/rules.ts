@@ -13,6 +13,33 @@ export type TownState = { round: number; citizens: Citizen[]; cash: number; fail
 
 const N = 40;
 
+type Heard = { worried: number; withdraw: boolean; says: string | null };
+
+/** One round of open-weights decisions, passed as JSON. Checks never set this, so they stay on the fallback brain. */
+function readCitizenDecisions(raw: unknown): Map<number, Heard> | null {
+  if (typeof raw !== "string" || !raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return null;
+    const heard = new Map<number, Heard>();
+    for (const item of parsed) {
+      if (!item || typeof item !== "object") continue;
+      const row = item as Record<string, unknown>;
+      if (typeof row.id !== "number" || !Number.isInteger(row.id)) continue;
+      if (typeof row.worried !== "number" || !Number.isFinite(row.worried)) continue;
+      if (typeof row.withdraw !== "boolean") continue;
+      heard.set(row.id, {
+        worried: Math.min(1, Math.max(0, row.worried)),
+        withdraw: row.withdraw,
+        says: typeof row.says === "string" ? row.says.slice(0, 80) : null,
+      });
+    }
+    return heard.size ? heard : null;
+  } catch {
+    return null;
+  }
+}
+
 export const rumourTown: RulesModule<TownState> = {
   init(params, rng) {
     const reserve = Number(params.reserveRatio ?? 0.1);
@@ -36,12 +63,18 @@ export const rumourTown: RulesModule<TownState> = {
     const insured = Boolean(params.insurance);
     const queueVisible = params.queueVisible !== false;
     const withdrawnShare = s.citizens.filter((c) => c.withdrawn).length / N;
+    const heard = readCitizenDecisions(params.citizenDecisions);
     let cash = s.cash;
     const citizens = s.citizens.map((c) => {
       if (c.withdrawn) return c;
+      const external = heard?.get(c.id);
+      if (external) {
+        if (external.withdraw) cash -= 1;
+        return { ...c, worried: external.worried, withdrawn: external.withdraw, says: external.says };
+      }
       const neighbours = s.citizens.filter((o) => o.id !== c.id && Math.hypot(o.x - c.x, o.y - c.y) < 0.25);
-      const heard = neighbours.filter((o) => o.worried > 0.5).length;
-      let worried = Math.min(1, c.worried * 0.9 + heard * 0.15 + (queueVisible ? withdrawnShare * 1.2 : 0));
+      const worriedNeighbours = neighbours.filter((o) => o.worried > 0.5).length;
+      let worried = Math.min(1, c.worried * 0.9 + worriedNeighbours * 0.15 + (queueVisible ? withdrawnShare * 1.2 : 0));
       if (insured) worried *= 0.15; // deposits are safe whatever others do
       const withdraw = worried > 0.55 && rng.chance(worried);
       if (withdraw) cash -= 1;

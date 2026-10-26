@@ -170,3 +170,25 @@ export function sampleNotice(source: DataSource | undefined, notice: string | un
   if (source !== "sample") return null;
   return notice ?? null;
 }
+
+export type CitizenDecision = { id: number; worried: number; withdraw: boolean; says: string | null };
+
+/** Decisions the town may apply for one step. Anything else is ignored so the fallback brain runs. */
+export function readCitizenDecisions(value: unknown): CitizenDecision[] | null {
+  if (!Array.isArray(value) || value.length === 0 || value.length > 80) return null;
+  const decisions: CitizenDecision[] = [];
+  for (const item of value) {
+    if (!item || typeof item !== "object") return null;
+    const row = item as Record<string, unknown>;
+    if (typeof row.id !== "number" || !Number.isInteger(row.id)) return null;
+    if (typeof row.worried !== "number" || !Number.isFinite(row.worried)) return null;
+    if (typeof row.withdraw !== "boolean") return null;
+    decisions.push({
+      id: row.id,
+      worried: row.worried,
+      withdraw: row.withdraw,
+      says: typeof row.says === "string" ? row.says : null,
+    });
+  }
+  return decisions;
+}

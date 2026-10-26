@@ -21,7 +21,16 @@ export function createPipelineScene(): Scene {
   const travelerFigure = createFigure();
   traveler.addChild(travelerFigure.view);
   const seal = new Graphics();
+  const sealLabel = new Text({
+    text: "sealed",
+    resolution: pixelRatio(),
+    style: { fontFamily: stageFont("story"), fontSize: 15, fill: 0xf6e2a8 },
+  });
+  sealLabel.anchor.set(0, 0.5);
+  sealLabel.position.set(46, -22);
+  sealLabel.visible = false;
   traveler.addChild(seal);
+  traveler.addChild(sealLabel);
 
   let layoutKey = "";
   let points: { x: number; y: number }[] = [];
@@ -68,6 +77,7 @@ export function createPipelineScene(): Scene {
     const unit = Math.min(frame.width, frame.height);
     traveler.scale.set(Math.max(1.15, Math.min(1.85, unit / 480)));
     painting.show(frame.worldId, frame.width, frame.height);
+    sealLabel.visible = sealed;
   };
 
   return {
@@ -325,8 +335,8 @@ function drawLine(
 function drawSeal(g: Graphics, sealed: boolean, palette: WorldPalette): void {
   g.clear();
   if (!sealed) return;
-  g.circle(16, 8, 8).fill({ color: palette.deep });
-  g.circle(16, 8, 3).stroke({ width: 1, color: palette.glow, alpha: 0.8 });
+  g.roundRect(16, -36, 92, 26, 7).fill({ color: palette.deep });
+  g.circle(30, -23, 5).stroke({ width: 1.6, color: palette.glow });
 }
 
 function summarize(row: unknown): string {

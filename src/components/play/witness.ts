@@ -50,6 +50,16 @@ const BEATS = {
 
 export type WitnessBeat = (typeof BEATS)[keyof typeof BEATS];
 
+/** Keep the lines the stage said, in order, without repeating one. */
+export function rememberSeen(lines: string[], line: string | null): string[] {
+  if (!line || lines.includes(line)) return lines;
+  return [...lines, line].slice(-3);
+}
+
+export function seenOnCard(lines: string[]): string | null {
+  return lines.length ? lines.join(" ") : null;
+}
+
 export function witnessBeat(line: string | null): WitnessBeat | null {
   if (!line) return null;
   return line in BEATS ? BEATS[line as keyof typeof BEATS] : null;

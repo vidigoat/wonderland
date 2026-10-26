@@ -8,6 +8,8 @@ export type ReceiptModel = {
   after: boolean;
   afterKind: "prediction" | "transfer";
   elapsedMs: number | null;
+  /** Witness lines the stage already said. Never a mechanism. */
+  seen?: string | null;
 };
 
 export type ReceiptPalette = {
@@ -136,6 +138,12 @@ export function paintReceipt(
 
   ctx.font = `italic 34px ${displayFont}`;
   wrap(ctx, model.tagline, 92, columnY + 480, width - 184, 46, 3);
+
+  if (model.seen) {
+    ctx.font = `italic 36px ${displayFont}`;
+    ctx.fillStyle = palette.ink;
+    wrap(ctx, model.seen, 92, columnY + 660, width - 184, 48, 2);
+  }
 
   ctx.font = `400 24px ${uiFont}`;
   ctx.fillStyle = palette.ink;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { witnessBeat, witnessLine } from "./witness";
+import { rememberSeen, seenOnCard, witnessBeat, witnessLine } from "./witness";
 
 describe("witness", () => {
   it("names a visible change and stays quiet when nothing new happened", () => {
@@ -12,6 +12,16 @@ describe("witness", () => {
     expect(witnessLine("firebreak", { crossing: "no", stillBurning: "yes", burnedShare: 0.1 }, { crossing: "no", stillBurning: "no", burnedShare: 0.49 })).toBe("The fire stopped.");
     expect(witnessLine("firebreak", { crossing: "no", stillBurning: "no", burnedShare: 0 }, { crossing: "no", stillBurning: "no", burnedShare: 0 })).toBeNull();
     expect(witnessLine("peppered-forest", { meanDarkness: 0.2 }, { meanDarkness: 0.4 })).toBe("The moths are not the colour they were.");
+  });
+
+  it("keeps the lines you saw, and does not repeat one", () => {
+    const once = rememberSeen([], "The vault is open.");
+    const twice = rememberSeen(once, "The vault is open.");
+    const both = rememberSeen(twice, "The scribe stopped.");
+    expect(both).toEqual(["The vault is open.", "The scribe stopped."]);
+    expect(seenOnCard(both)).toBe("The vault is open. The scribe stopped.");
+    expect(seenOnCard([])).toBeNull();
+    expect(rememberSeen(["a", "b", "c"], "d")).toEqual(["b", "c", "d"]);
   });
 
   it("gives each spoken line a stage beat and ignores anything else", () => {

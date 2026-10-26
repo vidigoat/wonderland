@@ -28,7 +28,7 @@ function downloadCanvas(canvas: HTMLCanvasElement, filename: string) {
 export function ReceiptCard({ model, worldId }: { model: ReceiptModel; worldId: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const copy = receiptCopy(model);
-  const summary = `${model.title}. First prediction ${copy.before}. ${copy.afterKind} ${copy.after}. Time ${copy.elapsed}.`;
+  const summary = `${model.title}. First prediction ${copy.before}. ${copy.afterKind} ${copy.after}. Time ${copy.elapsed}.${model.seen ? ` You saw: ${model.seen}` : ""}`;
 
   useEffect(() => {
     const canvas = ref.current;

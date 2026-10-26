@@ -43,7 +43,7 @@ import { defaultParams, formatParam, freshStart, runDuration, runSteps, summaris
 import { mintSession } from "./session";
 import { startWavCapture, type WavCapture } from "./wav";
 import { armChime, playChime } from "./chime";
-import { witnessBeat, witnessLine, type WitnessBeat } from "./witness";
+import { rememberSeen, seenOnCard, witnessBeat, witnessLine, type WitnessBeat } from "./witness";
 
 function rulesFor(spec: PublicWorldSpec): RulesModule | null {
   if (spec.rules.kind !== "builtin") return null;
@@ -111,6 +111,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const [adaObs, setAdaObs] = useState<Observation | null>(null);
   const [townNote, setTownNote] = useState<string | null>(null);
   const [witness, setWitness] = useState<string | null>(null);
+  const [seen, setSeen] = useState<string[]>([]);
   const [beat, setBeat] = useState<{ name: WitnessBeat; id: number } | null>(null);
 
   const paramsRef = useRef(params);
@@ -193,6 +194,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     prevObs.current = obs;
     if (!line) return;
     setWitness(line);
+    setSeen((lines) => rememberSeen(lines, line));
     const name = witnessBeat(line);
     if (name) {
       setBeat((current) => ({ name, id: (current?.id ?? 0) + 1 }));
@@ -820,6 +822,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
                   after: play.afterCorrect,
                   afterKind: spec.predictions.length > 1 ? "prediction" : "transfer",
                   elapsedMs: discoveryElapsed(play),
+                  seen: seenOnCard(seen),
                 }}
               />
             </section>

@@ -27,7 +27,7 @@ export function loadSprite(worldId: string, sprite: string): Promise<Texture | n
   return pending;
 }
 
-const FIGURE = 48;
+const FIGURE = 86;
 
 export type Figure = {
   view: Container;

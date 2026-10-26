@@ -4,6 +4,7 @@ import { clamp01, phaseOffset, readNumber, smoothstep } from "./helpers";
 import { pixelRatio, stageFont } from "./fonts";
 import { barkColor, populationTint } from "./palette";
 import type { Scene, Frame } from "./scene";
+import { createBackdrop } from "./backdrop";
 import { createFigure, type Figure } from "./sprites";
 
 const BLEND_MS = 260;
@@ -44,10 +45,11 @@ type Node = {
 export function createPopulationScene(): Scene {
   const root = new Container();
   const backdrop = new Graphics();
+  const painting = createBackdrop();
   const figures = new Container();
   const bubbles = new Container();
   figures.sortableChildren = true;
-  root.addChild(backdrop, figures, bubbles);
+  root.addChild(backdrop, painting.view, figures, bubbles);
 
   const nodes = new Map<string, Node>();
   let backdropKey = "";
@@ -56,13 +58,14 @@ export function createPopulationScene(): Scene {
   const update = (frame: Frame) => {
     if (!alive) return;
     const agents = shownAgents(frame);
-    paintBackdrop(backdrop, frame, backdropKey, (next) => {
+    const painted = frame.worldId === "peppered-forest" ? false : painting.show(frame.worldId, frame.width, frame.height);
+    paintBackdrop(backdrop, frame, backdropKey, painted, (next) => {
       backdropKey = next;
     });
 
     const seen = new Set<string>();
     const unit = Math.min(frame.width, frame.height);
-    const figureScale = Math.max(0.72, Math.min(1.35, unit / 520));
+    const figureScale = Math.max(0.85, Math.min(1.55, unit / 640));
 
     for (const agent of agents.slice(0, 600)) {
       const id = String(agent.id);
@@ -132,6 +135,7 @@ export function createPopulationScene(): Scene {
     destroy() {
       alive = false;
       for (const node of nodes.values()) node.figure.cancel();
+      painting.destroy();
       nodes.clear();
       root.destroy({ children: true });
     },
@@ -154,9 +158,9 @@ function place(x: number, y: number, width: number, height: number): { x: number
   };
 }
 
-function paintBackdrop(g: Graphics, frame: Frame, previous: string, commit: (next: string) => void): void {
+function paintBackdrop(g: Graphics, frame: Frame, previous: string, painted: boolean, commit: (next: string) => void): void {
   const bark = frame.worldId === "peppered-forest" ? readNumber(frame.params, "barkDarkness", frame.view ? 0.2 : 0.25) : -1;
-  const key = `${frame.width}x${frame.height}|${frame.worldId}|${bark.toFixed(3)}|${frame.palette.ground}`;
+  const key = `${frame.width}x${frame.height}|${frame.worldId}|${bark.toFixed(3)}|${painted ? "art" : "draw"}|${frame.palette.ground}`;
   if (key === previous) return;
   commit(key);
   g.clear();
@@ -181,6 +185,8 @@ function paintBackdrop(g: Graphics, frame: Frame, previous: string, commit: (nex
     }
     return;
   }
+
+  if (painted) return;
 
   g.rect(0, 0, width, height).fill({ color: palette.ground });
   if (worldId === "rumour-town") {

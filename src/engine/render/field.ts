@@ -1,13 +1,15 @@
 import { Container, Graphics, Sprite, Texture, BufferImageSource } from "pixi.js";
 import { FIELD_COLORS, fieldColor, fieldScale, phaseOffset, type FieldScale } from "./helpers";
 import type { Frame, Scene } from "./scene";
+import { createBackdrop } from "./backdrop";
 
 export function createFieldScene(): Scene {
   const root = new Container();
   const ground = new Graphics();
+  const painting = createBackdrop();
   const sprite = new Sprite(Texture.EMPTY);
   const frame = new Graphics();
-  root.addChild(ground, sprite, frame);
+  root.addChild(ground, painting.view, sprite, frame);
 
   let signature = "";
   let owned: Texture | null = null;
@@ -15,6 +17,7 @@ export function createFieldScene(): Scene {
 
   const update = (next: Frame) => {
     if (!alive) return;
+    painting.show(next.worldId, next.width, next.height);
     const grid = next.view?.kind === "field" && next.view.grid.length > 0 ? next.view.grid : idleGrid(next.worldId);
     const scale = fieldScale(next.worldId, flat(grid));
     const columns = grid[0]?.length ?? 1;
@@ -34,6 +37,7 @@ export function createFieldScene(): Scene {
     update,
     destroy() {
       alive = false;
+      painting.destroy();
       sprite.texture = Texture.EMPTY;
       owned?.destroy(true);
       owned = null;

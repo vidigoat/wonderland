@@ -10,18 +10,20 @@ import {
 } from "./helpers";
 import type { Frame, Scene } from "./scene";
 import type { WorldPalette } from "./palette";
+import { createBackdrop } from "./backdrop";
 
 const MAX_STEP = 2.5 * CANNON_STEP_DT * 1.6;
 
 export function createBodiesScene(): Scene {
   const root = new Container();
   const sky = new Graphics();
+  const painting = createBackdrop();
   const planet = new Graphics();
   const trail = new Graphics();
   const ghost = new Graphics();
   const cannon = new Graphics();
   const ball = new Graphics();
-  root.addChild(sky, planet, trail, ghost, cannon, ball);
+  root.addChild(sky, painting.view, planet, trail, ghost, cannon, ball);
 
   const samples: Point2[] = [];
   let viewRadius = 3.2;
@@ -33,6 +35,7 @@ export function createBodiesScene(): Scene {
     if (!alive) return;
     const view = frame.view?.kind === "bodies" ? frame.view : null;
     paintSky(sky, frame);
+    painting.show(frame.worldId, frame.width, frame.height);
     const palette = frame.palette;
 
     if (!ballReady) {
@@ -90,6 +93,7 @@ export function createBodiesScene(): Scene {
     update,
     destroy() {
       alive = false;
+      painting.destroy();
       root.destroy({ children: true });
     },
   };

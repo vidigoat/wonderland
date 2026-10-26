@@ -4,17 +4,19 @@ import { pixelRatio, stageFont } from "./fonts";
 import type { WorldPalette } from "./palette";
 import type { Frame, Scene } from "./scene";
 import { createFigure, destroyChildren, type Figure } from "./sprites";
+import { createBackdrop } from "./backdrop";
 
 const DEFAULT_STAGES = ["scroll", "scribe", "ledger", "vault"];
 
 export function createPipelineScene(): Scene {
   const root = new Container();
   const backdrop = new Graphics();
+  const painting = createBackdrop();
   const route = new Graphics();
   const stations = new Container();
   const traveler = new Container();
   const spell = new Container();
-  root.addChild(backdrop, route, stations, traveler, spell);
+  root.addChild(backdrop, painting.view, route, stations, traveler, spell);
 
   const travelerFigure = createFigure();
   traveler.addChild(travelerFigure.view);
@@ -64,7 +66,8 @@ export function createPipelineScene(): Scene {
     traveler.position.set(at.x, at.y + bob);
     traveler.rotation = frame.reducedMotion ? 0 : at.angle * 0.18;
     const unit = Math.min(frame.width, frame.height);
-    traveler.scale.set(Math.max(0.85, Math.min(1.45, unit / 560)));
+    traveler.scale.set(Math.max(1.15, Math.min(1.85, unit / 480)));
+    painting.show(frame.worldId, frame.width, frame.height);
   };
 
   return {
@@ -74,6 +77,7 @@ export function createPipelineScene(): Scene {
       alive = false;
       travelerFigure.cancel();
       for (const figure of stationFigures) figure.cancel();
+      painting.destroy();
       root.destroy({ children: true });
     },
   };
@@ -89,7 +93,7 @@ function travelAmount(frame: Frame): number {
 }
 
 function stationPoints(count: number, width: number, height: number): { x: number; y: number }[] {
-  const y = height * 0.34;
+  const y = height * 0.46;
   const inset = Math.max(56, width * 0.12);
   return Array.from({ length: Math.max(count, 1) }, (_, index) => ({
     x: count <= 1 ? width / 2 : inset + ((width - inset * 2) * index) / (count - 1),
@@ -155,7 +159,7 @@ function layStations(
   destroyChildren(layer);
   const figures: Figure[] = [];
   const unit = Math.min(frame.width, frame.height);
-  const scale = Math.max(0.9, Math.min(1.5, unit / 560));
+  const scale = Math.max(1.25, Math.min(2.15, unit / 420));
   stages.forEach((stage, index) => {
     const at = points[index];
     if (!at) return;

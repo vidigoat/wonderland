@@ -118,6 +118,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const openWeightsRef = useRef<"live" | "sample" | null>(null);
   const prevObs = useRef<Observation | null>(null);
   const birthRef = useRef<Params>(defaultParams(spec));
+  const originRef = useRef<Observation | null>(null);
   const playingRef = useRef(false);
   const cancelRef = useRef(false);
   const rafRef = useRef(0);
@@ -183,7 +184,8 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   }, [spec.id]);
 
   useEffect(() => {
-    const line = witnessLine(spec.id, prevObs.current, obs);
+    const baseline = spec.id === "peppered-forest" && originRef.current ? originRef.current : prevObs.current;
+    const line = witnessLine(spec.id, baseline, obs);
     prevObs.current = obs;
     if (!line) return;
     setWitness(line);
@@ -327,6 +329,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
       }
     }
     session.params = { ...paramsRef.current };
+    originRef.current = session.history[session.history.length - 1] ?? null;
     const steps = runSteps(spec.archetype);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     try {

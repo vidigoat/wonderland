@@ -93,6 +93,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const [hypothesis, setHypothesis] = useState("");
   const [listening, setListening] = useState(false);
   const [voiceNote, setVoiceNote] = useState<string | null>(null);
+  const [voiceNotice, setVoiceNotice] = useState<string | null>(null);
   const [judging, setJudging] = useState(false);
   const [judgeError, setJudgeError] = useState<string | null>(null);
   const [reply, setReply] = useState<string | null>(null);
@@ -493,16 +494,18 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     if (captureRef.current || listening) return;
     wantTalk.current = true;
     setVoiceNote(null);
+    setVoiceNotice(null);
     try {
       const capture = await startWavCapture();
       if (!wantTalk.current) {
         await capture.stop();
+        setVoiceNote("Hold it a little longer. The typed sentence is still here.");
         return;
       }
       captureRef.current = capture;
       setListening(true);
     } catch {
-      if (wantTalk.current) setVoiceNote("The microphone stayed shut. The sentence can be typed.");
+      setVoiceNote("The microphone stayed shut. The sentence can be typed.");
     }
   }
 
@@ -530,11 +533,12 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
       }
       const body = readTranscript(JSON.parse(text) as unknown);
       if (!body || !body.text) {
-        setVoiceNote(body?.notice ?? "No words came back. The typed sentence is still here.");
+        setVoiceNote("No words came back. The typed sentence is still here.");
+        setVoiceNotice(body?.source === "sample" ? (body.notice ?? null) : null);
         return;
       }
       setHypothesis(body.text);
-      if (body.source === "sample" && body.notice) setVoiceNote(body.notice);
+      setVoiceNotice(body.source === "sample" ? (body.notice ?? null) : null);
     } catch (err) {
       setVoiceNote(err instanceof Error ? err.message : "No words came back. The typed sentence is still here.");
     }
@@ -698,6 +702,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
                 </button>
               </div>
               {voiceNote ? <p className="aside">{voiceNote}</p> : null}
+              <SampleNote notice={voiceNotice} />
               {play.phase === "hypothesise" ? (
                 <button type="button" className="quiet" onClick={() => setPlay(backToExperiment)}>
                   Run another trial first

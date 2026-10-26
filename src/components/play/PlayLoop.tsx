@@ -647,6 +647,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
         <aside className="notebook">
           <div className="notebook-scroll">
           {rulesMissing ? <p className="slip">This world’s rules are not on the shelf yet.</p> : null}
+          {!witness && seen.length > 0 && play.phase !== "receipt" ? <p className="seen-quiet">You saw: {seen[seen.length - 1]}</p> : null}
           <SampleNote notice={townNote} />
           {seedError ? (
             <p className="slip">

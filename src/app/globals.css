@@ -966,6 +966,14 @@ a {
   padding: 1.15rem 1.2rem 1rem 2.15rem;
 }
 
+.seen-quiet {
+  margin: 0 0 0.8rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.15rem;
+  line-height: 1.25;
+}
+
 .voice {
   margin: 0 0 0.75rem;
   font-size: 1.32rem;

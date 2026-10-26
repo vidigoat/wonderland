@@ -546,11 +546,12 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
         : null;
   const opening = spec.predictions[0];
   const second = spec.predictions[1];
-  const showBench = play.phase !== "intro";
-  const showReadings = play.phase === "experiment" || play.phase === "hypothesise" || play.phase === "loop" || play.phase === "transfer" || play.phase === "receipt";
+  const showBench = play.phase !== "intro" && play.phase !== "receipt";
+  const showReadings = play.phase === "experiment" || play.phase === "hypothesise" || play.phase === "loop" || play.phase === "transfer";
+  const newSituation = play.phase === "transfer" && play.askingPrediction == null;
 
   return (
-    <div className="play" data-world={spec.id} data-archetype={spec.archetype}>
+    <div className="play" data-world={spec.id} data-archetype={spec.archetype} data-phase={play.phase}>
       <header className="play-bar">
         <Link href="/" className="wordmark">
           Wonderland
@@ -560,7 +561,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
       </header>
       <PhaseTrail phase={play.phase} />
       <div className="play-body">
-        <section className="stage-pane" aria-label={spec.title}>
+        <section className="stage-pane" aria-label={spec.title} data-situation={newSituation ? "yes" : undefined}>
           <StageSlot
             view={view}
             archetype={spec.archetype}
@@ -571,7 +572,13 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
             beat={beat?.name ?? null}
             beatId={beat?.id ?? 0}
           />
-          {witness ? <p className="witness">{witness}</p> : null}
+          {witness && !newSituation ? <p className="witness">{witness}</p> : null}
+          {newSituation ? (
+            <div className="situation">
+              <p className="kicker">A new situation</p>
+              <p>{spec.transfer.setup}</p>
+            </div>
+          ) : null}
         </section>
         <aside className="notebook">
           <div className="notebook-scroll">

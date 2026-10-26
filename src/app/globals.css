@@ -633,6 +633,44 @@ a {
   color: var(--stage-ink, var(--ink));
 }
 
+.stage-pane[data-situation="yes"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: rgba(20, 17, 14, 0.46);
+  pointer-events: none;
+}
+
+.situation {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 48%;
+  transform: translate(-50%, -50%);
+  width: min(34rem, calc(100% - 2.4rem));
+  margin: 0;
+  padding: 1.15rem 1.35rem 1.35rem;
+  background: var(--paper, #f7f0df);
+  color: var(--notebook-ink, #241816);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.32);
+}
+
+.situation .kicker {
+  color: var(--accent, var(--brass));
+}
+
+.situation p:last-child {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.5vw, 1.9rem);
+  line-height: 1.22;
+}
+
+.play[data-phase="receipt"] .ada {
+  max-height: 30%;
+}
+
 .witness {
   position: absolute;
   z-index: 4;
@@ -1124,7 +1162,9 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .receipt canvas {
-  width: min(100%, 390px);
+  width: auto;
+  max-width: 100%;
+  max-height: min(48vh, 460px);
   height: auto;
   display: block;
 }

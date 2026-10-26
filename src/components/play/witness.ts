@@ -30,7 +30,8 @@ export function witnessLine(worldId: string, previous: Observation | null, next:
   }
   if (worldId === "peppered-forest") {
     const shift = Math.abs(Number(next.meanDarkness) - Number(previous.meanDarkness));
-    if (Number.isFinite(shift) && shift >= 0.15) return "The moths are not the colour they were.";
+    // Selection moves the mean past 0.6. Drift with the birds away stays under 0.35.
+    if (Number.isFinite(shift) && shift >= 0.45) return "The moths are not the colour they were.";
   }
   return null;
 }

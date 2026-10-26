@@ -15,6 +15,8 @@ export type PopulationAgent = {
 export type PopulationView = {
   kind: "population";
   agents: PopulationAgent[];
+  /** Rumour Town: whether the building on the square still takes deposits. */
+  doors?: "open" | "shut";
 };
 
 export type BodiesView = {

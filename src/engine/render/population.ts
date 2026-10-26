@@ -46,10 +46,13 @@ export function createPopulationScene(): Scene {
   const root = new Container();
   const backdrop = new Graphics();
   const painting = createBackdrop();
+  const bank = createFigure();
+  const shutters = new Graphics();
   const figures = new Container();
   const bubbles = new Container();
   figures.sortableChildren = true;
-  root.addChild(backdrop, painting.view, figures, bubbles);
+  bank.view.visible = false;
+  root.addChild(backdrop, painting.view, bank.view, shutters, figures, bubbles);
 
   const nodes = new Map<string, Node>();
   let backdropKey = "";
@@ -67,6 +70,7 @@ export function createPopulationScene(): Scene {
     const speakers = spokenIds(agents);
     const unit = Math.min(frame.width, frame.height);
     const figureScale = Math.max(0.85, Math.min(1.55, unit / 640));
+    placeBank(bank, shutters, frame, figureScale);
 
     for (const agent of agents.slice(0, 600)) {
       const id = String(agent.id);
@@ -143,11 +147,44 @@ export function createPopulationScene(): Scene {
     destroy() {
       alive = false;
       for (const node of nodes.values()) node.figure.cancel();
+      bank.cancel();
       painting.destroy();
       nodes.clear();
       root.destroy({ children: true });
     },
   };
+}
+
+const BANK_SCALE = 1.9;
+const BANK_FIGURE = 86;
+
+function placeBank(bank: Figure, shutters: Graphics, frame: Frame, figureScale: number): void {
+  if (frame.worldId !== "rumour-town") {
+    bank.view.visible = false;
+    shutters.clear();
+    return;
+  }
+  const scale = figureScale * BANK_SCALE;
+  const half = (BANK_FIGURE * scale) / 2;
+  const x = frame.width * 0.5;
+  const y = Math.max(half * 0.72, frame.height * 0.58 - half);
+  bank.view.visible = true;
+  bank.view.scale.set(scale);
+  bank.view.position.set(x, y);
+  bank.show(frame.worldId, "bank", 0xffffff, false);
+  const shut = frame.view?.kind === "population" && frame.view.doors === "shut";
+  paintDoors(shutters, x, y + 22 * scale, 15 * scale, scale, shut);
+}
+
+function paintDoors(g: Graphics, x: number, y: number, width: number, scale: number, shut: boolean): void {
+  g.clear();
+  if (shut) {
+    g.roundRect(x - width * 1.15, y - width * 0.55, width * 2.3, width * 1.35, 2).fill({ color: 0x2a211c, alpha: 0.55 });
+    g.roundRect(x - width * 1.35, y - width * 0.15, width * 2.7, Math.max(3, 5 * scale), 1).fill({ color: 0x3a2c28 });
+    g.roundRect(x - width * 1.2, y + width * 0.45, width * 2.4, Math.max(3, 4 * scale), 1).fill({ color: 0x5c4638 });
+    return;
+  }
+  g.ellipse(x, y + width * 0.15, width * 0.55, width * 0.85).fill({ color: 0xf6d48a, alpha: 0.42 });
 }
 
 function shownAgents(frame: Frame): PopulationAgent[] {

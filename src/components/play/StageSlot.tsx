@@ -13,8 +13,11 @@ async function loadWorldStage(): Promise<ComponentType<StageProps> | null> {
   try {
     const mod = (await import("@/components/stage/WorldStage")) as unknown as StageModule;
     const Comp = mod.WorldStage ?? mod.default ?? null;
-    return typeof Comp === "function" ? Comp : null;
-  } catch {
+    if (typeof Comp === "function") return Comp;
+    console.error("World stage export was", typeof Comp, Object.keys(mod));
+    return null;
+  } catch (error) {
+    console.error(error);
     return null;
   }
 }

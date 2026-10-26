@@ -91,6 +91,10 @@ export const rumourTown: RulesModule<TownState> = {
     };
   },
   view(s) {
-    return { kind: "population", agents: s.citizens.map((c) => ({ id: c.id, x: c.x, y: c.y, tint: c.worried, sprite: c.withdrawn ? "citizen-queue" : "citizen", bubble: c.says })) };
+    return {
+      kind: "population" as const,
+      doors: s.failed ? ("shut" as const) : ("open" as const),
+      agents: s.citizens.map((c) => ({ id: c.id, x: c.x, y: c.y, tint: c.worried, sprite: c.withdrawn ? "citizen-queue" : "citizen", bubble: c.says })),
+    };
   },
 };

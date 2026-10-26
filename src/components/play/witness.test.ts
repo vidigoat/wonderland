@@ -11,7 +11,8 @@ describe("witness", () => {
     expect(witnessLine("firebreak", { crossing: "no" }, { crossing: "yes" })).toBe("The far ridge is burning.");
     expect(witnessLine("firebreak", { crossing: "no", stillBurning: "yes", burnedShare: 0.1 }, { crossing: "no", stillBurning: "no", burnedShare: 0.49 })).toBe("The fire stopped.");
     expect(witnessLine("firebreak", { crossing: "no", stillBurning: "no", burnedShare: 0 }, { crossing: "no", stillBurning: "no", burnedShare: 0 })).toBeNull();
-    expect(witnessLine("peppered-forest", { meanDarkness: 0.2 }, { meanDarkness: 0.4 })).toBe("The moths are not the colour they were.");
+    expect(witnessLine("peppered-forest", { meanDarkness: 0.2 }, { meanDarkness: 0.4 })).toBeNull();
+    expect(witnessLine("peppered-forest", { meanDarkness: 0.2 }, { meanDarkness: 0.7 })).toBe("The moths are not the colour they were.");
   });
 
   it("keeps the lines you saw, and does not repeat one", () => {
@@ -34,7 +35,7 @@ describe("witness", () => {
       witnessLine("rumour-town", { bank: "open" }, { bank: "collapsed" }),
       witnessLine("firebreak", { crossing: "no" }, { crossing: "yes" }),
       witnessLine("firebreak", { crossing: "no", stillBurning: "yes", burnedShare: 0.2 }, { crossing: "no", stillBurning: "no", burnedShare: 0.4 }),
-      witnessLine("peppered-forest", { meanDarkness: 0.1 }, { meanDarkness: 0.3 }),
+      witnessLine("peppered-forest", { meanDarkness: 0.1 }, { meanDarkness: 0.7 }),
     ];
     expect(spoken.map(witnessBeat)).toEqual(["vault", "halt", "leave", "land", "orbit", "bank", "ridge", "held", "moths"]);
     expect(witnessBeat(null)).toBeNull();

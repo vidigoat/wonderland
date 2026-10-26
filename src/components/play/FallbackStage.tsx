@@ -88,9 +88,17 @@ function BodiesPlate({ view }: { view: BodiesView }) {
 
 function PopulationPlate({ view, worldId }: { view: PopulationView; worldId: string }) {
   const bubbles = view.agents.filter((agent) => agent.bubble).slice(0, 3);
+  const shut = worldId === "rumour-town" && view.doors === "shut";
   return (
     <div className={`population-plate ${worldId === "rumour-town" ? "is-town" : "is-forest"}`}>
-      {worldId === "rumour-town" ? <span className="town-lamp" /> : <span className="forest-bark" />}
+      {worldId === "rumour-town" ? (
+        <>
+          <span className={shut ? "town-bank is-shut" : "town-bank"} />
+          <span className="town-lamp" />
+        </>
+      ) : (
+        <span className="forest-bark" />
+      )}
       {view.agents.map((agent) => {
         const worry = worldId === "rumour-town";
         const color = worry ? mix("#f2d7c4", "#c2410c", agent.tint) : mix("#f4efe4", "#1a1814", agent.tint);
@@ -134,6 +142,12 @@ export function FallbackStage({ view, archetype, worldId, playing }: StageProps)
       {view?.kind === "bodies" ? <BodiesPlate view={view} /> : null}
       {view?.kind === "population" ? <PopulationPlate view={view} worldId={worldId} /> : null}
       {view?.kind === "pipeline" ? <PipelinePlate view={view} playing={playing} /> : null}
+      {!view && worldId === "rumour-town" ? (
+        <div className="population-plate is-town">
+          <span className="town-bank" />
+          <span className="town-lamp" />
+        </div>
+      ) : null}
       {!view ? <div className="scene-wait">The world is settling.</div> : null}
       <p className="stage-caption">{playing ? "In motion" : "At rest"}</p>
     </div>

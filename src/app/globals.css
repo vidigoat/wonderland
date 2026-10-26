@@ -1783,6 +1783,54 @@ input[type="range"]::-moz-range-thumb {
   top: 6%;
 }
 
+.town-bank {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  width: min(220px, 34%);
+  height: 168px;
+  transform: translateX(-50%);
+  background:
+    linear-gradient(to bottom right, transparent 50%, #a85338 50%) left top / 50% 48px no-repeat,
+    linear-gradient(to bottom left, transparent 50%, #a85338 50%) right top / 50% 48px no-repeat,
+    linear-gradient(#f7efe2, #e7d3b4) center 48px / 78% 120px no-repeat;
+  filter: drop-shadow(0 10px 0 rgba(58, 44, 40, 0.12));
+  z-index: 1;
+}
+
+.town-bank::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 36px;
+  height: 58px;
+  transform: translateX(-50%);
+  background: #f6d48a;
+  box-shadow: 0 0 22px rgba(246, 212, 138, 0.95);
+}
+
+.town-bank::after {
+  content: "";
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  top: 62px;
+  height: 78px;
+  background:
+    linear-gradient(#f7efe2, #f7efe2) left center / 12px 78px no-repeat,
+    linear-gradient(#f7efe2, #f7efe2) right center / 12px 78px no-repeat;
+}
+
+.town-bank.is-shut::before {
+  width: 52px;
+  background:
+    linear-gradient(#3a2c28, #3a2c28) center 16px / 64px 8px no-repeat,
+    linear-gradient(#5c4638, #5c4638) center 34px / 58px 7px no-repeat,
+    #241816;
+  box-shadow: none;
+}
+
 .live-moth, .citizen {
   position: absolute;
   transition: left 90ms linear, top 90ms linear, color 180ms linear;

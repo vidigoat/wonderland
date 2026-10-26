@@ -17,7 +17,7 @@ Every place that would call a model:
 ## What is already true
 
 - `GET /api/status` reports `models` and `openWeights` without exposing keys. Client code reads this. It does not import `mode.ts`.
-- `POST /api/session` mints a shared numeric seed locally. That is not a model call.
+- `POST /api/grade` returns `{ correct, source: "local" }` for a prediction or the transfer question. It never returns the answer. Use this for the receipt. Do not put `answerKey` in the client to score locally.
 - `POST /api/generate` runs events through `toClientPipelineEvent` before they reach the browser. Hidden laws, answer keys, check descriptions, and measured check details are removed.
 - `toPublic()` also removes `checks`. Do not pass a full `WorldSpec` into a client component.
 - Browser code loads rules from `@/worlds/builtins`, never from `@/worlds` (that module imports the specs).

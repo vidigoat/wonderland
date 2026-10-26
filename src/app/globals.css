@@ -491,6 +491,41 @@ a {
   color: var(--stage-ink, var(--ink));
 }
 
+.witness {
+  position: absolute;
+  z-index: 4;
+  top: 1.1rem;
+  left: 1.2rem;
+  right: 1.2rem;
+  margin: 0;
+  pointer-events: none;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 520;
+  font-size: clamp(1.7rem, 3.2vw, 2.6rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  color: var(--stage-ink);
+  text-shadow: 0 1px 0 rgba(243, 234, 215, 0.35);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .witness {
+    animation: witness-in 480ms ease;
+  }
+}
+
+@keyframes witness-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 .stage-frame, .stage-fallback, .stage-pane > .stage-fallback, .world-stage, .world-stage-host {
   height: 100%;
   width: 100%;

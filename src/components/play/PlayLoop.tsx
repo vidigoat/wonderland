@@ -40,8 +40,8 @@ import {
 } from "./phase";
 import { defaultParams, formatParam, runSteps, summariseObservation } from "./readings";
 import { mintSession } from "./session";
-import type { WavCapture } from "./wav";
-import { startWavCapture } from "./wav";
+import { startWavCapture, type WavCapture } from "./wav";
+import { witnessLine } from "./witness";
 
 function rulesFor(spec: PublicWorldSpec): RulesModule | null {
   if (spec.rules.kind !== "builtin") return null;
@@ -106,6 +106,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const [adaEntries, setAdaEntries] = useState<AdaEntry[]>([]);
   const [adaBench, setAdaBench] = useState<Params>(() => defaultParams(spec));
   const [townNote, setTownNote] = useState<string | null>(null);
+  const [witness, setWitness] = useState<string | null>(null);
 
   const paramsRef = useRef(params);
   const sessionRef = useRef<WorldSession | null>(null);
@@ -115,6 +116,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const adaGaveUp = useRef(false);
   const adaStarted = useRef(false);
   const openWeightsRef = useRef<"live" | "sample" | null>(null);
+  const prevObs = useRef<Observation | null>(null);
   const playingRef = useRef(false);
   const cancelRef = useRef(false);
   const rafRef = useRef(0);
@@ -177,6 +179,17 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
       live = false;
     };
   }, [spec.id]);
+
+  useEffect(() => {
+    const line = witnessLine(spec.id, prevObs.current, obs);
+    prevObs.current = obs;
+    if (!line) return;
+    setWitness(line);
+    const timer = window.setTimeout(() => {
+      setWitness((current) => (current === line ? null : current));
+    }, 4200);
+    return () => window.clearTimeout(timer);
+  }, [obs, spec.id]);
 
   const adaTurn = useCallback(async () => {
     if (adaBusy.current || adaGaveUp.current) return;
@@ -525,6 +538,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
       <div className="play-body">
         <section className="stage-pane" aria-label={spec.title}>
           <StageSlot view={view} archetype={spec.archetype} worldId={spec.id} artStyle={spec.art.style} playing={playing} params={params} />
+          {witness ? <p className="witness">{witness}</p> : null}
         </section>
         <aside className="notebook">
           {rulesMissing ? <p className="slip">This world’s rules are not on the shelf yet.</p> : null}

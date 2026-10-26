@@ -172,8 +172,10 @@ function layStations(
     figures.push(figure);
 
     if (open && /vault|door/i.test(stage)) {
+      figure.view.scale.set(scale * 1.35);
       const glow = new Graphics();
-      glow.ellipse(at.x, at.y, 34 * scale, 40 * scale).fill({ color: frame.palette.glow, alpha: 0.35 });
+      glow.ellipse(at.x, at.y, 70 * scale, 48 * scale).fill({ color: frame.palette.glow, alpha: 0.28 });
+      glow.ellipse(at.x, at.y, 28 * scale, 34 * scale).fill({ color: frame.palette.glow, alpha: 0.7 });
       layer.addChildAt(glow, 0);
     }
     if (error && /scribe/i.test(stage)) {

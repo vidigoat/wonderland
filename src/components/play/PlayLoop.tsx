@@ -179,7 +179,6 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
         if (!live || !data || typeof data !== "object") return;
         const body = data as { openWeights?: unknown; notice?: unknown };
         if (body.openWeights === "live" || body.openWeights === "sample") openWeightsRef.current = body.openWeights;
-        if (spec.id === "rumour-town" && body.openWeights === "sample" && typeof body.notice === "string") setTownNote(body.notice);
       })
       .catch(() => undefined);
     return () => {

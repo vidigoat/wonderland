@@ -125,8 +125,9 @@ function flame(g: Graphics, x: number, y: number, size: number): void {
 }
 
 function ash(g: Graphics, x: number, y: number, size: number): void {
-  g.rect(x - size * 0.06, y, size * 0.12, size * 0.22).fill({ color: 0x3a342c });
-  g.circle(x, y - size * 0.02, size * 0.1).fill({ color: FIELD_COLORS.ash });
+  const h = size * 0.62;
+  g.poly([x, y - h * 0.15, x + size * 0.2, y + h * 0.32, x - size * 0.2, y + h * 0.32]).fill({ color: FIELD_COLORS.ash });
+  g.rect(x - size * 0.045, y + h * 0.26, size * 0.09, size * 0.2).fill({ color: 0x241910 });
 }
 
 function paintGrid(grid: number[][], scale: FieldScale): Texture {

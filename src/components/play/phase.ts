@@ -129,6 +129,13 @@ export function knobsLocked(state: PlaySnapshot): boolean {
   return state.phase === "transfer" || state.phase === "receipt" || state.phase === "intro" || state.phase === "predict";
 }
 
+/** The warmer/colder word, in the notebook's voice. */
+export function verdictKicker(verdict: string | null): string {
+  if (verdict === "warmer") return "Closer";
+  if (verdict === "colder") return "Further off";
+  return "Your sentence";
+}
+
 export function formatElapsed(ms: number): string {
   const total = Math.max(0, Math.round(ms / 1000));
   const minutes = Math.floor(total / 60);

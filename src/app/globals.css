@@ -1291,6 +1291,20 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: inset 0 0 0 3px var(--paper, var(--parchment));
 }
 
+.suggestion {
+  margin: 0.15rem 0 0.85rem 0.35rem;
+  padding: 0.15rem 0 0.15rem 0.75rem;
+  border-left: 1px solid color-mix(in srgb, var(--notebook-ink, var(--ink)) 28%, transparent);
+}
+
+.suggestion .kicker {
+  font-family: var(--font-display);
+  font-style: italic;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  font-size: 0.95rem;
+}
+
 .suggestion ul, .ada-notes, .bench {
   list-style: none;
   padding: 0;

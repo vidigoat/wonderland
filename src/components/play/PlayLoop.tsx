@@ -37,6 +37,7 @@ import {
   knobsLocked,
   leaveIntro,
   toHypothesise,
+  verdictKicker,
   type PlaySnapshot,
 } from "./phase";
 import { defaultParams, formatParam, freshStart, pictureAction, raceLine, raceRows, runDuration, runSteps, summariseObservation } from "./readings";
@@ -786,9 +787,37 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
 
           {play.phase === "hypothesise" || play.phase === "loop" ? (
             <section className="phase">
-              <p className="kicker">{play.phase === "loop" ? verdict : "Your sentence"}</p>
+              <p className="kicker">{play.phase === "loop" ? verdictKicker(verdict) : "Your sentence"}</p>
               {reply ? <p className="voice reply">{reply}</p> : null}
               <SampleNote notice={judgeNotice} />
+              {suggestion ? (
+                <div className="suggestion">
+                  <p className="kicker">Penciled in the margin</p>
+                  <ul>
+                    {spec.knobs
+                      .filter((knob) => knob.id in suggestion)
+                      .map((knob) => (
+                        <li key={knob.id}>
+                          <span>{knob.label}</span> <span className="num">{formatParam(suggestion[knob.id])}</span>
+                        </li>
+                      ))}
+                  </ul>
+                  <button
+                    type="button"
+                    className="quiet"
+                    onClick={() => {
+                      setParams((prev) => {
+                        const next = { ...prev, ...suggestion };
+                        paramsRef.current = next;
+                        if (sessionRef.current) sessionRef.current.params = next;
+                        return next;
+                      });
+                    }}
+                  >
+                    Set those knobs
+                  </button>
+                </div>
+              ) : null}
               {judgeError ? <p className="slip">{judgeError}</p> : null}
               <label className="free-guess">
                 <span>Say the law in one sentence.</span>
@@ -831,35 +860,6 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
                 </button>
               ) : null}
             </section>
-          ) : null}
-
-          {suggestion && (play.phase === "experiment" || play.phase === "loop" || play.phase === "hypothesise") ? (
-            <div className="suggestion">
-              <p className="kicker">Penciled in the margin</p>
-              <ul>
-                {spec.knobs
-                  .filter((knob) => knob.id in suggestion)
-                  .map((knob) => (
-                    <li key={knob.id}>
-                      <span>{knob.label}</span> <span className="num">{formatParam(suggestion[knob.id])}</span>
-                    </li>
-                  ))}
-              </ul>
-              <button
-                type="button"
-                className="quiet"
-                onClick={() => {
-                  setParams((prev) => {
-                    const next = { ...prev, ...suggestion };
-                    paramsRef.current = next;
-                    if (sessionRef.current) sessionRef.current.params = next;
-                    return next;
-                  });
-                }}
-              >
-                Set those knobs
-              </button>
-            </div>
           ) : null}
 
           {play.phase === "transfer" && play.askingPrediction == null ? (

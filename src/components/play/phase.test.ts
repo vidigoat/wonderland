@@ -11,6 +11,7 @@ import {
   discoveryElapsed,
   formatElapsed,
   initialPlay,
+  verdictKicker,
   knobsLocked,
   leaveIntro,
   PHASE_ORDER,
@@ -89,6 +90,9 @@ describe("phase machine", () => {
   it("formats elapsed time from a duration, not a clock", () => {
     expect(formatElapsed(0)).toBe("0s");
     expect(formatElapsed(90_400)).toBe("1m 30s");
+    expect(verdictKicker("warmer")).toBe("Closer");
+    expect(verdictKicker("colder")).toBe("Further off");
+    expect(verdictKicker(null)).toBe("Your sentence");
   });
 
   it("gives a cannon shot enough steps to travel", () => {

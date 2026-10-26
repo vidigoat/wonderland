@@ -46,12 +46,21 @@ export function bindingView(items: readonly MontageItem[]): BindingView {
     }
   }
 
+  const choiceOnly = choose != null && world == null;
+  const unsaid: Partial<Record<ClientStage, string>> = {
+    designer: "No room was written.",
+    checker: "No checks were run.",
+    artist: "No new pictures.",
+    done: "Nothing new was bound.",
+  };
+
   return {
-    steps: ORDER.map((step) => ({
-      ...step,
-      message: messages.get(step.stage) ?? "",
-      on: messages.has(step.stage),
-    })),
+    steps: ORDER.map((step) => {
+      const said = messages.get(step.stage);
+      if (said) return { ...step, message: said, on: true };
+      if (choiceOnly) return { ...step, message: unsaid[step.stage] ?? "Not this time.", on: true };
+      return { ...step, message: "", on: false };
+    }),
     checks,
     world,
     choose,

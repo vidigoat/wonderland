@@ -22,4 +22,16 @@ describe("bindingView", () => {
     expect(view.error).toBeNull();
     expect(JSON.stringify(view)).not.toContain("hiddenLaw");
   });
+
+  it("closes every station when the result is a choice of worlds", () => {
+    const view = bindingView([
+      { type: "stage", stage: "scientist", message: "The law is not shown." },
+      { type: "choose", message: "Choose one of the five.", worlds: [], notice: "Sample." },
+    ]);
+    expect(view.choose?.message).toBe("Choose one of the five.");
+    expect(view.steps.every((step) => step.on)).toBe(true);
+    expect(view.steps.find((step) => step.stage === "checker")?.message).toBe("No checks were run.");
+    expect(view.steps.find((step) => step.stage === "done")?.message).toBe("Nothing new was bound.");
+    expect(view.world).toBeNull();
+  });
 });

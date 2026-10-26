@@ -9,7 +9,7 @@ import { think } from "@/lib/ai/meta";
 import { SAMPLE_NOTICE } from "@/lib/samples/mark";
 import { heroWorlds } from "@/worlds";
 import { POST } from "@/app/api/judge/route";
-import { ModelCallError, SAMPLE_REPLIES, WARMER_REPLY, containsSlice, judgeStatement, sampleJudge, scrubReply } from "@/agents/judge";
+import { ModelCallError, SAMPLE_REPLIES, WARMER_REPLY, containsSlice, judgeStatement, loadAgentPrompt, sampleJudge, scrubReply } from "@/agents/judge";
 
 const KEYS = ["MODEL_API_KEY", "FIREWORKS_API_KEY", "BASETEN_API_KEY", "OPEN_WEIGHTS_PROVIDER"] as const;
 const previous = Object.fromEntries(KEYS.map((key) => [key, process.env[key]]));
@@ -53,6 +53,11 @@ describe("scrubReply", () => {
       expectNoLaw(reply);
       for (const hero of heroWorlds) expect(scrubReply(reply, hero)).toBe(reply);
     }
+  });
+
+  it("judge and rival prompts contain no hero hidden law", async () => {
+    expectNoLaw(await loadAgentPrompt("judge"));
+    expectNoLaw(await loadAgentPrompt("rival"));
   });
 });
 

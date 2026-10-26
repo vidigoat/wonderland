@@ -45,8 +45,10 @@ describe("citizens", () => {
     const res = await POST(request({ worldId: "rumour-town", citizens, params: { insurance: false } }));
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ source: "sample", notice: SAMPLE_NOTICE, decisions: null });
-    expect(containsSlice(CITIZEN_SYSTEM, rumour.science.hiddenLaw)).toBe(false);
-    expect(CITIZEN_SYSTEM.includes(rumour.science.hiddenLaw)).toBe(false);
+    for (const hero of heroWorlds) {
+      expect(CITIZEN_SYSTEM.includes(hero.science.hiddenLaw), hero.id).toBe(false);
+      expect(containsSlice(CITIZEN_SYSTEM, hero.science.hiddenLaw), hero.id).toBe(false);
+    }
   });
 
   it("open-weights failure falls back with an honest notice", async () => {

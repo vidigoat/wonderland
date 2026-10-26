@@ -39,7 +39,7 @@ import {
   toHypothesise,
   type PlaySnapshot,
 } from "./phase";
-import { defaultParams, formatParam, freshStart, restageParams, runDuration, runSteps, summariseObservation } from "./readings";
+import { defaultParams, formatParam, freshStart, pictureAction, runDuration, runSteps, summariseObservation } from "./readings";
 import { mintSession, withSeed } from "./session";
 import { startWavCapture, type WavCapture } from "./wav";
 import { armChime, playChime } from "./chime";
@@ -126,6 +126,9 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const prevObs = useRef<Observation | null>(null);
   const birthRef = useRef<Params>(defaultParams(spec));
   const experimentParams = useRef<Params | null>(null);
+  const heldSession = useRef<WorldSession | null>(null);
+  const quietObs = useRef<Set<Observation>>(new Set());
+  const hideWitness = useRef(false);
   const originRef = useRef<Observation | null>(null);
   const playingRef = useRef(false);
   const cancelRef = useRef(false);
@@ -134,6 +137,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const captureRef = useRef<WavCapture | null>(null);
   const wantTalk = useRef(false);
   const rulesMissing = rulesFor(spec) == null;
+  if (play.phase === "transfer" && witness !== null) setWitness(null);
 
   function publish(session: WorldSession) {
     const last = session.history[session.history.length - 1] ?? null;
@@ -194,30 +198,40 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   }, [play.phase, play.askingPrediction]);
 
   useEffect(() => {
+    hideWitness.current = play.phase === "transfer" && play.askingPrediction == null;
     if (play.phase !== "transfer") return;
     const rules = rulesFor(spec);
     const seed = seedRef.current;
     if (!rules || seed == null) return;
-    let next: Params | null = null;
-    let fly = false;
-    if (play.askingPrediction == null) {
-      const staged = restageParams(paramsRef.current, spec.transfer.params);
-      if (!staged) return;
-      if (!experimentParams.current) experimentParams.current = { ...paramsRef.current };
-      next = staged;
-      fly = spec.archetype === "bodies";
-    } else if (play.askingPrediction === 1 && experimentParams.current) {
-      next = experimentParams.current;
-    } else return;
-    paramsRef.current = next;
-    setParams(next);
+    const patch = spec.id === "firebreak" ? { ...spec.transfer.params, firebreak: false } : spec.transfer.params;
+    const action = pictureAction(play.askingPrediction, paramsRef.current, patch, experimentParams.current);
+    if (action.kind === "stay") return;
+    if (action.kind === "resume") {
+      paramsRef.current = action.params;
+      setParams(action.params);
+      const held = heldSession.current;
+      if (!held) return;
+      held.params = { ...action.params };
+      sessionRef.current = held;
+      birthRef.current = { ...action.params };
+      const heldObs = held.history[held.history.length - 1] ?? null;
+      if (heldObs) quietObs.current.add(heldObs);
+      setObs(heldObs);
+      setView(asWorldView(held.view(), spec.archetype));
+      return;
+    }
+    if (!experimentParams.current) experimentParams.current = action.remember;
+    if (!heldSession.current) heldSession.current = sessionRef.current;
+    paramsRef.current = action.params;
+    setParams(action.params);
     let cancel = false;
-    void new WorldSession(rules, next, seed).start().then(async (session) => {
+    const fly = spec.archetype === "bodies";
+    void new WorldSession(rules, action.params, seed).start().then(async (session) => {
       if (cancel) return;
       if (fly) await session.tick(runSteps("bodies"));
       if (cancel) return;
       sessionRef.current = session;
-      birthRef.current = { ...next };
+      birthRef.current = { ...action.params };
       const last = session.history[session.history.length - 1] ?? null;
       setObs(last);
       setView(asWorldView(session.view(), spec.archetype));
@@ -243,6 +257,10 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   }, [spec.id]);
 
   useEffect(() => {
+    if (hideWitness.current || (obs && quietObs.current.has(obs))) {
+      prevObs.current = obs;
+      return;
+    }
     const baseline = spec.id === "peppered-forest" && originRef.current ? originRef.current : prevObs.current;
     const line = witnessLine(spec.id, baseline, obs);
     prevObs.current = obs;
@@ -617,9 +635,11 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
       ? "These stay still until the first guess is written down."
       : play.phase === "transfer" && play.askingPrediction == null && Object.keys(spec.transfer.params).length > 0
         ? "These belong to the new situation."
-        : play.phase === "transfer" || play.phase === "receipt"
-          ? "The bench is still."
-          : null;
+        : play.phase === "transfer" && play.askingPrediction === 1 && Object.keys(spec.transfer.params).length > 0
+          ? "These are the knobs from the trial you left."
+          : play.phase === "transfer" || play.phase === "receipt"
+            ? "The bench is still."
+            : null;
   const opening = spec.predictions[0];
   const second = spec.predictions[1];
   const showBench = play.phase !== "intro" && play.phase !== "receipt";
@@ -857,6 +877,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
           {play.phase === "transfer" && play.askingPrediction === 1 && second ? (
             <section className="phase">
               <p className="kicker">Once more, at the end</p>
+              {Object.keys(spec.transfer.params).length > 0 ? <p className="aside">The trial you left is on the stage again.</p> : null}
               {second.options ? (
                 <ChoiceList name={second.id} prompt={second.prompt} options={second.options} selected={selected} onSelect={setSelected} />
               ) : (

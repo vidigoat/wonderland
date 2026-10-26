@@ -19,7 +19,7 @@ import {
   TRAIL,
 } from "./phase";
 import { receiptCopy } from "./receipt";
-import { freshStart, raceRows, restageParams, runDuration, runSteps, speakTool } from "./readings";
+import { freshStart, pictureAction, raceRows, restageParams, runDuration, runSteps, speakTool } from "./readings";
 import { drainSse, heroHref, toMontageItem } from "./sse";
 import { encodeWav } from "./wav";
 
@@ -116,6 +116,38 @@ describe("the proof's opening picture", () => {
     });
     expect(restageParams({ name: "traveller" }, {})).toBeNull();
     expect(restageParams({ name: "traveller" }, undefined)).toBeNull();
+  });
+
+  it("remembers the trial and puts those knobs back for the follow-up", () => {
+    const trial = { barkDarkness: 0.9, startDarkness: 0.2, birds: true };
+    const tundra = { barkDarkness: 0.05, startDarkness: 0.7 };
+    const opening = pictureAction(null, trial, tundra, null);
+    expect(opening).toEqual({
+      kind: "restage",
+      params: { barkDarkness: 0.05, startDarkness: 0.7, birds: true },
+      remember: trial,
+    });
+    const again = pictureAction(null, opening.kind === "restage" ? opening.params : trial, tundra, trial);
+    expect(again).toEqual({
+      kind: "restage",
+      params: { barkDarkness: 0.05, startDarkness: 0.7, birds: true },
+      remember: trial,
+    });
+    expect(pictureAction(1, tundra, { barkDarkness: 0.05 }, trial)).toEqual({ kind: "resume", params: trial });
+    expect(pictureAction(1, trial, tundra, null)).toEqual({ kind: "stay" });
+    expect(pictureAction(null, { name: "traveller" }, {}, null)).toEqual({ kind: "stay" });
+  });
+
+  it("opens the valley packed, with no strip, then returns the planting the player left", () => {
+    const left = { density: 0.55, firebreak: true, wind: 0.4 };
+    const packed = { density: 0.9, wind: 0, firebreak: false };
+    const opening = pictureAction(null, left, packed, null);
+    expect(opening).toMatchObject({
+      kind: "restage",
+      params: { density: 0.9, wind: 0, firebreak: false },
+      remember: left,
+    });
+    expect(pictureAction(1, packed, packed, left)).toEqual({ kind: "resume", params: left });
   });
 });
 

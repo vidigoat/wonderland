@@ -85,6 +85,32 @@ export function restageParams(current: Params, patch: Params | undefined): Param
   return { ...current, ...patch };
 }
 
+export type PictureAction =
+  | { kind: "restage"; params: Params; remember: Params }
+  | { kind: "resume"; params: Params }
+  | { kind: "stay" };
+
+/**
+ * The new situation replaces the knobs. The follow-up question returns the trial
+ * the player actually left, including a picture that was already restaged once.
+ */
+export function pictureAction(
+  asking: 0 | 1 | null,
+  current: Params,
+  patch: Params | undefined,
+  remembered: Params | null,
+): PictureAction {
+  if (asking === 1) {
+    if (!remembered) return { kind: "stay" };
+    return { kind: "resume", params: remembered };
+  }
+  if (asking != null) return { kind: "stay" };
+  const base = remembered ?? current;
+  const staged = restageParams(base, patch);
+  if (!staged) return { kind: "stay" };
+  return { kind: "restage", params: staged, remember: remembered ?? { ...current } };
+}
+
 export function describeParams(spec: PublicWorldSpec, params: Params): { id: string; label: string; value: string }[] {
   return spec.knobs
     .filter((knob) => knob.id in params)

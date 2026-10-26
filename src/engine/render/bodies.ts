@@ -72,7 +72,7 @@ export function createBodiesScene(): Scene {
     remember(samples, view.ball);
     const path = worldTrail.length >= 2 ? worldTrail : samples;
     const preview = ghostFrom(path);
-    const focus = Math.max(2.6, targetRadius(view, preview));
+    const focus = Math.max(1.72, targetRadius(view, preview));
     const camera = cameraFor(frame, viewRadius, focus, (next) => {
       viewRadius = next;
     });
@@ -120,7 +120,7 @@ function cameraFor(frame: Frame, current: number, focus: number, commit: (next: 
 }
 
 function targetRadius(view: BodiesView, ghost: Point2[]): number {
-  let maxR = 2.6;
+  let maxR = 1.72;
   const consider = (x: number, y: number) => {
     const radius = Math.hypot(x, y);
     if (Number.isFinite(radius)) maxR = Math.max(maxR, radius * 1.18);
@@ -216,18 +216,18 @@ function placeCannon(cannon: Graphics, camera: Camera, planetR: number): void {
 
 function drawBall(g: Graphics, palette: WorldPalette): void {
   g.clear();
-  g.circle(0, 0, 12).fill({ color: palette.glow, alpha: 0.35 });
-  g.circle(0, 0, 5.5).fill({ color: palette.parchment });
-  g.circle(0, 0, 5.5).stroke({ width: 1.5, color: palette.brass });
+  g.circle(0, 0, 18).fill({ color: palette.glow, alpha: 0.4 });
+  g.circle(0, 0, 8).fill({ color: palette.parchment });
+  g.circle(0, 0, 8).stroke({ width: 2, color: palette.brass });
 }
 
 function drawTrail(g: Graphics, path: Point2[], camera: Camera, palette: WorldPalette): void {
   g.clear();
   if (path.length < 2) return;
   trace(g, path, camera);
-  g.stroke({ width: 12, color: palette.glow, alpha: 0.28, cap: "round", join: "round" });
+  g.stroke({ width: 16, color: palette.glow, alpha: 0.32, cap: "round", join: "round" });
   trace(g, path, camera);
-  g.stroke({ width: 2.5, color: palette.accent, alpha: 0.95, cap: "round", join: "round" });
+  g.stroke({ width: 4, color: palette.accent, alpha: 0.95, cap: "round", join: "round" });
 }
 
 function drawGhost(g: Graphics, path: Point2[], camera: Camera, palette: WorldPalette): void {

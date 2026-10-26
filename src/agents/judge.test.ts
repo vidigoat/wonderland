@@ -83,6 +83,18 @@ describe("sample judge", () => {
     expect(connection).toHaveBeenCalled();
   });
 
+  it("accepts the spoken demo sentence and still withholds the law", () => {
+    const spec = heroWorlds.find((world) => world.id === "gatekeeper");
+    if (!spec) throw new Error("missing gatekeeper");
+    const statement = "a quote ends the words, so the rest of the scroll is run as the spell";
+    const result = sampleJudge(spec, statement);
+    expect(result.verdict).toBe("discovered");
+    expect(result.reply).toBe(SAMPLE_REPLIES.discovered);
+    expect(result.nextExperiment).toBeUndefined();
+    expectNoLaw(JSON.stringify(result));
+    expect(sampleJudge(spec, "A quote makes the scribe choke.").verdict).toBe("warmer");
+  });
+
   it("uses the fixed replies for warmer and colder", () => {
     const warmer = sampleJudge(heroWorlds[0], "The quote makes the scribe choke.");
     expect(warmer).toMatchObject({ verdict: "warmer", reply: SAMPLE_REPLIES.warmer, source: "sample", notice: SAMPLE_NOTICE, nextExperiment: { sealed: true } });

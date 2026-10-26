@@ -23,4 +23,17 @@ describe("gradeAnswer", () => {
     const miss = gradeAnswer(spec, { kind: "transfer", statement: "Use more water." });
     expect(miss.correct).toBe(false);
   });
+
+  it("scores the library proof without returning the key", () => {
+    const spec = heroWorlds.find((world) => world.id === "gatekeeper");
+    if (!spec) throw new Error("missing gatekeeper");
+    const key = String(spec.transfer.answerKey);
+    const result = gradeAnswer(spec, {
+      kind: "transfer",
+      statement: "Close the quote and add a condition that is always true. The librarian should use parameterised queries.",
+    });
+    expect(result).toEqual({ correct: true });
+    expect(JSON.stringify(result)).not.toContain(key);
+    expect(gradeAnswer(spec, { kind: "transfer", statement: "Ask the librarian nicely." }).correct).toBe(false);
+  });
 });

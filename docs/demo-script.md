@@ -10,7 +10,7 @@ Three minutes, on the running app. The buttons below are the ones on the screen.
 | 1:00 | Set the name to `O'Brien`. Press **Send the scroll**. The scribe stops. The line across the stage says “The scribe stopped.” |
 | 1:15 | Set the name and the password to `' OR '1'='1`. Send the scroll again. The vault lightens, the room shakes, and the line says “The vault is open.” Ada’s notebook, on the sample lane, has been trying one knob at a time beside you. |
 | 1:35 | Press **I can say it**. Type: a quote ends the words, so the rest of the scroll is run as the spell. Press **Offer this sentence**. The sample judge says a new situation is waiting. It does not repeat the law. |
-| 1:50 | Answer the library search. Press **Offer the proof**. If a second prediction appears, answer it. **Keep this card** downloads the receipt. |
+| 1:50 | For the library, type: Close the quote and add a condition that is always true. The librarian should use parameterised queries. Press **Offer the proof**. On the second question, choose **No — your words stay words**. **Keep this card** downloads the receipt. |
 | 2:10 | The shelf: Peppered Forest, Newton’s Cannon, Rumour Town, The Firebreak. In the forest, move the soot and press **A generation** until the line says the moths are not the colour they were. |
 | 2:40 | “The model built the room. You found the law.” |
 

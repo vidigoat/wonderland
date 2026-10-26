@@ -132,7 +132,7 @@ type Rubric = {
 const RUBRICS: Record<string, Rubric> = {
   gatekeeper: {
     discovered: (text) =>
-      (has(text, ["quote", "apostrophe"]) && has(text, ["executed", "as code", "as a command", "part of the command", "runs as"])) ||
+      (has(text, ["quote", "apostrophe"]) && has(text, ["executed", "as code", "as a command", "part of the command", "runs as", "run as"])) ||
       (has(text, ["parameter", "sealed"]) && has(text, ["as data", "separate", "mixed into", "not code"])),
     partial: (text) => has(text, ["quote", "apostrophe", "sealed", "parameter", "injection", "command", "scribe"]),
     misconception: (text) => has(text, ["need the password", "need a password", "escaping", "hiding the error", "hide the error", "error messages"]),

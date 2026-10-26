@@ -13,6 +13,14 @@ describe("public worlds", () => {
     expect("checks" in pub).toBe(false);
     expect("science" in pub).toBe(false);
     if (typeof spec.transfer.answerKey === "string") expect(blob).not.toContain(spec.transfer.answerKey);
+    expect(blob).not.toContain("tryWith");
+    for (const prediction of spec.predictions) {
+      for (const value of Object.values(prediction.tryWith ?? {})) {
+        if (typeof value === "string" && value.length > 4 && !spec.story.mystery.includes(value) && !prediction.prompt.includes(value)) {
+          expect(blob, prediction.id).not.toContain(value);
+        }
+      }
+    }
     const event = toClientPipelineEvent({ type: "world", spec, source: "sample", notice: "sample" });
     expect(event.type).toBe("world");
     if (event.type === "world") expect(JSON.stringify(event.spec)).toBe(blob);

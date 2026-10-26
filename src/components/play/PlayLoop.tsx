@@ -421,7 +421,6 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
       setPlay((state) => (which === "first" ? commitFirstPrediction(state, correct) : commitSecondPrediction(state, correct)));
       setSelected(null);
       setFree("");
-      if (which === "first" && spec.predictions[0]?.tryWith) setSuggestion(spec.predictions[0].tryWith);
     } catch (err) {
       setGradeError(err instanceof Error ? err.message : "The grade did not come back.");
     } finally {

@@ -1,4 +1,4 @@
-import { builtinRules } from "@/worlds";
+import { builtinRules } from "@/worlds/builtins";
 import { compileRules, type RulesModule } from "./rules";
 import type { WorldSpec } from "./spec";
 

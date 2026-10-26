@@ -26,6 +26,7 @@ People who learn with AI assistance understood less: 50% vs 67% in a 2026 random
 | Peppered Forest | Natural selection | Heritable variation + selective predation |
 | Newton's Cannon | Orbits | Velocity-Verlet gravity |
 | Rumour Town | Bank runs | Diamond–Dybvig; citizens powered by Muse Glimmer |
+| The Firebreak | Why fires spread | Site percolation on a grid — a spark crosses only when the trees connect |
 
 Every world must pass machine-checked science assertions on every seed before it ships (`pnpm test`).
 

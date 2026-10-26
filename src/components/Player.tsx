@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Observation, Params } from "@/engine/rules";
 import { WorldSession } from "@/engine/runtime";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { builtinRules } from "@/worlds";
+import { builtinRules } from "@/worlds/builtins";
 
 /**
  * SCAFFOLD PLAYER — functional but plain. Proves the engine runs in the browser.

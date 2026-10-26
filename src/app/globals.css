@@ -297,6 +297,47 @@ a {
   filter: drop-shadow(0 12px 14px rgba(20, 17, 14, 0.35));
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .scene-gatekeeper .scene-figure,
+  .scene-rumour-town .scene-figure {
+    animation: figure-bob 5.5s ease-in-out infinite;
+  }
+
+  .scene-peppered-forest .scene-figure {
+    animation: moth-drift 7s ease-in-out infinite;
+  }
+
+  .scene-newtons-cannon .scene-figure {
+    animation: planet-drift 11s ease-in-out infinite;
+  }
+
+  .scene-firebreak .scene-figure {
+    transform-origin: center bottom;
+    animation: flame-flicker 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes figure-bob {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-7px); }
+}
+
+@keyframes moth-drift {
+  0%, 100% { transform: translateX(-50%) translateY(0) rotate(-3deg); }
+  50% { transform: translateX(-42%) translateY(-10px) rotate(4deg); }
+}
+
+@keyframes planet-drift {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-8px); }
+}
+
+@keyframes flame-flicker {
+  0%, 100% { transform: translateX(-50%) scale(1, 1); }
+  40% { transform: translateX(-50%) scale(0.96, 1.06); }
+  70% { transform: translateX(-50%) scale(1.03, 0.96); }
+}
+
 .scene {
   position: absolute;
   inset: 0;

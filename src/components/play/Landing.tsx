@@ -176,13 +176,15 @@ function Binding({ log, stopped }: { log: LogEntry[]; stopped: boolean }) {
         </p>
       )}
       {view.choose ? (
-        <div>
+        <div className="choose">
           <p>{view.choose.message}</p>
-          <ul className="choose-list">
+          <ul className="choose-row">
             {view.choose.worlds.map((world) => (
               <li key={world.id}>
-                <Link href={world.href}>{world.title}</Link>
-                <span>{world.concept}</span>
+                <Link href={world.href} className="place-link">
+                  <PlaceScene id={world.id} />
+                  <span className="place-name">{world.title}</span>
+                </Link>
               </li>
             ))}
           </ul>

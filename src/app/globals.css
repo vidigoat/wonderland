@@ -710,15 +710,14 @@ a {
 .situation {
   position: absolute;
   z-index: 5;
-  left: 50%;
-  top: 48%;
-  transform: translate(-50%, -50%);
-  width: min(34rem, calc(100% - 2.4rem));
+  left: 1rem;
+  right: 1rem;
+  bottom: 0.85rem;
   margin: 0;
-  padding: 1.15rem 1.35rem 1.35rem;
-  background: var(--paper, #f7f0df);
+  padding: 0.7rem 0.95rem 0.8rem;
+  background: color-mix(in srgb, var(--paper, #f7f0df) 92%, transparent);
   color: var(--notebook-ink, #241816);
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.32);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
 }
 
 .situation .kicker {
@@ -728,8 +727,8 @@ a {
 .situation p:last-child {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.35rem, 2.5vw, 1.9rem);
-  line-height: 1.22;
+  font-size: 1.05rem;
+  line-height: 1.25;
 }
 
 .play[data-phase="receipt"] .ada {

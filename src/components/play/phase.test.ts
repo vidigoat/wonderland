@@ -19,7 +19,7 @@ import {
   TRAIL,
 } from "./phase";
 import { receiptCopy } from "./receipt";
-import { freshStart, runDuration, runSteps } from "./readings";
+import { freshStart, raceRows, runDuration, runSteps } from "./readings";
 import { drainSse, heroHref, toMontageItem } from "./sse";
 import { encodeWav } from "./wav";
 
@@ -96,6 +96,24 @@ describe("phase machine", () => {
     expect(freshStart("rumour-town", "population", { rumourSeeds: 1, reserveRatio: 0.1 }, { rumourSeeds: 1, reserveRatio: 0.1 })).toBe(false);
     expect(freshStart("rumour-town", "population", { rumourSeeds: 1 }, { rumourSeeds: 6 })).toBe(true);
     expect(freshStart("peppered-forest", "population", { startDarkness: 0.2, barkDarkness: 0.2 }, { startDarkness: 0.2, barkDarkness: 0.9 })).toBe(false);
+  });
+});
+
+describe("the race", () => {
+  const spec = {
+    observables: [
+      { id: "vaultOpen", label: "Vault", display: "text" as const },
+      { id: "query", label: "The spell the scribe cast", display: "text" as const },
+    ],
+  };
+
+  it("names only the readings that differ, and stays quiet when they match", () => {
+    expect(raceRows(spec, { vaultOpen: "open", query: "SELECT 1" }, { vaultOpen: "shut", query: "SELECT 1" })).toEqual([
+      { id: "vaultOpen", label: "Vault", yours: "open", hers: "shut", spell: true },
+    ]);
+    expect(raceRows(spec, { vaultOpen: "shut" }, { vaultOpen: "shut" })).toEqual([]);
+    expect(raceRows(spec, null, { vaultOpen: "open" })).toEqual([]);
+    expect(raceRows(spec, { vaultOpen: "open" }, null)).toEqual([]);
   });
 });
 

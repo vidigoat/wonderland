@@ -26,7 +26,9 @@ export function formatParam(value: Params[string] | undefined): string {
   return "—";
 }
 
-export function readingLines(spec: PublicWorldSpec, obs: Observation | null): { id: string; label: string; value: string; spell: boolean }[] {
+export type ReadingLine = { id: string; label: string; value: string; spell: boolean };
+
+export function readingLines(spec: { observables: PublicWorldSpec["observables"] }, obs: Observation | null): ReadingLine[] {
   return spec.observables.map((item) => {
     const raw = obs ? obs[item.id] : undefined;
     const value = formatReading(raw, item.display);
@@ -37,6 +39,24 @@ export function readingLines(spec: PublicWorldSpec, obs: Observation | null): { 
       spell: item.id === "query" || item.display === "text",
     };
   });
+}
+
+/** Rows where your reading and Ada's reading are not the same. Empty until both have looked. */
+export function raceRows(
+  spec: { observables: PublicWorldSpec["observables"] },
+  yours: Observation | null,
+  hers: Observation | null,
+): { id: string; label: string; yours: string; hers: string; spell: boolean }[] {
+  if (!yours || !hers) return [];
+  const other = new Map(readingLines(spec, hers).map((line) => [line.id, line.value]));
+  return readingLines(spec, yours)
+    .flatMap((line) => {
+      const ada = other.get(line.id);
+      if (ada == null || ada === line.value) return [];
+      return [{ id: line.id, label: line.label, yours: line.value, hers: ada, spell: line.spell }];
+    })
+    .sort((a, b) => Number(a.spell) - Number(b.spell))
+    .slice(0, 4);
 }
 
 export function summariseObservation(spec: PublicWorldSpec, obs: Record<string, number | string> | undefined): string | null {

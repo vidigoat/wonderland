@@ -1,9 +1,9 @@
 "use client";
 
-import type { Params } from "@/engine/rules";
+import type { Observation, Params } from "@/engine/rules";
 import type { PublicWorldSpec } from "@/engine/spec";
 import { ADA_WIRING } from "./http";
-import { describeParams } from "./readings";
+import { describeParams, raceRows } from "./readings";
 import { SampleNote } from "./Scenes";
 
 export type AdaEntry = {
@@ -19,6 +19,8 @@ export function AdaNote({
   seedNote,
   entries,
   params,
+  yours,
+  rival,
   onTurn,
   canTurn,
 }: {
@@ -28,10 +30,13 @@ export function AdaNote({
   seedNote: string | null;
   entries: AdaEntry[];
   params: Params;
+  yours: Observation | null;
+  rival: Observation | null;
   onTurn: () => void;
   canTurn: boolean;
 }) {
   const bench = describeParams(spec, params);
+  const race = raceRows(spec, yours, rival);
   return (
     <section className="ada" aria-label="Ada">
       <header className="ada-head">
@@ -42,6 +47,26 @@ export function AdaNote({
           </button>
         ) : null}
       </header>
+      {race.length ? (
+        <div className="race" aria-label="Where you and Ada differ">
+          <div className="race-head">
+            <span />
+            <span>You</span>
+            <span>Ada</span>
+          </div>
+          {race.map((row) => (
+            <div key={row.id} className="race-row" data-split="yes">
+              <span className="race-label">{row.label}</span>
+              <span className={row.spell ? "spell" : "num"} title={row.yours}>
+                {row.yours}
+              </span>
+              <span className={row.spell ? "spell" : "num"} title={row.hers}>
+                {row.hers}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : null}
       {status === "wiring" ? <p className="wiring">{ADA_WIRING}</p> : null}
       {status === "quiet" ? <p className="aside">She is in the room, a step behind.</p> : null}
       <ol className="ada-notes">

@@ -106,6 +106,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const [adaNotice, setAdaNotice] = useState<string | null>(null);
   const [adaEntries, setAdaEntries] = useState<AdaEntry[]>([]);
   const [adaBench, setAdaBench] = useState<Params>(() => defaultParams(spec));
+  const [adaObs, setAdaObs] = useState<Observation | null>(null);
   const [townNote, setTownNote] = useState<string | null>(null);
   const [witness, setWitness] = useState<string | null>(null);
   const [beat, setBeat] = useState<{ name: WitnessBeat; id: number } | null>(null);
@@ -226,6 +227,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
       }
       adaParams.current = { ...adaParams.current, ...parsed.turn.params };
       setAdaBench({ ...adaParams.current });
+      if (parsed.turn.observation) setAdaObs(parsed.turn.observation);
       setAdaNotice(sampleNotice(parsed.source, parsed.notice));
       setAdaEntries((entries) =>
         [
@@ -819,6 +821,8 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
             seedNote={seedNote}
             entries={adaEntries}
             params={adaBench}
+            yours={obs}
+            rival={adaObs}
             canTurn={play.knobsUnlocked && !adaBlocked && ready && play.phase !== "receipt" && play.phase !== "transfer"}
             onTurn={() => void adaTurn()}
           />

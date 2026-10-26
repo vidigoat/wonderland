@@ -76,5 +76,14 @@ export function runVerb(worldId: string, archetype: string): string {
 }
 
 export function runSteps(archetype: string): number {
-  return archetype === "pipeline" ? 1 : 30;
+  if (archetype === "pipeline") return 1;
+  if (archetype === "bodies") return 120;
+  if (archetype === "field") return 48;
+  return 30;
+}
+
+/** How long one gesture should stay on screen, so a shot can travel and a fire can spread. */
+export function runDuration(steps: number): number {
+  if (steps <= 1) return 1100;
+  return Math.min(3600, Math.max(1400, steps * 20));
 }

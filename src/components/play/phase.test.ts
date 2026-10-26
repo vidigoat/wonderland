@@ -17,6 +17,7 @@ import {
   toHypothesise,
 } from "./phase";
 import { receiptCopy } from "./receipt";
+import { runDuration, runSteps } from "./readings";
 import { drainSse, heroHref, toMontageItem } from "./sse";
 import { encodeWav } from "./wav";
 
@@ -71,6 +72,13 @@ describe("phase machine", () => {
   it("formats elapsed time from a duration, not a clock", () => {
     expect(formatElapsed(0)).toBe("0s");
     expect(formatElapsed(90_400)).toBe("1m 30s");
+  });
+
+  it("gives a cannon shot enough steps to travel", () => {
+    expect(runSteps("pipeline")).toBe(1);
+    expect(runSteps("bodies")).toBeGreaterThanOrEqual(100);
+    expect(runDuration(runSteps("bodies"))).toBeGreaterThan(runDuration(1));
+    expect(runSteps("population")).toBe(30);
   });
 });
 

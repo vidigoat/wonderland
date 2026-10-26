@@ -38,7 +38,7 @@ import {
   toHypothesise,
   type PlaySnapshot,
 } from "./phase";
-import { defaultParams, formatParam, runSteps, summariseObservation } from "./readings";
+import { defaultParams, formatParam, runDuration, runSteps, summariseObservation } from "./readings";
 import { mintSession } from "./session";
 import { startWavCapture, type WavCapture } from "./wav";
 import { witnessLine } from "./witness";
@@ -310,13 +310,20 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   }
 
   async function run() {
-    const session = sessionRef.current;
+    let session = sessionRef.current;
     if (!session || playingRef.current || knobsLocked(play)) return;
     playingRef.current = true;
     setPlaying(true);
     setRunError(null);
-    paramsRef.current = params;
-    session.params = { ...params };
+    if ((spec.archetype === "bodies" || spec.archetype === "field") && seedRef.current != null) {
+      const rules = rulesFor(spec);
+      if (rules) {
+        session = await new WorldSession(rules, { ...paramsRef.current }, seedRef.current).start();
+        sessionRef.current = session;
+        if (!cancelRef.current) publish(session);
+      }
+    }
+    session.params = { ...paramsRef.current };
     const steps = runSteps(spec.archetype);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     try {
@@ -330,17 +337,17 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
           if (reduce) {
             await session.tick(rest);
             publish(session);
-          } else await spreadTicks(session, rest, 1500);
+          } else await spreadTicks(session, rest, runDuration(rest));
         }
       } else if (spec.archetype === "pipeline") {
         await session.tick(1);
         if (!cancelRef.current) publish(session);
-        if (!reduce && !cancelRef.current) await hold(1100);
+        if (!reduce && !cancelRef.current) await hold(runDuration(1));
       } else if (reduce) {
         await session.tick(steps);
         if (!cancelRef.current) publish(session);
       } else {
-        await spreadTicks(session, steps, 1500);
+        await spreadTicks(session, steps, runDuration(steps));
       }
       if (!cancelRef.current) void adaTurn();
     } catch (err) {
@@ -355,7 +362,6 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     const rules = rulesFor(spec);
     const seed = seedRef.current;
     if (!rules || seed == null || playingRef.current) return;
-    paramsRef.current = params;
     const session = await new WorldSession(rules, { ...paramsRef.current }, seed).start();
     if (cancelRef.current) return;
     sessionRef.current = session;
@@ -363,12 +369,10 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   }
 
   function onChange(id: string, value: Params[string]) {
-    setParams((prev) => {
-      const next = { ...prev, [id]: value };
-      paramsRef.current = next;
-      sessionRef.current?.setParam(id, value);
-      return next;
-    });
+    const next = { ...paramsRef.current, [id]: value };
+    paramsRef.current = next;
+    sessionRef.current?.setParam(id, value);
+    setParams(next);
   }
 
   async function gradePrediction(predictionId: string, choice: number | string, which: "first" | "second") {

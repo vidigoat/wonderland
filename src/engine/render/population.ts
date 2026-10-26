@@ -1,6 +1,6 @@
 import { Container, Graphics, Text } from "pixi.js";
 import type { PopulationAgent } from "@/engine/view";
-import { clamp01, phaseOffset, readNumber, smoothstep, spokenIds } from "./helpers";
+import { clamp01, phaseOffset, readNumber, smoothstep, spokenIds, townFoot } from "./helpers";
 import { pixelRatio, stageFont } from "./fonts";
 import { barkColor, populationTint } from "./palette";
 import type { Scene, Frame } from "./scene";
@@ -118,7 +118,8 @@ export function createPopulationScene(): Scene {
       const phase = phaseOffset(id);
       const bob = frame.reducedMotion ? 0 : Math.sin(frame.time / 720 + phase * Math.PI * 2) * 4.5;
       const wobble = frame.reducedMotion ? 0 : Math.sin(frame.time / 980 + phase * 4) * 0.1;
-      const at = place(node.drawX, node.drawY, frame.width, frame.height);
+      const footY = frame.worldId === "rumour-town" ? townFoot(node.drawY) : node.drawY;
+      const at = place(node.drawX, footY, frame.width, frame.height);
       node.figure.view.position.set(at.x, at.y + bob);
       node.figure.view.rotation = wobble;
       node.figure.view.scale.set(figureScale * (0.86 + phase * 0.28));

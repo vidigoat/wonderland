@@ -10,6 +10,7 @@ import {
   smoothstep,
   launchPreview,
   onSurface,
+  townFoot,
   trailGhostPoints,
 } from "./helpers";
 
@@ -230,5 +231,13 @@ describe("helpers stay deterministic", () => {
     expect(smoothstep(0)).toBe(0);
     expect(smoothstep(1)).toBe(1);
     expect(smoothstep(0.5)).toBeCloseTo(0.5);
+  });
+
+  it("stands the town on the cobbles, from the doorstep to the front of the square", () => {
+    expect(townFoot(0)).toBeCloseTo(0.62);
+    expect(townFoot(1)).toBeCloseTo(0.96);
+    expect(townFoot(-2)).toBeCloseTo(0.62);
+    expect(townFoot(3)).toBeCloseTo(0.96);
+    expect(townFoot(0)).toBeGreaterThan(0.58);
   });
 });

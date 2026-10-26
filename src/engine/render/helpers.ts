@@ -59,6 +59,14 @@ export function clamp01(value: number): number {
   return value;
 }
 
+/**
+ * Rumour Town stands on the cobbles, just below the bank's doorstep.
+ * 0 is the queue at the door. 1 is the front of the square.
+ */
+export function townFoot(y: number): number {
+  return 0.62 + clamp01(y) * 0.34;
+}
+
 export function smoothstep(value: number): number {
   const t = clamp01(value);
   return t * t * (3 - 2 * t);

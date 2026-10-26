@@ -79,6 +79,12 @@ export function speakTool(knobs: { id: string; label: string }[], tool: string):
   return spoken;
 }
 
+/** The proof's opening picture. An empty patch means the stage stays as the player left it. */
+export function restageParams(current: Params, patch: Params | undefined): Params | null {
+  if (!patch || Object.keys(patch).length === 0) return null;
+  return { ...current, ...patch };
+}
+
 export function describeParams(spec: PublicWorldSpec, params: Params): { id: string; label: string; value: string }[] {
   return spec.knobs
     .filter((knob) => knob.id in params)

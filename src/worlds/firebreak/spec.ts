@@ -59,7 +59,7 @@ export const firebreakSpec: WorldSpec = {
   ],
   transfer: {
     setup: "Market stalls stand in a grid of streets. A lantern falls at the western row.",
-    params: { density: 0.9, firebreak: true, wind: 0 },
+    params: { density: 0.9, wind: 0 },
     question: "What single change to how the stalls are placed stops the fire from reaching the eastern gate, even if the stalls are packed close?",
     answerKey: "Leave one unbroken empty gap, wider than the fire can jump, all the way across the grid.",
   },

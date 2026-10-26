@@ -19,7 +19,7 @@ import {
   TRAIL,
 } from "./phase";
 import { receiptCopy } from "./receipt";
-import { freshStart, raceRows, runDuration, runSteps, speakTool } from "./readings";
+import { freshStart, raceRows, restageParams, runDuration, runSteps, speakTool } from "./readings";
 import { drainSse, heroHref, toMontageItem } from "./sse";
 import { encodeWav } from "./wav";
 
@@ -105,6 +105,17 @@ describe("Ada's words", () => {
       "set knob Soot on the bark → 1",
     );
     expect(speakTool([{ id: "name", label: "Name on your scroll" }], "set knob name → visitor")).toBe("set knob Name on your scroll → visitor");
+  });
+});
+
+describe("the proof's opening picture", () => {
+  it("applies the new situation and leaves an empty one alone", () => {
+    expect(restageParams({ barkDarkness: 0.9, startDarkness: 0.2 }, { barkDarkness: 0.05, startDarkness: 0.7 })).toEqual({
+      barkDarkness: 0.05,
+      startDarkness: 0.7,
+    });
+    expect(restageParams({ name: "traveller" }, {})).toBeNull();
+    expect(restageParams({ name: "traveller" }, undefined)).toBeNull();
   });
 });
 

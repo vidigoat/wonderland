@@ -39,7 +39,7 @@ import {
   toHypothesise,
   type PlaySnapshot,
 } from "./phase";
-import { defaultParams, formatParam, freshStart, runDuration, runSteps, summariseObservation } from "./readings";
+import { defaultParams, formatParam, freshStart, restageParams, runDuration, runSteps, summariseObservation } from "./readings";
 import { mintSession, withSeed } from "./session";
 import { startWavCapture, type WavCapture } from "./wav";
 import { armChime, playChime } from "./chime";
@@ -177,6 +177,28 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
       captureRef.current = null;
     };
   }, [spec, retry]);
+
+  useEffect(() => {
+    if (play.phase !== "transfer" || play.askingPrediction != null) return;
+    const rules = rulesFor(spec);
+    const seed = seedRef.current;
+    const next = restageParams(paramsRef.current, spec.transfer.params);
+    if (!rules || seed == null || !next) return;
+    paramsRef.current = next;
+    setParams(next);
+    let cancel = false;
+    void new WorldSession(rules, next, seed).start().then((session) => {
+      if (cancel) return;
+      sessionRef.current = session;
+      birthRef.current = { ...next };
+      const last = session.history[session.history.length - 1] ?? null;
+      setObs(last);
+      setView(asWorldView(session.view(), spec.archetype));
+    });
+    return () => {
+      cancel = true;
+    };
+  }, [play.phase, play.askingPrediction, spec]);
 
   useEffect(() => {
     let live = true;

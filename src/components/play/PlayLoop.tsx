@@ -144,9 +144,11 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const liveRace = play.phase === "experiment" || play.phase === "hypothesise" || play.phase === "loop";
   if (split && split !== raceSaid && liveRace) {
     setRaceSaid(split);
-    setWitness(split);
     setSeen(rememberSeen(seen, split));
-    setBeat({ name: "race", id: (beat?.id ?? 0) + 1 });
+    if (witness == null) {
+      setWitness(split);
+      setBeat({ name: "race", id: (beat?.id ?? 0) + 1 });
+    }
   }
 
   useEffect(() => {

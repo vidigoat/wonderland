@@ -3,6 +3,7 @@ import type { BodiesView } from "@/engine/view";
 import {
   CANNON_STEP_DT,
   launchPreview,
+  onSurface,
   phaseOffset,
   readNumber,
   readPoint,
@@ -73,7 +74,11 @@ export function createBodiesScene(): Scene {
     const worldTrail = view.trail.map((sample) => readPoint(sample));
     remember(samples, view.ball);
     const path = worldTrail.length >= 2 ? worldTrail : samples;
-    const preview = path.length >= 8 ? ghostFrom(path) : launchPreview(readNumber(frame.params, "speed", 0.5));
+    const radius = view.planet.r || 1;
+    const last = path[path.length - 1];
+    const buried = last != null && Math.hypot(last.x, last.y) < radius;
+    const preview = buried || path.length >= 8 ? (buried ? [] : ghostFrom(path)) : launchPreview(readNumber(frame.params, "speed", 0.5));
+    const drawn = path.map((point) => onSurface(point.x, point.y, radius));
     const focus = Math.max(1.72, targetRadius(view, preview));
     const camera = cameraFor(frame, viewRadius, focus, (next) => {
       viewRadius = next;
@@ -83,9 +88,10 @@ export function createBodiesScene(): Scene {
       planetKey = next;
     });
     placeCannon(cannon, camera, view.planet.r || 1);
-    drawTrail(trail, path, camera, palette);
+    drawTrail(trail, drawn, camera, palette);
     drawGhost(ghost, preview, camera, palette);
-    const at = camera.toScreen(view.ball.x, view.ball.y);
+    const landed = onSurface(view.ball.x, view.ball.y, radius);
+    const at = camera.toScreen(landed.x, landed.y);
     ball.position.set(at.x, at.y);
     ball.visible = true;
   };

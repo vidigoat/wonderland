@@ -9,6 +9,7 @@ import {
   phaseOffset,
   smoothstep,
   launchPreview,
+  onSurface,
   trailGhostPoints,
 } from "./helpers";
 
@@ -64,6 +65,15 @@ describe("injectionHighlightRange", () => {
     expect(injectionHighlightRange(spell("queen", "crown-of-thorns-9"))).toBeNull();
     expect(injectionHighlightRange(spell("O''Brien", "fine"))).toBeNull();
     expect(injectionHighlightRange("O'Brien")).toBeNull();
+  });
+});
+
+describe("onSurface", () => {
+  it("lifts a buried shot onto the rim and leaves a flying one", () => {
+    expect(onSurface(0, 0.4)).toEqual({ x: 0, y: 1 });
+    expect(onSurface(0.3, 0.4).y).toBeCloseTo(0.8);
+    expect(onSurface(0, 1.4)).toEqual({ x: 0, y: 1.4 });
+    expect(onSurface(0, 0)).toEqual({ x: 0, y: 0 });
   });
 });
 

@@ -260,6 +260,13 @@ export function injectionHighlightRange(query: string): IndexRange | null {
  * Each output point is one cannon step: four velocity-Verlet substeps of 0.01.
  * Stops at the surface (r < 1) or at escape (r > 12). Empty if fewer than two samples.
  */
+/** A landed shot sits on the disk. Points already outside are left alone. The origin stays put. */
+export function onSurface(x: number, y: number, radius = 1): Point2 {
+  const r = Math.hypot(x, y);
+  if (!(r > 0) || r >= radius) return { x, y };
+  return { x: (x / r) * radius, y: (y / r) * radius };
+}
+
 /** Ghost from the muzzle at a horizontal launch speed, before the shot has a trail. */
 export function launchPreview(speed: number, steps = 100): Point2[] {
   const r = 1.02;

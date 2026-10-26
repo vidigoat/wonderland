@@ -1,6 +1,6 @@
 import { phaseMark, TRAIL, type Phase } from "./phase";
 
-export function PhaseTrail({ phase }: { phase: Phase }) {
+export function PhaseTrail({ phase, seen }: { phase: Phase; seen: string[] }) {
   const active = phaseMark(phase);
   return (
     <nav className="phase-trail" aria-label="The discovery">
@@ -14,6 +14,13 @@ export function PhaseTrail({ phase }: { phase: Phase }) {
           );
         })}
       </ol>
+      {seen.length > 0 ? (
+        <p className="seen-trail">
+          {seen.map((line) => (
+            <span key={line}>{line}</span>
+          ))}
+        </p>
+      ) : null}
     </nav>
   );
 }

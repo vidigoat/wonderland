@@ -612,7 +612,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
         <h1>{spec.title}</h1>
         <Link href="/gallery">The shelf</Link>
       </header>
-      <PhaseTrail phase={play.phase} />
+      <PhaseTrail phase={play.phase} seen={play.phase === "receipt" ? [] : witness ? seen.filter((line) => line !== witness) : seen} />
       <div className="play-body">
         <section className="stage-pane" aria-label={spec.title} data-situation={newSituation ? "yes" : undefined}>
           <StageSlot
@@ -649,7 +649,6 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
         <aside className="notebook">
           <div className="notebook-scroll">
           {rulesMissing ? <p className="slip">This world’s rules are not on the shelf yet.</p> : null}
-          {!witness && seen.length > 0 && play.phase !== "receipt" ? <p className="seen-quiet">You saw: {seen[seen.length - 1]}</p> : null}
           <SampleNote notice={townNote} />
           {seedError ? (
             <p className="slip">

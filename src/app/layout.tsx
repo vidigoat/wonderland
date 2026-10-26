@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Geist, Geist_Mono } from "next/font/google";
+import { siteOrigin } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,6 +21,7 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
+  metadataBase: siteOrigin(),
   title: {
     default: "Wonderland",
     template: "%s — Wonderland",

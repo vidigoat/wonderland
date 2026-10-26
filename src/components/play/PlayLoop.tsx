@@ -83,6 +83,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const [view, setView] = useState<WorldView | null>(null);
   const [playing, setPlaying] = useState(false);
   const [ready, setReady] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [seedError, setSeedError] = useState<string | null>(null);
   const [seedNote, setSeedNote] = useState<string | null>(null);
   const [retry, setRetry] = useState(0);
@@ -588,6 +589,17 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     }
   }
 
+  function copyWorld() {
+    const href = window.location.href;
+    void navigator.clipboard.writeText(href).then(
+      () => {
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 1600);
+      },
+      () => setCopied(false),
+    );
+  }
+
   const locked = knobsLocked(play);
   const lockedNote =
     play.phase === "predict"
@@ -610,7 +622,12 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
           Wonderland
         </Link>
         <h1>{spec.title}</h1>
-        <Link href="/gallery">The shelf</Link>
+        <span className="play-links">
+          <button type="button" className="quiet" disabled={!ready} onClick={() => void copyWorld()}>
+            {copied ? "Copied" : "Copy this world"}
+          </button>
+          <Link href="/gallery">The shelf</Link>
+        </span>
       </header>
       <PhaseTrail phase={play.phase} seen={play.phase === "receipt" ? [] : witness ? seen.filter((line) => line !== witness) : seen} />
       <div className="play-body">

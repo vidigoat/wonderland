@@ -683,6 +683,26 @@ a {
   font-size: clamp(1.2rem, 2vw, 1.7rem);
 }
 
+.play-links {
+  display: flex;
+  gap: 0.9rem;
+  align-items: baseline;
+}
+
+.play-links button {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.play-links button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 .play-body {
   min-height: 0;
   display: grid;

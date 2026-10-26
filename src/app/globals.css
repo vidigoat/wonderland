@@ -192,6 +192,11 @@ a {
   max-width: 14ch;
 }
 
+.landing:has(.choose) .law-line {
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  max-width: none;
+}
+
 .law-line span {
   display: block;
 }
@@ -436,7 +441,7 @@ a {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0.7rem;
-  height: 220px;
+  height: 200px;
 }
 
 .choose-row li {

@@ -20,7 +20,14 @@ export function witnessLine(worldId: string, previous: Observation | null, next:
     return null;
   }
   if (worldId === "rumour-town" && next.bank === "collapsed" && previous.bank !== "collapsed") return "The bank has closed its doors.";
-  if (worldId === "firebreak" && next.crossing === "yes" && previous.crossing !== "yes") return "The far ridge is burning.";
+  if (worldId === "firebreak") {
+    if (next.crossing === "yes" && previous.crossing !== "yes") return "The far ridge is burning.";
+    const burned = Number(next.burnedShare);
+    if (next.stillBurning === "no" && previous.stillBurning === "yes" && next.crossing !== "yes" && burned > 0.02) {
+      return "The fire stopped.";
+    }
+    return null;
+  }
   if (worldId === "peppered-forest") {
     const shift = Math.abs(Number(next.meanDarkness) - Number(previous.meanDarkness));
     if (Number.isFinite(shift) && shift >= 0.15) return "The moths are not the colour they were.";

@@ -853,6 +853,15 @@ a {
   max-height: none;
 }
 
+.play[data-phase="receipt"] .receipt-caption {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin: 0 0 0.55rem;
+  padding: 0.1rem 0 0.45rem;
+  background: var(--paper, #f7f1e4);
+}
+
 .legend {
   position: absolute;
   z-index: 3;

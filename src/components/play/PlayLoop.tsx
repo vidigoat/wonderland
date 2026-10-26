@@ -257,22 +257,27 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   function spreadTicks(session: WorldSession, steps: number, duration: number) {
     return new Promise<void>((resolve, reject) => {
       const started = performance.now();
+      const batch = steps > 80 ? 4 : 1;
+      const frames = Math.ceil(steps / batch);
       let done = 0;
+      let frameIndex = 0;
       let busy = false;
       const frame = (now: number) => {
         if (cancelRef.current) return resolve();
         if (busy) return;
-        const due = started + ((done + 1) * duration) / steps;
+        const due = started + ((frameIndex + 1) * duration) / frames;
         if (now < due) {
           rafRef.current = requestAnimationFrame(frame);
           return;
         }
         busy = true;
         session.params = { ...paramsRef.current };
+        const n = Math.min(batch, steps - done);
         void session
-          .tick(1)
+          .tick(n)
           .then(() => {
-            done += 1;
+            done += n;
+            frameIndex += 1;
             if (!cancelRef.current) publish(session);
             busy = false;
             if (done >= steps || cancelRef.current) resolve();

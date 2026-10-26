@@ -94,6 +94,7 @@ a {
 }
 
 .press {
+  scroll-margin-bottom: 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;

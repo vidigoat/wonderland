@@ -179,6 +179,19 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   }, [spec, retry]);
 
   useEffect(() => {
+    if (play.phase !== "transfer") return;
+    const frame = window.requestAnimationFrame(() => {
+      const button = document.querySelector<HTMLButtonElement>(".phase .press");
+      if (!button) return;
+      const box = button.getBoundingClientRect();
+      if (box.bottom > window.innerHeight - 12 || box.top < 0) {
+        button.scrollIntoView({ block: "end", inline: "nearest" });
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [play.phase, play.askingPrediction]);
+
+  useEffect(() => {
     if (play.phase !== "transfer" || play.askingPrediction != null) return;
     const rules = rulesFor(spec);
     const seed = seedRef.current;

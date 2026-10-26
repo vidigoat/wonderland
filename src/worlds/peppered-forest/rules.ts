@@ -60,7 +60,23 @@ export const pepperedForest: RulesModule<ForestState> = {
       eaten: state.eatenThisGen,
     };
   },
-  view(state) {
-    return { kind: "population", agents: state.moths.map((m, i) => ({ id: i, x: m.x, y: m.y, tint: m.darkness, sprite: "moth" })) };
+  view(state, params) {
+    const moths: { id: string | number; x: number; y: number; tint: number; sprite: string }[] = state.moths.map((moth, index) => ({
+      id: index,
+      x: moth.x,
+      y: moth.y,
+      tint: moth.darkness,
+      sprite: "moth",
+    }));
+    if (params.birds === false) return { kind: "population" as const, agents: moths };
+    const beat = state.generation % 8;
+    moths.push({
+      id: "bird",
+      x: 0.08 + beat * 0.1,
+      y: 0.06 + (beat % 3) * 0.05,
+      tint: 0,
+      sprite: "bird",
+    });
+    return { kind: "population" as const, agents: moths };
   },
 };

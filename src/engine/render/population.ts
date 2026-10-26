@@ -117,7 +117,14 @@ export function createPopulationScene(): Scene {
       node.figure.view.rotation = wobble;
       node.figure.view.scale.set(figureScale * (0.86 + phase * 0.28));
       node.figure.view.zIndex = at.y;
-      node.figure.show(frame.worldId, agent.sprite || "figure", populationTint(frame.worldId, node.drawTint, frame.palette), true);
+      const sprite = agent.sprite || "figure";
+      const keepsOwnColor = sprite === "bird";
+      node.figure.show(
+        frame.worldId,
+        sprite,
+        keepsOwnColor ? 0xffffff : populationTint(frame.worldId, node.drawTint, frame.palette),
+        !keepsOwnColor,
+      );
       syncBubble(node, agent.bubble, at.x, at.y + bob, frame, bubbles);
     }
 

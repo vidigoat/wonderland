@@ -877,6 +877,10 @@ input[type="range"]::-moz-range-thumb {
   font-size: 0.88rem;
 }
 
+.bench > span {
+  white-space: nowrap;
+}
+
 .readings dl {
   margin: 0;
 }

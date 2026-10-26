@@ -8,8 +8,9 @@ export function createFieldScene(): Scene {
   const ground = new Graphics();
   const painting = createBackdrop();
   const sprite = new Sprite(Texture.EMPTY);
+  const trees = new Graphics();
   const frame = new Graphics();
-  root.addChild(ground, painting.view, sprite, frame);
+  root.addChild(ground, painting.view, sprite, trees, frame);
 
   let signature = "";
   let owned: Texture | null = null;
@@ -22,14 +23,26 @@ export function createFieldScene(): Scene {
     const scale = fieldScale(next.worldId, flat(grid));
     const columns = grid[0]?.length ?? 1;
     const sig = `${next.worldId}|${scale}|${next.width}x${next.height}|${hashGrid(grid)}`;
-    if (sig !== signature) {
-      signature = sig;
-      const texture = paintGrid(grid, scale);
-      sprite.texture = texture;
-      owned?.destroy(true);
-      owned = texture;
-      place(sprite, frame, ground, next, columns, grid.length, scale);
+    if (sig === signature) return;
+    signature = sig;
+    const box = valleyBox(next, columns, grid.length);
+    strokeValley(frame, ground, next, box, scale);
+    if (scale === "firebreak") {
+      sprite.visible = false;
+      trees.visible = true;
+      drawValley(trees, grid, box);
+      return;
     }
+    trees.visible = false;
+    trees.clear();
+    sprite.visible = true;
+    const texture = paintGrid(grid, scale);
+    sprite.texture = texture;
+    owned?.destroy(true);
+    owned = texture;
+    sprite.position.set(box.x, box.y);
+    sprite.width = box.w;
+    sprite.height = box.h;
   };
 
   return {
@@ -46,28 +59,72 @@ export function createFieldScene(): Scene {
   };
 }
 
-function place(sprite: Sprite, frame: Graphics, ground: Graphics, view: Frame, columns: number, rows: number, scale: FieldScale): void {
-  ground.clear();
-  ground.rect(0, 0, view.width, view.height).fill({ color: scale === "firebreak" ? FIELD_COLORS.night : view.palette.ground });
+type Box = { x: number; y: number; w: number; h: number };
 
+function valleyBox(view: Frame, columns: number, rows: number): Box {
   const margin = Math.max(18, Math.min(view.width, view.height) * 0.06);
   const availW = Math.max(1, view.width - margin * 2);
   const availH = Math.max(1, view.height - margin * 2);
   const aspect = columns / Math.max(1, rows);
-  let drawW = availW;
-  let drawH = drawW / aspect;
-  if (drawH > availH) {
-    drawH = availH;
-    drawW = drawH * aspect;
+  let w = availW;
+  let h = w / aspect;
+  if (h > availH) {
+    h = availH;
+    w = h * aspect;
   }
-  const x = (view.width - drawW) / 2;
-  const y = (view.height - drawH) / 2;
-  sprite.position.set(x, y);
-  sprite.width = drawW;
-  sprite.height = drawH;
+  return { x: (view.width - w) / 2, y: (view.height - h) / 2, w, h };
+}
 
+function strokeValley(frame: Graphics, ground: Graphics, view: Frame, box: Box, scale: FieldScale): void {
+  ground.clear();
+  ground.rect(0, 0, view.width, view.height).fill({ color: scale === "firebreak" ? FIELD_COLORS.night : view.palette.ground });
   frame.clear();
-  frame.roundRect(x - 8, y - 8, drawW + 16, drawH + 16, 18).stroke({ width: 2, color: view.palette.accent, alpha: 0.75 });
+  frame.roundRect(box.x - 8, box.y - 8, box.w + 16, box.h + 16, 18).stroke({ width: 2, color: view.palette.accent, alpha: 0.75 });
+}
+
+function drawValley(g: Graphics, grid: number[][], box: Box): void {
+  g.clear();
+  const rows = grid.length;
+  const columns = grid[0]?.length ?? 1;
+  const cw = box.w / columns;
+  const ch = box.h / rows;
+  const size = Math.min(cw, ch);
+  for (let row = 0; row < rows; row++) {
+    const cells = grid[row] ?? [];
+    for (let col = 0; col < columns; col++) {
+      const value = cells[col] ?? 0;
+      const x = box.x + col * cw + cw / 2;
+      const y = box.y + row * ch + ch / 2;
+      if (close(value, 1)) flame(g, x, y, size);
+      else if (close(value, 0.35)) pine(g, x, y, size);
+      else if (close(value, 0.12)) ash(g, x, y, size);
+    }
+  }
+}
+
+function close(value: number, level: number): boolean {
+  return Math.abs(value - level) <= 1e-9;
+}
+
+function pine(g: Graphics, x: number, y: number, size: number): void {
+  const h = size * 0.86;
+  const w = size * 0.34;
+  g.poly([x, y - h * 0.48, x + w, y + h * 0.28, x - w, y + h * 0.28]).fill({ color: FIELD_COLORS.moss });
+  g.rect(x - size * 0.05, y + h * 0.22, size * 0.1, size * 0.16).fill({ color: 0x241910 });
+}
+
+function flame(g: Graphics, x: number, y: number, size: number): void {
+  g.poly([
+    x, y - size * 0.42,
+    x + size * 0.2, y + size * 0.08,
+    x, y - size * 0.02,
+    x - size * 0.2, y + size * 0.08,
+  ]).fill({ color: FIELD_COLORS.ember });
+  g.circle(x, y - size * 0.08, size * 0.06).fill({ color: 0xf6e2a8 });
+}
+
+function ash(g: Graphics, x: number, y: number, size: number): void {
+  g.circle(x, y + size * 0.08, size * 0.1).fill({ color: FIELD_COLORS.ash });
 }
 
 function paintGrid(grid: number[][], scale: FieldScale): Texture {

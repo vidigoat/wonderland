@@ -153,7 +153,7 @@ async function liveIllustration(spec: WorldSpec, artDir: string): Promise<Illust
     await writeFile(path.join(folder, `${entity.id}.png`), encodeRgbaPng(sprite));
     written[entity.id] = `/art/${spec.id}/${entity.id}.png`;
   }
-  if (written.citizen) written["citizen-queue"] = written.citizen;
+  if (spec.id === "rumour-town" && written.citizen) written["citizen-queue"] = written.citizen;
 
   return {
     source: "live",

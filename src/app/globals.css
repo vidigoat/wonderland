@@ -840,12 +840,17 @@ a {
   max-height: 22%;
 }
 
+.play[data-phase="receipt"] .play-body {
+  grid-template-columns: minmax(220px, 0.72fr) minmax(480px, 1.4fr);
+}
+
 .play[data-phase="receipt"] .ada {
-  max-height: 30%;
+  max-height: 18%;
 }
 
 .play[data-phase="receipt"] .receipt canvas {
-  max-height: min(42vh, 350px);
+  width: min(100%, 720px);
+  max-height: none;
 }
 
 .legend {

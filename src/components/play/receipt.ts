@@ -200,7 +200,7 @@ export function paintReceipt(
   ctx.font = `italic 28px ${displayFont}`;
   ctx.fillStyle = palette.ink;
   ctx.fillText(copy.afterKind, width / 2 + 20, wordsY);
-  ctx.font = `italic 26px ${displayFont}`;
+  ctx.font = `italic 30px ${displayFont}`;
   if (model.beforeWords) wrap(ctx, model.beforeWords, 92, wordsY, width / 2 - 150, 32, 2);
   if (model.afterWords) wrap(ctx, model.afterWords, width / 2 + 20, wordsY + 40, width / 2 - 150, 32, 2);
 

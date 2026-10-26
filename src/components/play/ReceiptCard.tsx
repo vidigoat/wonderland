@@ -66,13 +66,13 @@ export function ReceiptCard({ model, worldId }: { model: ReceiptModel; worldId: 
 
   return (
     <figure className="receipt">
+      <canvas ref={ref} width={1280} height={1680} role="img" aria-label={summary} />
       <figcaption className="receipt-caption">
         <button type="button" className="press" onClick={() => ref.current && downloadCanvas(ref.current, `${worldId}-receipt.png`)}>
           Keep this card
         </button>
-        <p>{summary}</p>
+        <p className="sr">{summary}</p>
       </figcaption>
-      <canvas ref={ref} width={1280} height={1680} role="img" aria-label={summary} />
     </figure>
   );
 }

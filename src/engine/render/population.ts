@@ -52,7 +52,8 @@ export function createPopulationScene(): Scene {
   const bubbles = new Container();
   figures.sortableChildren = true;
   bank.view.visible = false;
-  root.addChild(backdrop, painting.view, bank.view, shutters, figures, bubbles);
+  figures.addChild(bank.view, shutters);
+  root.addChild(backdrop, painting.view, figures, bubbles);
 
   const nodes = new Map<string, Node>();
   let backdropKey = "";
@@ -168,9 +169,12 @@ function placeBank(bank: Figure, shutters: Graphics, frame: Frame, figureScale: 
   const half = (BANK_FIGURE * scale) / 2;
   const x = frame.width * 0.5;
   const y = Math.max(half * 0.72, frame.height * 0.58 - half);
+  const feet = y + half;
   bank.view.visible = true;
   bank.view.scale.set(scale);
   bank.view.position.set(x, y);
+  bank.view.zIndex = feet;
+  shutters.zIndex = feet + 1;
   bank.show(frame.worldId, "bank", 0xffffff, false);
   const shut = frame.view?.kind === "population" && frame.view.doors === "shut";
   paintDoors(shutters, x, y + 22 * scale, 15 * scale, scale, shut);

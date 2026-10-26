@@ -10,6 +10,9 @@ export type ReceiptModel = {
   elapsedMs: number | null;
   /** Witness lines the stage already said. Never a mechanism. */
   seen?: string | null;
+  /** What the player themselves wrote beside each mark. */
+  beforeWords?: string | null;
+  afterWords?: string | null;
 };
 
 export type ReceiptPalette = {
@@ -193,21 +196,26 @@ export function paintReceipt(
   ctx.fillStyle = model.after ? palette.accent : palette.ink;
   ctx.fillText(copy.after, width / 2 + 20, columnY + (tight ? 78 : 100));
 
-  ctx.font = `italic 32px ${displayFont}`;
+  const wordsY = columnY + (tight ? 124 : 156);
+  ctx.font = `italic 28px ${displayFont}`;
   ctx.fillStyle = palette.ink;
-  ctx.fillText(copy.afterKind, width / 2 + 20, columnY + (tight ? 128 : 156));
+  ctx.fillText(copy.afterKind, width / 2 + 20, wordsY);
+  ctx.font = `italic 26px ${displayFont}`;
+  if (model.beforeWords) wrap(ctx, model.beforeWords, 92, wordsY, width / 2 - 150, 32, 2);
+  if (model.afterWords) wrap(ctx, model.afterWords, width / 2 + 20, wordsY + 40, width / 2 - 150, 32, 2);
 
+  const timeLabelY = wordsY + (model.beforeWords || model.afterWords ? 108 : 70);
   ctx.font = `500 26px ${uiFont}`;
   tracking.letterSpacing = "4px";
   ctx.fillStyle = palette.accent;
-  ctx.fillText("TIME UNTIL IT HELD", 92, columnY + (tight ? 210 : 280));
+  ctx.fillText("TIME UNTIL IT HELD", 92, timeLabelY);
   tracking.letterSpacing = "0px";
   ctx.font = `560 ${tight ? 72 : 92}px ${displayFont}`;
   ctx.fillStyle = palette.ink;
-  ctx.fillText(copy.elapsed, 92, columnY + (tight ? 292 : 390));
+  ctx.fillText(copy.elapsed, 92, timeLabelY + (tight ? 78 : 100));
 
   ctx.font = `italic 34px ${displayFont}`;
-  const taglineY = columnY + (tight ? 360 : 480);
+  const taglineY = timeLabelY + (tight ? 150 : 190);
   wrap(ctx, model.tagline, 92, taglineY, width - 184, tight ? 42 : 46, 2);
 
   const seenY = taglineY + (tight ? 110 : 180);

@@ -37,15 +37,15 @@ function downloadCanvas(canvas: HTMLCanvasElement, filename: string) {
 export function ReceiptCard({ model, worldId }: { model: ReceiptModel; worldId: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const copy = receiptCopy(model);
-  const { title, tagline, concept, before, after, afterKind, elapsedMs, seen } = model;
-  const summary = `${title}. First prediction ${copy.before}. ${copy.afterKind} ${copy.after}. Time ${copy.elapsed}.${seen ? ` You saw: ${seen}` : ""}`;
+  const { title, tagline, concept, before, after, afterKind, elapsedMs, seen, beforeWords, afterWords } = model;
+  const summary = `${title}. First prediction ${copy.before}${beforeWords ? `: ${beforeWords}` : ""}. ${copy.afterKind} ${copy.after}${afterWords ? `: ${afterWords}` : ""}. Time ${copy.elapsed}.${seen ? ` You saw: ${seen}` : ""}`;
 
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const current = { title, tagline, concept, before, after, afterKind, elapsedMs, seen };
+    const current = { title, tagline, concept, before, after, afterKind, elapsedMs, seen, beforeWords, afterWords };
     let cancel = false;
     const draw = (art: ReceiptPicture | null) => {
       if (cancel) return;
@@ -62,7 +62,7 @@ export function ReceiptCard({ model, worldId }: { model: ReceiptModel; worldId: 
     return () => {
       cancel = true;
     };
-  }, [worldId, title, tagline, concept, before, after, afterKind, elapsedMs, seen]);
+  }, [worldId, title, tagline, concept, before, after, afterKind, elapsedMs, seen, beforeWords, afterWords]);
 
   return (
     <figure className="receipt">

@@ -33,9 +33,10 @@ describe("phase machine", () => {
     expect(predict.startedAtMs).toBe(1000);
     expect(knobsLocked(predict)).toBe(true);
     expect(commitFirstPrediction(intro, true)).toEqual(intro);
-    const experiment = commitFirstPrediction(predict, false);
+    const experiment = commitFirstPrediction(predict, false, "Choke — the spell breaks");
     expect(experiment.phase).toBe("experiment");
     expect(experiment.beforeCorrect).toBe(false);
+    expect(experiment.beforeWords).toBe("Choke — the spell breaks");
     expect(experiment.knobsUnlocked).toBe(true);
     expect(knobsLocked(experiment)).toBe(false);
   });
@@ -57,14 +58,17 @@ describe("phase machine", () => {
     expect(asking.phase).toBe("transfer");
     expect(asking.askingPrediction).toBe(1);
     expect(asking.afterCorrect).toBeNull();
-    const receipt = commitSecondPrediction(asking, true);
+    const receipt = commitSecondPrediction(asking, true, "No — your words stay words");
     expect(receipt.phase).toBe("receipt");
     expect(receipt.afterCorrect).toBe(true);
+    expect(receipt.afterWords).toBe("No — your words stay words");
     expect(receipt.transferCorrect).toBe(false);
+    expect(asking.afterWords).toBeNull();
 
-    const onlyTransfer = commitTransfer(transfer, true, 1);
+    const onlyTransfer = commitTransfer(transfer, true, 1, "They are falling together.");
     expect(onlyTransfer.phase).toBe("receipt");
     expect(onlyTransfer.afterCorrect).toBe(true);
+    expect(onlyTransfer.afterWords).toBe("They are falling together.");
   });
 
   it("names the phases in play order", () => {

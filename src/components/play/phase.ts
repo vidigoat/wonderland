@@ -36,6 +36,9 @@ export type PlaySnapshot = {
   askingPrediction: 0 | 1 | null;
   startedAtMs: number | null;
   discoveredAtMs: number | null;
+  /** The player's own words. Never an answer key. */
+  beforeWords: string | null;
+  afterWords: string | null;
 };
 
 export function initialPlay(): PlaySnapshot {
@@ -48,6 +51,8 @@ export function initialPlay(): PlaySnapshot {
     askingPrediction: null,
     startedAtMs: null,
     discoveredAtMs: null,
+    beforeWords: null,
+    afterWords: null,
   };
 }
 
@@ -56,11 +61,13 @@ export function leaveIntro(state: PlaySnapshot, nowMs: number): PlaySnapshot {
   return { ...state, phase: "predict", askingPrediction: 0, startedAtMs: nowMs };
 }
 
-export function commitFirstPrediction(state: PlaySnapshot, correct: boolean): PlaySnapshot {
+export function commitFirstPrediction(state: PlaySnapshot, correct: boolean, words = ""): PlaySnapshot {
   if (state.phase !== "predict" || state.askingPrediction !== 0) return state;
+  const said = words.trim();
   return {
     ...state,
     beforeCorrect: correct,
+    beforeWords: said || null,
     knobsUnlocked: true,
     phase: "experiment",
     askingPrediction: null,
@@ -91,18 +98,21 @@ export function applyVerdict(state: PlaySnapshot, verdict: JudgeVerdict, nowMs: 
   return { ...state, phase: "loop" };
 }
 
-export function commitTransfer(state: PlaySnapshot, correct: boolean, predictionCount: number): PlaySnapshot {
+export function commitTransfer(state: PlaySnapshot, correct: boolean, predictionCount: number, words = ""): PlaySnapshot {
   if (state.phase !== "transfer" || state.askingPrediction !== null) return state;
   const next: PlaySnapshot = { ...state, transferCorrect: correct };
   if (predictionCount > 1) return { ...next, askingPrediction: 1 };
-  return { ...next, afterCorrect: correct, phase: "receipt" };
+  const said = words.trim();
+  return { ...next, afterCorrect: correct, afterWords: said || state.afterWords, phase: "receipt" };
 }
 
-export function commitSecondPrediction(state: PlaySnapshot, correct: boolean): PlaySnapshot {
+export function commitSecondPrediction(state: PlaySnapshot, correct: boolean, words = ""): PlaySnapshot {
   if (state.phase !== "transfer" || state.askingPrediction !== 1) return state;
+  const said = words.trim();
   return {
     ...state,
     afterCorrect: correct,
+    afterWords: said || null,
     askingPrediction: null,
     phase: "receipt",
   };

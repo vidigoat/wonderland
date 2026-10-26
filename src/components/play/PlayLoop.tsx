@@ -510,7 +510,9 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
         setGradeError("The grade did not come back.");
         return;
       }
-      setPlay((state) => (which === "first" ? commitFirstPrediction(state, correct) : commitSecondPrediction(state, correct)));
+      const prediction = spec.predictions.find((item) => item.id === predictionId);
+      const words = typeof choice === "number" ? (prediction?.options?.[choice] ?? "") : choice;
+      setPlay((state) => (which === "first" ? commitFirstPrediction(state, correct, words) : commitSecondPrediction(state, correct, words)));
       setSelected(null);
       setFree("");
     } catch (err) {
@@ -539,7 +541,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
         setGradeError("The grade did not come back.");
         return;
       }
-      setPlay((state) => commitTransfer(state, correct, spec.predictions.length));
+      setPlay((state) => commitTransfer(state, correct, spec.predictions.length, statement));
       setTransferChoice(null);
       setTransferText("");
     } catch (err) {
@@ -935,6 +937,8 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
                   afterKind: spec.predictions.length > 1 ? "prediction" : "transfer",
                   elapsedMs: discoveryElapsed(play),
                   seen: seenOnCard(seen),
+                  beforeWords: play.beforeWords,
+                  afterWords: play.afterWords,
                 }}
               />
             </section>

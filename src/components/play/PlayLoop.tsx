@@ -187,7 +187,9 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     paramsRef.current = next;
     setParams(next);
     let cancel = false;
-    void new WorldSession(rules, next, seed).start().then((session) => {
+    void new WorldSession(rules, next, seed).start().then(async (session) => {
+      if (cancel) return;
+      if (spec.archetype === "bodies") await session.tick(runSteps("bodies"));
       if (cancel) return;
       sessionRef.current = session;
       birthRef.current = { ...next };

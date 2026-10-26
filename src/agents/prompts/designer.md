@@ -23,5 +23,4 @@ Playability lint (the engine sends the world back if this fails):
 
 Return only the WorldSpec JSON for the schema you were given. Do not wrap it in markdown.
 If the checker or the playability lint returns failures, you get them back as repair notes. Fix the rules
-(not the checks) unless a check is genuinely wrong, in which case say why inside the spec's own fields only
-by correcting the rules. The player-facing copy must still hide the law.
+(not the checks) unless a check is genuinely wrong. Player-facing copy must still hide the law.

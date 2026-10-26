@@ -1,4 +1,6 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { rm } from "node:fs/promises";
+import path from "node:path";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
@@ -85,6 +87,11 @@ describe("generateWorld", () => {
   beforeEach(() => {
     think.mockReset();
     delete process.env.MODEL_API_KEY;
+  });
+
+  afterEach(async () => {
+    await rm(path.join(process.cwd(), "data", "worlds", "tiny-live.json"), { force: true });
+    await rm(path.join(process.cwd(), "public", "art", "tiny-live"), { recursive: true, force: true });
   });
 
   it("does not call the model in sample mode", async () => {

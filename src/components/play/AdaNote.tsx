@@ -42,8 +42,6 @@ export function AdaNote({
           </button>
         ) : null}
       </header>
-      {seedNote ? <p className="aside">{seedNote}</p> : null}
-      <SampleNote notice={notice} />
       {status === "wiring" ? <p className="wiring">{ADA_WIRING}</p> : null}
       {status === "quiet" ? <p className="aside">She is in the room, a step behind.</p> : null}
       <ol className="ada-notes">
@@ -67,6 +65,8 @@ export function AdaNote({
           ))}
         </p>
       ) : null}
+      {seedNote ? <p className="aside">{seedNote}</p> : null}
+      <SampleNote notice={notice} />
     </section>
   );
 }

@@ -795,9 +795,11 @@ a {
 }
 
 .notebook {
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   min-height: 0;
-  padding: 1.15rem 1.2rem 2.4rem 2.15rem;
+  padding: 0;
   background-color: var(--paper, #f7f1e4);
   color: var(--notebook-ink, #14110e);
   background-image: linear-gradient(
@@ -807,6 +809,13 @@ a {
     var(--margin, rgba(110, 29, 36, 0.5)) 1.22rem,
     transparent 1.22rem
   );
+}
+
+.notebook-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 1.15rem 1.2rem 1rem 2.15rem;
 }
 
 .voice {
@@ -1024,9 +1033,13 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .ada {
-  margin-top: 1.4rem;
-  padding-top: 0.8rem;
+  flex: none;
+  max-height: 38%;
+  overflow: auto;
+  margin: 0;
+  padding: 0.75rem 1.2rem 0.95rem 2.15rem;
   border-top: 1px solid color-mix(in srgb, var(--notebook-ink) 16%, transparent);
+  background: color-mix(in srgb, var(--paper, #f7f1e4) 92%, var(--notebook-ink, #14110e));
 }
 
 .ada-head {
@@ -1507,7 +1520,16 @@ input[type="range"]::-moz-range-thumb {
   }
 
   .notebook {
+    display: block;
     overflow: visible;
+  }
+
+  .notebook-scroll {
+    overflow: visible;
+  }
+
+  .ada {
+    max-height: none;
   }
 
   .play-bar h1 {

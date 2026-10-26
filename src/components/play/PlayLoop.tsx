@@ -572,6 +572,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
           {witness ? <p className="witness">{witness}</p> : null}
         </section>
         <aside className="notebook">
+          <div className="notebook-scroll">
           {rulesMissing ? <p className="slip">This world’s rules are not on the shelf yet.</p> : null}
           <SampleNote notice={townNote} />
           {seedError ? (
@@ -810,6 +811,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
             />
           ) : null}
           {showReadings ? <Readings spec={spec} obs={obs} /> : null}
+          </div>
           <AdaNote
             spec={spec}
             status={adaStatus}

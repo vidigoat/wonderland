@@ -1,0 +1,5 @@
+---
+description: Wonderland house rules
+alwaysApply: true
+---
+Read AGENTS.md and plan.md before any change. Own only your workstream's files. Keep `pnpm check` green. Never expose `science` or `answerKey` to the client (use `toPublic`). Seeded rng only. Meta models only, via src/lib/ai.

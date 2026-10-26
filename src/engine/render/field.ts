@@ -1,5 +1,5 @@
 import { Container, Graphics, Sprite, Texture, BufferImageSource } from "pixi.js";
-import { FIELD_COLORS, fieldColor, fieldScale, phaseOffset, type FieldScale } from "./helpers";
+import { FIELD_COLORS, clearedStrip, fieldColor, fieldScale, phaseOffset, type FieldScale } from "./helpers";
 import type { Frame, Scene } from "./scene";
 import { createBackdrop } from "./backdrop";
 
@@ -90,6 +90,15 @@ function drawValley(g: Graphics, grid: number[][], box: Box): void {
   const cw = box.w / columns;
   const ch = box.h / rows;
   const size = Math.min(cw, ch);
+  const strip = clearedStrip(grid);
+  if (strip) {
+    const x = box.x + strip.start * cw;
+    const w = (strip.end - strip.start) * cw;
+    const edge = Math.max(1.5, cw * 0.12);
+    g.rect(x, box.y, w, box.h).fill({ color: 0xc6b48a });
+    g.rect(x, box.y, edge, box.h).fill({ color: 0x8a7350 });
+    g.rect(x + w - edge, box.y, edge, box.h).fill({ color: 0x8a7350 });
+  }
   for (let row = 0; row < rows; row++) {
     const cells = grid[row] ?? [];
     for (let col = 0; col < columns; col++) {

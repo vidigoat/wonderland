@@ -67,6 +67,32 @@ export function townFoot(y: number): number {
   return 0.62 + clamp01(y) * 0.34;
 }
 
+/**
+ * A cleared lane: two or more neighbouring columns with nothing in them, top to bottom.
+ * One empty column is a gap in the planting. A lane is the strip you can walk through.
+ */
+export function clearedStrip(grid: number[][]): { start: number; end: number } | null {
+  const columns = grid[0]?.length ?? 0;
+  const rows = grid.length;
+  if (rows === 0 || columns === 0) return null;
+  let run = -1;
+  let best: { start: number; end: number } | null = null;
+  for (let x = 0; x <= columns; x++) {
+    const open =
+      x < columns &&
+      grid.every((row) => {
+        const cell = row[x];
+        return typeof cell !== "number" || !Number.isFinite(cell) || cell <= 0.01;
+      });
+    if (open && run < 0) run = x;
+    if (!open && run >= 0) {
+      if (x - run >= 2 && (best == null || x - run > best.end - best.start)) best = { start: run, end: x };
+      run = -1;
+    }
+  }
+  return best;
+}
+
 export function smoothstep(value: number): number {
   const t = clamp01(value);
   return t * t * (3 - 2 * t);

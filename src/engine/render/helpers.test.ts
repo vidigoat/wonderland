@@ -10,6 +10,7 @@ import {
   smoothstep,
   launchPreview,
   onSurface,
+  clearedStrip,
   townFoot,
   trailGhostPoints,
 } from "./helpers";
@@ -239,5 +240,15 @@ describe("helpers stay deterministic", () => {
     expect(townFoot(-2)).toBeCloseTo(0.62);
     expect(townFoot(3)).toBeCloseTo(0.96);
     expect(townFoot(0)).toBeGreaterThan(0.58);
+  });
+
+  it("finds a cleared lane and ignores a single empty column", () => {
+    const row = (gap: number[]) => Array.from({ length: 8 }, (_, x) => (gap.includes(x) ? 0 : 0.35));
+    const lane = Array.from({ length: 4 }, () => row([3, 4, 5]));
+    expect(clearedStrip(lane)).toEqual({ start: 3, end: 6 });
+    const hole = Array.from({ length: 4 }, () => row([2]));
+    expect(clearedStrip(hole)).toBeNull();
+    expect(clearedStrip([[0.35, 0.35], [0, 0.35]])).toBeNull();
+    expect(clearedStrip([])).toBeNull();
   });
 });

@@ -8,6 +8,22 @@ export const PHASE_ORDER = ["intro", "predict", "experiment", "hypothesise", "lo
 
 export type Phase = (typeof PHASE_ORDER)[number];
 
+/** Six stations. The warmer/colder loop stays on Say. */
+export const TRAIL = [
+  { phase: "intro", label: "Mystery" },
+  { phase: "predict", label: "Guess" },
+  { phase: "experiment", label: "Try" },
+  { phase: "hypothesise", label: "Say" },
+  { phase: "transfer", label: "Prove" },
+  { phase: "receipt", label: "Card" },
+] as const;
+
+export function phaseMark(phase: Phase): number {
+  if (phase === "loop") return 3;
+  const index = TRAIL.findIndex((step) => step.phase === phase);
+  return index < 0 ? 0 : index;
+}
+
 export type JudgeVerdict = "discovered" | "warmer" | "colder";
 
 export type PlaySnapshot = {

@@ -8,6 +8,7 @@ import type { PublicWorldSpec } from "@/engine/spec";
 import { asWorldView, type WorldView } from "@/engine/view";
 import { builtinRules } from "@/worlds/builtins";
 import { AdaNote, type AdaEntry } from "./AdaNote";
+import { PhaseTrail } from "./PhaseTrail";
 import { Instruments } from "./Instruments";
 import { Readings } from "./Readings";
 import { ReceiptCard } from "./ReceiptCard";
@@ -552,6 +553,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
         <h1>{spec.title}</h1>
         <Link href="/gallery">The shelf</Link>
       </header>
+      <PhaseTrail phase={play.phase} />
       <div className="play-body">
         <section className="stage-pane" aria-label={spec.title}>
           <StageSlot view={view} archetype={spec.archetype} worldId={spec.id} artStyle={spec.art.style} playing={playing} params={params} />

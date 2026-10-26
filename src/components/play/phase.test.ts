@@ -14,7 +14,9 @@ import {
   knobsLocked,
   leaveIntro,
   PHASE_ORDER,
+  phaseMark,
   toHypothesise,
+  TRAIL,
 } from "./phase";
 import { receiptCopy } from "./receipt";
 import { freshStart, runDuration, runSteps } from "./readings";
@@ -67,6 +69,17 @@ describe("phase machine", () => {
 
   it("names the phases in play order", () => {
     expect(PHASE_ORDER).toEqual(["intro", "predict", "experiment", "hypothesise", "loop", "transfer", "receipt"]);
+  });
+
+  it("maps the loop onto Say and walks Mystery through Card", () => {
+    expect(TRAIL.map((step) => step.label)).toEqual(["Mystery", "Guess", "Try", "Say", "Prove", "Card"]);
+    expect(phaseMark("intro")).toBe(0);
+    expect(phaseMark("predict")).toBe(1);
+    expect(phaseMark("experiment")).toBe(2);
+    expect(phaseMark("hypothesise")).toBe(3);
+    expect(phaseMark("loop")).toBe(3);
+    expect(phaseMark("transfer")).toBe(4);
+    expect(phaseMark("receipt")).toBe(5);
   });
 
   it("formats elapsed time from a duration, not a clock", () => {

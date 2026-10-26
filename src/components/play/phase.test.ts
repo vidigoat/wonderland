@@ -19,7 +19,7 @@ import {
   TRAIL,
 } from "./phase";
 import { receiptCopy } from "./receipt";
-import { freshStart, raceRows, runDuration, runSteps } from "./readings";
+import { freshStart, raceRows, runDuration, runSteps, speakTool } from "./readings";
 import { drainSse, heroHref, toMontageItem } from "./sse";
 import { encodeWav } from "./wav";
 
@@ -96,6 +96,15 @@ describe("phase machine", () => {
     expect(freshStart("rumour-town", "population", { rumourSeeds: 1, reserveRatio: 0.1 }, { rumourSeeds: 1, reserveRatio: 0.1 })).toBe(false);
     expect(freshStart("rumour-town", "population", { rumourSeeds: 1 }, { rumourSeeds: 6 })).toBe(true);
     expect(freshStart("peppered-forest", "population", { startDarkness: 0.2, barkDarkness: 0.2 }, { startDarkness: 0.2, barkDarkness: 0.9 })).toBe(false);
+  });
+});
+
+describe("Ada's words", () => {
+  it("names the instrument instead of the knob id", () => {
+    expect(speakTool([{ id: "barkDarkness", label: "Soot on the bark" }, { id: "birds", label: "Birds present" }], "set knob barkDarkness → 1")).toBe(
+      "set knob Soot on the bark → 1",
+    );
+    expect(speakTool([{ id: "name", label: "Name on your scroll" }], "set knob name → visitor")).toBe("set knob Name on your scroll → visitor");
   });
 });
 

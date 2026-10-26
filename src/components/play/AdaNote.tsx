@@ -3,7 +3,7 @@
 import type { Observation, Params } from "@/engine/rules";
 import type { PublicWorldSpec } from "@/engine/spec";
 import { ADA_WIRING } from "./http";
-import { describeParams, raceRows } from "./readings";
+import { describeParams, raceRows, speakTool } from "./readings";
 import { SampleNote } from "./Scenes";
 
 export type AdaEntry = {
@@ -75,7 +75,7 @@ export function AdaNote({
           <li key={`${entry.tool}-${index}`}>
             <p className="thought">{entry.thought}</p>
             <p className="tool-line">
-              <span>{entry.tool.replaceAll("_", " ")}</span>
+              <span>{speakTool(spec.knobs, entry.tool).replaceAll("_", " ")}</span>
               {entry.reading ? <span>{entry.reading}</span> : null}
             </p>
           </li>

@@ -69,6 +69,16 @@ export function summariseObservation(spec: PublicWorldSpec, obs: Record<string, 
   return parts.length ? parts.join(" · ") : null;
 }
 
+/** Say a knob by its label. Longer ids are replaced first so a short id cannot eat a longer one. */
+export function speakTool(knobs: { id: string; label: string }[], tool: string): string {
+  const ordered = [...knobs].sort((a, b) => b.id.length - a.id.length);
+  let spoken = tool;
+  for (const knob of ordered) {
+    if (knob.id) spoken = spoken.replaceAll(knob.id, knob.label);
+  }
+  return spoken;
+}
+
 export function describeParams(spec: PublicWorldSpec, params: Params): { id: string; label: string; value: string }[] {
   return spec.knobs
     .filter((knob) => knob.id in params)

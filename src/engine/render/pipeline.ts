@@ -80,7 +80,7 @@ export function createPipelineScene(): Scene {
     traveler.position.set(at.x, at.y + bob);
     traveler.rotation = frame.reducedMotion ? 0 : at.angle * 0.18;
     const unit = Math.min(frame.width, frame.height);
-    traveler.scale.set(Math.max(1.15, Math.min(1.85, unit / 480)));
+    traveler.scale.set(Math.max(1.25, Math.min(2.15, unit / 420)));
     painting.show(frame.worldId, frame.width, frame.height);
     sealLabel.visible = sealed;
   };
@@ -169,16 +169,18 @@ function layStations(
   stages.forEach((stage, index) => {
     const at = points[index];
     if (!at) return;
-    const figure = createFigure();
-    const tint = stationTint(stage, frame.palette);
-    figure.show(frame.worldId, stage, tint);
-    figure.view.position.set(at.x, at.y);
-    figure.view.scale.set(scale);
-    layer.addChild(figure.view);
-    figures.push(figure);
+    // The traveler is the scroll. A second one on the desk would look like a copy.
+    if (!/scroll/i.test(stage)) {
+      const figure = createFigure();
+      const tint = stationTint(stage, frame.palette);
+      figure.show(frame.worldId, stage, tint);
+      figure.view.position.set(at.x, at.y);
+      figure.view.scale.set(open && /vault|door/i.test(stage) ? scale * 1.35 : scale);
+      layer.addChild(figure.view);
+      figures.push(figure);
+    }
 
     if (open && /vault|door/i.test(stage)) {
-      figure.view.scale.set(scale * 1.35);
       const glow = new Graphics();
       glow.ellipse(at.x, at.y, 70 * scale, 48 * scale).fill({ color: frame.palette.glow, alpha: 0.28 });
       glow.ellipse(at.x, at.y, 28 * scale, 34 * scale).fill({ color: frame.palette.glow, alpha: 0.7 });

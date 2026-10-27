@@ -121,6 +121,8 @@ A name of `' OR '1'='1` breaks the quotes and still fails the password clause, s
 
 The receipt card was drawn so tall that Ada covered the lines you had earned. Commit `5a25be4`. It now ends inside the notebook. On the production server a finished Peppered Forest shows the plain discovery, both predictions held, 14 seconds, and the line that the law is not printed. The hidden law is not on the page. `pnpm check` is 239 tests.
 
+That fitted card was still a tall painting shrunk until the words were too small. Commit `c30a50e`. The painting sits on the left and the lines sit beside it. On the production server the card reads Peppered Forest, both predictions held, 14 seconds, and that the law is not printed. Ada sits under the card. The hidden law is not on the page. `pnpm check` is 239 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

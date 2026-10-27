@@ -46,7 +46,7 @@ import {
   type PlaySnapshot,
 } from "./phase";
 import { collectShots } from "./capture";
-import { defaultParams, formatParam, freshStart, pictureAction, raceLine, raceRows, restageParams, runDuration, runSteps, stripMoved, summariseObservation, runVerb } from "./readings";
+import { defaultParams, formatParam, freshStart, pictureAction, raceLine, raceRows, restageParams, runDuration, runSteps, shotSettled, stripMoved, summariseObservation, runVerb } from "./readings";
 import { mintSession, withSeed } from "./session";
 import { startWavCapture, type WavCapture } from "./wav";
 import { armChime, playChime } from "./chime";
@@ -498,7 +498,8 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
             frameIndex += 1;
             if (!cancelRef.current) publish(session);
             busy = false;
-            if (done >= steps || cancelRef.current) resolve();
+            const settled = spec.archetype === "bodies" && shotSettled(session.history[session.history.length - 1]);
+            if (done >= steps || cancelRef.current || settled) resolve();
             else rafRef.current = requestAnimationFrame(frame);
           })
           .catch(reject);

@@ -193,6 +193,11 @@ export function runVerb(worldId: string, archetype: string): string {
   }
 }
 
+/** A cannon shot is over once the ball has met the ground or left. An orbit is still flying. */
+export function shotSettled(obs: { status?: number | string } | null | undefined): boolean {
+  return obs?.status === "landed" || obs?.status === "escaped";
+}
+
 export function runSteps(archetype: string): number {
   if (archetype === "pipeline") return 1;
   // Long enough for a shot above circular speed to leave (escape at 1.4 takes ~550 steps).

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Observable } from "@/engine/spec";
 import { chartLines, chartSeries } from "./chart";
-import { formatHudValue, formatReading, isShareReading, plainUnit } from "./readings";
+import { formatHudValue, formatReading, isShareReading, plainUnit, shotSettled } from "./readings";
 
 describe("reading numbers", () => {
   it("prints a tiny negative as 0, and keeps a real small change", () => {
@@ -19,6 +19,13 @@ describe("reading numbers", () => {
     expect(formatReading(248)).toBe("248");
     expect(formatReading(3.2, "counter")).toBe("3");
     expect(formatReading(40, "counter")).toBe("40");
+  });
+
+  it("ends a cannon shot when the ball has landed or left, and keeps an orbit running", () => {
+    expect(shotSettled({ status: "landed" })).toBe(true);
+    expect(shotSettled({ status: "escaped" })).toBe(true);
+    expect(shotSettled({ status: "flying" })).toBe(false);
+    expect(shotSettled(null)).toBe(false);
   });
 
   it("shows shares as percents and units as words", () => {

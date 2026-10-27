@@ -1336,3 +1336,11 @@
 @media (max-width: 860px) {
   .play-concept { display: none; }
 }
+/* Text readings: label left, value right; a long value (a whole query) wraps inside its column. */
+.play .reading.spell-reading {
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+}
+.play .reading.spell-reading dd {
+  text-align: right;
+}

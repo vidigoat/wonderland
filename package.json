@@ -12,6 +12,7 @@
     "test:watch": "vitest",
     "smoke": "tsx --conditions=react-server --env-file=.env.local scripts/smoke-meta.ts",
     "spike": "tsx --conditions=react-server --env-file=.env.local scripts/spike-generate.ts",
+    "eval": "tsx --conditions=react-server --env-file=.env.local scripts/eval-generate.ts",
     "check": "pnpm typecheck && pnpm lint && pnpm test",
     "paint": "tsx --conditions=react-server --env-file=.env.local scripts/paint-world.mts"
   },

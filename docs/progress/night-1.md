@@ -41,16 +41,16 @@ Judgement: the dune's numbers stay near zero for a short run. The chart shows th
 
 A question that cannot become a world gets one sentence, three questions already on the shelf, and a button to play the closest world. Word overlap picks them. While a build runs, the clock says it usually takes 2–5 minutes, Rumour Town is there to play, and the page says the build continues if the tab is closed. When the world is ready the tab title changes and a chime plays.
 
-## W5 · The study
+## W5 · The study (`51c7aee`)
 
 `/study` assigns each visitor, with `crypto.randomUUID` kept in the URL, to read a hand-written explanation or to play Peppered Forest for six minutes. Both then answer the same four new-situation questions and one confidence mark. Replies go to `data/study/responses.jsonl`. `?test=1` goes to a separate file and is excluded. `/study/results` shows the real count, accuracy, and confidence, and says the group is too small when fewer than 10 people have finished. There are no real replies yet. None were invented.
 
 A finished play writes one anonymous line to `data/plays/plays.jsonl`. Nothing from that file is shown on screen.
 
-## Not done
+## W3 · The eval
 
-W3. The eight fresh questions have not been run. There is no `MODEL_API_KEY` and no ledger, so no fraction, time, or cost is written. The playtester batch of 12 worlds, capped at $0.60, was not run for the same reason.
+`pnpm eval` is `scripts/eval-generate.ts`. Run here on Tue 27 Oct 2026, about 11:05 PM IST, with no key. It wrote `docs/eval-results.md` and exited 0. The eight questions were not sent to a model. No fraction, median time, or median cost. The README was not given a number. Failed questions were not re-run, and nothing new was painted.
 
-## Not started
+## Still blocked on a key
 
-W3, W4, W5. The rest of W2.
+The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

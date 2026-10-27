@@ -45,16 +45,18 @@ function ledgerPath(): string {
   return path.join(base, "ledger.json");
 }
 
-let cache: Ledger | null = null;
+// The dev server and scripts (smoke, spike) share one ledger file, so it is re-read on every check and
+// write — an in-memory copy per process let each overwrite the other's spend and undercount the total.
+// `memory` keeps the cap enforced on a read-only disk (Vercel), where the file cannot be written.
+let memory: Ledger | null = null;
 
 function load(): Ledger {
-  if (cache) return cache;
   try {
-    cache = JSON.parse(fs.readFileSync(/* turbopackIgnore: true */ ledgerPath(), "utf8")) as Ledger;
+    memory = JSON.parse(fs.readFileSync(/* turbopackIgnore: true */ ledgerPath(), "utf8")) as Ledger;
   } catch {
-    cache = { totals: { meta: 0, baseten: 0 }, entries: [] };
+    memory ??= { totals: { meta: 0, baseten: 0 }, entries: [] };
   }
-  return cache;
+  return memory;
 }
 
 function save(ledger: Ledger) {

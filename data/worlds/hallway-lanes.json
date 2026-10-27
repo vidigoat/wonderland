@@ -1,0 +1,292 @@
+{
+  "id": "hallway-lanes",
+  "version": 1,
+  "concept": "Why do crowds walking in opposite directions form lanes?",
+  "title": "Hallway Lanes",
+  "tagline": "Two crowds, one corridor — watch order appear from chaos",
+  "archetype": "bodies",
+  "science": {
+    "hiddenLaw": "Bidirectional pedestrian flow spontaneously self-organizes into lanes because local repulsive avoidance of oncoming individuals creates positive feedback for following same-direction predecessors, minimizing head-on collisions and maximizing throughput without central coordination.",
+    "plainStatement": "When crowds move opposite ways, each person sidesteps oncoming people. Once a few people happen to line up behind someone going the same way, it becomes easier to follow than to keep weaving, so separate lanes emerge on their own and everyone moves faster.",
+    "misconceptions": [
+      "Lanes form because they are deliberately planned, signaled, or directed by a leader — they are top-down rather than emergent from local interactions.",
+      "Lanes require a cultural rule like 'keep right' or a built-in left/right bias; without side bias lanes cannot form.",
+      "Individuals act independently so higher density always means proportionally slower flow, and lanes do not improve efficiency or reduce collisions."
+    ],
+    "sources": [
+      {
+        "title": "Helbing & Molnár (1995) Social force model for pedestrian dynamics. Phys. Rev. E 51, 4282",
+        "url": "https://journals.aps.org/pre/abstract/10.1103/PhysRevE.51.4282"
+      },
+      {
+        "title": "Helbing et al. (2001) Self-organizing pedestrian movement. Environment and Planning B 28, 361-383",
+        "url": "https://journals.sagepub.com/doi/10.1068/b2697"
+      },
+      {
+        "title": "Moussaïd et al. (2011) How simple rules determine pedestrian behavior and crowd disasters. PNAS 108, 6884-6888",
+        "url": "https://www.pnas.org/doi/10.1073/pnas.1016507108"
+      }
+    ]
+  },
+  "story": {
+    "setting": "A busy transit hallway at rush hour. Dozens of commuters stream east and west through the same narrow passage.",
+    "mystery": "Can strangers with no leader sort themselves into smooth, separate lanes?",
+    "goal": "Adjust the crowd and watch how lanes form and flow changes."
+  },
+  "knobs": [
+    {
+      "id": "density",
+      "label": "Crowd density",
+      "kind": "slider",
+      "min": 0.1,
+      "max": 0.9,
+      "step": 0.1,
+      "default": 0.4,
+      "hint": "More people in hallway"
+    },
+    {
+      "id": "counterflowRatio",
+      "label": "Westbound share",
+      "kind": "slider",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.5,
+      "hint": "Fraction walking opposite direction"
+    },
+    {
+      "id": "avoidanceStrength",
+      "label": "Sidestep tendency",
+      "kind": "slider",
+      "min": 0,
+      "max": 1.5,
+      "step": 0.1,
+      "default": 1,
+      "hint": "How strongly people dodge oncoming walkers"
+    },
+    {
+      "id": "sideBias",
+      "label": "Right-side bias",
+      "kind": "slider",
+      "min": -1,
+      "max": 1,
+      "step": 0.2,
+      "default": 0,
+      "hint": "Preference to pass on the right"
+    }
+  ],
+  "observables": [
+    {
+      "id": "laneOrderParameter",
+      "label": "Lane order",
+      "unit": "",
+      "display": "series"
+    },
+    {
+      "id": "headOnCollisionRate",
+      "label": "Head-on encounters",
+      "unit": "per person",
+      "display": "series"
+    },
+    {
+      "id": "avgSpeed",
+      "label": "Average speed",
+      "unit": "",
+      "display": "series"
+    }
+  ],
+  "entities": [
+    {
+      "id": "eastWalker",
+      "label": "Eastbound walker",
+      "artPrompt": "top-down view of person walking east, blue shirt, simple flat icon",
+      "segmentPrompt": "person seen from above walking east"
+    },
+    {
+      "id": "westWalker",
+      "label": "Westbound walker",
+      "artPrompt": "top-down view of person walking west, red shirt, simple flat icon",
+      "segmentPrompt": "person seen from above walking west"
+    }
+  ],
+  "rules": {
+    "kind": "js",
+    "source": "const W=60; const H=20; const K=6;\nexports.init = (params, rng) => {\n  const density = params.density ?? 0.4;\n  const counterflowRatio = params.counterflowRatio ?? 0.5;\n  const N = Math.floor(20 + density * 80);\n  const nWest = Math.round(N * counterflowRatio);\n  const nEast = N - nWest;\n  const agents=[];\n  for(let i=0;i<N;i++){\n    const dir = i < nEast ? 1 : -1;\n    const x = rng.range(0,W);\n    const y = rng.range(0.5, H-0.5);\n    const v0 = 0.9 + rng.range(0,0.4);\n    agents.push({id:i, x, y, dir, vy:0, v0});\n  }\n  // shuffle y to avoid initial correlation\n  for(let i=agents.length-1;i>0;i--){\n    const j = rng.int(0,i);\n    const tmpY = agents[i].y; agents[i].y = agents[j].y; agents[j].y = tmpY;\n    const tmpX = agents[i].x; agents[i].x = agents[j].x; agents[j].x = tmpX;\n  }\n  return {agents, W, H, time:0};\n};\nexports.step = (state, params, rng) => {\n  const A = params.avoidanceStrength ?? 1;\n  const B = params.sideBias ?? 0;\n  const W = state.W, H = state.H;\n  const N = state.agents.length;\n  const newAgents = state.agents.map(a=>({...a}));\n  // compute lateral forces\n  for(let i=0;i<N;i++){\n    const ai = state.agents[i];\n    let Fy = 0;\n    if(ai.y < 2) Fy += (2 - ai.y)*1.4;\n    if(ai.y > H-2) Fy += (H-2 - ai.y)*1.4;\n    for(let j=0;j<N;j++){\n      if(i===j) continue;\n      const aj = state.agents[j];\n      let dx = aj.x - ai.x;\n      if(dx > W/2) dx -= W;\n      if(dx < -W/2) dx += W;\n      const dy = aj.y - ai.y;\n      if(aj.dir !== ai.dir){\n        if(ai.dir*dx > 0 && ai.dir*dx < 8 && Math.abs(dy) < 3){\n          const mag = A * 2.6 * Math.exp(-Math.abs(dx)/2.4) * Math.exp(-Math.abs(dy)/1.0);\n          let dirY;\n          if(Math.abs(dy) > 0.18){\n            dirY = -Math.sign(dy);\n          } else {\n            if(Math.abs(B) > 0.02){\n              dirY = -ai.dir * Math.sign(B);\n            } else {\n              dirY = rng.next() > 0.5 ? 1 : -1;\n            }\n          }\n          Fy += dirY * mag;\n          if(Math.abs(B) > 0.02){\n            Fy += -ai.dir * B * 0.55 * Math.exp(-Math.abs(dx)/3.2);\n          }\n        }\n      } else {\n        if(ai.dir*dx > 0 && ai.dir*dx < 6 && Math.abs(dy) < 2.6){\n          const magFollow = A * 0.95 * Math.exp(-Math.abs(dx)/2.8) * Math.exp(-Math.abs(dy)/1.1);\n          Fy += dy * magFollow * 0.7;\n          if(Math.abs(dy) < 0.85 && Math.abs(dx) < 2.0){\n            const rep = 0.7 * Math.exp(-Math.abs(dy)/0.45);\n            Fy += -Math.sign(dy) * rep * (A>0?1:0);\n            if(Math.abs(dy) < 0.12) Fy += (rng.next()>0.5?0.3:-0.3);\n          }\n        }\n      }\n    }\n    let vy = ai.vy * 0.82 + Fy * 0.19 + (rng.next()-0.5)*0.05;\n    if(vy > 2.2) vy=2.2;\n    if(vy < -2.2) vy=-2.2;\n    newAgents[i].vy = vy;\n  }\n  // update positions\n  for(let i=0;i<N;i++){\n    const ai = state.agents[i];\n    let vy = newAgents[i].vy;\n    let y = ai.y + vy * 0.32;\n    if(y < 0.5){ y=0.5; newAgents[i].vy *= -0.25; }\n    if(y > H-0.5){ y=H-0.5; newAgents[i].vy *= -0.25; }\n    newAgents[i].y = y;\n    // speed reduction if blocked head-on\n    let speedFactor = 1;\n    for(let j=0;j<N;j++){\n      if(i===j) continue;\n      const aj = state.agents[j];\n      if(aj.dir !== ai.dir){\n        let dx = aj.x - ai.x;\n        if(dx > W/2) dx -= W;\n        if(dx < -W/2) dx += W;\n        const dy = aj.y - ai.y;\n        if(ai.dir*dx > 0 && ai.dir*dx < 1.7 && Math.abs(dy) < 0.85){\n          speedFactor = 0.22;\n          break;\n        }\n      }\n    }\n    let x = ai.x + ai.dir * ai.v0 * 0.5 * speedFactor;\n    x = ((x % W) + W) % W;\n    newAgents[i].x = x;\n  }\n  return {agents:newAgents, W, H, time: state.time+1};\n};\nexports.observe = (state, params) => {\n  const Kbins = K;\n  const H = state.H;\n  const W = state.W;\n  const bins = Array(Kbins).fill(0).map(()=>({east:0, west:0}));\n  for(const a of state.agents){\n    let b = Math.floor(a.y / H * Kbins);\n    if(b<0) b=0; if(b>=Kbins) b=Kbins-1;\n    if(a.dir===1) bins[b].east++; else bins[b].west++;\n  }\n  const f = bins.map(b=>{\n    const tot=b.east+b.west;\n    if(tot===0) return 0.5;\n    return b.east/tot;\n  });\n  const mean = f.reduce((s,v)=>s+v,0)/Kbins;\n  const variance = f.reduce((s,v)=>s+(v-mean)*(v-mean),0)/Kbins;\n  const laneOrderParameter = Math.max(0, Math.min(1, variance*4));\n  let count=0;\n  const N=state.agents.length;\n  for(let i=0;i<N;i++){\n    for(let j=i+1;j<N;j++){\n      const ai=state.agents[i], aj=state.agents[j];\n      if(ai.dir===aj.dir) continue;\n      let dx = aj.x - ai.x;\n      if(dx > W/2) dx -= W;\n      if(dx < -W/2) dx += W;\n      const dy = aj.y - ai.y;\n      if(Math.abs(dx) < 2.5 && Math.abs(dy) < 1.0) count++;\n    }\n  }\n  const headOnCollisionRate = count / Math.max(1,N);\n  let sumV=0;\n  for(const a of state.agents) sumV += a.v0;\n  const avgSpeed = sumV / Math.max(1,N) * (1 - headOnCollisionRate*0.6);\n  return {laneOrderParameter, headOnCollisionRate, avgSpeed};\n};\nexports.view = (state, params) => {\n  return {\n    kind: 'bodies',\n    bounds: {x:0, y:0, w: state.W, h: state.H},\n    bodies: state.agents.map(a=>({\n      id: a.id,\n      x: a.x,\n      y: a.y,\n      radius: 0.72,\n      color: a.dir===1 ? '#3b82f6' : '#ef4444'\n    }))\n  };\n};\n"
+  },
+  "predictions": [
+    {
+      "id": "emergent_vs_leader",
+      "prompt": "With no leader and only local dodging, will lanes still appear?",
+      "options": [
+        "Yes, lanes emerge on their own",
+        "No, need a leader to direct",
+        "Lanes appear then quickly collapse"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "density": 0.5,
+        "counterflowRatio": 0.5,
+        "avoidanceStrength": 1,
+        "sideBias": 0
+      }
+    },
+    {
+      "id": "bias_not_needed",
+      "prompt": "If nobody prefers the right side, can lanes still form?",
+      "options": [
+        "Yes, lanes form without any bias",
+        "No, keep-right rule is required",
+        "Only one wide lane forms"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "density": 0.45,
+        "counterflowRatio": 0.5,
+        "avoidanceStrength": 1,
+        "sideBias": 0
+      }
+    },
+    {
+      "id": "lanes_improve_flow",
+      "prompt": "As lanes form, what happens to head-on encounters?",
+      "options": [
+        "Encounters drop and flow improves",
+        "Encounters stay high always",
+        "Speed falls proportionally with density"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "density": 0.6,
+        "counterflowRatio": 0.5,
+        "avoidanceStrength": 1,
+        "sideBias": 0
+      }
+    }
+  ],
+  "transfer": {
+    "setup": "A fleet of warehouse robots shuttles east and west along a narrow aisle, each only programmed to veer slightly to avoid oncoming robots and stay near robots going its way.",
+    "params": {
+      "density": 0.4,
+      "counterflowRatio": 0.5,
+      "avoidanceStrength": 1,
+      "sideBias": 0
+    },
+    "question": "What will the robots do without central control?",
+    "options": [
+      "Form stable east and west lanes",
+      "Jam in the middle forever",
+      "Need a keep-right rule to form lanes"
+    ],
+    "answerKey": 0
+  },
+  "checks": [
+    {
+      "id": "lane_formation_emerges",
+      "description": "With balanced counterflow and local avoidance, lane order rises from random to high, showing spontaneous segregation.",
+      "params": {
+        "density": 0.4,
+        "counterflowRatio": 0.5,
+        "avoidanceStrength": 1,
+        "sideBias": 0
+      },
+      "steps": 8000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "laneOrderParameter",
+        "op": "gt",
+        "value": 0.65
+      }
+    },
+    {
+      "id": "control_no_avoidance_no_lanes",
+      "description": "Control: Remove avoidance (avoidanceStrength=0) -> lane order stays low despite counterflow; effect disappears without cause.",
+      "params": {
+        "density": 0.4,
+        "counterflowRatio": 0.5,
+        "avoidanceStrength": 0,
+        "sideBias": 0
+      },
+      "steps": 8000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "laneOrderParameter",
+        "op": "lt",
+        "value": 0.35
+      }
+    },
+    {
+      "id": "control_unidirectional_no_segregation",
+      "description": "Control: Remove counterflow (counterflowRatio=0) -> no lane signal; unidirectional flow does not segregate.",
+      "params": {
+        "density": 0.4,
+        "counterflowRatio": 0,
+        "avoidanceStrength": 1,
+        "sideBias": 0
+      },
+      "steps": 8000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "laneOrderParameter",
+        "op": "lt",
+        "value": 0.35
+      }
+    },
+    {
+      "id": "lanes_reduce_collisions",
+      "description": "As lanes form, head-on collision rate trends down over time, demonstrating efficiency gain from self-organization.",
+      "params": {
+        "density": 0.4,
+        "counterflowRatio": 0.5,
+        "avoidanceStrength": 1,
+        "sideBias": 0
+      },
+      "steps": 8000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "headOnCollisionRate",
+        "op": "trendDown"
+      }
+    },
+    {
+      "id": "lanes_without_side_bias",
+      "description": "Lanes still form with zero side bias, disproving that a keep-right rule is required; emergence is bias-independent.",
+      "params": {
+        "density": 0.4,
+        "counterflowRatio": 0.5,
+        "avoidanceStrength": 1,
+        "sideBias": 0
+      },
+      "steps": 8000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "laneOrderParameter",
+        "op": "gt",
+        "value": 0.6
+      }
+    }
+  ],
+  "art": {
+    "style": "clean top-down vector, flat colors, minimal hallway, soft shadows",
+    "background": "narrow corridor with light floor, darker walls top and bottom, top-down view"
+  }
+}

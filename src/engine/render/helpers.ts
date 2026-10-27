@@ -278,6 +278,29 @@ export function softenRidge(heights: number[], passes = 8): number[] {
   return current;
 }
 
+export type SpeechBox = { x: number; y: number; w: number; h: number };
+
+/** Stack speech that would sit on top of itself, and leave a bubble that is already clear where it is. */
+export function separateSpeech(boxes: readonly SpeechBox[], stageHeight: number): { x: number; y: number }[] {
+  const placed: SpeechBox[] = [];
+  return boxes.map((box) => {
+    let y = box.y;
+    for (let guard = 0; guard < 8; guard++) {
+      const hit = placed.some((other) => {
+        const overlapX = Math.abs(box.x - other.x) < Math.max(150, (box.w + other.w) / 2 - 4);
+        const overlapY = Math.abs(y - other.y) < Math.max(48, (box.h + other.h) / 2);
+        return overlapX && overlapY;
+      });
+      if (!hit) break;
+      const lifted = y - box.h - 8;
+      y = lifted > 12 ? lifted : box.y + box.h + 8;
+      if (y > stageHeight - 12) y = Math.max(12, box.y - box.h - 8);
+    }
+    placed.push({ ...box, y });
+    return { x: box.x, y };
+  });
+}
+
 export type HeightSilhouette = { heights: number[] };
 
 /**

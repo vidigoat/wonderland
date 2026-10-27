@@ -1,6 +1,6 @@
 import { Container, Graphics, Text } from "pixi.js";
 import type { PopulationAgent } from "@/engine/view";
-import { clamp01, crowdToDraw, landedApart, phaseOffset, populationCrowd, readNumber, smoothstep, spokenIds, townFoot } from "./helpers";
+import { clamp01, crowdToDraw, landedApart, phaseOffset, populationCrowd, readNumber, separateSpeech, smoothstep, spokenIds, townFoot } from "./helpers";
 import { pixelRatio, stageFont } from "./fonts";
 import { barkColor, isGlowSprite, isHeroWorld, populationTint } from "./palette";
 import type { Scene, Frame } from "./scene";
@@ -78,6 +78,7 @@ export function createPopulationScene(): Scene {
     });
 
     const seen = new Set<string>();
+    const heard = new Set<string>();
     const speakers = spokenIds(agents);
     // Painted worlds can hold a hundred creatures: shrink each so the crowd reads as a crowd, not a wall.
     // A phone keeps fewer moths, each large enough to tell pale from dark.
@@ -164,8 +165,25 @@ export function createPopulationScene(): Scene {
         keepsOwnColor ? 0xffffff : populationTint(frame.worldId, node.drawTint, frame.palette, sprite),
         !keepsOwnColor,
       );
-      syncBubble(node, speakers.has(id) ? agent.bubble : null, at.x, at.y + bob, frame, bubbles, id);
+      let line = speakers.has(id) ? agent.bubble : null;
+      const phrase = line?.trim();
+      if (phrase && heard.has(phrase)) line = null;
+      else if (phrase) heard.add(phrase);
+      syncBubble(node, line, at.x, at.y + bob, frame, bubbles, id);
     }
+
+    const talking = drawn.flatMap((agent) => {
+      const node = nodes.get(String(agent.id));
+      const bubble = node?.bubble;
+      if (!node || !bubble) return [];
+      const bounds = bubble.getLocalBounds();
+      return [{ node, box: { x: bubble.position.x, y: bubble.position.y, w: Math.max(bounds.width, 120), h: Math.max(bounds.height, 32) } }];
+    });
+    const spots = separateSpeech(talking.map((speech) => speech.box), frame.height);
+    talking.forEach((speech, index) => {
+      const spot = spots[index];
+      if (spot) speech.node.bubble?.position.set(spot.x, spot.y);
+    });
 
     for (const [id, node] of nodes) {
       if (seen.has(id)) continue;
@@ -318,11 +336,17 @@ function syncBubble(node: Node, bubble: string | null | undefined, x: number, y:
     node.bubbleBelow = below;
     layer.addChild(node.bubble);
   }
-  const lift = (phaseOffset(id) - 0.5) * 28;
+  const lift = (phaseOffset(id) - 0.5) * 64;
   // Keep the whole bubble on the stage: a speaker at the edge still gets every word read.
   const half = node.bubble.width / 2 + 6;
-  const bx = frame.width > half * 2 ? Math.min(frame.width - half, Math.max(half, x)) : x;
-  node.bubble.position.set(bx, (below ? y + 30 : y - 34) + lift);
+  let bx = frame.width > half * 2 ? Math.min(frame.width - half, Math.max(half, x)) : x;
+  let by = (below ? y + 30 : y - 34) + lift;
+  // The bank card covers the top-left of the square. Say the line in the open sky instead.
+  if (frame.worldId === "rumour-town" && bx < frame.width * 0.52) {
+    bx = Math.min(frame.width - half, frame.width * 0.62);
+    by = frame.height * 0.2;
+  }
+  node.bubble.position.set(bx, by);
 }
 
 function makeBubble(text: string, below: boolean, ink: number, parchment: number, accent: number): Container {

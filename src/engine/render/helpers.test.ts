@@ -15,6 +15,7 @@ import {
   phaseOffset,
   populationCrowd,
   resolveShotPath,
+  separateSpeech,
   softenRidge,
   SCROLL_TRIP_MS,
   scrollRest,
@@ -249,6 +250,21 @@ describe("fieldColor", () => {
     expect(fieldScale("other", [0, 0.12, 0.35, 1])).toBe("firebreak");
     expect(fieldScale("other", [0, 1, 0.5])).toBe("continuous");
     expect(fieldScale("other", [0, 1, 0, 1])).toBe("continuous");
+  });
+});
+
+describe("speech bubbles", () => {
+  it("lifts a bubble that sits on another and leaves a distant one", () => {
+    const placed = separateSpeech(
+      [
+        { x: 100, y: 200, w: 120, h: 32 },
+        { x: 108, y: 204, w: 120, h: 32 },
+        { x: 420, y: 200, w: 120, h: 32 },
+      ],
+      500,
+    );
+    expect(Math.abs(placed[0].y - placed[1].y)).toBeGreaterThan(20);
+    expect(placed[2]).toEqual({ x: 420, y: 200 });
   });
 });
 

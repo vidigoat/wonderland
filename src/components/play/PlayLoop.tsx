@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { compileRules, type Observation, type Params, type RulesModule } from "@/engine/rules";
 import { WorldSession } from "@/engine/runtime";
@@ -708,15 +709,18 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   return (
     <div className="play" data-world={spec.id} data-archetype={spec.archetype} data-phase={play.phase} data-margin={suggestion ? "yes" : undefined}>
       <header className="play-bar">
-        <Link href="/" className="wordmark">
+        <Link href="/" className="bw-logo">
+          <span className="bw-logo-mark" aria-hidden="true" />
           Wonderland
         </Link>
         <h1>{spec.title}</h1>
         <span className="play-links">
-          <button type="button" className="quiet" disabled={!ready} onClick={() => void copyWorld()}>
-            {copied ? "Copied" : "Copy this world"}
-          </button>
-          <Link href="/gallery">The shelf</Link>
+          <Button type="button" variant="outline" size="sm" disabled={!ready} onClick={() => void copyWorld()}>
+            {copied ? "Copied" : "Copy link"}
+          </Button>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/gallery">All worlds</Link>
+          </Button>
         </span>
       </header>
       <PhaseTrail phase={play.phase} seen={play.phase === "receipt" ? [] : witness ? seen.filter((line) => line !== witness) : seen} />

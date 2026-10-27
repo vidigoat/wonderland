@@ -559,3 +559,20 @@
 .bw h1, .bw h2, .bw h3 {
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
+.bw-gallery-body {
+  padding-top: clamp(48px, 7vw, 88px);
+  padding-bottom: clamp(72px, 10vw, 120px);
+}
+.bw-gallery-sub {
+  margin-top: clamp(64px, 9vw, 110px);
+}
+/* Play screen top bar shares the landing's mark and buttons. */
+.play-bar .bw-logo {
+  color: #fafafa;
+}
+.play-bar .play-links a, .play-bar .play-links button {
+  border-radius: 8px;
+  padding: 0 10px;
+  color: #d4d4d4;
+  text-decoration: none;
+}

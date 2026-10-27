@@ -537,10 +537,10 @@
 }
 
 /* AI-written worlds have no painting yet: a glowing hint of the world's kind. */
-.wl-world-written .scene-written {
+:is(.wl-world-written, .bw-world-written) .scene-written {
   background-color: #0a0a0a;
 }
-.wl-world-written .scene-written-population {
+:is(.wl-world-written, .bw-world-written) .scene-written-population {
   background-image:
     radial-gradient(circle at 22% 30%, rgba(255, 255, 255, 0.95) 0 2px, rgba(255, 255, 255, 0.25) 3px 9px, transparent 10px),
     radial-gradient(circle at 64% 22%, rgba(255, 255, 255, 0.9) 0 2px, rgba(255, 255, 255, 0.22) 3px 8px, transparent 9px),
@@ -549,18 +549,18 @@
     radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.7) 0 2px, rgba(255, 255, 255, 0.18) 3px 7px, transparent 8px),
     radial-gradient(120% 80% at 50% 0%, #1a1a1a, #0a0a0a 70%);
 }
-.wl-world-written .scene-written-bodies {
+:is(.wl-world-written, .bw-world-written) .scene-written-bodies {
   background-image:
     repeating-radial-gradient(circle at 50% 40%, transparent 0 46px, rgba(255, 255, 255, 0.25) 47px 48px, transparent 49px 94px),
     radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.35), transparent 45%),
     radial-gradient(120% 80% at 50% 0%, #171717, #0a0a0a 70%);
 }
-.wl-world-written .scene-written-field {
+:is(.wl-world-written, .bw-world-written) .scene-written-field {
   background-image:
     radial-gradient(circle at 46% 38%, #fff3c4 0 4%, #f6c453 12%, #e0703a 26%, rgba(120, 40, 60, 0.6) 42%, transparent 62%),
     linear-gradient(160deg, #141414, #0a0a0a);
 }
-.wl-world-written .scene-written span {
+:is(.wl-world-written, .bw-world-written) .scene-written span {
   display: none;
 }
 

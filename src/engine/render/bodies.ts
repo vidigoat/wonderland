@@ -26,7 +26,8 @@ export function createBodiesScene(): Scene {
   const ghost = new Graphics();
   const cannon = new Graphics();
   const ball = new Graphics();
-  root.addChild(sky, painting.view, planet, trail, cannon, ball, ghost);
+  // The ghost sits above the barrel so a short fall is visible. The trail and the ball stay in front once the shot is fired.
+  root.addChild(sky, painting.view, planet, cannon, ghost, trail, ball);
 
   const samples: Point2[] = [];
   let viewRadius = 3.2;

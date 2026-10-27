@@ -53,6 +53,8 @@ A finished play writes one anonymous line to `data/plays/plays.jsonl`. Nothing f
 
 The study pages are ink on the cream page. A first pass had drawn them in white, which disappeared. Checked on the production server: the read arm, the empty results table, and a question with no mechanism ("Why is the sky blue on a clear day?") which offered three shelf questions and Newton's Cannon.
 
+The README test count was still 200. It is 223. `pnpm eval` is listed, and `/study` is described as built with no finished replies yet. A typed question, “Why does SQL injection work?”, on the production server matched The Gatekeeper’s Ledger, 4 of 4 checks, and offered Enter.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

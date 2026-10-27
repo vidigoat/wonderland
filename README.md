@@ -238,11 +238,12 @@ pnpm dev                       # http://localhost:3000
 
 | Command | |
 |---|---|
-| `pnpm check` | Typecheck, lint and the full test suite (200 tests, including every world's science checks). |
+| `pnpm check` | Typecheck, lint and the full test suite (223 tests, including every world's science checks). |
 | `pnpm build && pnpm start` | Production build. |
 | `pnpm paint <id> \| --all` | Paint saved worlds with Muse Image + SAM 3.1. |
 | `pnpm smoke` | One live call to each model. |
 | `pnpm spike` | Generate a batch of worlds from scratch and report how many verify. |
+| `pnpm eval` | Eight fresh questions. Writes `docs/eval-results.md`. With no key it records that it did not run. |
 
 No keys? Everything still runs: the hand-built worlds play fully and every model step is visibly marked as a sample.
 
@@ -250,7 +251,7 @@ No keys? Everything still runs: the hand-built worlds play fully and every model
 
 ```
 src/
-  app/                Next.js 16 App Router: landing, /w/[id] play screen, /gallery, API routes, share images
+  app/                Next.js 16 App Router: landing, /w/[id], /gallery, /study, API routes, share images
   components/
     landing/          TryIt (the playable demo), PaintedWall, Pipeline, WorldThumb
     play/             PlayLoop (the game), AdaNote, ReceiptCard, Landing
@@ -262,7 +263,7 @@ src/
 data/worlds/          Worlds written by Muse Spark Open (verified, saved as JSON)
 public/art/           Every world's Muse Image paintings and SAM cut-outs
 public/brand/         Logo files (SVG)
-scripts/              paint-world, smoke test, generation spike
+scripts/              paint-world, smoke test, generation spike, eight-question eval
 docs/                 Design system, architecture notes, research
 ```
 
@@ -281,7 +282,7 @@ The interface is black, white and [Geist](https://vercel.com/font), so the only 
 - **Classrooms.** A teacher link that collects every student's card, so a class can see who found the law and how.
 - **Faster builds.** Stream the world onto the stage while it's being painted, so the first minute is watchable.
 - **Your own data.** Let a world start from a dataset or a paper, not only a question.
-- **A measured study.** Pre/post questions around a single world, to show the learning gain with numbers.
+- **Run the study with real learners.** `/study` is built: read or play Peppered Forest, then the same four new questions. `/study/results` counts only finished replies. There are none yet.
 
 ---
 

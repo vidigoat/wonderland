@@ -1906,16 +1906,18 @@
   .play[data-world="murmuration-sky"] .hud-big {
     font-size: 15px;
   }
-  /* Stacked cards were covering the hot spot, and the left of the valley where the hares are. */
+  /* Stacked cards were covering the hot spot, the hares, and the red jam. */
   .play[data-world="heat-diffusion-plate"] .stage-stack .hud,
-  .play[data-world="predator-prey-valley"] .stage-stack .hud {
+  .play[data-world="predator-prey-valley"] .stage-stack .hud,
+  .play[data-world="phantom-jam-ring-road"] .stage-stack .hud {
     max-width: calc(100% - 16px);
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4px;
   }
   .play[data-world="heat-diffusion-plate"] .hud-card,
-  .play[data-world="predator-prey-valley"] .hud-card {
+  .play[data-world="predator-prey-valley"] .hud-card,
+  .play[data-world="phantom-jam-ring-road"] .hud-card {
     min-width: 0;
   }
 }

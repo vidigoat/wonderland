@@ -489,6 +489,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     if (cancelRef.current) return;
     sessionRef.current = session;
     publish(session);
+    setWitness(null);
   }
 
   function applyParams(next: Params) {

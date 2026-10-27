@@ -1903,14 +1903,16 @@
   .play[data-world="dune-march"] .hud-big {
     font-size: 15px;
   }
-  /* Four stacked cards were covering the hot spot. Two columns leave the glow in view. */
-  .play[data-world="heat-diffusion-plate"] .stage-stack .hud {
+  /* Stacked cards were covering the hot spot, and the left of the valley where the hares are. */
+  .play[data-world="heat-diffusion-plate"] .stage-stack .hud,
+  .play[data-world="predator-prey-valley"] .stage-stack .hud {
     max-width: calc(100% - 16px);
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4px;
   }
-  .play[data-world="heat-diffusion-plate"] .hud-card {
+  .play[data-world="heat-diffusion-plate"] .hud-card,
+  .play[data-world="predator-prey-valley"] .hud-card {
     min-width: 0;
   }
 }

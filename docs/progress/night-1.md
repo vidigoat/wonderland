@@ -155,6 +155,8 @@ Hiding the queue and keeping half the cash on hand also leaves the landing bank 
 
 The spoken line sat on the scribe's spell, so a name of `' OR '1'='1` hid the sentence that the vault stayed shut, and the open vault hid the entries it gave up. Commit `5016017`. The spell card now sits above that line. On the production server the name-only spell keeps the vault shut and the whole sentence is visible, with the broken quote marked. The same words in both fields open the vault, and the card names the two entries it gave up. The spoken line sits under the card. `pnpm check` is 245 tests.
 
+The vault drew at most 24 coins, so "enough for 32 of 40 savers" was a row of 24. Commit `9432ad3`. There is now one coin for each saver the vault can pay. On the production server, with the cash on hand at 80%, the card says 32 of 40 and shows 32 coins. `pnpm check` is 246 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

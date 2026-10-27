@@ -1,7 +1,14 @@
 # Wonderland — 7-hour build plan for the agent team
 
 > **Read first:** `README.md` → `docs/design.md` → `docs/architecture.md` → this file. Then `AGENTS.md` for house rules.
-> Deadline for the whole hackathon: **Wed Nov 4, 9:00 PM ET** (Thu Nov 5, 6:30 AM IST). This plan covers the first 7-hour push.
+> Deadline for the whole hackathon: **Wed Nov 4, 9:00 PM EST** (Thu Nov 5, 7:30 AM IST; US clocks fall back on Sun Nov 1). This plan covers the first 7-hour push.
+
+## The remaining schedule (set Tue Oct 27)
+| Window | IST | ET | What happens |
+|---|---|---|---|
+| **Build** | now → **Mon Nov 2, 7:30 AM** | → Sun Nov 1, 9:00 PM | New features, the public deploy, anything that changes how the product works. |
+| **Freeze + polish** | Mon Nov 2, 7:30 AM → Wed Nov 4, 7:30 PM | → Wed Nov 4, 9:00 AM | No new features. Bug fixes, copy, README, screenshots, demo video, submission form, repo goes public. |
+| **Submitted** | by **Wed Nov 4, 7:30 PM** | by Wed Nov 4, 9:00 AM | Twelve hours of slack before the real deadline. |
 
 ## The one-sentence product
 Type any "why/how" → a team of Meta-model agents builds a **playable, scientifically verified world** with a **hidden law** → you **discover** it by predicting and experimenting (the AI never tells you) → you **prove** it on a new situation, racing an **AI rival** that runs on Meta open weights.

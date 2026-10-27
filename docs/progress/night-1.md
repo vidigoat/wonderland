@@ -37,9 +37,19 @@ Judgement: the dune's numbers stay near zero for a short run. The chart shows th
 
 `caa7d84`: the build screen shows each painting as it arrives and each cut-out with a short glow, then runs the new world and posts the frames. Sample builds use the pictures already on the shelf. The $0.60 batch over the 12 worlds was not run. This checkout has no `MODEL_API_KEY`.
 
-## W4 · A miss, and the wait
+## W4 · A miss, and the wait (`15daeb4`)
 
 A question that cannot become a world gets one sentence, three questions already on the shelf, and a button to play the closest world. Word overlap picks them. While a build runs, the clock says it usually takes 2–5 minutes, Rumour Town is there to play, and the page says the build continues if the tab is closed. When the world is ready the tab title changes and a chime plays.
+
+## W5 · The study
+
+`/study` assigns each visitor, with `crypto.randomUUID` kept in the URL, to read a hand-written explanation or to play Peppered Forest for six minutes. Both then answer the same four new-situation questions and one confidence mark. Replies go to `data/study/responses.jsonl`. `?test=1` goes to a separate file and is excluded. `/study/results` shows the real count, accuracy, and confidence, and says the group is too small when fewer than 10 people have finished. There are no real replies yet. None were invented.
+
+A finished play writes one anonymous line to `data/plays/plays.jsonl`. Nothing from that file is shown on screen.
+
+## Not done
+
+W3. The eight fresh questions have not been run. There is no `MODEL_API_KEY` and no ledger, so no fraction, time, or cost is written. The playtester batch of 12 worlds, capped at $0.60, was not run for the same reason.
 
 ## Not started
 

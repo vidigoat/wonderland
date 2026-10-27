@@ -167,6 +167,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const originRef = useRef<Observation | null>(null);
   const runStart = useRef(0);
   const playtestRan = useRef(false);
+  const playLogged = useRef(false);
   const worldStamp = `${spec.id}:${retry}`;
   const [stamp, setStamp] = useState(worldStamp);
   if (stamp !== worldStamp) {
@@ -209,6 +210,24 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     setView(asWorldView(session.view(), spec.archetype));
     setTrace(session.history.slice(runStart.current));
   }
+
+  useEffect(() => {
+    if (play.phase !== "receipt" || playLogged.current || play.startedAtMs == null) return;
+    playLogged.current = true;
+    const minutes = Math.max(0, (performance.now() - play.startedAtMs) / 60000);
+    const said = verdict === "discovered" || verdict === "warmer" || verdict === "colder" ? verdict : "unsaid";
+    void fetch("/api/plays", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        worldId: spec.id,
+        firstCorrect: play.beforeCorrect === true,
+        verdict: said,
+        transferCorrect: play.transferCorrect === true,
+        minutes,
+      }),
+    }).catch(() => undefined);
+  }, [play.phase, play.startedAtMs, play.beforeCorrect, play.transferCorrect, spec.id, verdict]);
 
   useLayoutEffect(() => {
     const watching = new URLSearchParams(window.location.search).get("playtest") === "1";

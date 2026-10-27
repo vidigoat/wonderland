@@ -1765,6 +1765,55 @@
   font-weight: 500;
 }
 
+.study {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+  color: #fafafa;
+}
+.study h1 {
+  margin: 8px 0 16px;
+  font-size: clamp(32px, 5vw, 48px);
+  letter-spacing: -0.04em;
+}
+.study-essay {
+  font-size: 17px;
+  line-height: 1.55;
+  color: #e5e5e5;
+}
+.study-frame {
+  width: 100%;
+  height: min(70dvh, 640px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: #000;
+}
+.study-questions {
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+}
+.study-questions legend {
+  margin-bottom: 8px;
+  font-weight: 650;
+}
+.study-questions label {
+  display: flex;
+  gap: 8px;
+  margin: 6px 0;
+}
+.study-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0 24px;
+}
+.study-table th,
+.study-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  text-align: left;
+}
+
 /* The run, under the stage. The stage keeps the picture; the chart keeps the comparison. */
 .stage-pane:has(.reading-chart) {
   display: flex;

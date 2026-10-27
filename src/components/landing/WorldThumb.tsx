@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { compileRules, type RulesModule } from "@/engine/rules";
 import { WorldSession } from "@/engine/runtime";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { bodyFacing, cssHex, figureTint, flockFacing, heightSilhouette, softenRidge, thumbBodyPx, thumbJamHalo, thumbJamInk, thumbSample, thumbSteps } from "@/engine/render/helpers";
+import { bodyFacing, cssHex, figureTint, flockFacing, heightSilhouette, ridgeWindow, softenRidge, thumbBodyPx, thumbJamHalo, thumbJamInk, thumbSample, thumbSteps } from "@/engine/render/helpers";
 import { asWorldView, isParticlesView } from "@/engine/view";
 
 /**
@@ -176,14 +176,21 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
           const dune = heightSilhouette(view.grid);
           if (dune) {
             const ridge = softenRidge(dune.heights);
-            const count = ridge.length;
-            const peak = Math.max(...ridge, 0.001);
-            const base = h * 0.86;
-            const rise = h * 0.62;
-            ctx.beginPath();
-            ridge.forEach((value, index) => {
+            const span = ridgeWindow(ridge);
+            const body = ridge.slice(span.start, span.end + 1);
+            const count = body.length;
+            const peak = Math.max(...body, 0.001);
+            // The title gradient covers the lower half of the card, so the whole dune has to sit above it.
+            const base = h * 0.5;
+            const rise = h * 0.26;
+            const pointAt = (index: number) => {
               const x = count === 1 ? w / 2 : (index / (count - 1)) * w;
-              const y = base - (Math.max(0, value) / peak) * rise;
+              const y = base - (Math.max(0, body[index] ?? 0) / peak) * rise;
+              return [x, y] as const;
+            };
+            ctx.beginPath();
+            body.forEach((_, index) => {
+              const [x, y] = pointAt(index);
               if (index === 0) ctx.moveTo(x, y);
               else ctx.lineTo(x, y);
             });
@@ -191,9 +198,15 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
             ctx.lineTo(0, base);
             ctx.closePath();
             ctx.fillStyle = "#e0b15a";
-            ctx.globalAlpha = painting ? 0.9 : 0.95;
+            ctx.globalAlpha = painting ? 0.92 : 0.95;
             ctx.fill();
             ctx.globalAlpha = 1;
+            ctx.beginPath();
+            body.forEach((_, index) => {
+              const [x, y] = pointAt(index);
+              if (index === 0) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+            });
             ctx.strokeStyle = "#6a4424";
             ctx.lineWidth = Math.max(2, h * 0.012);
             ctx.stroke();

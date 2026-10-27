@@ -338,6 +338,21 @@ export function smoothField(grid: number[][], longest = 180): number[][] {
   return out;
 }
 
+/**
+ * The columns that are the dune, plus a little flat sand on either side.
+ * A shelf card can then draw the shape across the picture instead of a spike in a field of zeros.
+ */
+export function ridgeWindow(heights: readonly number[]): { start: number; end: number } {
+  const last = heights.length - 1;
+  if (last <= 0) return { start: 0, end: Math.max(0, last) };
+  let start = 0;
+  let end = last;
+  while (start < end && (heights[start] ?? 0) < 0.02) start++;
+  while (end > start && (heights[end] ?? 0) < 0.02) end--;
+  const pad = Math.max(1, Math.round((end - start) * 0.12));
+  return { start: Math.max(0, start - pad), end: Math.min(last, end + pad) };
+}
+
 /** A dune grid is only a few rows tall. Blur the ridge so the slope reads as sand, not stairs. The crest stays put. */
 export function softenRidge(heights: number[], passes = 8): number[] {
   let current = heights.slice();

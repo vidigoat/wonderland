@@ -27,6 +27,7 @@ import {
   populationCrowd,
   resolveShotPath,
   separateSpeech,
+  ridgeWindow,
   softenRidge,
   SCROLL_TRIP_MS,
   scrollRest,
@@ -299,6 +300,17 @@ describe("a dune ridge", () => {
     const crest = (values: number[]) => values.indexOf(Math.max(...values));
     expect(Math.abs(crest(soft) - crest(stairs))).toBeLessThanOrEqual(1);
     expect(soft[0]).toBeLessThan(soft[crest(soft)] ?? 0);
+  });
+
+  it("keeps the long windward slope when the flats are cut away", () => {
+    const heights = Array.from({ length: 66 }, () => 0);
+    for (let i = 0; i < 20; i++) heights[6 + i] = (i + 1) / 20;
+    for (let i = 0; i < 10; i++) heights[26 + i] = 1 - (i + 1) / 10;
+    const span = ridgeWindow(heights);
+    const body = heights.slice(span.start, span.end + 1);
+    const peakAt = body.indexOf(Math.max(...body));
+    expect(body.length).toBeLessThan(heights.length);
+    expect(peakAt / (body.length - 1)).toBeGreaterThan(0.55);
   });
 });
 

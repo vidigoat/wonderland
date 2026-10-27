@@ -1,5 +1,7 @@
 # Wonderland
 
+![Wonderland — the AI builds the world, you find the law](docs/design/og-site.png)
+
 **AI that builds the world, not the answer.**
 
 Type any *why* or *how* — "Why does SQL injection work?", "How does natural selection make camouflage?", "Why do bank runs happen?" — and a team of agents built on Meta's models creates a **playable, scientifically verified world** around a **hidden law**. You discover it yourself by predicting and experimenting. The AI never tells you. Then you prove it on a situation you've never seen, racing **Ada**, an AI rival running on Meta open weights.

@@ -125,6 +125,8 @@ That fitted card was still a tall painting shrunk until the words were too small
 
 A long prediction on that card stopped on the word "because". Commit `6413fcb`. The last line now keeps what fits and ends with an ellipsis when the sentence is longer. On the production server the before line reads through "before reproducing", and the after line reads "Stays roughly the same". `pnpm check` is 239 tests.
 
+The fire cards said "Far ridge no" and "Flames no" after the fire had stopped. Commit `8087160`. They now say untouched or reached, and out or still going. The science checks still see yes and no. On the production server a default burn finishes in about six seconds at 10% of the trees burned, the far ridge untouched, and the flames out. `pnpm check` is 239 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

@@ -27,7 +27,7 @@ Dev mode on this machine never hydrated (the HMR socket failed), so the shots ar
 
 Judgement: the dune's numbers stay near zero for a short run. The chart shows the creep. I did not speed the dune up, because the checks depend on the slow rate.
 
-## W2 · Playtester, started
+## W2 · Playtester, started (`92da6c0`)
 
 `look()` calls Muse Spark 1.3 on the Meta API with image parts. It does not go through `think()`, so an open-weights reasoning setting cannot turn the pictures into text.
 

@@ -648,6 +648,11 @@
   .pipe-row {
     grid-template-columns: 1fr;
   }
+  /* A 16:10 frame on a phone is about 210px, and the bank card covers the square. */
+  .try-canvas {
+    aspect-ratio: auto;
+    height: 520px;
+  }
   .try-panel {
     padding: 22px;
   }

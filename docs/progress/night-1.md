@@ -99,6 +99,8 @@ The hallway used a cannon-length run. Commit `5315063`. On some seeds the two di
 
 The meadow's "flashing in step" was a ramp laid over the real order, so the chart kept climbing after the swarm had locked. The card also repeated the sliders and a second percent. Commit `3ca0dfa`. The reading is now the swarm's own order, and a blink counts only when a firefly wraps. On the production server one gesture finishes in about seven seconds at 93% flashing in step and 0.16 flashes each second, with 100 fireflies. The chart rises, then holds. A phone shows the same three cards, at 87% on that run. All five science checks still pass. `pnpm check` is 231 tests.
 
+Walking speed on the hallway was the crowd's wished-for pace times a collision formula, so the card stayed near 1.09. Commit `3266c0a`. It is now the share of their usual pace they manage on that step. The two directions face opposite ways, and the button says "Let them walk". On the production server one gesture finishes in about ten seconds at 100% lanes, 0% head-on bumps, and 1 of their usual pace. With sidestepping turned off it ends at 3% lanes, 17% head-on bumps, and 0.83 of their usual pace. The ring road button says "Let them drive". All seven hallway checks pass. `pnpm check` is 232 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

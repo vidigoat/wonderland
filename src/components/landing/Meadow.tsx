@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
  * (Kuramoto coupling). It is the product's promise in motion — order you can watch emerge.
  * Pauses when hidden; a single still frame under prefers-reduced-motion.
  */
-export function Meadow({ count = 110, className }: { count?: number; className?: string }) {
+export function Meadow({ count = 110, className, tone = "warm" }: { count?: number; className?: string; tone?: "warm" | "mono" }) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -55,9 +55,10 @@ export function Meadow({ count = 110, className }: { count?: number; className?:
         const lit = Math.max(0, Math.cos(f.phase)) ** 8;
         const r = (2.4 + lit * 5.5) * dpr;
         const glow = ctx.createRadialGradient(x, y, 0, x, y, r * 3.6);
-        glow.addColorStop(0, `rgba(255, 242, 186, ${0.32 + lit * 0.68})`);
-        glow.addColorStop(0.3, `rgba(255, 208, 100, ${0.14 + lit * 0.42})`);
-        glow.addColorStop(1, "rgba(255, 190, 70, 0)");
+        const [core, mid, edge] = tone === "mono" ? ["255, 255, 255", "220, 220, 220", "200, 200, 200"] : ["255, 242, 186", "255, 208, 100", "255, 190, 70"];
+        glow.addColorStop(0, `rgba(${core}, ${(tone === "mono" ? 0.16 : 0.32) + lit * 0.68})`);
+        glow.addColorStop(0.3, `rgba(${mid}, ${(tone === "mono" ? 0.06 : 0.14) + lit * 0.3})`);
+        glow.addColorStop(1, `rgba(${edge}, 0)`);
         ctx.fillStyle = glow;
         ctx.beginPath();
         ctx.arc(x, y, r * 3.6, 0, Math.PI * 2);
@@ -82,7 +83,7 @@ export function Meadow({ count = 110, className }: { count?: number; className?:
       observer.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [count]);
+  }, [count, tone]);
 
   return <canvas ref={ref} className={className} aria-hidden="true" />;
 }

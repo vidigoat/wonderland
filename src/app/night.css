@@ -5,21 +5,22 @@
  * Type: Bricolage Grotesque (display, with character) + Atkinson Hyperlegible (everything you read).
  */
 :root {
-  --wl-night: #0c1630;
-  --wl-deep: #060d1f;
-  --wl-dusk: #1a2a55;
-  --wl-lantern: #f6c453;
-  --wl-lantern-soft: rgba(246, 196, 83, 0.16);
-  --wl-ada: #ab8cff;
-  --wl-ada-soft: rgba(171, 140, 255, 0.14);
-  --wl-text: #eef2fb;
-  --wl-muted: #a3b1d0;
-  --wl-faint: #6f7fa3;
-  --wl-glass: rgba(210, 222, 255, 0.07);
-  --wl-glass-strong: rgba(18, 30, 62, 0.72);
-  --wl-line: rgba(210, 222, 255, 0.14);
-  --wl-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
-  --wl-body: var(--font-atkinson), ui-sans-serif, system-ui, sans-serif;
+  /* Monochrome. Colour comes only from the worlds themselves. You = white, Ada = grey. */
+  --wl-night: #0a0a0a;
+  --wl-deep: #000000;
+  --wl-dusk: #141414;
+  --wl-lantern: #fafafa;
+  --wl-lantern-soft: rgba(255, 255, 255, 0.12);
+  --wl-ada: #a3a3a3;
+  --wl-ada-soft: rgba(255, 255, 255, 0.05);
+  --wl-text: #fafafa;
+  --wl-muted: #a3a3a3;
+  --wl-faint: #737373;
+  --wl-glass: rgba(255, 255, 255, 0.04);
+  --wl-glass-strong: rgba(10, 10, 10, 0.86);
+  --wl-line: rgba(255, 255, 255, 0.12);
+  --wl-display: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --wl-body: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --wl-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -134,12 +135,12 @@
   border-radius: 999px;
   background: var(--wl-glass-strong);
   border: 1px solid var(--wl-line);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), 0 0 0 6px rgba(246, 196, 83, 0.04);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), 0 0 0 6px rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(16px);
   animation: wl-rise 1.1s 0.24s var(--wl-ease) both;
 }
 .wl-ask:focus-within {
-  border-color: rgba(246, 196, 83, 0.55);
+  border-color: rgba(255, 255, 255, 0.55);
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), 0 0 0 6px var(--wl-lantern-soft);
 }
 .wl-ask-input {
@@ -161,18 +162,18 @@
   padding: 15px 26px;
   border-radius: 999px;
   background: var(--wl-lantern);
-  color: #241a04;
+  color: #0a0a0a;
   font-family: var(--wl-display);
   font-weight: 700;
   font-size: 17px;
   white-space: nowrap;
   text-decoration: none;
-  box-shadow: 0 10px 34px rgba(246, 196, 83, 0.35);
+  box-shadow: 0 10px 34px rgba(255, 255, 255, 0.35);
   transition: transform 0.2s var(--wl-ease), box-shadow 0.2s var(--wl-ease);
 }
 .wl-ask-go:hover {
   transform: translateY(-1px);
-  box-shadow: 0 14px 40px rgba(246, 196, 83, 0.45);
+  box-shadow: 0 14px 40px rgba(255, 255, 255, 0.45);
 }
 .wl-ask-go:disabled {
   opacity: 0.7;
@@ -201,7 +202,7 @@
 }
 .wl-chips button:hover {
   color: var(--wl-text);
-  border-color: rgba(246, 196, 83, 0.45);
+  border-color: rgba(255, 255, 255, 0.45);
 }
 .wl-ribbon {
   margin-top: 22px;
@@ -222,7 +223,7 @@
   padding: 12px 18px 12px 12px;
   border-radius: 999px;
   background: var(--wl-ada-soft);
-  border: 1px solid rgba(171, 140, 255, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(12px);
   animation: wl-peek 0.9s 2.2s var(--wl-ease) both;
 }
@@ -240,8 +241,8 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #fff 0 8%, #d6c7ff 18%, var(--wl-ada) 55%, rgba(171, 140, 255, 0) 72%);
-  box-shadow: 0 0 26px rgba(171, 140, 255, 0.75);
+  background: radial-gradient(circle at 35% 35%, #fff 0 8%, #d4d4d4 18%, var(--wl-ada) 55%, rgba(255, 255, 255, 0) 72%);
+  box-shadow: 0 0 26px rgba(255, 255, 255, 0.75);
   animation: wl-breathe 3.6s ease-in-out infinite;
 }
 
@@ -383,7 +384,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1px solid rgba(246, 196, 83, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   color: var(--wl-lantern);
   font-family: var(--wl-display);
   font-weight: 700;
@@ -425,7 +426,7 @@
 }
 .wl-world:hover {
   transform: translateY(-4px);
-  border-color: rgba(246, 196, 83, 0.5);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 .wl-world .scene {
   position: absolute;
@@ -514,8 +515,8 @@
   to { opacity: 1; transform: none; }
 }
 @keyframes wl-breathe {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 22px rgba(171, 140, 255, 0.6); }
-  50% { transform: scale(1.08); box-shadow: 0 0 34px rgba(171, 140, 255, 0.9); }
+  0%, 100% { transform: scale(1); box-shadow: 0 0 22px rgba(255, 255, 255, 0.6); }
+  50% { transform: scale(1.08); box-shadow: 0 0 34px rgba(255, 255, 255, 0.9); }
 }
 @keyframes wl-pop {
   from { transform: scale(0.4); opacity: 0; }
@@ -537,27 +538,27 @@
 
 /* AI-written worlds have no painting yet: a glowing hint of the world's kind. */
 .wl-world-written .scene-written {
-  background-color: #0b1430;
+  background-color: #0a0a0a;
 }
 .wl-world-written .scene-written-population {
   background-image:
-    radial-gradient(circle at 22% 30%, rgba(255, 226, 140, 0.95) 0 2px, rgba(255, 210, 90, 0.25) 3px 9px, transparent 10px),
-    radial-gradient(circle at 64% 22%, rgba(255, 226, 140, 0.9) 0 2px, rgba(255, 210, 90, 0.22) 3px 8px, transparent 9px),
-    radial-gradient(circle at 44% 52%, rgba(255, 226, 140, 0.85) 0 2px, rgba(255, 210, 90, 0.2) 3px 8px, transparent 9px),
-    radial-gradient(circle at 78% 46%, rgba(255, 226, 140, 0.9) 0 2px, rgba(255, 210, 90, 0.22) 3px 9px, transparent 10px),
-    radial-gradient(circle at 30% 70%, rgba(255, 226, 140, 0.7) 0 2px, rgba(255, 210, 90, 0.18) 3px 7px, transparent 8px),
-    radial-gradient(120% 80% at 50% 0%, #1d2d5c, #0b1430 70%);
+    radial-gradient(circle at 22% 30%, rgba(255, 255, 255, 0.95) 0 2px, rgba(255, 255, 255, 0.25) 3px 9px, transparent 10px),
+    radial-gradient(circle at 64% 22%, rgba(255, 255, 255, 0.9) 0 2px, rgba(255, 255, 255, 0.22) 3px 8px, transparent 9px),
+    radial-gradient(circle at 44% 52%, rgba(255, 255, 255, 0.85) 0 2px, rgba(255, 255, 255, 0.2) 3px 8px, transparent 9px),
+    radial-gradient(circle at 78% 46%, rgba(255, 255, 255, 0.9) 0 2px, rgba(255, 255, 255, 0.22) 3px 9px, transparent 10px),
+    radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.7) 0 2px, rgba(255, 255, 255, 0.18) 3px 7px, transparent 8px),
+    radial-gradient(120% 80% at 50% 0%, #1a1a1a, #0a0a0a 70%);
 }
 .wl-world-written .scene-written-bodies {
   background-image:
-    repeating-radial-gradient(circle at 50% 40%, transparent 0 46px, rgba(246, 196, 83, 0.25) 47px 48px, transparent 49px 94px),
-    radial-gradient(circle at 50% 40%, rgba(246, 196, 83, 0.35), transparent 45%),
-    radial-gradient(120% 80% at 50% 0%, #1b2a55, #0b1430 70%);
+    repeating-radial-gradient(circle at 50% 40%, transparent 0 46px, rgba(255, 255, 255, 0.25) 47px 48px, transparent 49px 94px),
+    radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.35), transparent 45%),
+    radial-gradient(120% 80% at 50% 0%, #171717, #0a0a0a 70%);
 }
 .wl-world-written .scene-written-field {
   background-image:
     radial-gradient(circle at 46% 38%, #fff3c4 0 4%, #f6c453 12%, #e0703a 26%, rgba(120, 40, 60, 0.6) 42%, transparent 62%),
-    linear-gradient(160deg, #22184a, #0b1430);
+    linear-gradient(160deg, #141414, #0a0a0a);
 }
 .wl-world-written .scene-written span {
   display: none;
@@ -625,7 +626,7 @@
 }
 .play-links a:hover, .play-links button:hover:not(:disabled) {
   color: var(--wl-text);
-  border-color: rgba(246, 196, 83, 0.5);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* Progress: sentence case, gold for where you are. */
@@ -705,13 +706,13 @@
   border-radius: 999px;
   padding: 13px 22px;
   background: var(--wl-lantern);
-  color: #241a04;
+  color: #0a0a0a;
   font-family: var(--wl-display);
   font-weight: 700;
   font-size: 16px;
   letter-spacing: -0.01em;
   text-transform: none;
-  box-shadow: 0 10px 30px rgba(246, 196, 83, 0.28);
+  box-shadow: none;
 }
 .play .press:disabled {
   opacity: 0.5;
@@ -745,8 +746,8 @@
   margin: 10px;
   padding: 14px 16px;
   border-radius: 18px;
-  border: 1px solid rgba(171, 140, 255, 0.35);
-  background: rgba(171, 140, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.1);
 }
 .play .ada-head, .play .ada .kicker {
   color: var(--wl-ada);
@@ -770,6 +771,7 @@
   color: var(--wl-ada);
 }
 .play .ada h2::before {
+  /* a small grey light: presence, not decoration */
   content: "";
   display: inline-block;
   width: 10px;

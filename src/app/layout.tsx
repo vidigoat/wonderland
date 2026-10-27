@@ -3,6 +3,7 @@ import { Atkinson_Hyperlegible, Bricolage_Grotesque, Fraunces, Geist, Geist_Mono
 import { siteOrigin } from "@/lib/site";
 import "./globals.css";
 import "./night.css";
+import "./bw.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,7 +46,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${bricolage.variable} ${atkinson.variable} h-full antialiased`}>
+    <html lang="en" className={`dark ${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${bricolage.variable} ${atkinson.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

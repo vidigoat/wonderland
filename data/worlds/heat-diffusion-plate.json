@@ -37,7 +37,7 @@
   "knobs": [
     {
       "id": "diffusivity",
-      "label": "Spread Speed",
+      "label": "How fast it spreads",
       "kind": "slider",
       "min": 0,
       "max": 0.2,
@@ -47,7 +47,7 @@
     },
     {
       "id": "hotSpotTemp",
-      "label": "Laser Heat",
+      "label": "Heat of the first spot",
       "kind": "slider",
       "min": 0,
       "max": 100,
@@ -57,7 +57,7 @@
     },
     {
       "id": "backgroundTemp",
-      "label": "Base Chill",
+      "label": "The rest of the plate",
       "kind": "slider",
       "min": 0,
       "max": 50,
@@ -67,7 +67,7 @@
     },
     {
       "id": "insulated",
-      "label": "Sealed Border",
+      "label": "Sealed edges",
       "kind": "toggle",
       "default": true,
       "hint": "When on, edges keep all heat inside; when off, edges can lose heat to the room"

@@ -37,23 +37,23 @@
   "knobs": [
     {
       "id": "windSpeed",
-      "label": "Wind Strength",
+      "label": "Wind strength",
       "kind": "slider",
       "min": 0,
       "max": 12,
       "step": 0.5,
       "default": 5,
-      "hint": "how hard the wind blows"
+      "hint": "How hard the wind blows."
     },
     {
       "id": "initialHeight",
-      "label": "Dune Height",
+      "label": "Dune height",
       "kind": "slider",
       "min": 5,
       "max": 25,
       "step": 1,
       "default": 10,
-      "hint": "how tall the dune starts"
+      "hint": "How tall the dune starts."
     }
   ],
   "observables": [

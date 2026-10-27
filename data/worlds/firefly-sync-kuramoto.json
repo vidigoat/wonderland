@@ -36,7 +36,7 @@
   "knobs": [
     {
       "id": "coupling",
-      "label": "How Much They Notice Neighbors",
+      "label": "How much they notice neighbors",
       "kind": "slider",
       "min": 0,
       "max": 2.5,
@@ -46,7 +46,7 @@
     },
     {
       "id": "freqSpread",
-      "label": "Diversity of Natural Blink Rates",
+      "label": "How different their blinks are",
       "kind": "slider",
       "min": 0,
       "max": 1.5,
@@ -56,14 +56,14 @@
     },
     {
       "id": "leaderPresent",
-      "label": "Bright Conductor Present",
+      "label": "A bright leader",
       "kind": "toggle",
       "default": false,
       "hint": "Add a single extra-bright firefly that might act as a leader"
     },
     {
       "id": "externalCue",
-      "label": "Shared Environmental Pulse",
+      "label": "A shared pulse",
       "kind": "slider",
       "min": 0,
       "max": 1,
@@ -73,7 +73,7 @@
     },
     {
       "id": "swarmSize",
-      "label": "Swarm Size",
+      "label": "How many fireflies",
       "kind": "slider",
       "min": 20,
       "max": 150,

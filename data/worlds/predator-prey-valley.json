@@ -57,7 +57,7 @@
     },
     {
       "id": "conversionEfficiency",
-      "label": "Hunt to kitten conversion",
+      "label": "Hares turned into lynx",
       "kind": "slider",
       "min": 0.01,
       "max": 0.2,
@@ -67,7 +67,7 @@
     },
     {
       "id": "predatorMortality",
-      "label": "Lynx survival challenge",
+      "label": "How fast lynx decline",
       "kind": "slider",
       "min": 0.05,
       "max": 0.5,

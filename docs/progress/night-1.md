@@ -179,6 +179,8 @@ On a phone the valley drew only lynx, while the card said 112 hares were alive. 
 
 On a phone the flock's three cards covered the birds on the left. Commit `babd643`. They now sit in one row. On the production server at 390 wide, one flight reads 0% bumping, 81% facing the same way, and the flock 16.7 from the centre, with the birds clear under the cards and turned along that drift. `pnpm check` is 251 tests.
 
+On a phone the ring road's cards sat on the stopped cars. Commit `c85591e`. They now sit in two columns above the road. On the production server at 390 wide, one drive reads 1 jam, travelling at -3.79 metres per second, an average of 11 metres per second, speeds differing by 14.1 metres per second, and the red knot is on the road under the cards. `pnpm check` is 251 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

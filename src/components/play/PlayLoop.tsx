@@ -490,7 +490,11 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   function onChange(id: string, value: Params[string]) {
     const next = { ...paramsRef.current, [id]: value };
     paramsRef.current = next;
-    sessionRef.current?.setParam(id, value);
+    const session = sessionRef.current;
+    if (session) {
+      session.setParam(id, value);
+      setView(asWorldView(session.view(), spec.archetype));
+    }
     setParams(next);
   }
 

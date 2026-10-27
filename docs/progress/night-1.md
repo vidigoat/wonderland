@@ -55,7 +55,7 @@ The study pages are ink on the cream page. A first pass had drawn them in white,
 
 The README test count was still 200. It is 223. `pnpm eval` is listed, and `/study` is described as built with no finished replies yet. A typed question, “Why does SQL injection work?”, on the production server matched The Gatekeeper’s Ledger, 4 of 4 checks, and offered Enter.
 
-On a phone the forest drew all 120 moths, each about 19 pixels, so the flock was a field of specks. The stage now draws 36 of them, keeps the bird, and holds each moth at least half a figure. A desk still draws the whole flock. Checked on the production server at 390 pixels wide.
+On a phone the forest drew all 120 moths, each about 19 pixels, so the flock was a field of specks. Commit `0bca0a1` draws 36 of them, keeps the bird, and holds each moth at least half a figure. A desk still draws the whole flock. `pnpm check` is 225 tests. Checked on the production server at 390 pixels wide: pale moths, dark moths, and the bird are readable on the birch.
 
 ## Still blocked on a key
 

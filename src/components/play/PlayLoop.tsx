@@ -733,6 +733,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
             archetype={spec.archetype}
             worldId={spec.id}
             artStyle={spec.art.style}
+            painted={spec.art.painted}
             playing={playing}
             params={params}
             beat={beat?.name ?? null}

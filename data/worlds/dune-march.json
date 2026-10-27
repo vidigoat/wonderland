@@ -253,6 +253,13 @@
   ],
   "art": {
     "style": "painterly desert minimalism with warm sand tones",
-    "background": "vast flat desert plain under pale sky with distant dunes"
+    "background": "vast flat desert plain under pale sky with distant dunes",
+    "painted": {
+      "background": "/art/dune-march/background.webp",
+      "sprites": {
+        "dune": "/art/dune-march/dune.webp",
+        "ground": "/art/dune-march/ground.webp"
+      }
+    }
   }
 }

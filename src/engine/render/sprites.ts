@@ -1,10 +1,40 @@
 import { Assets, Container, Graphics, Sprite, type Texture } from "pixi.js";
+import type { PaintedArt } from "@/engine/spec";
 import { drawSilhouette } from "./silhouettes";
 
 const cache = new Map<string, Promise<Texture | null>>();
+const paintedWorlds = new Map<string, PaintedArt>();
+
+/** Worlds painted by Muse Image + SAM 3.1 load their own files; every other world keeps its handmade SVGs. */
+export function registerPaintedArt(worldId: string, art: PaintedArt | undefined): void {
+  if (worldId && art) paintedWorlds.set(worldId, art);
+}
+
+export function isPaintedWorld(worldId: string): boolean {
+  return paintedWorlds.has(worldId);
+}
+
+export function paintedSpriteNames(worldId: string): string[] {
+  return Object.keys(paintedWorlds.get(worldId)?.sprites ?? {});
+}
+
+function paintedUrl(worldId: string, sprite: string): string | undefined {
+  const art = paintedWorlds.get(worldId);
+  return sprite === "background" ? art?.background : art?.sprites[sprite];
+}
 
 export function spriteUrl(worldId: string, sprite: string): string {
-  return `/art/${encodeURIComponent(worldId)}/${encodeURIComponent(sprite)}.svg`;
+  return paintedUrl(worldId, sprite) ?? `/art/${encodeURIComponent(worldId)}/${encodeURIComponent(sprite)}.svg`;
+}
+
+/** A painting keeps its own colours: the state tint only changes how bright it is. */
+function brightnessOf(tint: number): number {
+  const r = (tint >> 16) & 0xff;
+  const g = (tint >> 8) & 0xff;
+  const b = tint & 0xff;
+  const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+  const v = Math.round((0.42 + 0.58 * lum) * 255);
+  return (v << 16) | (v << 8) | v;
 }
 
 /** Load sample art. A missing file resolves to null and never throws. */
@@ -37,7 +67,7 @@ export type Figure = {
   destroy(): void;
 };
 
-/** Silhouette immediately, swapped for `/art/${worldId}/${sprite}.svg` if that file loads. */
+/** Silhouette immediately, swapped for the world's art (painted, or `/art/${worldId}/${sprite}.svg`) if that file loads. */
 export function createFigure(): Figure {
   const view = new Container();
   let graphic: Graphics | null = null;
@@ -47,10 +77,12 @@ export function createFigure(): Figure {
   let alive = true;
   let tint = 0xffffff;
   let tintArt = false;
+  let painting = false;
 
+  const artTint = () => (!tintArt ? 0xffffff : painting ? brightnessOf(tint) : tint);
   const applyTint = () => {
     if (graphic) graphic.tint = tint;
-    if (spriteView) spriteView.tint = tintArt ? tint : 0xffffff;
+    if (spriteView) spriteView.tint = artTint();
   };
 
   return {
@@ -61,6 +93,7 @@ export function createFigure(): Figure {
       const nextKey = `${worldId}/${sprite}`;
       if (key !== nextKey) {
         key = nextKey;
+        painting = paintedUrl(worldId, sprite) !== undefined;
         const current = ++token;
         spriteView?.destroy();
         spriteView = null;
@@ -76,7 +109,7 @@ export function createFigure(): Figure {
           graphic?.destroy();
           graphic = null;
           spriteView = next;
-          next.tint = tintArt ? tint : 0xffffff;
+          next.tint = artTint();
           view.addChild(next);
         });
       }

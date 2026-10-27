@@ -69,6 +69,14 @@ export const Check = z.object({
 });
 export type Check = z.infer<typeof Check>;
 
+const ART_URL = /^\/art\/[a-z0-9-]+\/[A-Za-z0-9-]+\.(webp|png|jpg|svg)$/;
+
+export const PaintedArt = z.object({
+  background: z.string().regex(ART_URL).optional(),
+  sprites: z.record(z.string(), z.string().regex(ART_URL)),
+});
+export type PaintedArt = z.infer<typeof PaintedArt>;
+
 export const WorldSpec = z.object({
   id: z.string(),
   version: z.literal(1),
@@ -110,6 +118,8 @@ export const WorldSpec = z.object({
   art: z.object({
     style: z.string(),
     background: z.string(),
+    /** Set by the artist after Muse Image and SAM 3.1 have painted this world. Local files only. */
+    painted: PaintedArt.optional(),
   }),
 });
 export type WorldSpec = z.infer<typeof WorldSpec>;

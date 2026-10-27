@@ -1,4 +1,4 @@
-import { Container, Graphics } from "pixi.js";
+import { Container, Graphics, Sprite, type Texture } from "pixi.js";
 import { isParticlesView, type CannonView, type ParticlesView } from "@/engine/view";
 import {
   CANNON_STEP_DT,
@@ -15,6 +15,7 @@ import {
 import type { Frame, Scene } from "./scene";
 import type { WorldPalette } from "./palette";
 import { createBackdrop } from "./backdrop";
+import { isPaintedWorld, loadSprite, paintedSpriteNames } from "./sprites";
 
 const MAX_STEP = 2.5 * CANNON_STEP_DT * 1.6;
 
@@ -28,8 +29,10 @@ export function createBodiesScene(): Scene {
   const cannon = new Graphics();
   const ball = new Graphics();
   const particles = new Graphics();
+  const figures = new Container();
   // The ghost sits above the barrel so a short fall is visible. The trail and the ball stay in front once the shot is fired.
-  root.addChild(sky, painting.view, planet, cannon, ghost, trail, ball, particles);
+  root.addChild(sky, painting.view, planet, cannon, ghost, trail, ball, particles, figures);
+  const textures = new Map<string, Texture | null>();
 
   const samples: Point2[] = [];
   let viewRadius = 3.2;
@@ -47,8 +50,10 @@ export function createBodiesScene(): Scene {
     const many = anyView && isParticlesView(anyView) ? anyView : null;
     for (const g of [planet, cannon, ghost, trail, ball]) g.visible = !many;
     particles.visible = Boolean(many);
+    figures.visible = Boolean(many);
     if (many) {
       drawParticles(particles, many, frame, palette);
+      if (isPaintedWorld(frame.worldId)) placeFigures(figures, textures, many, frame);
       return;
     }
     const view = anyView as CannonView | null;
@@ -271,6 +276,48 @@ function trace(g: Graphics, path: Point2[], camera: Camera): void {
 }
 
 /** AI-written worlds: draw each body inside the view's bounds, keeping the aspect ratio, with a soft lane behind rows. */
+/** Body ids like "car12" or "eastWalker3" name their sprite. */
+function spriteFor(body: ParticlesView["bodies"][number]): string {
+  return String(body.id ?? "").replace(/[-_]?\d+$/, "");
+}
+
+/** Painted worlds: each body is its Muse Image + SAM cut-out, sitting on the coloured dot that carries its state. */
+function placeFigures(layer: Container, textures: Map<string, Texture | null>, view: ParticlesView, frame: Frame) {
+  const pad = Math.min(frame.width, frame.height) * 0.08;
+  const s = Math.min((frame.width - pad * 2) / view.bounds.w, (frame.height - pad * 2) / view.bounds.h);
+  const ox = (frame.width - view.bounds.w * s) / 2 - view.bounds.x * s;
+  const oy = (frame.height - view.bounds.h * s) / 2 - view.bounds.y * s;
+  const bodies = view.bodies.slice(0, 600);
+  while (layer.children.length > bodies.length) layer.removeChildAt(layer.children.length - 1).destroy();
+  bodies.forEach((body, index) => {
+    // Bodies with plain ids ("17") wear the world's first painted figure.
+    const name = paintedSpriteNames(frame.worldId).includes(spriteFor(body)) ? spriteFor(body) : (paintedSpriteNames(frame.worldId)[0] ?? "");
+    if (!textures.has(name)) {
+      textures.set(name, null);
+      void loadSprite(frame.worldId, name).then((texture) => textures.set(name, texture));
+    }
+    const texture = textures.get(name);
+    let sprite = layer.children[index] as Sprite | undefined;
+    if (!sprite) {
+      sprite = new Sprite();
+      sprite.anchor.set(0.5);
+      layer.addChild(sprite);
+    }
+    if (!texture || !Number.isFinite(body.x) || !Number.isFinite(body.y)) {
+      sprite.visible = false;
+      return;
+    }
+    const r = Math.max(3, Math.min(18, (body.radius ?? 1) * s * 0.9));
+    if (sprite.texture !== texture) sprite.texture = texture;
+    sprite.visible = true;
+    sprite.scale.set((r * 3.2) / Math.max(texture.width, texture.height));
+    sprite.position.set(ox + body.x * s, oy + body.y * s);
+    // A tall cut-out (a car seen from above) on a lane that runs sideways is turned to drive along it.
+    const vx = (body as { vx?: number }).vx;
+    sprite.rotation = texture.height > texture.width * 1.25 && typeof vx === "number" ? Math.PI / 2 : 0;
+  });
+}
+
 function drawParticles(g: Graphics, view: ParticlesView, frame: Frame, palette: WorldPalette) {
   g.clear();
   const pad = Math.min(frame.width, frame.height) * 0.08;

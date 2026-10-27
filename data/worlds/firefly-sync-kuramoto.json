@@ -321,6 +321,13 @@
   ],
   "art": {
     "style": "painterly dusk meadow with soft bokeh lights, warm glowing fireflies against deep blue twilight, gentle impressionist brushwork",
-    "background": "misty mangrove riverside at twilight with dark silhouetted trees and reflective water under a dusky indigo sky"
+    "background": "misty mangrove riverside at twilight with dark silhouetted trees and reflective water under a dusky indigo sky",
+    "painted": {
+      "background": "/art/firefly-sync-kuramoto/background.webp",
+      "sprites": {
+        "firefly": "/art/firefly-sync-kuramoto/firefly.webp",
+        "leaderFirefly": "/art/firefly-sync-kuramoto/leaderFirefly.webp"
+      }
+    }
   }
 }

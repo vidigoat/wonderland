@@ -5,7 +5,7 @@ import { pixelRatio, stageFont } from "./fonts";
 import { barkColor, populationTint } from "./palette";
 import type { Scene, Frame } from "./scene";
 import { createBackdrop } from "./backdrop";
-import { createFigure, type Figure } from "./sprites";
+import { createFigure, isPaintedWorld, type Figure } from "./sprites";
 
 const BLEND_MS = 260;
 
@@ -70,7 +70,9 @@ export function createPopulationScene(): Scene {
     const seen = new Set<string>();
     const speakers = spokenIds(agents);
     const unit = Math.min(frame.width, frame.height);
-    const figureScale = Math.max(0.85, Math.min(1.55, unit / 640));
+    // Painted worlds can hold a hundred creatures: shrink each so the crowd reads as a crowd, not a wall.
+    const crowd = isPaintedWorld(frame.worldId) ? Math.min(1, Math.sqrt((frame.width * frame.height) / Math.max(1, agents.length)) / 230) : 1;
+    const figureScale = Math.max(0.85, Math.min(1.55, unit / 640)) * crowd;
     placeBank(bank, shutters, frame, figureScale);
 
     for (const agent of agents.slice(0, 600)) {

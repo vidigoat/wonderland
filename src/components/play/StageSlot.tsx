@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ComponentType } from "react";
+import { registerPaintedArt } from "@/engine/render/sprites";
 import { FallbackStage } from "./FallbackStage";
 import type { StageProps } from "./stage-props";
 
@@ -26,6 +27,8 @@ async function loadWorldStage(): Promise<ComponentType<StageProps> | null> {
 export function StageSlot({ beat, beatId, ...props }: StageProps & { beat: string | null; beatId: number }) {
   const [Stage, setStage] = useState<ComponentType<StageProps> | null>(null);
   const frame = useRef<HTMLDivElement>(null);
+  // Before the stage mounts, so its first texture request already points at the painting.
+  registerPaintedArt(props.worldId, props.painted);
 
   useEffect(() => {
     let live = true;

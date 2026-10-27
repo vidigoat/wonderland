@@ -8,13 +8,22 @@ import { asWorldView, isParticlesView } from "@/engine/view";
 
 /**
  * A still of a generated world, made by actually running it: its own verified rules, its own default knobs,
- * a few dozen steps in. Drawn in white on black, so the card shows what that world really looks like.
+ * a few dozen steps in. Drawn in white over the world's Muse Image painting (or black), so the card shows what that world really looks like.
  */
 const STEPS = 40;
 
 function lightness(t: number): string {
   const v = Math.round(60 + Math.max(0, Math.min(1, t)) * 195);
   return `rgb(${v}, ${v}, ${v})`;
+}
+
+function loadImage(src: string): Promise<HTMLImageElement | null> {
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => resolve(null);
+    image.src = src;
+  });
 }
 
 export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
@@ -42,13 +51,53 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
         const h = (canvas.height = canvas.clientHeight * dpr);
         ctx.fillStyle = "#0a0a0a";
         ctx.fillRect(0, 0, w, h);
+        const painting = spec.art.painted?.background;
+        if (painting) {
+          // The Muse Image painting, covered and dimmed so the world's own motion still reads on top.
+          const image = await loadImage(painting);
+          if (!alive) return;
+          if (image) {
+            const scale = Math.max(w / image.width, h / image.height);
+            ctx.drawImage(image, (w - image.width * scale) / 2, (h - image.height * scale) / 2, image.width * scale, image.height * scale);
+            ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+            ctx.fillRect(0, 0, w, h);
+          }
+        }
         const view = asWorldView(session.view(), spec.archetype);
         if (!view) return;
+        // Painted creatures (Muse Image, cut out by SAM 3.1) stand in for the glow dots.
+        const spriteUrls = spec.art.painted?.sprites ?? {};
+        const names = Object.keys(spriteUrls);
+        const sprites = new Map<string, HTMLImageElement>();
+        await Promise.all(
+          names.map(async (name) => {
+            const image = await loadImage(spriteUrls[name]!);
+            if (image) sprites.set(name, image);
+          }),
+        );
+        if (!alive) return;
+        const spriteOf = (name: string) => sprites.get(name) ?? sprites.get(names[0] ?? "");
+        const drawSprite = (image: HTMLImageElement, x: number, y: number, size: number, alpha = 1, turn = 0) => {
+          const k = size / Math.max(image.width, image.height);
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.translate(x, y);
+          ctx.rotate(turn);
+          ctx.drawImage(image, (-image.width * k) / 2, (-image.height * k) / 2, image.width * k, image.height * k);
+          ctx.restore();
+        };
         const pad = 0.12;
         const at = (x: number, y: number) => [w * (pad + x * (1 - 2 * pad)), h * (pad * 0.6 + y * (1 - 2 * pad))] as const;
         if (view.kind === "population") {
-          for (const agent of view.agents.slice(0, 400)) {
+          const agents = view.agents.slice(0, 400);
+          const size = Math.min(w, h) * Math.min(0.2, 0.85 / Math.sqrt(Math.max(1, agents.length)));
+          for (const agent of agents) {
             const [x, y] = at(agent.x, agent.y);
+            const image = sprites.size > 0 ? spriteOf(String(agent.sprite ?? "")) : undefined;
+            if (image) {
+              drawSprite(image, x, y, size, 0.55 + Math.max(0, Math.min(1, agent.tint)) * 0.45);
+              continue;
+            }
             const r = (2.2 + agent.tint * 2.6) * dpr;
             const glow = ctx.createRadialGradient(x, y, 0, x, y, r * 3);
             glow.addColorStop(0, lightness(agent.tint));
@@ -62,6 +111,12 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
           const { x: bx, y: by, w: bw, h: bh } = view.bounds;
           for (const body of view.bodies.slice(0, 400)) {
             const [x, y] = at((body.x - bx) / bw, (body.y - by) / bh);
+            const image = sprites.size > 0 ? spriteOf(String(body.id ?? "").replace(/[-_]?\d+$/, "")) : undefined;
+            if (image) {
+              const turn = image.height > image.width * 1.25 && typeof (body as { vx?: number }).vx === "number" ? Math.PI / 2 : 0;
+              drawSprite(image, x, y, 13 * dpr, 1, turn);
+              continue;
+            }
             ctx.fillStyle = typeof body.color === "string" ? body.color : "#fafafa";
             ctx.beginPath();
             ctx.arc(x, y, 3.2 * dpr, 0, Math.PI * 2);
@@ -94,8 +149,9 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
           for (let r = top; r <= bottom; r++) {
             for (let c = left; c <= right; c++) {
               const value = view.grid[r]?.[c] ?? 0;
-              ctx.fillStyle = lightness(value);
-              ctx.globalAlpha = 0.12 + Math.max(0, Math.min(1, value)) * 0.88;
+              ctx.fillStyle = painting ? "#f2b45a" : lightness(value);
+              // Over a painting the field glows where it is strong and leaves the painting visible where it is empty.
+              ctx.globalAlpha = painting ? Math.pow(Math.max(0, Math.min(1, value)), 0.7) * 0.92 : 0.12 + Math.max(0, Math.min(1, value)) * 0.88;
               ctx.fillRect(ox + (c - left) * size, oy + (r - top) * size, Math.ceil(size), Math.ceil(size));
             }
           }

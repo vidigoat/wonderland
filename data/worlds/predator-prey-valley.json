@@ -386,6 +386,13 @@
   ],
   "art": {
     "style": "watercolor natural history illustration, soft greens and browns, gentle daylight, storybook scientific",
-    "background": "alpine meadow with distant mountains, wildflowers, and a small ranger cabin under a pale sky"
+    "background": "alpine meadow with distant mountains, wildflowers, and a small ranger cabin under a pale sky",
+    "painted": {
+      "background": "/art/predator-prey-valley/background.webp",
+      "sprites": {
+        "prey": "/art/predator-prey-valley/prey.webp",
+        "predator": "/art/predator-prey-valley/predator.webp"
+      }
+    }
   }
 }

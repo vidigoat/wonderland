@@ -87,7 +87,7 @@ export async function paint(opts: { prompt: string; n?: number; size?: string; r
     });
     return (res.output as Array<{ type: string; result?: string }>).filter((o) => o.type === "image_generation_call" && o.result).map((o) => o.result!);
   }
-  const res = await metaClient().images.generate({ model: MODELS.image, prompt: opts.prompt, n: opts.n ?? 1, size: (opts.size ?? "1024x1024") as never, response_format: "b64_json" });
+  const res = await metaClient().images.generate({ model: MODELS.image, prompt: opts.prompt, n: opts.n ?? 1, size: (opts.size ?? "1024x1024") as never, response_format: "b64_json", output_format: "png" } as never);
   return (res.data ?? []).map((d) => d.b64_json!).filter(Boolean);
 }
 
@@ -97,11 +97,17 @@ export async function paint(opts: { prompt: string; n?: number; size?: string; r
  * Docs: https://dev.meta.ai/docs/media-segmentation and /docs/sam/reading-segmentation
  */
 export async function segment(opts: { prompt: string; imageUrl: string }): Promise<string> {
-  const res = await metaClient().responses.create({
+  // SAM only answers when streamed; the non-streamed response carries an empty output_text.
+  const stream = await metaClient().responses.create({
     model: MODELS.sam,
+    stream: true,
     input: [{ role: "user", content: [{ type: "input_text", text: opts.prompt }, { type: "input_image", image_url: opts.imageUrl }] }] as never,
   });
-  return res.output_text;
+  let text = "";
+  for await (const event of stream as unknown as AsyncIterable<{ type: string; delta?: string }>) {
+    if (event.type === "response.output_text.delta" && event.delta) text += event.delta;
+  }
+  return text;
 }
 
 /** Muse Voice Transcribe — WAV in, text out. Docs: https://dev.meta.ai/docs/speech-to-text */

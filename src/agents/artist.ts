@@ -93,6 +93,19 @@ function cutSprite(entityId: string, image: RgbaImage, record: SamRecord, raster
   return { width: boxW, height: boxH, rgba };
 }
 
+/**
+ * SAM matches short noun phrases best. "person seen from above walking east" can find nothing
+ * where "person" finds the figure, so the phrase is shortened step by step until a mask appears.
+ */
+export function segmentPrompts(phrase: string): string[] {
+  const full = phrase.trim();
+  const head = full.split(/\s+(?:seen|viewed|walking|with|from|in|on|at|of|that|which)\b/i)[0]!.trim();
+  const words = head.split(/\s+/);
+  const last = words[words.length - 1] ?? head;
+  const first = words[0] ?? head;
+  return [...new Set([full, head, last, first].filter(Boolean))];
+}
+
 function largestMask(entityId: string, text: string): { record: SamRecord; raster: Uint8Array } {
   const records = parseSamOutput(text).filter((record) => record.mask);
   if (records.length === 0) throw new Error(`SAM returned no mask for ${entityId}.`);
@@ -113,7 +126,7 @@ async function liveIllustration(spec: WorldSpec, artDir: string): Promise<Illust
   await mkdir(folder, { recursive: true });
 
   const backgroundImages = await paint({
-    prompt: `${spec.art.background}. Painted in this style: ${spec.art.style}. Full-frame scene, no text, no border.`,
+    prompt: `${spec.art.background}. Painted in this style: ${spec.art.style}. Full-frame scene, empty of the moving figures (they are drawn on top), no text, no border.`,
     size: "1024x1024",
   });
   const backgroundB64 = backgroundImages[0];
@@ -125,7 +138,9 @@ async function liveIllustration(spec: WorldSpec, artDir: string): Promise<Illust
   await writeFile(path.join(folder, `background.${backgroundExt}`), backgroundBytes);
 
   const written: Record<string, string> = {};
-  for (const entity of spec.entities) {
+  // A field world is drawn as its grid over the painting; it never shows entity sprites.
+  const entities = spec.archetype === "field" ? [] : spec.entities;
+  for (const entity of entities) {
     const painted = await paint({
       prompt: `${entity.artPrompt}. Style: ${spec.art.style}. Single subject, centered, flat background, no text.`,
       size: "1024x1024",
@@ -134,13 +149,17 @@ async function liveIllustration(spec: WorldSpec, artDir: string): Promise<Illust
     if (!b64) throw new Error(`Muse Image returned no picture for ${entity.id}.`);
     const bytes = imageBytes(b64);
     const type = mediaType(bytes);
-    const text = await segment({
-      prompt: entity.segmentPrompt,
-      imageUrl: `data:${type ?? "application/octet-stream"};base64,${bytes.toString("base64")}`,
-    });
     if (type !== "image/png") {
       throw new Error(`Muse Image returned ${type ?? "an unrecognized image"} for ${entity.id}. A PNG is required to cut a transparent sprite.`);
     }
+    const imageUrl = `data:${type};base64,${bytes.toString("base64")}`;
+    let text = "";
+    for (const prompt of segmentPrompts(entity.segmentPrompt)) {
+      text = await segment({ prompt, imageUrl });
+      if (parseSamOutput(text).some((record) => record.mask)) break;
+    }
+    // Nothing SAM can cut out: this creature keeps its drawn silhouette. A failed call still throws.
+    if (!parseSamOutput(text).some((record) => record.mask)) continue;
     const { record, raster } = largestMask(entity.id, text);
     let image: RgbaImage;
     try {
@@ -157,7 +176,8 @@ async function liveIllustration(spec: WorldSpec, artDir: string): Promise<Illust
 
   return {
     source: "live",
-    sprites: spriteUrls(spec, "png", written),
+    // Only files that were actually cut; anything missing keeps its drawn silhouette.
+    sprites: written,
     background: `/art/${spec.id}/background.${backgroundExt}`,
   };
 }

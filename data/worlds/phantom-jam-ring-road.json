@@ -358,6 +358,13 @@
   ],
   "art": {
     "style": "clean vector aerial top-down, muted desert asphalt with bright teal and coral cars, minimal UI",
-    "background": "pale desert circular test track seen from directly above, thin white lane markings"
+    "background": "pale desert circular test track seen from directly above, thin white lane markings",
+    "painted": {
+      "background": "/art/phantom-jam-ring-road/background.webp",
+      "sprites": {
+        "car": "/art/phantom-jam-ring-road/car.webp",
+        "track": "/art/phantom-jam-ring-road/track.webp"
+      }
+    }
   }
 }

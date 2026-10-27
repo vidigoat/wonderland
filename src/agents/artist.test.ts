@@ -14,7 +14,7 @@ vi.mock("@/lib/ai/meta", () => ({
 }));
 
 import { paint, segment } from "@/lib/ai/meta";
-import { illustrate } from "./artist";
+import { illustrate, segmentPrompts } from "./artist";
 
 const KEY = "MODEL_API_KEY";
 const previousKey = process.env[KEY];
@@ -144,3 +144,13 @@ describe("illustrate live lane", () => {
     await expect(illustrate(rumourTownSpec, dir)).rejects.toThrow("sam down");
   });
 });
+
+describe("segmentPrompts", () => {
+  it("shortens a long phrase down to its noun", () => {
+    expect(segmentPrompts("person seen from above walking east")).toEqual(["person seen from above walking east", "person"]);
+    expect(segmentPrompts("glowing firefly body with light")).toEqual(["glowing firefly body with light", "glowing firefly body", "body", "glowing"]);
+    expect(segmentPrompts("hare silhouette")).toEqual(["hare silhouette", "silhouette", "hare"]);
+    expect(segmentPrompts("hare")).toEqual(["hare"]);
+  });
+});
+

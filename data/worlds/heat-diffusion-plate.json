@@ -312,6 +312,10 @@
   ],
   "art": {
     "style": "infrared thermal imaging, glowing orange-yellow on deep indigo steel, soft bloom, scientific lab aesthetic, high contrast",
-    "background": "dark laboratory with overhead view of square metal plate, faint grid, vignetted thermal camera overlay"
+    "background": "dark laboratory with overhead view of square metal plate, faint grid, vignetted thermal camera overlay",
+    "painted": {
+      "background": "/art/heat-diffusion-plate/background.webp",
+      "sprites": {}
+    }
   }
 }

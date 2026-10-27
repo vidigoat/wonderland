@@ -287,6 +287,12 @@
   ],
   "art": {
     "style": "clean top-down vector, flat colors, minimal hallway, soft shadows",
-    "background": "narrow corridor with light floor, darker walls top and bottom, top-down view"
+    "background": "narrow corridor with light floor, darker walls top and bottom, top-down view",
+    "painted": {
+      "background": "/art/hallway-lanes/background.webp",
+      "sprites": {
+        "westWalker": "/art/hallway-lanes/westWalker.webp"
+      }
+    }
   }
 }

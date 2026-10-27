@@ -2,6 +2,7 @@ import { Container, Graphics, Sprite, Texture, BufferImageSource } from "pixi.js
 import { FIELD_COLORS, clearedStrip, fieldColor, fieldScale, phaseOffset, type FieldScale } from "./helpers";
 import type { Frame, Scene } from "./scene";
 import { createBackdrop } from "./backdrop";
+import { isPaintedWorld } from "./sprites";
 
 export function createFieldScene(): Scene {
   const root = new Container();
@@ -27,6 +28,7 @@ export function createFieldScene(): Scene {
     signature = sig;
     const box = valleyBox(next, columns, grid.length);
     strokeValley(frame, ground, next, box, scale);
+    frame.alpha = isPaintedWorld(next.worldId) ? 0.35 : 1;
     if (scale === "firebreak") {
       sprite.visible = false;
       trees.visible = true;
@@ -36,7 +38,8 @@ export function createFieldScene(): Scene {
     trees.visible = false;
     trees.clear();
     sprite.visible = true;
-    const texture = paintGrid(grid, scale);
+    // Over a Muse Image painting the field glows where it is strong and lets the painting show where it is empty.
+    const texture = paintGrid(grid, scale, isPaintedWorld(next.worldId));
     sprite.texture = texture;
     owned?.destroy(true);
     owned = texture;
@@ -139,7 +142,7 @@ function ash(g: Graphics, x: number, y: number, size: number): void {
   g.rect(x - size * 0.045, y + h * 0.26, size * 0.09, size * 0.2).fill({ color: 0x241910 });
 }
 
-function paintGrid(grid: number[][], scale: FieldScale): Texture {
+function paintGrid(grid: number[][], scale: FieldScale, translucent = false): Texture {
   const rows = grid.length;
   const columns = grid[0]?.length ?? 0;
   const data = new Uint8Array(Math.max(1, columns) * Math.max(1, rows) * 4);
@@ -155,7 +158,7 @@ function paintGrid(grid: number[][], scale: FieldScale): Texture {
       data[index] = (color >> 16) & 255;
       data[index + 1] = (color >> 8) & 255;
       data[index + 2] = color & 255;
-      data[index + 3] = 255;
+      data[index + 3] = translucent ? Math.round(Math.pow(Math.max(0, Math.min(1, value)), 0.7) * 235) : 255;
     }
   }
   const source = new BufferImageSource({

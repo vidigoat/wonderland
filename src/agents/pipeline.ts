@@ -94,23 +94,27 @@ function cleanError(error: unknown, spec?: WorldSpecT, brief?: ScientistBriefT):
 
 async function* finishVerified(spec: WorldSpecT): AsyncGenerator<PipelineEvent> {
   yield { type: "world", spec, source: "live" };
-  const problems: string[] = [];
+  // The science already passed, so a failed painting never throws the world away: it plays unpainted.
   try {
     const art = await import("./artist");
-    if (typeof art.illustrate === "function") await art.illustrate(spec);
+    if (typeof art.illustrate === "function") {
+      const illustration = await art.illustrate(spec);
+      if (illustration?.source === "live") {
+        const { finishIllustration } = await import("./art-finish");
+        const path = await import("node:path");
+        spec.art.painted = await finishIllustration(spec.id, illustration, path.join(process.cwd(), "public", "art"));
+        yield { type: "stage", stage: "artist", message: "Painted with Muse Image, cut out with SAM 3.1.", source: "live" };
+      }
+    }
   } catch (error) {
-    problems.push(`Artist step failed: ${redact(cause(error), spec).replace(/\s+/g, " ").slice(0, 180)}`);
+    const message = `Artist step failed: ${redact(cause(error), spec).replace(/\s+/g, " ").slice(0, 180)} The world plays unpainted.`;
+    yield { type: "stage", stage: "artist", message, source: "live" };
   }
   try {
     const storage = await import("@/lib/storage/worlds");
     if (typeof storage.saveWorld === "function") await storage.saveWorld(spec);
   } catch (error) {
-    problems.push(`Saving the world failed: ${redact(cause(error), spec).replace(/\s+/g, " ").slice(0, 180)}`);
-  }
-  if (problems.length > 0) {
-    const message = problems.join(" ");
-    yield { type: "stage", stage: "artist", message, source: "live" };
-    yield { type: "error", message, source: "live" };
+    yield { type: "error", message: `Saving the world failed: ${redact(cause(error), spec).replace(/\s+/g, " ").slice(0, 180)}`, source: "live" };
     return;
   }
   yield stage("done", "World verified.", spec);
@@ -202,7 +206,8 @@ async function* generateLiveBody(
     try {
       spec = WorldSpec.parse(parseJson(raw));
       // Models write ids like "counterflowCorridor"; storage needs kebab-case. Normalise rather than lose a verified world.
-      spec = { ...spec, id: worldId(spec.id, spec.title) };
+      // Painted art is only ever recorded by the artist, never taken from model output.
+      spec = { ...spec, id: worldId(spec.id, spec.title), art: { style: spec.art.style, background: spec.art.background } };
     } catch (error) {
       if (round === maxRepairs) break;
       yield stage("repair", "Spec didn't validate — repairing. The law stays ███.", undefined, brief);

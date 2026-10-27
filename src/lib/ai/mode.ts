@@ -32,6 +32,9 @@ export function openWeightsSource(): DataSource {
 export type ReasoningBackend = "meta" | "open-weights";
 
 export function reasoningBackend(): ReasoningBackend | null {
+  // REASONING_BACKEND=open-weights keeps thinking on Muse Spark Open even with a Meta key,
+  // so Meta credit is spent on Muse Image + SAM art instead of long design calls.
+  if (process.env.REASONING_BACKEND === "open-weights" && openWeightsSource() === "live") return "open-weights";
   if (metaSource() === "live") return "meta";
   if (openWeightsSource() === "live") return "open-weights";
   return null;

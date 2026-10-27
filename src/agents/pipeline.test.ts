@@ -3,6 +3,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
+vi.mock("@/lib/storage/worlds", () => ({ saveWorld: vi.fn(async () => undefined) }));
 
 const think = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/ai/meta", () => ({
@@ -121,7 +122,7 @@ describe("generateWorld", () => {
     expect(visibleText(events)).not.toContain("The scribe builds the command");
   });
 
-  it("asks the model for schemas, hides the law, and reports a failed artist step", async () => {
+  it("asks the model for schemas, hides the law, and keeps the world when the artist step fails", async () => {
     process.env.MODEL_API_KEY = "test-key";
     const spec = passingWorld();
     think.mockImplementation(async (opts: { jsonSchema?: { name: string }; input: string }) => {
@@ -150,8 +151,8 @@ describe("generateWorld", () => {
     const checks = events.find((event) => event.type === "checks");
     expect(checks && checks.type === "checks" ? checks.results.every((result) => result.passed) : false).toBe(true);
     expect(events.some((event) => event.type === "stage" && event.stage === "artist" && /Artist step failed/.test(event.message))).toBe(true);
-    expect(events.some((event) => event.type === "error" && /failed/i.test(event.message))).toBe(true);
-    expect(events.some((event) => event.type === "stage" && event.stage === "done")).toBe(false);
+    expect(events.some((event) => event.type === "error")).toBe(false);
+    expect(events.some((event) => event.type === "stage" && event.stage === "done")).toBe(true);
   });
 
   it("refuses without designing a world", async () => {

@@ -4,10 +4,13 @@ export function PosterCard({
   copy,
   kicker = "Wonderland",
   footer = "The AI builds the world. You find the law.",
+  painting,
 }: {
   copy: PosterCopy;
   kicker?: string;
   footer?: string;
+  /** A painted world's Muse Image background, as a JPEG data URL. Replaces the motif. */
+  painting?: string;
 }) {
   // Share cards follow the site: black and white, Geist-like sans, the ringed-dot mark.
   const ink = "#fafafa";
@@ -35,7 +38,12 @@ export function PosterCard({
           <div style={{ display: "flex", fontSize: 76, fontWeight: 600, lineHeight: 1, letterSpacing: "-0.05em" }}>{copy.title}</div>
           <div style={{ display: "flex", fontSize: 30, lineHeight: 1.35, marginTop: 24, maxWidth: 660, color: muted }}>{copy.tagline}</div>
         </div>
-        <Motif motif={copy.motif} ink={ink} accent={muted} paper="#262626" />
+        {painting ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={painting} width={340} height={340} alt="" style={{ borderRadius: 20, border: "1px solid rgba(255,255,255,0.14)", objectFit: "cover" }} />
+        ) : (
+          <Motif motif={copy.motif} ink={ink} accent={muted} paper="#262626" />
+        )}
       </div>
       <div style={{ display: "flex", fontSize: 22, color: muted }}>{footer}</div>
     </div>

@@ -60,6 +60,10 @@ export function formatHudValue(
   unit?: string,
 ): { text: string; unit: string | null } {
   if (isShareReading(id, label, value)) return { text: `${Math.round(value * 100)}%`, unit: null };
+  // A counter that is really a ratio (a dune's speed against a dune of height 10) must keep its fraction.
+  if (display === "counter" && typeof value === "number" && Number.isFinite(value) && Math.abs(value) < 20 && Math.abs(value - Math.round(value)) >= 0.05) {
+    return { text: formatReading(value, "series"), unit: plainUnit(unit) };
+  }
   return { text: formatReading(value, display), unit: plainUnit(unit) };
 }
 
@@ -198,12 +202,32 @@ export function shotSettled(obs: { status?: number | string } | null | undefined
   return obs?.status === "landed" || obs?.status === "escaped";
 }
 
-export function runSteps(archetype: string): number {
+/**
+ * Steps for one gesture on Marching Dunes.
+ * The saved rules use k = 0.005 and a saltation threshold of 3.5, so c = k (wind − threshold)^1.5 / height.
+ * A fixed short run moves the crest by a fraction of a cell. This asks for about 18 cells, and stays short when the wind is too weak to move sand.
+ */
+export function duneRunSteps(wind: number, height: number): number {
+  const diff = Math.max(0, wind - 3.5);
+  const celerity = (0.005 * diff ** 1.5) / Math.max(1, height);
+  if (celerity <= 1e-8) return 48;
+  return Math.min(20000, Math.max(48, Math.ceil(18 / celerity)));
+}
+
+export function runSteps(archetype: string, worldId?: string, params?: Params): number {
   if (archetype === "pipeline") return 1;
   // Long enough for a shot above circular speed to leave (escape at 1.4 takes ~550 steps).
   if (archetype === "bodies") return 560;
+  if (worldId === "dune-march") return duneRunSteps(Number(params?.windSpeed ?? 5), Number(params?.initialHeight ?? 10));
   if (archetype === "field") return 48;
   return 30;
+}
+
+/** How many simulation steps to take per frame, so a long march still finishes in one gesture. */
+export function tickBatch(steps: number): number {
+  if (steps <= 80) return 1;
+  if (steps <= 600) return 4;
+  return Math.max(1, Math.ceil(steps / 24));
 }
 
 /** How long one gesture should stay on screen, so a shot can travel and a fire can spread. */

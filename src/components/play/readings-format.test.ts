@@ -35,6 +35,14 @@ describe("reading numbers", () => {
       text: "42%",
       unit: null,
     });
+    expect(formatHudValue("migrationSpeed", "How fast the dune walks", 0.5, "counter", "")).toEqual({
+      text: "0.5",
+      unit: null,
+    });
+    expect(formatHudValue("lynxAlive", "Lynx alive", 8, "counter", "lynx")).toEqual({
+      text: "8",
+      unit: "lynx",
+    });
     expect(formatHudValue("waveSpeed", "How fast the jam travels", -2.4, "series", "m/s")).toEqual({
       text: "-2.4",
       unit: "metres per second",

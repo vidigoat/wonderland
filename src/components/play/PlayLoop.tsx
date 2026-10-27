@@ -46,7 +46,7 @@ import {
   type PlaySnapshot,
 } from "./phase";
 import { collectShots } from "./capture";
-import { defaultParams, formatParam, freshStart, pictureAction, raceLine, raceRows, restageParams, runDuration, runSteps, shotSettled, stripMoved, summariseObservation, runVerb } from "./readings";
+import { defaultParams, formatParam, freshStart, pictureAction, raceLine, raceRows, restageParams, runDuration, runSteps, shotSettled, stripMoved, summariseObservation, tickBatch, runVerb } from "./readings";
 import { mintSession, withSeed } from "./session";
 import { startWavCapture, type WavCapture } from "./wav";
 import { armChime, playChime } from "./chime";
@@ -475,7 +475,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   function spreadTicks(session: WorldSession, steps: number, duration: number) {
     return new Promise<void>((resolve, reject) => {
       const started = performance.now();
-      const batch = steps > 80 ? 4 : 1;
+      const batch = tickBatch(steps);
       const frames = Math.ceil(steps / batch);
       let done = 0;
       let frameIndex = 0;
@@ -570,7 +570,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     }
     for (const [id, value] of Object.entries(paramsRef.current)) session.setParam(id, value);
     originRef.current = session.history[session.history.length - 1] ?? null;
-    const steps = runSteps(spec.archetype);
+    const steps = runSteps(spec.archetype, spec.id, paramsRef.current);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     try {
       if (spec.id === "rumour-town" && openWeightsRef.current === "live") {

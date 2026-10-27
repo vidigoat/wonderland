@@ -59,6 +59,8 @@ On a phone the forest drew all 120 moths, each about 19 pixels, so the flock was
 
 The valley drew 111 hares and 7 lynx at about 20 pixels, so the lynx looked like more hares. Commit `3602b13` keeps every predator and draws that crowd large enough to tell apart. A firefly's brightness follows its own phase, so a dark one shrinks. Checked on the production server after one run: the meadow shows spotted lynx among the hares, and only a few fireflies are bright, which matches "flashing in step" at 2%. `pnpm check` is 226 tests.
 
+Marching Dunes used the same short run as a fire. At the default wind the crest moved a fraction of a cell, the picture sat still, and the distance read as 0. One gesture now walks the crest about 0.23 dune widths, in about ten seconds, and the shape ends further downwind. A speed of one half stays "0.5" instead of rounding to 1. The four dune checks still pass. Checked on the production server.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

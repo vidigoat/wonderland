@@ -20,7 +20,7 @@ import {
   TRAIL,
 } from "./phase";
 import { pictureFrame, receiptArtPaths, receiptCopy, receiptSummary } from "./receipt";
-import { freshStart, pictureAction, raceLine, raceRows, restageParams, runDuration, runSteps, speakTool, stripMoved } from "./readings";
+import { duneRunSteps, freshStart, pictureAction, raceLine, raceRows, restageParams, runDuration, runSteps, speakTool, stripMoved, tickBatch } from "./readings";
 import { drainSse, heroHref, toMontageItem } from "./sse";
 import { encodeWav } from "./wav";
 
@@ -100,6 +100,13 @@ describe("phase machine", () => {
     expect(runSteps("bodies")).toBeGreaterThanOrEqual(550);
     expect(runDuration(runSteps("bodies"))).toBeGreaterThan(runDuration(1));
     expect(runSteps("population")).toBe(30);
+    expect(runSteps("field", "firebreak")).toBe(48);
+    expect(duneRunSteps(0, 10)).toBe(48);
+    expect(duneRunSteps(5, 10)).toBeGreaterThan(1000);
+    expect(duneRunSteps(5, 20)).toBeGreaterThan(duneRunSteps(5, 10));
+    expect(tickBatch(560)).toBe(4);
+    const duneSteps = runSteps("field", "dune-march", { windSpeed: 5, initialHeight: 10 });
+    expect(Math.ceil(duneSteps / tickBatch(duneSteps))).toBeLessThanOrEqual(24);
     expect(freshStart("newtons-cannon", "bodies", { speed: 0.5 }, { speed: 0.5 })).toBe(true);
     expect(freshStart("rumour-town", "population", { rumourSeeds: 1, reserveRatio: 0.1 }, { rumourSeeds: 1, reserveRatio: 0.1 })).toBe(false);
     expect(freshStart("rumour-town", "population", { rumourSeeds: 1 }, { rumourSeeds: 6 })).toBe(true);

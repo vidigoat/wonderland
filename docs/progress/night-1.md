@@ -79,7 +79,7 @@ The ember plate said the heat was "170" and "6362". Commit `c2e1336`. Those were
 
 The leftover heat number, "how fast heat is flowing 2.24", is the change from one spot on the metal to the next. Commit `fa5029e`. It now says that, in degrees. Birds bumping, a share between 0 and 1, shows as a percent. Checked on the production server: 13.2 degrees of difference, hottest spot 65.4 degrees, 2.27 degrees from one spot to the next, average warmth 6.21 degrees.
 
-Painting every one of the plate's 48 steps held the button on "In motion" for about fifteen seconds. The gesture now paints a dozen frames. On the production server it finishes in about five seconds: 13 degrees of difference, hottest spot 63.9 degrees, 2.24 degrees from one spot to the next, average warmth 6.21 degrees. A fire still paints every step.
+Painting every one of the plate's 48 steps held the button on "In motion" for about fifteen seconds. Commit `84d62cd`. The gesture now paints a dozen frames. On the production server it finishes in about five seconds: 13 degrees of difference, hottest spot 63.9 degrees, 2.24 degrees from one spot to the next, average warmth 6.21 degrees. A fire still paints every step.
 
 ## Still blocked on a key
 

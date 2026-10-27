@@ -133,6 +133,8 @@ The hallway shelf card still painted every person facing the same way. Commit `3
 
 The receipt called the minutes on the world "Time until it held", including when a prediction was missed. Commit `4793a11`. It now says "Time you spent". On the production server a finished Peppered Forest card reads 13s under that label, both predictions held, and that the law is not printed. `pnpm check` is 241 tests.
 
+Forty steps left the ring-road shelf card as an even line of cars, before a jam exists. Commit `5a4c3cc`. The card now runs 220 steps, and the hallway card runs long enough for the two directions to sort. On the shelf seed those 220 steps pack 12 stopped cars together and leave the rest moving. The production gallery shows that card. `pnpm check` is 242 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

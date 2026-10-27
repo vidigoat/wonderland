@@ -22,18 +22,6 @@ export function createPipelineScene(): Scene {
 
   const travelerFigure = createFigure();
   traveler.addChild(travelerFigure.view);
-  const seal = new Graphics();
-  const sealLabel = new Text({
-    text: "sealed",
-    resolution: pixelRatio(),
-    style: { fontFamily: stageFont("story"), fontSize: 15, fill: 0xf6e2a8 },
-  });
-  sealLabel.anchor.set(0, 0.5);
-  sealLabel.position.set(46, -22);
-  sealLabel.visible = false;
-  traveler.addChild(seal);
-  traveler.addChild(sealLabel);
-
   let layoutKey = "";
   let points: { x: number; y: number }[] = [];
   let stationFigures: Figure[] = [];
@@ -71,7 +59,6 @@ export function createPipelineScene(): Scene {
       for (const figure of stationFigures) figure.cancel();
       stationFigures = layStations(stations, stages, points, frame, rows.length > 0, Boolean(error));
       laySpell(spell, frame, query, error, rows, sealed);
-      drawSeal(seal, sealed, frame.palette);
     }
 
     travelerFigure.show(frame.worldId, "scroll", frame.palette.parchment);
@@ -92,7 +79,6 @@ export function createPipelineScene(): Scene {
     traveler.rotation = frame.reducedMotion ? 0 : at.angle * 0.18;
     traveler.scale.set(scale);
     painting.show(frame.worldId, frame.width, frame.height);
-    sealLabel.visible = sealed;
   };
 
   return {
@@ -390,13 +376,6 @@ function drawLine(
   }
   for (const chunk of chunks) layer.addChild(chunk);
   return y + lineHeight;
-}
-
-function drawSeal(g: Graphics, sealed: boolean, palette: WorldPalette): void {
-  g.clear();
-  if (!sealed) return;
-  g.roundRect(16, -36, 92, 26, 7).fill({ color: palette.deep });
-  g.circle(30, -23, 5).stroke({ width: 1.6, color: palette.glow });
 }
 
 function summarize(row: unknown): string {

@@ -9,6 +9,7 @@ describe("witness", () => {
     expect(witnessLine("newtons-cannon", { status: "flying", laps: 0.1 }, { status: "flying", laps: 0.6 })).toBe("It has not come down.");
     expect(witnessLine("rumour-town", { bank: "open" }, { bank: "collapsed" })).toBe("The bank has closed its doors.");
     expect(witnessLine("firebreak", { crossing: "no" }, { crossing: "yes" })).toBe("The far ridge is burning.");
+    expect(witnessLine("firebreak", { crossing: "yes", stillBurning: "yes" }, { crossing: "yes", stillBurning: "no" })).toBe("The far ridge burned.");
     expect(witnessLine("firebreak", { crossing: "no", stillBurning: "yes", burnedShare: 0.1 }, { crossing: "no", stillBurning: "no", burnedShare: 0.49 })).toBe("The fire stopped.");
     expect(witnessLine("firebreak", { crossing: "no", stillBurning: "no", burnedShare: 0 }, { crossing: "no", stillBurning: "no", burnedShare: 0 })).toBeNull();
     expect(witnessLine("peppered-forest", { meanDarkness: 0.2 }, { meanDarkness: 0.4 })).toBeNull();
@@ -34,10 +35,11 @@ describe("witness", () => {
       witnessLine("newtons-cannon", { status: "flying", laps: 0.2 }, { status: "flying", laps: 0.6 }),
       witnessLine("rumour-town", { bank: "open" }, { bank: "collapsed" }),
       witnessLine("firebreak", { crossing: "no" }, { crossing: "yes" }),
+      witnessLine("firebreak", { crossing: "yes", stillBurning: "yes" }, { crossing: "yes", stillBurning: "no" }),
       witnessLine("firebreak", { crossing: "no", stillBurning: "yes", burnedShare: 0.2 }, { crossing: "no", stillBurning: "no", burnedShare: 0.4 }),
       witnessLine("peppered-forest", { meanDarkness: 0.1 }, { meanDarkness: 0.7 }),
     ];
-    expect(spoken.map(witnessBeat)).toEqual(["vault", "halt", "leave", "land", "orbit", "bank", "ridge", "held", "moths"]);
+    expect(spoken.map(witnessBeat)).toEqual(["vault", "halt", "leave", "land", "orbit", "bank", "ridge", "ridge", "held", "moths"]);
     expect(witnessBeat(null)).toBeNull();
     expect(witnessBeat("Ada's reading is not yours.")).toBe("race");
     expect(witnessBeat("quotes end the string")).toBeNull();
@@ -49,6 +51,7 @@ describe("witness", () => {
       witnessLine("gatekeeper", { scribeError: "ok" }, { scribeError: "error" }),
       witnessLine("newtons-cannon", { status: "flying" }, { status: "escaped" }),
       witnessLine("firebreak", { crossing: "no" }, { crossing: "yes" }),
+      witnessLine("firebreak", { crossing: "yes", stillBurning: "yes" }, { crossing: "yes", stillBurning: "no" }),
       witnessLine("firebreak", { crossing: "no", stillBurning: "yes", burnedShare: 0.2 }, { crossing: "no", stillBurning: "no", burnedShare: 0.49 }),
     ];
     for (const line of lines) {

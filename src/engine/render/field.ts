@@ -176,9 +176,9 @@ function flame(g: Graphics, x: number, y: number, size: number): void {
 }
 
 function ash(g: Graphics, x: number, y: number, size: number): void {
-  const h = size * 0.62;
-  g.poly([x, y - h * 0.15, x + size * 0.2, y + h * 0.32, x - size * 0.2, y + h * 0.32]).fill({ color: FIELD_COLORS.ash });
-  g.rect(x - size * 0.045, y + h * 0.26, size * 0.09, size * 0.2).fill({ color: 0x241910 });
+  // A short charred stump. A triangle here reads as another sapling, so a burned valley looks unburned.
+  g.rect(x - size * 0.07, y + size * 0.08, size * 0.14, size * 0.16).fill({ color: FIELD_COLORS.ash });
+  g.circle(x, y + size * 0.08, size * 0.045).fill({ color: 0x2a241c });
 }
 
 function paintGrid(grid: number[][], scale: FieldScale, translucent = false): Texture {

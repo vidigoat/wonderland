@@ -951,16 +951,18 @@ h1, h2, .law-line, .voice, .galley-title, .place-name, .wordmark {
 .swatch {
   width: 0.72rem;
   height: 0.72rem;
-  background: #9a968f;
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  background: #3f3c36;
+  clip-path: polygon(22% 55%, 78% 55%, 78% 100%, 22% 100%);
 }
 
 .swatch.sapling {
   background: #3e6b45;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
 
 .swatch.flame {
   background: #e15a24;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
 
 .witness {

@@ -19,8 +19,8 @@ export const FIREBREAK_FLAME = 1;
 export const FIELD_COLORS = {
   /** Indigo night ground. */
   night: 0x1c1a3a,
-  /** Grey ash. */
-  ash: 0x9a968f,
+  /** Charred stump. Dark enough that a burned valley is not another forest. */
+  ash: 0x3f3c36,
   /** Moss tree. */
   moss: 0x3e6b45,
   /** Ember flame. */

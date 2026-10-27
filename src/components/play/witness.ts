@@ -21,6 +21,7 @@ export function witnessLine(worldId: string, previous: Observation | null, next:
   }
   if (worldId === "rumour-town" && next.bank === "collapsed" && previous.bank !== "collapsed") return "The bank has closed its doors.";
   if (worldId === "firebreak") {
+    if (next.stillBurning === "no" && previous.stillBurning === "yes" && next.crossing === "yes") return "The far ridge burned.";
     if (next.crossing === "yes" && previous.crossing !== "yes") return "The far ridge is burning.";
     const burned = Number(next.burnedShare);
     if (next.stillBurning === "no" && previous.stillBurning === "yes" && next.crossing !== "yes" && burned > 0.02) {
@@ -45,6 +46,7 @@ const BEATS = {
   "It has not come down.": "orbit",
   "The bank has closed its doors.": "bank",
   "The far ridge is burning.": "ridge",
+  "The far ridge burned.": "ridge",
   "The fire stopped.": "held",
   "The moths are not the colour they were.": "moths",
   "Ada's reading is not yours.": "race",

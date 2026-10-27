@@ -9,6 +9,8 @@ export type JudgeBody = {
   source?: DataSource;
   notice?: string;
   nextExperiment?: Params;
+  /** The law in plain words. The server sends it only once the judge says you have discovered it. */
+  law?: string;
 };
 
 export type RivalTurn = {
@@ -95,6 +97,7 @@ export function readJudge(value: unknown, knobIds?: readonly string[]): JudgeBod
     source: readSource(v.source),
     notice: typeof v.notice === "string" ? v.notice : undefined,
     nextExperiment: next,
+    law: v.verdict === "discovered" && typeof v.law === "string" && v.law.trim() ? v.law.trim().slice(0, 400) : undefined,
   };
 }
 

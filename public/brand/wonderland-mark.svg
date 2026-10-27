@@ -1,18 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Wonderland">
-  <title>Wonderland</title>
-  <defs>
-    <clipPath id="wl-keyhole"><path d="M32 16.5a8.5 8.5 0 0 1 4.3 15.8l2.6 14.2a1.6 1.6 0 0 1-1.6 1.9H26.7a1.6 1.6 0 0 1-1.6-1.9l2.6-14.2A8.5 8.5 0 0 1 32 16.5Z"/></clipPath>
-    <linearGradient id="wl-sky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffd27a"/>
-      <stop offset="0.55" stop-color="#f4875a"/>
-      <stop offset="1" stop-color="#c2456a"/>
-    </linearGradient>
-  </defs>
-  <path fill="#fafafa" fill-rule="evenodd" d="M32 3a29 29 0 1 1 0 58a29 29 0 1 1 0-58Zm0 13.5a8.5 8.5 0 0 0-4.3 15.8l-2.6 14.2a1.6 1.6 0 0 0 1.6 1.9h10.6a1.6 1.6 0 0 0 1.6-1.9l-2.6-14.2A8.5 8.5 0 0 0 32 16.5Z"/>
-  <g clip-path="url(#wl-keyhole)">
-    <rect x="20" y="14" width="24" height="36" fill="url(#wl-sky)"/>
-    <circle cx="32" cy="27" r="3.6" fill="#fff4d6"/>
-    <path d="M20 41c4-3.2 7.5-4.2 11-2.6c3.6 1.6 7.4.6 13-2.6V50H20Z" fill="#2c3f8f"/>
-    <path d="M20 45c5-2.4 9.5-2.6 14-.8c3.4 1.3 6.4.9 10-1.2V50H20Z" fill="#1b2559"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Wonderland"><title>Wonderland</title><path d="M8.5 27.5V14a7.5 7.5 0 0 1 15 0v13.5Z" fill="none" stroke="#fafafa" stroke-width="2.8" stroke-linejoin="round"/><circle cx="16" cy="18.5" r="2.7" fill="#fafafa"/></svg>

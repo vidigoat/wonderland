@@ -10,6 +10,7 @@ import { WorldSession } from "@/engine/runtime";
 import type { PublicWorldSpec } from "@/engine/spec";
 import { asWorldView, type WorldView } from "@/engine/view";
 import { builtinRules } from "@/worlds/builtins";
+import { StageHud, StageLegend } from "@/components/play/StageHud";
 
 /**
  * The whole product in thirty seconds, on the landing page.
@@ -125,6 +126,8 @@ export function TryIt({ spec }: { spec: PublicWorldSpec }) {
         </div>
         <div className="try-canvas">
           <StageSlot view={view} archetype={spec.archetype} worldId={spec.id} artStyle={spec.art.style} painted={spec.art.painted} playing={phase === "running"} params={params} beat={null} beatId={0} />
+          {obs ? <StageHud spec={spec} obs={obs} params={params} /> : null}
+          {phase !== "predict" ? <StageLegend worldId={spec.id} /> : null}
           <p className="try-caption" aria-live="polite">
             {caption(obs, phase)}
           </p>
@@ -135,7 +138,8 @@ export function TryIt({ spec }: { spec: PublicWorldSpec }) {
         {phase === "predict" ? (
           <>
             <p className="try-step">1 · Predict</p>
-            <h3 className="try-q">This bank is perfectly healthy. You tell one person a false rumour. What happens?</h3>
+            <h3 className="try-q">This bank is perfectly healthy. You tell one person a false rumour that it&apos;s in trouble. What happens?</h3>
+            <p className="try-note">Like every real bank, it keeps only a little cash in the vault (enough for 4 of its 40 savers) and lends the rest out.</p>
             <ul className="try-options">
               {GUESSES.map((text, index) => (
                 <li key={text}>
@@ -145,7 +149,7 @@ export function TryIt({ spec }: { spec: PublicWorldSpec }) {
                 </li>
               ))}
             </ul>
-            <p className="try-note">Pick one. Then watch the town decide.</p>
+            <p className="try-note">Pick one, then watch the town decide.</p>
           </>
         ) : null}
 
@@ -153,14 +157,18 @@ export function TryIt({ spec }: { spec: PublicWorldSpec }) {
           <>
             <p className="try-step">{tries === 0 ? "2 · Watch" : `Experiment ${tries}`}</p>
             <h3 className="try-q">{tries === 0 ? "Watch the square." : "Running your town again…"}</h3>
-            <p className="try-note">Every person here decides for themselves. Nobody scripted the ending.</p>
+            <p className="try-note">Every person decides for themselves: they worry when their neighbours worry, and they run when they see a queue. Watch the coins in the vault.</p>
           </>
         ) : null}
 
         {phase === "fell" ? (
           <>
             <p className="try-step">{guess === RIGHT ? "You called it" : "Not what you expected?"}</p>
-            <h3 className="try-q">The bank closed on day {days}. It had the money. Then everyone came for it at once.</h3>
+            <h3 className="try-q">The bank closed on day {days}, and the rumour was false.</h3>
+            <p className="try-note">
+              Worry spread from neighbour to neighbour. A few people went for their cash, others saw the queue and joined it, and the vault ran dry. Nothing was wrong
+              with the bank until everyone believed something was.
+            </p>
             <p className="try-note">Now the real question: what one change would have saved it? Nobody will tell you. Try things.</p>
             <Button size="lg" className="try-go" onClick={() => setPhase("experiment")}>
               Find what saves it <ArrowRight aria-hidden="true" />
@@ -204,10 +212,17 @@ export function TryIt({ spec }: { spec: PublicWorldSpec }) {
         {phase === "held" ? (
           <>
             <p className="try-step">You found it</p>
-            <h3 className="try-q">The bank held. Same rumour, same town. Nobody ran, because nobody needed to be first.</h3>
+            <h3 className="try-q">The bank held. Same rumour, same town.</h3>
+            <div className="try-learned">
+              <p className="try-learned-label">What you just discovered</p>
+              <p>
+                A bank run feeds on itself: people don&apos;t run because the bank is weak, they run because they fear others will run first. Guarantee every
+                deposit and there&apos;s no reason to be first, so nobody runs. It&apos;s why most countries insure bank deposits today.
+              </p>
+            </div>
             <p className="try-note">
-              That&apos;s a real law of economics, and you worked it out yourself in {tries} {tries === 1 ? "try" : "tries"}. Every Wonderland world works like this, about anything you
-              ask. In the full game you put it into words, prove it on a new case, and race Ada, an AI scientist, to it.
+              You worked that out yourself, in {tries} {tries === 1 ? "try" : "tries"}. Every Wonderland world works like this, about anything you ask. In the full game you also
+              put it into words, prove it on a new case, and race Ada, an AI scientist, to it.
             </p>
             <div className="try-ctas">
               <Button asChild size="lg">

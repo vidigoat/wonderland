@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/brand/wonderland-mark.svg" width="88" alt="Wonderland logo: a world with a keyhole, and another world glowing through it" />
+  <img src="public/brand/wonderland-mark.svg" width="88" alt="Wonderland logo: a doorway with a light inside" />
 </p>
 
 <h1 align="center">Wonderland</h1>
@@ -37,7 +37,7 @@
   - [A team of Meta models](#a-team-of-meta-models)
   - [How a world is built and verified](#how-a-world-is-built-and-verified)
   - [How a world is painted](#how-a-world-is-painted)
-  - [The hidden law never reaches the browser](#the-hidden-law-never-reaches-the-browser)
+  - [The hidden law stays hidden until you find it](#the-hidden-law-stays-hidden-until-you-find-it)
   - [Running AI-written code safely](#running-ai-written-code-safely)
   - [A hard ceiling on spend](#a-hard-ceiling-on-spend)
 - [Run it yourself](#run-it-yourself)
@@ -62,7 +62,7 @@ That's the landing page's playable demo, recorded as is. A perfectly healthy ban
 
 AI made answers free. Understanding still has to be earned: decades of learning research agree that what you work out yourself sticks, and what you're told fades. Answer engines skip exactly the part that makes you understand.
 
-Wonderland keeps the AI and flips its job. **The models do the building, the science and the art. You do the thinking.** The hidden law is never printed anywhere you can read it, not on the page, not in the network traffic, not even on the card you keep at the end.
+Wonderland keeps the AI and flips its job. **The models do the building, the science and the art. You do the thinking.** The hidden law never reaches your screen, or even your browser's network traffic, until a judge agrees you've found it. Then, and only then, you get it in plain words. It is never printed on the card you share.
 
 Great interactive simulations exist ([PhET](https://phet.colorado.edu/), [Explorable Explanations](https://explorabl.es/)), but each one takes experts weeks. Wonderland makes a new one, verified, in about two minutes, for any question a learner actually has.
 
@@ -77,7 +77,9 @@ Great interactive simulations exist ([PhET](https://phet.colorado.edu/), [Explor
 | <img src="public/landing/step-play.webp" alt="Peppered Forest: soot on the bark, pale moths standing out" /> | <img src="public/landing/step-prove.webp" alt="A new situation the player has to predict" /> |
 | **3. Experiment until you see it.** Predict, change one thing, run it again. Ada, an AI scientist on the same world, is racing you, and she only moves after you do. | **4. Say it, then prove it.** Put the law into words, typed or spoken. A judge model tells you how close you are without ever saying the answer. Then a situation you haven't seen tests whether you really understood. |
 
-At the end you keep a card (shareable, with its own preview image) showing your prediction before and after, and how long the discovery took. The law itself is not on it.
+At the end the law you found is shown in plain words (*"What you discovered"*), and you keep a card, shareable with its own preview image, showing your prediction before and after and how long the discovery took. The law itself is not on the card, so sharing it never spoils the world for anyone else.
+
+Every screen says where you are: a bar across the top shows **what you're finding out** and the four steps (Predict, Experiment, Explain, Prove); the panel shows only the current step with a plain instruction written for that world; readings appear **on the stage**, where you're looking (Rumour Town shows the cash in the vault as coins draining away). Ada's notes stay folded until you've proved the law yourself, so she can never give it away.
 
 ## The worlds
 
@@ -184,7 +186,7 @@ A world is a typed [`WorldSpec`](src/engine/spec.ts): story, controls, observabl
 
 A failed painting never throws away a world whose science passed: it simply plays unpainted. `pnpm paint <world-id>` repaints any saved world.
 
-### The hidden law never reaches the browser
+### The hidden law stays hidden until you find it
 
 ```mermaid
 flowchart LR
@@ -204,6 +206,7 @@ flowchart LR
 - [`toPublic()`](src/engine/spec.ts) strips the law, the answer keys, the checks and the suggested settings before anything is sent. Predictions are graded on the server ([`/api/grade`](src/app/api/grade/route.ts)).
 - The judge's reply is scanned for any 24-character slice of the hidden law and replaced if one appears ([`src/agents/judge.ts`](src/agents/judge.ts)). Error messages are redacted the same way.
 - The build stream shows the law only as `███`.
+- The plain-words law is returned by `/api/judge` **only** together with a `discovered` verdict, and the play screen shows it as *"What you discovered"* on the final step. Before that moment it does not exist in the browser.
 
 ### Running AI-written code safely
 
@@ -269,7 +272,7 @@ The interface is black, white and [Geist](https://vercel.com/font), so the only 
 
 <img src="public/brand/wonderland-mark.svg" width="44" align="left" alt="" />
 
-**The mark** is a world with a keyhole, and another world glowing through it: every question hides a door, and behind it is a world you find for yourself. Files: [`public/brand/`](public/brand) (colour, on-light and single-colour versions). Design rules for contributors: [`docs/design/system.md`](docs/design/system.md).
+**The mark** is a doorway with a light inside: every question is a door, and behind it is a world you find for yourself. It is drawn in code on a 32-unit grid ([`src/components/brand/Logo.tsx`](src/components/brand/Logo.tsx)); files in [`public/brand/`](public/brand). Design rules for contributors: [`docs/design/system.md`](docs/design/system.md).
 
 <br clear="left" />
 

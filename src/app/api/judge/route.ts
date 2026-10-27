@@ -7,7 +7,8 @@ import { findWorld } from "@/worlds/find.server";
  * POST { worldId, statement }
  * → { verdict: "discovered" | "warmer" | "colder", reply, nextExperiment?, source, notice? }
  * Live: Muse Spark with src/agents/prompts/judge.md, then scrubReply.
- * Sample: server-side rubric and fixed replies. The hidden law is never returned.
+ * Sample: server-side rubric and fixed replies.
+ * The law, in plain words, is returned only with a "discovered" verdict: you found it, so now you may read it.
  */
 export async function POST(req: Request) {
   await connection();
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
   if (!spec) return Response.json({ error: "unknown world" }, { status: 404 });
   try {
     const result = await judgeStatement(spec, body.statement);
-    return Response.json(result);
+    return Response.json(result.verdict === "discovered" ? { ...result, law: spec.science.plainStatement } : result);
   } catch (error) {
     if (error instanceof ModelCallError) {
       return Response.json({ source: error.source, message: error.message }, { status: 502 });

@@ -12,12 +12,13 @@ export function createPipelineScene(): Scene {
   const root = new Container();
   const backdrop = new Graphics();
   const painting = createBackdrop();
+  const wash = new Graphics();
   const route = new Graphics();
   const stations = new Container();
   const traveler = new Container();
   const spell = new Container();
   // Stations and their names paint after the scroll, so the scribe, the vault, and the labels stay visible.
-  root.addChild(backdrop, painting.view, route, traveler, stations, spell);
+  root.addChild(backdrop, painting.view, wash, route, traveler, stations, spell);
 
   const travelerFigure = createFigure();
   traveler.addChild(travelerFigure.view);
@@ -64,6 +65,9 @@ export function createPipelineScene(): Scene {
       points = stationPoints(stages.length, frame.width, frame.height);
       paintArchive(backdrop, frame);
       paintRoute(route, points, frame.palette);
+      // Dim the painting so the four stations and the spell read clearly over it.
+      wash.clear();
+      wash.rect(0, 0, frame.width, frame.height).fill({ color: 0x000000, alpha: 0.38 });
       for (const figure of stationFigures) figure.cancel();
       stationFigures = layStations(stations, stages, points, frame, rows.length > 0, Boolean(error));
       laySpell(spell, frame, query, error, rows, sealed);
@@ -198,27 +202,44 @@ function layStations(
       layer.addChild(blot);
     }
 
-    const caption = new Text({
-      text: stage.replace(/[-_]/g, " "),
-      resolution: pixelRatio(),
-      style: {
-        fontFamily: stageFont("story"),
-        fontSize: frame.height < 520 ? 13 : 15,
-        fill: readableOn(frame.palette),
-        align: "center",
-      },
-    });
-    caption.anchor = 0.5;
-    caption.position.set(at.x, at.y + (frame.height < 520 ? 32 : 44) * scale);
-    layer.addChild(caption);
+    const role = stationRole(stage, open, error, index);
+    const card = stationCard(role, frame.height < 520);
+    card.position.set(at.x, at.y + (frame.height < 520 ? 30 : 42) * scale);
+    layer.addChild(card);
   });
   return figures;
 }
 
-function readableOn(palette: WorldPalette): number {
-  const ground = palette.ground;
-  const lum = ((ground >> 16) & 255) * 0.2126 + ((ground >> 8) & 255) * 0.7152 + (ground & 255) * 0.0722;
-  return lum > 150 ? palette.ink : palette.parchment;
+/** What each station is called and what it is doing right now, in plain words. */
+function stationRole(stage: string, open: boolean, error: boolean, index: number): { title: string; state: string; alert: boolean } {
+  const n = `${index + 1}`;
+  if (/scroll/i.test(stage)) return { title: `${n}  Your scroll`, state: "what you write", alert: false };
+  if (/scribe/i.test(stage)) return { title: `${n}  The scribe`, state: error ? "stopped: the spell broke" : "pastes it into a spell", alert: error };
+  if (/ledger|book/i.test(stage)) return { title: `${n}  The ledger`, state: open ? "gave up its entries" : "runs the spell", alert: open };
+  if (/vault|door/i.test(stage)) return { title: `${n}  The vault`, state: open ? "OPEN" : "shut", alert: open };
+  return { title: `${n}  ${stage.replace(/[-_]/g, " ")}`, state: "", alert: false };
+}
+
+function stationCard(role: { title: string; state: string; alert: boolean }, small: boolean): Container {
+  const card = new Container();
+  const resolution = pixelRatio();
+  const title = new Text({ text: role.title, resolution, style: { fontFamily: stageFont("ui"), fontSize: small ? 12 : 14, fontWeight: "600", fill: 0xfafafa } });
+  const state = new Text({
+    text: role.state,
+    resolution,
+    style: { fontFamily: stageFont("ui"), fontSize: small ? 11 : 12, fontWeight: role.alert ? "700" : "400", fill: role.alert ? 0xffd27a : 0xbdbdbd },
+  });
+  const padX = 10;
+  const padY = 6;
+  const w = Math.max(title.width, state.width) + padX * 2;
+  const h = title.height + state.height + padY * 2 + 1;
+  const plate = new Graphics();
+  plate.roundRect(-w / 2, 0, w, h, 9).fill({ color: 0x000000, alpha: 0.78 });
+  plate.roundRect(-w / 2, 0, w, h, 9).stroke({ width: 1, color: role.alert ? 0xffd27a : 0xffffff, alpha: role.alert ? 0.8 : 0.16 });
+  title.position.set(-title.width / 2, padY);
+  state.position.set(-state.width / 2, padY + title.height + 1);
+  card.addChild(plate, title, state);
+  return card;
 }
 
 function stationTint(stage: string, palette: WorldPalette): number {
@@ -232,62 +253,53 @@ function stationTint(stage: string, palette: WorldPalette): number {
 function laySpell(layer: Container, frame: Frame, query: string, error: string | null, rows: unknown[], sealed: boolean): void {
   destroyChildren(layer);
   const short = frame.height < 520;
-  const margin = Math.max(short ? 12 : 20, frame.width * 0.06);
+  const margin = Math.max(short ? 12 : 18, frame.width * 0.04);
   const cardW = frame.width - margin * 2;
-  const cardH = Math.min(short ? 96 : 176, Math.max(short ? 72 : 110, frame.height * (short ? 0.22 : 0.26)));
   const cardX = margin;
-  const cardY = frame.height - cardH - Math.max(12, frame.height * 0.04);
-  const plate = new Graphics();
-  plate.roundRect(cardX, cardY, cardW, cardH, 16).fill({ color: frame.palette.parchment });
-  plate.roundRect(cardX, cardY, cardW, cardH, 16).stroke({ width: 2, color: frame.palette.accent, alpha: 0.9 });
-  layer.addChild(plate);
-
-  if (!query) {
-    const waiting = new Text({
-      text: "The scribe's desk is clear.",
-      resolution: pixelRatio(),
-      style: { fontFamily: stageFont("story"), fontSize: 18, fill: frame.palette.ink },
-    });
-    waiting.position.set(cardX + 22, cardY + cardH / 2 - 12);
-    layer.addChild(waiting);
-    return;
-  }
-
+  const resolution = pixelRatio();
   const fontSize = cardW < 520 ? 13 : 15;
   const family = stageFont("mono");
   const maxWidth = cardW - 36;
+  const lineHeight = fontSize * 1.5;
+  const heading = new Text({
+    text: query ? "The spell the scribe wrote from your scroll (an SQL query)" : "The scribe's desk is clear. Send a scroll to see the spell it writes.",
+    resolution,
+    style: { fontFamily: stageFont("ui"), fontSize: 12, fill: 0xa3a3a3 },
+  });
   const measure = measurer(`500 ${fontSize}px ${family}`);
+  const lines = query ? wrapLines(query, maxWidth, measure).slice(0, 4) : [];
+  let footer: Text | null = null;
+  if (error) {
+    footer = new Text({
+      text: `The scribe stopped: ${error.replace(/\s+/g, " ").slice(0, 100)}`,
+      resolution,
+      style: { fontFamily: stageFont("ui"), fontSize: 13, fill: 0xff8a7a, wordWrap: true, wordWrapWidth: maxWidth },
+    });
+  } else if (rows.length > 0) {
+    const shown = rows.map(summarize).filter(Boolean).slice(0, 3);
+    footer = new Text({
+      text: `The ledger gave up ${rows.length} ${rows.length === 1 ? "entry" : "entries"}${shown.length ? `: ${shown.join(" · ")}` : ""}`,
+      resolution,
+      style: { fontFamily: stageFont("ui"), fontSize: 13, fontWeight: "600", fill: 0xffd27a, wordWrap: true, wordWrapWidth: maxWidth },
+    });
+  }
+  const padY = 12;
+  const cardH = padY + heading.height + 6 + lines.length * lineHeight + (footer ? footer.height + 8 : 0) + padY;
+  const cardY = frame.height - cardH - Math.max(12, frame.height * 0.03);
+  const plate = new Graphics();
+  plate.roundRect(cardX, cardY, cardW, cardH, 12).fill({ color: 0x050505, alpha: 0.86 });
+  plate.roundRect(cardX, cardY, cardW, cardH, 12).stroke({ width: 1, color: 0xffffff, alpha: 0.14 });
+  layer.addChild(plate);
+  heading.position.set(cardX + 18, cardY + padY);
+  layer.addChild(heading);
   const range = sealed ? null : injectionHighlightRange(query);
-  const lines = wrapLines(query, maxWidth, measure).slice(0, 5);
-  const lineHeight = fontSize * 1.45;
-  let y = cardY + 16;
+  let y = cardY + padY + heading.height + 6;
   for (const line of lines) {
     y = drawLine(layer, line, y, cardX + 18, lineHeight, fontSize, family, range, frame.palette);
   }
-
-  if (error) {
-    const note = new Text({
-      text: error.replace(/\s+/g, " ").slice(0, 110),
-      resolution: pixelRatio(),
-      style: {
-        fontFamily: family,
-        fontSize: 12,
-        fill: frame.palette.deep,
-        wordWrap: true,
-        wordWrapWidth: maxWidth,
-      },
-    });
-    note.position.set(cardX + 18, cardY + cardH - 28 - Math.min(32, note.height));
-    layer.addChild(note);
-  } else if (rows.length > 0) {
-    const linesOut = rows.map(summarize).filter(Boolean).slice(0, 3);
-    const ledger = new Text({
-      text: linesOut.length ? linesOut.join("\n") : `${rows.length} entries revealed`,
-      resolution: pixelRatio(),
-      style: { fontFamily: stageFont("story"), fontSize: 14, fill: frame.palette.deep },
-    });
-    ledger.position.set(cardX + 18, cardY + cardH - 18 - ledger.height);
-    layer.addChild(ledger);
+  if (footer) {
+    footer.position.set(cardX + 18, y + 4);
+    layer.addChild(footer);
   }
 }
 
@@ -325,12 +337,14 @@ function drawLine(
     chunks.push(node);
     return node;
   };
-  push(before, palette.ink);
-  const marked = push(mid, palette.parchment);
-  push(after, palette.ink);
+  // Your words, where they changed the spell, are marked in amber.
+  void palette;
+  push(before, 0xf5f5f5);
+  const marked = push(mid, 0x1a1205);
+  push(after, 0xf5f5f5);
   if (marked) {
     const wash = new Graphics();
-    wash.roundRect(marked.x - 3, y - 2, marked.width + 6, lineHeight - 2, 4).fill({ color: palette.deep, alpha: 0.92 });
+    wash.roundRect(marked.x - 3, y - 2, marked.width + 6, lineHeight - 3, 4).fill({ color: 0xffd27a, alpha: 0.95 });
     layer.addChild(wash);
   }
   for (const chunk of chunks) layer.addChild(chunk);

@@ -303,8 +303,8 @@ export function Landing({
             you understand.
           </p>
           <p>
-            Wonderland keeps the AI and flips its job. It does the building, the science and the art. You do the thinking. The hidden rule is never printed anywhere you can
-            read it, not even on the card you keep at the end.
+            Wonderland keeps the AI and flips its job. It does the building, the science and the art. You do the thinking. The hidden rule never reaches your screen
+            until a judge agrees you&apos;ve found it yourself.
           </p>
         </div>
       </section>

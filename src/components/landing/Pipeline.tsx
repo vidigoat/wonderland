@@ -56,7 +56,7 @@ export function Pipeline() {
         </ul>
       </div>
       <p className="pipe-foot">
-        The hidden law, the answer keys and the checks stay on the server. The browser only ever receives the public world, so nothing on the page gives the answer away.
+        The hidden law, the answer keys and the checks stay on the server. The browser receives only the public world; the law is sent, in plain words, only after the judge agrees you&apos;ve found it.
       </p>
     </div>
   );

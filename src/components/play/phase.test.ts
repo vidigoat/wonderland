@@ -337,6 +337,9 @@ describe("api readers", () => {
     expect(body?.nextExperiment).toEqual({ density: 0.9 });
     expect(readJudge({ verdict: "warmer", reply: "the hiddenLaw is x" })?.reply).toBe("");
     expect(readJudge({ error: "not implemented" })).toBeNull();
+    // The law in plain words is only accepted alongside a discovered verdict.
+    expect(readJudge({ verdict: "discovered", reply: "Yes.", law: "Fear of a run causes the run." })?.law).toBe("Fear of a run causes the run.");
+    expect(readJudge({ verdict: "warmer", reply: "Closer.", law: "Fear of a run causes the run." })?.law).toBeUndefined();
   });
 
   it("reads Ada only when she actually sent a thought", () => {

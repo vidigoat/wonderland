@@ -4,6 +4,11 @@ import type { Params } from "@/engine/rules";
 import type { PublicWorldSpec } from "@/engine/spec";
 import { formatParam, runVerb } from "./readings";
 
+/** A share of something (cash kept, how closely trees are planted) reads better as a percentage. */
+function asPercent(knob: { kind: string; label: string; min?: number; max?: number }): boolean {
+  return knob.kind === "slider" && (knob.min ?? 0) >= 0 && (knob.max ?? 1) <= 1 && /cash|share|ratio|reserve|fraction|density|closely|percent/i.test(knob.label);
+}
+
 export function Instruments({
   spec,
   params,
@@ -27,7 +32,7 @@ export function Instruments({
 }) {
   return (
     <div className="instruments">
-      <p className="kicker">Instruments</p>
+      <p className="kicker">Controls</p>
       {locked && lockedNote ? <p className="slip">{lockedNote}</p> : null}
       <div className="knob-rack" aria-disabled={locked}>
         {spec.knobs.map((knob) => {
@@ -36,7 +41,7 @@ export function Instruments({
             <label key={knob.id} className="knob">
               <span className="knob-label">
                 <span>{knob.label}</span>
-                {knob.kind !== "toggle" && knob.kind !== "text" ? <span className="num">{formatParam(value)}</span> : null}
+                {knob.kind !== "toggle" && knob.kind !== "text" ? <span className="num">{asPercent(knob) ? `${Math.round(Number(value ?? knob.default) * 100)}%` : formatParam(value)}</span> : null}
               </span>
               {knob.kind === "slider" ? (
                 <input

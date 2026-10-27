@@ -23,6 +23,7 @@ export function AdaNote({
   rival,
   onTurn,
   canTurn,
+  reveal = false,
 }: {
   spec: PublicWorldSpec;
   status: "quiet" | "thinking" | "wiring" | "noted";
@@ -34,9 +35,12 @@ export function AdaNote({
   rival: Observation | null;
   onTurn: () => void;
   canTurn: boolean;
+  /** Her reasoning and her exact moves would give the law away, so they stay folded until you have proved it yourself. */
+  reveal?: boolean;
 }) {
   const bench = describeParams(spec, params);
-  const race = raceRows(spec, yours, rival);
+  // Two rows are enough to show where you and she differ; more turns the card into a table.
+  const race = raceRows(spec, yours, rival).slice(0, 2);
   return (
     <section title={seedNote ?? undefined} className="ada" aria-label="Ada" data-status={status}>
       <header className="ada-head">
@@ -50,7 +54,7 @@ export function AdaNote({
       <div className="ada-scroll">
       {race.length ? (
         <div className="race" aria-label="Where you and Ada differ">
-          <p className="kicker">Where you differ</p>
+          <p className="kicker">Your readings and hers</p>
           <div className="race-head">
             <span />
             <span>You</span>
@@ -71,19 +75,26 @@ export function AdaNote({
       ) : null}
       {status === "wiring" ? <p className="wiring">{ADA_WIRING}</p> : null}
       {status === "quiet" ? <p className="aside">An AI scientist racing you on this same world. She moves after you do.</p> : null}
-      <ol className="ada-notes">
-        {entries.map((entry, index) => (
-          <li key={`${entry.tool}-${index}`}>
-            <p className="thought">{entry.thought}</p>
-            <p className="tool-line">
-              <span>{speakTool(spec.knobs, entry.tool).replaceAll("_", " ")}</span>
-              {entry.reading ? <span>{entry.reading}</span> : null}
-            </p>
-          </li>
-        ))}
-      </ol>
-      {/* Her bench appears once she has started; before that the card stays a single line. */}
-      {bench.length && entries.length ? (
+      {entries.length > 0 && !reveal ? (
+        <p className="ada-progress">
+          She has run {entries.length} {entries.length === 1 ? "experiment" : "experiments"}. Her notes open once you have proved the law yourself, so they can&apos;t give it away.
+        </p>
+      ) : null}
+      {reveal ? (
+        <ol className="ada-notes">
+          {entries.map((entry, index) => (
+            <li key={`${entry.tool}-${index}`}>
+              <p className="thought">{entry.thought}</p>
+              <p className="tool-line">
+                <span>{speakTool(spec.knobs, entry.tool).replaceAll("_", " ")}</span>
+                {entry.reading ? <span>{entry.reading}</span> : null}
+              </p>
+            </li>
+          ))}
+        </ol>
+      ) : null}
+      {/* Her bench (her exact settings) appears only with her notes. */}
+      {reveal && bench.length && entries.length ? (
         <p className="bench">
           <span>Her bench</span>
           {bench.map((item) => (

@@ -259,6 +259,8 @@ function paintBackdrop(g: Graphics, frame: Frame, previous: string, painted: boo
   if (painted) return;
 
   g.rect(0, 0, width, height).fill({ color: palette.ground });
+  // A painted world shows plain ground while its painting loads, never the drawn town under the painted bank.
+  if (isPaintedWorld(worldId)) return;
   if (worldId === "rumour-town") {
     g.ellipse(width * 0.5, height * 0.92, width * 0.46, height * 0.12).fill({ color: palette.mist, alpha: 0.45 });
     drawBankScenery(g, width * 0.5, height * 0.28, Math.min(width, height));

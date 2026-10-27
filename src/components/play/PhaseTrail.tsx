@@ -1,26 +1,26 @@
-import { phaseMark, TRAIL, type Phase } from "./phase";
+import { STEPS, stepIndex } from "./guide";
+import type { Phase } from "./phase";
 
-export function PhaseTrail({ phase, seen }: { phase: Phase; seen: string[] }) {
-  const active = phaseMark(phase);
+/** Always on screen: what you are finding out, and where you are in the four steps. */
+export function PhaseTrail({ phase, concept }: { phase: Phase; concept: string }) {
+  const at = stepIndex(phase);
   return (
-    <nav className="phase-trail" aria-label="The discovery">
-      <ol>
-        {TRAIL.map((step, index) => {
-          const state = index < active ? "done" : index === active ? "now" : "ahead";
+    <nav className="goal-bar" aria-label="Your progress">
+      <p className="goal-what">
+        <span className="goal-label">You&apos;re finding out</span>
+        <span className="goal-question">{concept}</span>
+      </p>
+      <ol className="goal-steps">
+        {STEPS.map((label, index) => {
+          const state = index < at ? "done" : index === at ? "now" : "ahead";
           return (
-            <li key={step.phase} data-state={state} aria-current={state === "now" ? "step" : undefined}>
-              <span>{step.label}</span>
+            <li key={label} data-state={state} aria-current={state === "now" ? "step" : undefined}>
+              <span className="goal-n">{state === "done" ? "✓" : index + 1}</span>
+              <span>{label}</span>
             </li>
           );
         })}
       </ol>
-      {seen.length > 0 ? (
-        <p className="seen-trail">
-          {seen.map((line) => (
-            <span key={line}>{line}</span>
-          ))}
-        </p>
-      ) : null}
     </nav>
   );
 }

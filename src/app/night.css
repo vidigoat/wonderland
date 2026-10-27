@@ -1432,3 +1432,335 @@
 .notebook .mission + .press {
   margin-top: 16px;
 }
+
+/* ── Play screen, third edition: always know what you're finding out, where you are, and what to do now ── */
+
+/* Goal bar: the question you're answering, and the four steps. */
+.play .goal-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 0 14px 12px;
+  padding: 10px 14px 10px 18px;
+  border: 1px solid var(--wl-line);
+  border-radius: 14px;
+  background: #0a0a0a;
+}
+.play .goal-what {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+}
+.play .goal-label {
+  flex: none;
+  color: var(--wl-faint);
+  font-size: 13px;
+  font-weight: 500;
+}
+.play .goal-question {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #fafafa;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.play .goal-steps {
+  display: flex;
+  flex: none;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.play .goal-steps li {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px 5px 6px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  color: var(--wl-faint);
+  font-size: 13px;
+  font-weight: 500;
+}
+.play .goal-n {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  font-size: 11px;
+  font-weight: 600;
+}
+.play .goal-steps li[data-state="done"] {
+  color: var(--wl-muted);
+}
+.play .goal-steps li[data-state="done"] .goal-n {
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fafafa;
+}
+.play .goal-steps li[data-state="now"] {
+  background: #fafafa;
+  color: #0a0a0a;
+  font-weight: 600;
+}
+.play .goal-steps li[data-state="now"] .goal-n {
+  border-color: #0a0a0a;
+}
+@media (max-width: 980px) {
+  .play .goal-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .play .goal-question {
+    white-space: normal;
+  }
+}
+
+/* Step card: one label, one plain instruction. */
+.notebook .step-label {
+  color: var(--wl-faint);
+  font-size: 13px;
+  font-weight: 500;
+}
+.notebook .step-lede {
+  margin-top: 8px;
+  color: #fafafa;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+.notebook .next-step {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--wl-line);
+}
+.notebook .next-step .aside {
+  margin-bottom: 10px;
+}
+.play .press.press-secondary {
+  background: transparent;
+  color: #fafafa;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+.play .press.press-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: #fafafa;
+}
+
+/* What the world just did: a caption at the foot of the stage, not a headline across it. */
+.play .witness {
+  top: auto;
+  right: auto;
+  bottom: 16px;
+  left: 16px;
+  max-width: calc(100% - 32px);
+  padding: 9px 14px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px);
+  color: #fafafa;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1.35;
+  letter-spacing: 0;
+  text-shadow: none;
+}
+
+/* Readings on the stage. */
+.hud {
+  position: absolute;
+  z-index: 5;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: calc(100% - 28px);
+  pointer-events: none;
+}
+.hud-card {
+  min-width: 110px;
+  padding: 9px 13px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.74);
+  backdrop-filter: blur(10px);
+  color: #fafafa;
+}
+.hud-label {
+  margin: 0;
+  color: #a3a3a3;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+.hud-big {
+  margin: 2px 0 0;
+  font-size: 22px;
+  font-weight: 650;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.hud-big small {
+  color: #a3a3a3;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.hud-bank {
+  max-width: 300px;
+}
+.hud-bank[data-closed="yes"] {
+  border-color: rgba(239, 68, 68, 0.7);
+  background: rgba(60, 10, 14, 0.85);
+}
+.hud-bank .hud-label + .hud-big + .hud-label {
+  margin-top: 8px;
+}
+.hud-coins {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+.hud-coins i {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #f2c45a;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.25);
+  transition:
+    background 0.3s,
+    opacity 0.3s;
+}
+.hud-coins i[data-spent="yes"] {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.3);
+}
+.hud-note {
+  margin: 8px 0 0;
+  color: #a3a3a3;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.hud-legend {
+  position: absolute;
+  z-index: 5;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  gap: 12px;
+  margin: 0;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px);
+  color: #e5e5e5;
+  font-size: 12px;
+  list-style: none;
+  pointer-events: none;
+}
+.hud-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.hud-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+.hud-legend i.hud-legend-bubble {
+  width: auto;
+  height: auto;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: #fff8ee;
+  color: #3a2a22;
+  font-style: normal;
+  font-size: 10px;
+  box-shadow: none;
+}
+
+/* Ada: one compact card; her notes open at the end. */
+.play .ada-progress {
+  margin: 6px 0 0;
+  color: var(--wl-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.notebook .learned {
+  margin: 4px 0 20px;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 210, 122, 0.45);
+  border-radius: 12px;
+  background: rgba(255, 210, 122, 0.07);
+}
+.notebook .learned-label {
+  color: #ffd27a;
+  font-size: 13px;
+  font-weight: 600;
+}
+.notebook .learned-law {
+  margin-top: 6px;
+  color: #fafafa;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+.notebook .learned .aside {
+  margin-top: 8px;
+}
+/* The run button stays in reach: pinned to the foot of the panel while the controls scroll. */
+.play .notebook .instruments .instrument-actions {
+  position: sticky;
+  bottom: -18px;
+  z-index: 2;
+  margin: 4px -22px -20px;
+  padding: 14px 22px 16px;
+  background: linear-gradient(to bottom, rgba(10, 10, 10, 0), #0a0a0a 18px);
+}
+.hud {
+  align-items: flex-start;
+}
+.hud-rows {
+  display: grid;
+  gap: 4px;
+  margin: 10px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+.hud-rows div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 13px;
+}
+.hud-rows dt {
+  color: #a3a3a3;
+}
+.hud-rows dd {
+  margin: 0;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.hud-rows small {
+  color: #a3a3a3;
+  font-weight: 500;
+}

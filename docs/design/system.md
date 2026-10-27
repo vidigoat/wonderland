@@ -17,7 +17,14 @@
 Landing: `src/app/bw.css` (shared) and `src/app/land.css` (sections). Play screen: `src/app/night.css` (`--wl-*`). shadcn tokens: `src/app/globals.css`; `<html class="dark">`.
 
 ## The mark
-A world with a keyhole, and another world glowing through it (sky, sun, hills). Source of truth: `src/components/brand/Logo.tsx` (`LogoMark`), mirrored in `public/brand/*.svg`, `src/app/icon.svg` and `src/components/brand/mark-data.ts` (server images). Minimum size 16px. The keyhole scene is the only gradient in the interface. Use `wonderland-mark-mono.svg` where only one colour is possible.
+A doorway with a light inside: every question is a door, and behind it is a world you find for yourself. Drawn in code on a 32-unit grid: `src/components/brand/Logo.tsx` (`LogoMark`, `markSvg`), mirrored in `src/app/icon.svg` (on a black tile), `public/brand/*.svg` and `src/components/brand/mark-data.ts` (server images). One colour only; never add gradients or effects to it.
+
+## Play screen
+- The goal bar is always visible: *You're finding out* + the question, and the four steps (Predict, Experiment, Explain, Prove).
+- The panel shows one step at a time: a step label, one plain instruction (written per world in `src/components/play/guide.ts`), then the controls. The run button is pinned to the foot of the panel.
+- Readings sit on the stage (`StageHud`), not in a list. Colour-coded worlds get a legend.
+- Ada's notes and settings stay folded until the player has proved the law; before that she shows only how many experiments she has run and two readings.
+- The law appears in plain words only after the judge's *discovered* verdict, on the final step.
 
 ## Type
 - **Geist** for everything, **Geist Mono** only for small technical labels (URLs, the build clock, model ids).

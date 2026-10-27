@@ -1903,6 +1903,16 @@
   .play[data-world="dune-march"] .hud-big {
     font-size: 15px;
   }
+  /* Four stacked cards were covering the hot spot. Two columns leave the glow in view. */
+  .play[data-world="heat-diffusion-plate"] .stage-stack .hud {
+    max-width: calc(100% - 16px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+  .play[data-world="heat-diffusion-plate"] .hud-card {
+    min-width: 0;
+  }
 }
 .reading-chart {
   flex: 0 0 auto;

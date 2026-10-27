@@ -11,6 +11,7 @@ import type { PublicWorldSpec } from "@/engine/spec";
 import { asWorldView, type WorldView } from "@/engine/view";
 import { builtinRules } from "@/worlds/builtins";
 import { StageHud, StageLegend } from "@/components/play/StageHud";
+import { heldCaption, runStopped } from "./try-caption";
 
 /**
  * The whole product in thirty seconds, on the landing page.
@@ -30,7 +31,7 @@ const START: Fixes = { reserveRatio: 0.1, queueVisible: true, insurance: false }
 
 function caption(obs: Observation | null, phase: Phase): string {
   if (!obs) return phase === "predict" ? "A perfectly healthy bank. Forty neighbours. One false rumour." : "";
-  if (phase === "held") return "Twelve days later, the bank is still open.";
+  if (phase === "held") return heldCaption(Number(obs.withdrawnShare ?? 0));
   if (obs.bank === "collapsed") return "The bank has closed its doors.";
   const withdrawn = Number(obs.withdrawnShare ?? 0);
   const worried = Number(obs.worriedShare ?? 0);
@@ -209,7 +210,7 @@ export function TryIt({ spec }: { spec: PublicWorldSpec }) {
           </>
         ) : null}
 
-        {phase === "held" ? (
+        {phase === "held" && runStopped(Number(obs?.withdrawnShare ?? 0)) ? (
           <>
             <p className="try-step">You found it</p>
             <h3 className="try-q">The bank held. Same rumour, same town.</h3>
@@ -234,6 +235,19 @@ export function TryIt({ spec }: { spec: PublicWorldSpec }) {
                 <Link href="/w/rumour-town">Play the full world</Link>
               </Button>
             </div>
+          </>
+        ) : null}
+
+        {phase === "held" && !runStopped(Number(obs?.withdrawnShare ?? 0)) ? (
+          <>
+            <p className="try-step">It held, this time</p>
+            <h3 className="try-q">The doors stayed open. People were still taking their money.</h3>
+            <p className="try-note">
+              The vault had enough cash, or fewer neighbours could see the queue. The reason to be first in line is still there. The run did not stop.
+            </p>
+            <Button size="lg" className="try-go" onClick={() => setPhase("experiment")}>
+              Change something else <ArrowRight aria-hidden="true" />
+            </Button>
           </>
         ) : null}
 

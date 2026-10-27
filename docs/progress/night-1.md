@@ -139,6 +139,8 @@ A larger red disc under each stopped car still never showed, because the car pai
 
 A dense planting on The Firebreak said the far ridge was still burning after the flames were out, and the ash was drawn as another stand of pale trees. Commit `6ae1e42`. A burned tree is now a short dark stump, and once the fire dies after reaching the ridge the line says "The far ridge burned." On the production server, with the saplings at 90%, one burn ends at 100% of the trees burned, the far ridge reached, and the flames out. The same three readings and that line show on a phone, and they do not cover one another. `pnpm check` is 242 tests.
 
+Those first stumps were a few pixels tall, so the burned valley looked empty. Commit `615321c`. A stump is now a short post with a pale cut, about a third the height of a sapling. On the production server a default burn ends at 11% of the trees burned, the far ridge untouched, the flames out, and the valley still a stand of green saplings. The line says the fire stopped. At 90% the same stage is a field of those stumps, 100% burned, the far ridge reached, the flames out, and the line says the ridge burned. A phone shows that field of stumps under the same three readings. `pnpm check` is 242 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

@@ -78,13 +78,15 @@ export function createPipelineScene(): Scene {
     trip = stepped.trip;
     const at = along(points, stepped.travel);
     const bob = frame.playing || frame.reducedMotion ? 0 : Math.sin(frame.time / 700) * 5;
-    // Sit on the path just before the station, so the figure and its name stay clear.
-    const aside = Math.min(78, frame.width * 0.07);
-    const drop = Math.max(34, frame.height * 0.04);
+    // Sit on the path just before and below the station, so the figure and its name stay clear.
+    // The offset grows with the scroll's drawn size; a fixed fraction of the width let a large scroll cover the vault.
+    const unit = Math.min(frame.width, frame.height);
+    const scale = Math.max(1.25, Math.min(2.15, unit / 420));
+    const aside = 44 * scale;
+    const drop = 40 * scale;
     traveler.position.set(at.x - aside, at.y + drop + bob);
     traveler.rotation = frame.reducedMotion ? 0 : at.angle * 0.18;
-    const unit = Math.min(frame.width, frame.height);
-    traveler.scale.set(Math.max(1.25, Math.min(2.15, unit / 420)));
+    traveler.scale.set(scale);
     painting.show(frame.worldId, frame.width, frame.height);
     sealLabel.visible = sealed;
   };

@@ -803,3 +803,41 @@
   color: var(--wl-muted);
   font-size: 13px;
 }
+
+/* What you've seen so far, under the progress steps. */
+.play .seen-trail {
+  font-family: var(--wl-body);
+  font-style: normal;
+  font-size: 14px;
+  color: var(--wl-muted);
+}
+
+/* The race table: your column gold, Ada's violet — the colour code holds everywhere. */
+.play .race-head span:nth-child(2), .play .race-row span:nth-child(2) {
+  color: var(--wl-lantern);
+}
+.play .race-head span:last-child, .play .race-row span:last-child {
+  color: var(--wl-ada);
+}
+.play .race-label {
+  color: var(--wl-muted);
+}
+.play .tool-line {
+  letter-spacing: 0;
+  text-transform: none;
+  font-family: var(--wl-body);
+  font-size: 13px;
+  color: var(--wl-faint);
+}
+.play .readings dt, .play .readings dd {
+  color: var(--wl-text);
+}
+.play .readings dt {
+  color: var(--wl-muted);
+}
+.play .race-head {
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 13px;
+  font-weight: 700;
+}

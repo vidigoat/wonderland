@@ -105,6 +105,8 @@ Stopped cars on the ring road wore the same painting as the ones still moving, s
 
 The starlings could report that they faced the same way while every painted bird still pointed up. A starling was also drawn as a glow, because the name contains "star". Commit `de6fe5f`. Each bird now turns with its own heading. The controls read "Flock size", "How far they look", "Personal space", "Copy a neighbor", "Stay with the flock", and "Wind jitter". On the production server one pass finishes in about six seconds. One run ended at 64% facing the same way, the birds turned along that drift, and 0% bumping. A phone run ended at 95% facing the same way, 0% bumping, and the flock 18.4 from the centre. `pnpm check` is 237 tests.
 
+The meadow, the dune, the hot plate, and the valley still named their controls in title case. The valley said "Hunt to kitten conversion". Commit `c6344bd`. On the production server the meadow now says "How much they notice neighbors", "How different their blinks are", "A bright leader", "A shared pulse", and "How many fireflies". The dune says "Wind strength" and "Dune height". The plate says "How fast it spreads", "Heat of the first spot", "The rest of the plate", and "Sealed edges". The valley says "Hares turned into lynx" and "How fast lynx decline". `pnpm check` is 238 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

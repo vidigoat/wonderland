@@ -4,6 +4,13 @@ import { chartLines, chartSeries } from "./chart";
 import { formatHudValue, formatReading, isShareReading, plainUnit, shotSettled, showWithdrawingKey, vaultCoinCount } from "./readings";
 
 describe("reading numbers", () => {
+  it("says a dune's speed as a pace, not as height jargon", () => {
+    expect(formatHudValue("migrationSpeed", "How fast the dune walks", 1, "counter", "times height 10")).toEqual({
+      text: "1",
+      unit: "of a height-10 dune's pace",
+    });
+  });
+
   it("draws one coin for every saver the vault can pay", () => {
     expect(vaultCoinCount(0.1)).toBe(4);
     expect(vaultCoinCount(0.8)).toBe(32);

@@ -36,6 +36,7 @@ const PLAIN_UNITS: Record<string, string | null> = {
   "per step": "each step",
   "°C": "degrees",
   relative: null,
+  "times height 10": "of a height-10 dune's pace",
 };
 
 /** Units a player can read. Symbolic leftovers are dropped. */

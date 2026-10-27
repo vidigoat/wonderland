@@ -87,7 +87,7 @@ Sand lost on the windward face was printing 0. Commit `5c7efea`. The loss is abo
 
 The ring road hid how much the cars' speeds differ. Commit `53d5939`. That number was a variance, and it was the fifth reading, so the card never showed it. It is now the spread in metres per second, and it sits on the card. On the production server one run finishes with the jam travelling at -3.79 metres per second, an average speed of 11 metres per second, and speeds that differ by 14.1 metres per second. All five jam checks still pass.
 
-On the thirty-second bank, several people shouted "Getting my money out!" on top of each other, and one shout sat under the bank card. A phrase is now said once, and on Rumour Town it is placed in the open sky. Checked on the production server: the line is readable above the bank, and the bank still closes on day 6. `pnpm check` is 229 tests.
+On the thirty-second bank, several people shouted "Getting my money out!" on top of each other, and one shout sat under the bank card. Commit `52a17a5`. A phrase is now said once, and on Rumour Town it is placed in the open sky. Checked on the production server: the line is readable above the bank, and the bank still closes on day 6. `pnpm check` is 229 tests.
 
 ## Still blocked on a key
 

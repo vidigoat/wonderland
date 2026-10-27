@@ -27,6 +27,14 @@ Dev mode on this machine never hydrated (the HMR socket failed), so the shots ar
 
 Judgement: the dune's numbers stay near zero for a short run. The chart shows the creep. I did not speed the dune up, because the checks depend on the slow rate.
 
+## W2 · Playtester, started
+
+`look()` calls Muse Spark 1.3 on the Meta API with image parts. It does not go through `think()`, so an open-weights reasoning setting cannot turn the pictures into text.
+
+`POST /api/playtest` takes a world id and 1–6 JPEG data URLs. It loads the full spec, asks whether the frames match the law and whether the picture is broken, then runs the reply through the judge's scrub. Notes are saved at `data/playtests/<worldId>.json`. With no key it returns `source: "sample"`, verdict `concern`, and the sentence "No key, so Spark did not watch this world." It does not say the world looked right.
+
+Not done yet: the build screen does not capture frames, and it does not show the painting and the cut-outs as they are made. The $0.60 batch over the 12 worlds was not run. This checkout has no `MODEL_API_KEY`.
+
 ## Not started
 
-W2, W3, W4, W5.
+W3, W4, W5. The rest of W2.

@@ -110,6 +110,37 @@ export async function segment(opts: { prompt: string; imageUrl: string }): Promi
   return text;
 }
 
+/**
+ * Muse Spark 1.3 on the Meta Model API, with images.
+ * This does not go through `think()`. `think()` sends the turn to Spark Open when
+ * REASONING_BACKEND=open-weights, and that path turns an image into text.
+ */
+export async function look(opts: {
+  system?: string;
+  prompt: string;
+  images: string[];
+  jsonSchema: { name: string; schema: Record<string, unknown> };
+}): Promise<string> {
+  const res = await metaClient().responses.create({
+    model: MODELS.spark,
+    instructions: opts.system,
+    input: [
+      {
+        role: "user",
+        content: [
+          ...opts.images.map((image) => ({ type: "input_image", image_url: image })),
+          { type: "input_text", text: opts.prompt },
+        ],
+      },
+    ] as never,
+    text: {
+      format: { type: "json_schema", name: opts.jsonSchema.name, schema: opts.jsonSchema.schema, strict: true },
+    } as never,
+    max_output_tokens: 800,
+  });
+  return res.output_text;
+}
+
 /** Muse Voice Transcribe — WAV in, text out. Docs: https://dev.meta.ai/docs/speech-to-text */
 export async function transcribe(wav: ArrayBuffer): Promise<string> {
   if (metaSource() !== "live") return transcribeOpenWeights(wav);

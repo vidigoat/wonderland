@@ -1889,18 +1889,21 @@
   .reading-chart svg {
     height: 72px;
   }
-  /* The dune is the picture. Three stacked cards were covering its windward slope. */
-  .play[data-world="dune-march"] .stage-stack .hud {
+  /* Three stacked cards were covering the dune, and the left of the flock. */
+  .play[data-world="dune-march"] .stage-stack .hud,
+  .play[data-world="murmuration-sky"] .stage-stack .hud {
     max-width: calc(100% - 16px);
     flex-wrap: nowrap;
     align-items: stretch;
     gap: 4px;
   }
-  .play[data-world="dune-march"] .hud-card {
+  .play[data-world="dune-march"] .hud-card,
+  .play[data-world="murmuration-sky"] .hud-card {
     flex: 1 1 0;
     min-width: 0;
   }
-  .play[data-world="dune-march"] .hud-big {
+  .play[data-world="dune-march"] .hud-big,
+  .play[data-world="murmuration-sky"] .hud-big {
     font-size: 15px;
   }
   /* Stacked cards were covering the hot spot, and the left of the valley where the hares are. */

@@ -153,6 +153,8 @@ On a phone the receipt was the wide card shrunk to about 165 pixels tall, so the
 
 Hiding the queue and keeping half the cash on hand also leaves the landing bank open for twelve days, with people still withdrawing. The card called that "You found it" and explained deposit insurance. Commit `269e85d`. That ending now says the doors stayed open and the run did not stop. Insurance, which stops the withdrawals, is still the discovery. On the production landing, the half-cash town ends at 43% taken out, the bank open, 17 of 40 gone, and the line that the run did not stop. Guaranteeing deposits ends at 0 of 40 worried, 0 taken out, the bank open, and the sentence about being first in line. `pnpm check` is 245 tests.
 
+The spoken line sat on the scribe's spell, so a name of `' OR '1'='1` hid the sentence that the vault stayed shut, and the open vault hid the entries it gave up. Commit `5016017`. The spell card now sits above that line. On the production server the name-only spell keeps the vault shut and the whole sentence is visible, with the broken quote marked. The same words in both fields open the vault, and the card names the two entries it gave up. The spoken line sits under the card. `pnpm check` is 245 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

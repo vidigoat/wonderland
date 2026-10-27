@@ -951,7 +951,7 @@ h1, h2, .law-line, .voice, .galley-title, .place-name, .wordmark {
 .swatch {
   width: 0.72rem;
   height: 0.72rem;
-  background: #3f3c36;
+  background: #8a847c;
   clip-path: polygon(22% 55%, 78% 55%, 78% 100%, 22% 100%);
 }
 

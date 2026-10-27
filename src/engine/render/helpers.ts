@@ -19,8 +19,8 @@ export const FIREBREAK_FLAME = 1;
 export const FIELD_COLORS = {
   /** Indigo night ground. */
   night: 0x1c1a3a,
-  /** Charred stump. Dark enough that a burned valley is not another forest. */
-  ash: 0x3f3c36,
+  /** Cut wood. Lighter than the night, shorter than a sapling, so a burned valley still reads. */
+  ash: 0x8a847c,
   /** Moss tree. */
   moss: 0x3e6b45,
   /** Ember flame. */

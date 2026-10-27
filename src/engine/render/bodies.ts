@@ -26,7 +26,7 @@ export function createBodiesScene(): Scene {
   const ghost = new Graphics();
   const cannon = new Graphics();
   const ball = new Graphics();
-  root.addChild(sky, painting.view, planet, trail, ghost, cannon, ball);
+  root.addChild(sky, painting.view, planet, trail, cannon, ball, ghost);
 
   const samples: Point2[] = [];
   let viewRadius = 3.2;

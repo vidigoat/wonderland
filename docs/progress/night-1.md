@@ -61,7 +61,7 @@ The valley drew 111 hares and 7 lynx at about 20 pixels, so the lynx looked like
 
 Marching Dunes used the same short run as a fire. Commit `3cc291e`. At the default wind the crest moved a fraction of a cell, the picture sat still, and the distance read as 0. One gesture now walks the crest about 0.23 dune widths, in about ten seconds, and the shape ends further downwind. A speed of one half stays "0.5" instead of rounding to 1. The four dune checks still pass. Checked on the production server.
 
-Murmuration Sky's readings were a formula of the knobs. Letting time pass did not change them, and the birds did not separate or copy a heading. The flight is now real: birds keep a gap, copy neighbors, and stay with the flock. All six checks pass on seeds 1, 2 and 3. On the production server one run ends at 0 birds bumping, 17% facing the same way, and the flock spread at 15.7, with three lines on the chart.
+Murmuration Sky's readings were a formula of the knobs. Commit `8400980`. Letting time pass did not change them, and the birds did not separate or copy a heading. The flight is now real: birds keep a gap, copy neighbors, and stay with the flock. All six checks pass on seeds 1, 2 and 3. On the production server one run ends at 0 birds bumping, 17% facing the same way, and the flock spread at 15.7, with three lines on the chart.
 
 ## Still blocked on a key
 

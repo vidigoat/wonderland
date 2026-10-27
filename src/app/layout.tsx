@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Fraunces, Geist, Geist_Mono } from "next/font/google";
+import { Atkinson_Hyperlegible, Bricolage_Grotesque, Fraunces, Geist, Geist_Mono } from "next/font/google";
 import { siteOrigin } from "@/lib/site";
 import "./globals.css";
+import "./night.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,6 +21,19 @@ const fraunces = Fraunces({
   style: ["normal", "italic"],
 });
 
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const atkinson = Atkinson_Hyperlegible({
+  variable: "--font-atkinson",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   metadataBase: siteOrigin(),
   title: {
@@ -31,7 +45,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${bricolage.variable} ${atkinson.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

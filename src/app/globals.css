@@ -1494,6 +1494,14 @@ input[type="range"]::-moz-range-thumb {
   font-size: 0.85rem;
 }
 
+.receipt-caption .receipt-kept {
+  margin: 0.45rem 0 0.15rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.2rem;
+  line-height: 1.25;
+}
+
 .missing, .entering {
   min-height: 100dvh;
   display: grid;

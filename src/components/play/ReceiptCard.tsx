@@ -69,6 +69,7 @@ export function ReceiptCard({ model, worldId }: { model: ReceiptModel; worldId: 
         <button type="button" className="press" onClick={() => ref.current && downloadCanvas(ref.current, `${worldId}-receipt.png`)}>
           Keep this card
         </button>
+        <p className="receipt-kept">The law is not printed on this card.</p>
         <p className="sr">{summary}</p>
       </figcaption>
       <canvas ref={ref} width={1280} height={1680} role="img" aria-label={summary} />

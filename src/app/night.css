@@ -929,3 +929,20 @@
   font-style: normal;
   color: var(--wl-muted);
 }
+
+/* Hold to speak: the same outline button as the rest of the product. */
+.play .speak {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--wl-line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--wl-text);
+  font-size: 14px;
+  font-weight: 500;
+}
+.play .speak:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.4);
+}

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { ClientPipelineEvent } from "@/engine/client-event";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, FlaskConical, MessageCircleQuestion, Telescope } from "lucide-react";
 import { LiveWorld } from "@/components/landing/LiveWorld";
 import { Meadow } from "@/components/landing/Meadow";
 import type { PublicWorldSpec } from "@/engine/spec";
@@ -242,21 +242,30 @@ export function Landing({ places, written = [], demo }: { places: PlaceCard[]; w
         <div className="bw-steps">
           <Card className="bw-card">
             <CardHeader>
-              <span className="bw-step-n">01</span>
+              <span className="bw-step-head">
+                <MessageCircleQuestion aria-hidden="true" className="bw-step-icon" />
+                <span className="bw-step-n">01</span>
+              </span>
               <CardTitle className="bw-card-title">You ask</CardTitle>
             </CardHeader>
             <CardContent className="bw-card-body">Any question about how something works: a hack, a habitat, a market, a planet.</CardContent>
           </Card>
           <Card className="bw-card">
             <CardHeader>
-              <span className="bw-step-n">02</span>
+              <span className="bw-step-head">
+                <FlaskConical aria-hidden="true" className="bw-step-icon" />
+                <span className="bw-step-n">02</span>
+              </span>
               <CardTitle className="bw-card-title">Muse Spark builds it</CardTitle>
             </CardHeader>
             <CardContent className="bw-card-body">It finds the real law, writes a living world around it, and runs science checks on every seed. Worlds that fail never ship.</CardContent>
           </Card>
           <Card className="bw-card">
             <CardHeader>
-              <span className="bw-step-n">03</span>
+              <span className="bw-step-head">
+                <Telescope aria-hidden="true" className="bw-step-icon" />
+                <span className="bw-step-n">03</span>
+              </span>
               <CardTitle className="bw-card-title">You discover it</CardTitle>
             </CardHeader>
             <CardContent className="bw-card-body">Predict, poke, watch it happen. Nobody tells you the answer, and Ada, an AI scientist, races you on the same world.</CardContent>
@@ -313,6 +322,21 @@ export function Landing({ places, written = [], demo }: { places: PlaceCard[]; w
         <Separator className="bw-sep" />
         <p className="bw-why-turn">Wonderland flips it. The AI does the building. You do the thinking.</p>
         <p className="bw-why-src">Randomised trial, 52 engineers. Shen &amp; Tamkin, 2026.</p>
+      </section>
+
+      <section className="bw-cta">
+        <h2 className="bw-h2">What do you want to understand?</h2>
+        <p className="bw-sub">Ask anything. The world takes about two minutes to build.</p>
+        <div className="bw-cta-row">
+          <Button asChild size="lg">
+            <a href="#concept">
+              Ask a question <ArrowRight aria-hidden="true" />
+            </a>
+          </Button>
+          <Button asChild size="lg" variant="outline">
+            <Link href="/w/gatekeeper">Play a world now</Link>
+          </Button>
+        </div>
       </section>
 
       <footer className="bw-foot">

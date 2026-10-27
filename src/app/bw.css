@@ -658,3 +658,41 @@
   .bw-showcase { margin-top: 0; }
   .bw-window-stage { aspect-ratio: 4 / 5; }
 }
+.bw-step-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.bw .bw-step-icon {
+  width: 22px;
+  height: 22px;
+  color: #fafafa;
+  stroke-width: 1.5;
+}
+.bw-cta {
+  width: min(1120px, 100% - 32px);
+  margin: 0 auto clamp(64px, 9vw, 110px);
+  padding: clamp(48px, 7vw, 88px) 24px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    radial-gradient(60% 80% at 50% 0%, rgba(255, 255, 255, 0.06), transparent 70%),
+    #0a0a0a;
+  text-align: center;
+}
+.bw-cta .bw-sub {
+  margin-left: auto;
+  margin-right: auto;
+}
+.bw-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 28px;
+}
+.bw-cta-row a {
+  height: 44px;
+  padding: 0 18px;
+  font-size: 15px;
+}

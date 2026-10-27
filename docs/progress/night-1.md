@@ -173,6 +173,8 @@ On the stage that same dune was a low bump, so the two slopes were hard to tell 
 
 On a phone those three cards stacked down the left and covered the windward slope. Commit `b0ca3b4`. They now sit in one row across the top. On the production server at 390 wide, one march still reads 1 of a height-10 dune's pace, 0.23 dune widths, and -0.0046 each step, and the dune sits clear beneath the cards. `pnpm check` is 250 tests.
 
+On a phone the hot plate's four cards covered most of the metal, so the glow was a sliver beside them. Commit `e719477`. They now sit in two columns. On the production server at 390 wide, one spread reads 13 degrees of difference, a hottest spot of 63.9 degrees, 2.24 degrees from one spot to the next, and an average warmth of 6.21 degrees, with the glow clear under the cards. `pnpm check` is 250 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

@@ -94,6 +94,31 @@ export function mountWorldStage(host: HTMLElement, read: () => StageProps): () =
       document.addEventListener("visibilitychange", onVisibility);
       if (document.hidden) app.ticker.stop();
 
+      let announced = false;
+      const markReady = () => {
+        if (announced || destroyed || closed) return;
+        announced = true;
+        host.dataset.stage = "ready";
+      };
+      const teardown = () => {
+        if (closed) return;
+        closed = true;
+        canvas.removeEventListener("webglcontextlost", onLost);
+        document.removeEventListener("visibilitychange", onVisibility);
+        motion.removeEventListener("change", onMotion);
+        observer.disconnect();
+        app.ticker.stop();
+        scene?.destroy();
+        scene = null;
+        app.destroy({ removeView: true }, { children: true, texture: false, textureSource: false });
+      };
+      const onLost = (event: Event) => {
+        event.preventDefault();
+        host.dataset.stage = "lost";
+        teardown();
+      };
+      canvas.addEventListener("webglcontextlost", onLost);
+
       const tick = (ticker: Ticker) => {
         clock += Math.min(ticker.deltaMS, 50);
         const props = read();
@@ -116,23 +141,11 @@ export function mountWorldStage(host: HTMLElement, read: () => StageProps): () =
           palette: paletteNow,
         };
         scene.update(frame);
+        markReady();
       };
       app.ticker.add(tick);
-
-      const teardown = () => {
-        if (closed) return;
-        closed = true;
-        document.removeEventListener("visibilitychange", onVisibility);
-        motion.removeEventListener("change", onMotion);
-        observer.disconnect();
-        app.ticker.stop();
-        scene?.destroy();
-        scene = null;
-        app.destroy({ removeView: true }, { children: true, texture: false, textureSource: false });
-      };
       cleanups.push(teardown);
       if (destroyed) teardown();
-      else host.dataset.stage = "ready";
     } catch {
       fail();
     }

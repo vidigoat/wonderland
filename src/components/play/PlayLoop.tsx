@@ -11,7 +11,7 @@ import { builtinRules } from "@/worlds/builtins";
 import { AdaNote, type AdaEntry } from "./AdaNote";
 import { PhaseTrail } from "./PhaseTrail";
 import { Instruments } from "./Instruments";
-import { Readings } from "./Readings";
+import { Readings } from "./ReadingPanel";
 import { ReceiptCard } from "./ReceiptCard";
 import { SampleNote } from "./Scenes";
 import { StageSlot } from "./StageSlot";

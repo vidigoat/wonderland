@@ -16,7 +16,8 @@ export function createPipelineScene(): Scene {
   const stations = new Container();
   const traveler = new Container();
   const spell = new Container();
-  root.addChild(backdrop, painting.view, route, stations, traveler, spell);
+  // Stations and their names paint after the scroll, so the scribe, the vault, and the labels stay visible.
+  root.addChild(backdrop, painting.view, route, traveler, stations, spell);
 
   const travelerFigure = createFigure();
   traveler.addChild(travelerFigure.view);
@@ -77,7 +78,10 @@ export function createPipelineScene(): Scene {
     trip = stepped.trip;
     const at = along(points, stepped.travel);
     const bob = frame.playing || frame.reducedMotion ? 0 : Math.sin(frame.time / 700) * 5;
-    traveler.position.set(at.x, at.y + bob);
+    // Sit on the path just before the station, so the figure and its name stay clear.
+    const aside = Math.min(78, frame.width * 0.07);
+    const drop = Math.max(34, frame.height * 0.04);
+    traveler.position.set(at.x - aside, at.y + drop + bob);
     traveler.rotation = frame.reducedMotion ? 0 : at.angle * 0.18;
     const unit = Math.min(frame.width, frame.height);
     traveler.scale.set(Math.max(1.25, Math.min(2.15, unit / 420)));
@@ -99,8 +103,8 @@ export function createPipelineScene(): Scene {
 }
 
 function stationPoints(count: number, width: number, height: number): { x: number; y: number }[] {
-  const y = height * 0.46;
-  const inset = Math.max(56, width * 0.12);
+  const y = height < 520 ? height * 0.32 : height * 0.42;
+  const inset = Math.max(height < 520 ? 28 : 56, width * (height < 520 ? 0.08 : 0.12));
   return Array.from({ length: Math.max(count, 1) }, (_, index) => ({
     x: count <= 1 ? width / 2 : inset + ((width - inset * 2) * index) / (count - 1),
     y,
@@ -197,13 +201,13 @@ function layStations(
       resolution: pixelRatio(),
       style: {
         fontFamily: stageFont("story"),
-        fontSize: 15,
+        fontSize: frame.height < 520 ? 13 : 15,
         fill: readableOn(frame.palette),
         align: "center",
       },
     });
     caption.anchor = 0.5;
-    caption.position.set(at.x, at.y + 46 * scale);
+    caption.position.set(at.x, at.y + (frame.height < 520 ? 32 : 44) * scale);
     layer.addChild(caption);
   });
   return figures;
@@ -225,9 +229,10 @@ function stationTint(stage: string, palette: WorldPalette): number {
 
 function laySpell(layer: Container, frame: Frame, query: string, error: string | null, rows: unknown[], sealed: boolean): void {
   destroyChildren(layer);
-  const margin = Math.max(20, frame.width * 0.06);
+  const short = frame.height < 520;
+  const margin = Math.max(short ? 12 : 20, frame.width * 0.06);
   const cardW = frame.width - margin * 2;
-  const cardH = Math.min(210, Math.max(120, frame.height * 0.34));
+  const cardH = Math.min(short ? 96 : 176, Math.max(short ? 72 : 110, frame.height * (short ? 0.22 : 0.26)));
   const cardX = margin;
   const cardY = frame.height - cardH - Math.max(12, frame.height * 0.04);
   const plate = new Graphics();

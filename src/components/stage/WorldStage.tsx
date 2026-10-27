@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { JSX } from "react";
 import { asWorldView, type WorldView } from "@/engine/view";
 import { readNumber } from "@/engine/render/helpers";
 import { barkColor, cssHex, paletteFor } from "@/engine/render/palette";
+import { FallbackStage } from "@/components/play/FallbackStage";
 
 /**
  * PixiJS v8 stage. The play loop mounts it inside `.stage-frame` and passes
@@ -22,6 +23,7 @@ export function WorldStage(props: {
 }): JSX.Element {
   const host = useRef<HTMLDivElement>(null);
   const latest = useRef(props);
+  const [painted, setPainted] = useState(false);
   useEffect(() => {
     latest.current = props;
   }, [props]);
@@ -31,12 +33,21 @@ export function WorldStage(props: {
     if (!el || typeof window === "undefined") return;
     let cancel = () => {};
     let stopped = false;
+    const readStage = () => {
+      const state = el.dataset.stage;
+      if (state === "ready") setPainted(true);
+      else if (state === "error" || state === "lost") setPainted(false);
+    };
+    const watch = new MutationObserver(readStage);
+    watch.observe(el, { attributes: true, attributeFilter: ["data-stage"] });
     void import("@/engine/render/mount").then((mod) => {
       if (stopped) return;
       cancel = mod.mountWorldStage(el, () => latest.current);
+      readStage();
     });
     return () => {
       stopped = true;
+      watch.disconnect();
       cancel();
     };
   }, []);
@@ -47,21 +58,22 @@ export function WorldStage(props: {
 
   return (
     <div
-      ref={host}
+      className="world-stage"
       data-world={props.worldId}
       data-archetype={props.archetype}
       data-playing={props.playing ? "yes" : "no"}
+      data-painted={painted ? "yes" : "no"}
       role="img"
       aria-label={caption(props.archetype, view)}
-      style={{
-        position: "relative",
-        width: "100%",
-        height: "100%",
-        minHeight: 0,
-        overflow: "hidden",
-        background: cssHex(ground),
-      }}
-    />
+      style={{ background: cssHex(ground) }}
+    >
+      <div ref={host} className="world-stage-host" />
+      {painted ? null : (
+        <div className="world-stage-fallback">
+          <FallbackStage {...props} view={view} />
+        </div>
+      )}
+    </div>
   );
 }
 

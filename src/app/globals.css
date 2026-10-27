@@ -935,6 +935,20 @@ a {
   }
 }
 
+.world-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.world-stage-host,
+.world-stage-fallback {
+  position: absolute;
+  inset: 0;
+}
+
 .stage-frame, .stage-fallback, .stage-pane > .stage-fallback, .world-stage, .world-stage-host {
   height: 100%;
   width: 100%;
@@ -1980,23 +1994,47 @@ input[type="range"]::-moz-range-thumb {
     min-height: 100dvh;
   }
 
-  .play-body {
+  .play-bar {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .play-bar h1 {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 1.25rem;
+    text-align: left;
+  }
+
+  .play-links {
+    flex-wrap: wrap;
+    gap: 0.45rem 0.8rem;
+  }
+
+  .play-body,
+  .play[data-phase="receipt"] .play-body {
     grid-template-columns: 1fr;
   }
 
-  .stage-pane {
-    height: 68vw;
-    min-height: 280px;
+  .stage-pane,
+  .play[data-phase="transfer"] .stage-pane {
+    height: min(72dvh, 560px);
+    min-height: 340px;
   }
 
-  .play[data-phase="transfer"] .stage-pane {
-    height: 78vw;
-    min-height: 320px;
+  .witness {
+    font-size: clamp(1.2rem, 5vw, 1.65rem);
+    top: 0.4rem;
+  }
+
+  .legend {
+    gap: 0.45rem;
+    font-size: 0.62rem;
   }
 
   .situation p:last-child {
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -2008,6 +2046,7 @@ input[type="range"]::-moz-range-thumb {
 
   .notebook-scroll {
     overflow: visible;
+    padding-right: 0.9rem;
   }
 
   .ada {
@@ -2020,8 +2059,21 @@ input[type="range"]::-moz-range-thumb {
     overflow: visible;
   }
 
-  .play-bar h1 {
-    text-align: left;
+  .play[data-phase="receipt"] .receipt canvas {
+    width: 100%;
+    max-height: 78dvh;
+  }
+
+  textarea,
+  .spell-input,
+  select,
+  input[type="range"] {
+    font-size: 16px;
+  }
+
+  .press,
+  .speak {
+    min-height: 44px;
   }
 }
 
@@ -2034,6 +2086,29 @@ input[type="range"]::-moz-range-thumb {
   .landing-body, .gallery {
     padding-left: 1rem;
     padding-right: 1rem;
+  }
+
+  .play-bar h1 {
+    flex-basis: 100%;
+    order: 3;
+  }
+
+  .law-line {
+    font-size: clamp(2.05rem, 11vw, 2.8rem);
+  }
+
+  .gallery h1 {
+    font-size: clamp(2.4rem, 12vw, 3.4rem);
+  }
+
+  .phase-trail ol {
+    gap: 0.15rem 0.55rem;
+  }
+
+  .stage-pane,
+  .play[data-phase="transfer"] .stage-pane {
+    height: min(68dvh, 480px);
+    min-height: 300px;
   }
 }
 

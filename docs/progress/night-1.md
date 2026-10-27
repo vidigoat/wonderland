@@ -147,6 +147,8 @@ Forty steps left three shelf cards before their law had appeared. On seed 11 the
 
 That gathered flock was still two black masses, because four hundred birds were drawn at about ten pixels. Commit `dd8caeb`. The card now draws 64 of them, large enough for the wings. On the production gallery the birds show a shared lean, wings out. The meadow still shows the shared flash. `pnpm check` is 243 tests.
 
+The dune card drew the whole grid, including the flat sand, and the title covered the base, so only a spike showed. Commit `98c234a`. The card now draws the ridge itself, above the title, with the long windward slope and the shorter slip face. On the production gallery that shape sits in the sky of the desert. `pnpm check` is 244 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

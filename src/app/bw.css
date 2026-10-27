@@ -576,3 +576,85 @@
   color: #d4d4d4;
   text-decoration: none;
 }
+
+/* Product window: a real world running live, the only colour on the page. */
+.bw-showcase {
+  width: min(1120px, 100% - 32px);
+  margin: -56px auto 0;
+  padding-bottom: clamp(56px, 8vw, 96px);
+  position: relative;
+  z-index: 2;
+}
+.bw-window {
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #0a0a0a;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 0, 0, 0.6);
+}
+.bw-window-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 42px;
+  padding: 0 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  color: #737373;
+}
+.bw-window-dots {
+  display: flex;
+  gap: 6px;
+}
+.bw-window-dots i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #262626;
+}
+.bw-window-url {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+}
+.bw-window-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #d4d4d4;
+}
+.bw-window-live::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fafafa;
+  animation: bw-working 1.6s ease-in-out infinite;
+}
+.bw-window-stage {
+  position: relative;
+  aspect-ratio: 16 / 8;
+  min-height: 300px;
+}
+.bw-window-stage .stage-frame,
+.bw-window-stage .stage-fallback {
+  position: absolute;
+  inset: 0;
+}
+.bw-window-caption {
+  position: absolute;
+  z-index: 5;
+  left: 22px;
+  bottom: 18px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px);
+  font-size: 15px;
+  font-weight: 500;
+  color: #fafafa;
+}
+@media (max-width: 760px) {
+  .bw-showcase { margin-top: 0; }
+  .bw-window-stage { aspect-ratio: 4 / 5; }
+}

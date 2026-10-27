@@ -5,7 +5,9 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { ClientPipelineEvent } from "@/engine/client-event";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
+import { LiveWorld } from "@/components/landing/LiveWorld";
 import { Meadow } from "@/components/landing/Meadow";
+import type { PublicWorldSpec } from "@/engine/spec";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +24,9 @@ type LogEntry = MontageItem & { key: number };
 /** A world the generator wrote, verified and bound. Public fields only. */
 export type WrittenCard = { id: string; title: string; tagline: string; concept: string; archetype: string };
 
+/** The product window plays Rumour Town with two rumours, thin reserves and no insurance. */
+const DEMO_PARAMS = { rumourSeeds: 2, reserveRatio: 0.1, insurance: false, queueVisible: true };
+
 const EXAMPLES = [
   "Why do fireflies end up flashing in sync?",
   "Why do traffic jams appear out of nowhere?",
@@ -30,7 +35,7 @@ const EXAMPLES = [
   "How does natural selection make camouflage?",
 ];
 
-export function Landing({ places, written = [] }: { places: PlaceCard[]; written?: WrittenCard[] }) {
+export function Landing({ places, written = [], demo }: { places: PlaceCard[]; written?: WrittenCard[]; demo?: PublicWorldSpec }) {
   const [concept, setConcept] = useState("");
   const [building, setBuilding] = useState(false);
   const [log, setLog] = useState<LogEntry[]>([]);
@@ -203,6 +208,12 @@ export function Landing({ places, written = [] }: { places: PlaceCard[]; written
           {ribbon ? <p className="bw-ribbon">{ribbon}</p> : null}
         </div>
       </section>
+
+      {demo ? (
+        <section className="bw-showcase" aria-label="A world running live">
+          <LiveWorld spec={demo} params={DEMO_PARAMS} />
+        </section>
+      ) : null}
 
       <section className="bw-logos" aria-label="Built with">
         <p>Powered by Meta&apos;s open and hosted models, served on partner infrastructure</p>

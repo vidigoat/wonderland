@@ -89,7 +89,7 @@ The ring road hid how much the cars' speeds differ. Commit `53d5939`. That numbe
 
 On the thirty-second bank, several people shouted "Getting my money out!" on top of each other, and one shout sat under the bank card. Commit `52a17a5`. A phrase is now said once, and on Rumour Town it is placed in the open sky. Checked on the production server: the line is readable above the bank, and the bank still closes on day 6. `pnpm check` is 229 tests.
 
-"How hard the hares swing" was a bare 0.99. That number is the size of the swing divided by the average herd. On the production server one chase finishes at 0.99 of their average, with 112 hares, 26 lynx, and the lynx peak 42 steps later.
+"How hard the hares swing" was a bare 0.99. Commit `5d6d25c`. That number is the size of the swing divided by the average herd. On the production server one chase finishes at 0.99 of their average, with 112 hares, 26 lynx, and the lynx peak 42 steps later.
 
 ## Still blocked on a key
 

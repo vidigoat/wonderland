@@ -47,7 +47,7 @@ A question that cannot become a world gets one sentence, three questions already
 
 A finished play writes one anonymous line to `data/plays/plays.jsonl`. Nothing from that file is shown on screen.
 
-## W3 · The eval
+## W3 · The eval (`74b93e9`)
 
 `pnpm eval` is `scripts/eval-generate.ts`. Run here on Tue 27 Oct 2026, about 11:05 PM IST, with no key. It wrote `docs/eval-results.md` and exited 0. The eight questions were not sent to a model. No fraction, median time, or median cost. The README was not given a number. Failed questions were not re-run, and nothing new was painted.
 

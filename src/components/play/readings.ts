@@ -5,18 +5,62 @@ export function defaultParams(spec: PublicWorldSpec): Params {
   return Object.fromEntries(spec.knobs.map((knob) => [knob.id, knob.default]));
 }
 
+/** Anything smaller than this prints as 0, so a tiny negative never becomes "-0.00". */
+const NEAR_ZERO = 0.005;
+
+function trimZeros(text: string): string {
+  if (!text.includes(".")) return text;
+  return text.replace(/(\.\d*?)0+$/, "$1").replace(/\.$/, "");
+}
+
 export function formatReading(value: number | string | undefined, display: Observable["display"] = "text"): string {
   if (value == null || value === "") return "—";
   if (typeof value === "number") {
     if (!Number.isFinite(value)) return "—";
-    if (display === "counter" && Number.isInteger(value)) return String(value);
-    const abs = Math.abs(value);
-    if (abs >= 100) return value.toFixed(0);
+    if (Math.abs(value) < NEAR_ZERO) return "0";
+    if (display === "counter") return String(Math.round(value));
     if (Number.isInteger(value)) return String(value);
-    if (abs >= 10) return value.toFixed(1);
-    return value.toFixed(2);
+    const abs = Math.abs(value);
+    const digits = abs >= 100 ? 0 : abs >= 10 ? 1 : 2;
+    return trimZeros(value.toFixed(digits));
   }
   return value;
+}
+
+const PLAIN_UNITS: Record<string, string | null> = {
+  "m/s": "metres per second",
+  "(m/s)²": null,
+  "(m/s)^2": null,
+  "veh/h": "cars each hour",
+  "flashes/s": "flashes a second",
+  "per step": "each step",
+  "°C": "degrees",
+  relative: null,
+};
+
+/** Units a player can read. Symbolic leftovers are dropped. */
+export function plainUnit(unit: string | undefined): string | null {
+  if (!unit || unit.trim() === "") return null;
+  if (Object.prototype.hasOwnProperty.call(PLAIN_UNITS, unit)) return PLAIN_UNITS[unit] ?? null;
+  if (/[/^²³()]/.test(unit)) return null;
+  return unit;
+}
+
+/** A 0–1 amount that is a share, a fraction, or a "how together" score. */
+export function isShareReading(id: string, label: string, value: unknown): value is number {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 1) return false;
+  return /share|fraction|proportion|percent|synchrony|alignment|polariz|order/i.test(`${id} ${label}`);
+}
+
+export function formatHudValue(
+  id: string,
+  label: string,
+  value: number | string | undefined,
+  display: Observable["display"] = "series",
+  unit?: string,
+): { text: string; unit: string | null } {
+  if (isShareReading(id, label, value)) return { text: `${Math.round(value * 100)}%`, unit: null };
+  return { text: formatReading(value, display), unit: plainUnit(unit) };
 }
 
 export function formatParam(value: Params[string] | undefined): string {
@@ -31,11 +75,11 @@ export type ReadingLine = { id: string; label: string; value: string; spell: boo
 export function readingLines(spec: { observables: PublicWorldSpec["observables"] }, obs: Observation | null): ReadingLine[] {
   return spec.observables.map((item) => {
     const raw = obs ? obs[item.id] : undefined;
-    const value = formatReading(raw, item.display);
+    const formatted = formatHudValue(item.id, item.label, raw, item.display, item.unit);
     return {
       id: item.id,
       label: item.label,
-      value: item.unit ? `${value} ${item.unit}` : value,
+      value: formatted.unit ? `${formatted.text} ${formatted.unit}` : formatted.text,
       spell: item.id === "query" || item.display === "text",
     };
   });

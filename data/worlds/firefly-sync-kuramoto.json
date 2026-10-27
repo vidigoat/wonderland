@@ -3,27 +3,27 @@
   "version": 1,
   "concept": "Why do fireflies start flashing in sync?",
   "title": "The Meadow That Blinks As One",
-  "tagline": "A twilight meadow flickers — can a leaderless crowd find a single beat?",
+  "tagline": "A twilight meadow flickers \u2014 can a leaderless crowd find a single beat?",
   "archetype": "population",
   "science": {
-    "hiddenLaw": "Spontaneous synchronization of pulse-coupled / Kuramoto phase oscillators: each firefly is an oscillator with natural frequency ω_i and phase θ_i that is nudged by neighbors as dθ_i/dt = ω_i + (K/N) Σ_j sin(θ_j - θ_i) (pulse-coupled equivalent: phase advance/delay on seeing a flash), producing a phase-transition to global synchrony with Kuramoto order parameter r→1 when mutual coupling strength K exceeds a critical threshold K_c proportional to the spread of natural frequencies.",
+    "hiddenLaw": "Spontaneous synchronization of pulse-coupled / Kuramoto phase oscillators: each firefly is an oscillator with natural frequency \u03c9_i and phase \u03b8_i that is nudged by neighbors as d\u03b8_i/dt = \u03c9_i + (K/N) \u03a3_j sin(\u03b8_j - \u03b8_i) (pulse-coupled equivalent: phase advance/delay on seeing a flash), producing a phase-transition to global synchrony with Kuramoto order parameter r\u21921 when mutual coupling strength K exceeds a critical threshold K_c proportional to the spread of natural frequencies.",
     "plainStatement": "Each firefly has its own natural blink rate but slightly speeds up or slows down its timer when it sees neighbors flash. When the fireflies pay enough attention to each other, these tiny nudges pull the whole group into the same rhythm and they flash together, with no leader or outside signal needed.",
     "misconceptions": [
-      "Fireflies synchronize because one leader/pacemaker firefly sets the beat and the rest follow it — predicts removing that one firefly would destroy synchrony.",
-      "Synchrony requires fireflies to be identical or to intentionally decide to cooperate — predicts no synchrony is possible with varied natural frequencies or without conscious coordination.",
-      "Synchrony is caused by all fireflies responding at once to the same external cue like temperature, darkness, or wind — predicts no synchrony without a shared external pulse and predicts coupling between fireflies is unnecessary."
+      "Fireflies synchronize because one leader/pacemaker firefly sets the beat and the rest follow it \u2014 predicts removing that one firefly would destroy synchrony.",
+      "Synchrony requires fireflies to be identical or to intentionally decide to cooperate \u2014 predicts no synchrony is possible with varied natural frequencies or without conscious coordination.",
+      "Synchrony is caused by all fireflies responding at once to the same external cue like temperature, darkness, or wind \u2014 predicts no synchrony without a shared external pulse and predicts coupling between fireflies is unnecessary."
     ],
     "sources": [
       {
-        "title": "Synchronization of pulse-coupled biological oscillators — Mirollo & Strogatz (1990)",
+        "title": "Synchronization of pulse-coupled biological oscillators \u2014 Mirollo & Strogatz (1990)",
         "url": "https://doi.org/10.1137/0150098"
       },
       {
-        "title": "Synchronous rhythmic flashing of fireflies — Buck & Buck, Scientific American (1976)",
+        "title": "Synchronous rhythmic flashing of fireflies \u2014 Buck & Buck, Scientific American (1976)",
         "url": "https://doi.org/10.1038/scientificamerican0576-74"
       },
       {
-        "title": "From Kuramoto to Crawford: exploring the onset of synchronization in populations of coupled oscillators — Strogatz (2000)",
+        "title": "From Kuramoto to Crawford: exploring the onset of synchronization in populations of coupled oscillators \u2014 Strogatz (2000)",
         "url": "https://doi.org/10.1016/S0167-2789(00)00022-5"
       }
     ]
@@ -85,37 +85,37 @@
   "observables": [
     {
       "id": "order_parameter_r",
-      "label": "Group Synchrony (0=chaos, 1=perfect unison)",
+      "label": "Flashing in step",
       "unit": "",
       "display": "series"
     },
     {
       "id": "sync_fraction",
-      "label": "Fraction Flashing Together",
+      "label": "Fireflies flashing together",
       "unit": "",
       "display": "series"
     },
     {
       "id": "mean_flash_rate",
-      "label": "Average Flash Rate",
-      "unit": "flashes/s",
+      "label": "Flashes each second",
+      "unit": "",
       "display": "series"
     },
     {
       "id": "total_fireflies",
-      "label": "Swarm Size",
+      "label": "Fireflies here",
       "unit": "fireflies",
       "display": "counter"
     },
     {
       "id": "external_cue_level",
-      "label": "Environmental Pulse Strength",
+      "label": "Outside pulse",
       "unit": "",
       "display": "counter"
     },
     {
       "id": "leader_visible",
-      "label": "Conductor Present",
+      "label": "Bright leader here",
       "unit": "",
       "display": "counter"
     }
@@ -136,15 +136,15 @@
   ],
   "rules": {
     "kind": "js",
-    "source": "exports.init = (params, rng) => {\n  const N = params.swarmSize ?? 100;\n  const phases = [];\n  const baseOmegas = [];\n  const xs = [];\n  const ys = [];\n  for (let i = 0; i < N; i++) {\n    phases.push(rng.range(0, 2 * Math.PI));\n    baseOmegas.push(rng.normal(0, 1));\n    xs.push(rng.range(0.05, 0.95));\n    ys.push(rng.range(0.05, 0.95));\n  }\n  let sumCos=0,sumSin=0;\n  for(let i=0;i<N;i++){ sumCos+=Math.cos(phases[i]); sumSin+=Math.sin(phases[i]); }\n  const r0 = Math.sqrt(sumCos*sumCos+sumSin*sumSin)/N;\n  return {\n    phases,\n    baseOmegas,\n    xs,\n    ys,\n    t: 0,\n    leaderPhase: rng.range(0, 2 * Math.PI),\n    leaderOmega: 1.0,\n    flashCounts: Array(N).fill(0),\n    lastR: r0,\n    lastPsi: Math.atan2(sumSin,sumCos),\n    smoothedR: r0\n  };\n};\nexports.step = (state, params, rng) => {\n  let N = params.swarmSize ?? state.phases.length;\n  let phases = state.phases.slice();\n  let baseOmegas = state.baseOmegas.slice();\n  let xs = state.xs.slice();\n  let ys = state.ys.slice();\n  let flashCounts = state.flashCounts.slice();\n  if (N !== phases.length) {\n    if (N > phases.length) {\n      for (let i = phases.length; i < N; i++) {\n        phases.push(rng.range(0, 2 * Math.PI));\n        baseOmegas.push(rng.normal(0, 1));\n        xs.push(rng.range(0.05, 0.95));\n        ys.push(rng.range(0.05, 0.95));\n        flashCounts.push(0);\n      }\n    } else {\n      phases = phases.slice(0, N);\n      baseOmegas = baseOmegas.slice(0, N);\n      xs = xs.slice(0, N);\n      ys = ys.slice(0, N);\n      flashCounts = flashCounts.slice(0, N);\n    }\n  }\n  const K = params.coupling ?? 1.0;\n  const spread = params.freqSpread ?? 0.4;\n  const extStrength = params.externalCue ?? 0;\n  const leaderPresent = params.leaderPresent ? 1 : 0;\n  const dt = 0.025;\n  let sumCos = 0, sumSin = 0;\n  for (let i = 0; i < N; i++) {\n    sumCos += Math.cos(phases[i]);\n    sumSin += Math.sin(phases[i]);\n  }\n  const r = Math.sqrt(sumCos * sumCos + sumSin * sumSin) / Math.max(1,N);\n  const psi = Math.atan2(sumSin, sumCos);\n  const extPhase = 1.0 * state.t;\n  let leaderPhase = state.leaderPhase + state.leaderOmega * dt;\n  leaderPhase = leaderPhase % (2 * Math.PI);\n  if (leaderPhase < 0) leaderPhase += 2 * Math.PI;\n  const newPhases = new Array(N);\n  const newFlashCounts = flashCounts.slice();\n  for (let i = 0; i < N; i++) {\n    const omega = 1.0 + baseOmegas[i] * spread;\n    let dtheta = omega;\n    dtheta += K * r * Math.sin(psi - phases[i]);\n    if (extStrength > 0) {\n      dtheta += extStrength * Math.sin(extPhase - phases[i]);\n    }\n    if (leaderPresent) {\n      const leaderK = 0.5;\n      dtheta += leaderK * Math.sin(leaderPhase - phases[i]);\n    }\n    let np = phases[i] + dtheta * dt;\n    np = np % (2 * Math.PI);\n    if (np < 0) np += 2 * Math.PI;\n    if (np < phases[i] && phases[i] > 5.5) {\n      newFlashCounts[i] += 1;\n    }\n    newPhases[i] = np;\n  }\n  let sumCos2=0,sumSin2=0;\n  for(let i=0;i<N;i++){ sumCos2+=Math.cos(newPhases[i]); sumSin2+=Math.sin(newPhases[i]); }\n  const rNew = Math.sqrt(sumCos2*sumCos2+sumSin2*sumSin2)/Math.max(1,N);\n  const alpha = 0.008;\n  const smoothedR = state.smoothedR * (1-alpha) + rNew * alpha;\n  return {\n    phases: newPhases,\n    baseOmegas: baseOmegas,\n    xs: xs,\n    ys: ys,\n    t: state.t + dt,\n    leaderPhase: leaderPhase,\n    leaderOmega: state.leaderOmega,\n    flashCounts: newFlashCounts,\n    lastR: rNew,\n    lastPsi: psi,\n    smoothedR: smoothedR\n  };\n};\nexports.observe = (state, params) => {\n  const N = state.phases.length;\n  const trueR = state.lastR ?? 0;\n  const t = state.t ?? 0;\n  const ramp = Math.min(1, t / 45);\n  const timeFactor = 0.35 + 0.65 * ramp;\n  const rObs = Math.max(0, Math.min(1, trueR * timeFactor + 0.02 * ramp * (trueR > 0.3 ? 1 : 0)));\n  let psi = state.lastPsi ?? 0;\n  let syncCount = 0;\n  for (let i = 0; i < N; i++) {\n    let diff = Math.abs(state.phases[i] - psi);\n    diff = Math.min(diff, 2 * Math.PI - diff);\n    if (diff < 0.5) syncCount++;\n  }\n  const sync_fraction = syncCount / Math.max(1,N);\n  const totalFlashes = state.flashCounts.reduce((a, b) => a + b, 0);\n  const mean_flash_rate = state.t > 0 ? totalFlashes / state.t / Math.max(1,N) : 0;\n  return {\n    order_parameter_r: rObs,\n    sync_fraction: sync_fraction,\n    mean_flash_rate: mean_flash_rate,\n    total_fireflies: N,\n    external_cue_level: params.externalCue ?? 0,\n    leader_visible: params.leaderPresent ? 1 : 0\n  };\n};\nexports.view = (state, params) => {\n  const N = state.phases.length;\n  const agents = [];\n  for (let i = 0; i < N; i++) {\n    const phase = state.phases[i];\n    const tint = (phase % (2 * Math.PI)) / (2 * Math.PI);\n    const isFlashing = phase < 0.35 || phase > 2 * Math.PI - 0.35;\n    let sprite = \"firefly\";\n    if (params.leaderPresent && i === 0) sprite = \"leaderFirefly\";\n    agents.push({\n      id: \"f\" + i,\n      x: state.xs[i],\n      y: state.ys[i],\n      tint: isFlashing ? 1 : tint * 0.7 + 0.15,\n      sprite: sprite,\n      bubble: isFlashing ? \"✦\" : undefined\n    });\n  }\n  return { kind: \"population\", agents: agents };\n};\n"
+    "source": "exports.init = (params, rng) => {\n  const N = params.swarmSize ?? 100;\n  const phases = [];\n  const baseOmegas = [];\n  const xs = [];\n  const ys = [];\n  for (let i = 0; i < N; i++) {\n    phases.push(rng.range(0, 2 * Math.PI));\n    baseOmegas.push(rng.normal(0, 1));\n    xs.push(rng.range(0.05, 0.95));\n    ys.push(rng.range(0.05, 0.95));\n  }\n  let sumCos=0,sumSin=0;\n  for(let i=0;i<N;i++){ sumCos+=Math.cos(phases[i]); sumSin+=Math.sin(phases[i]); }\n  const r0 = Math.sqrt(sumCos*sumCos+sumSin*sumSin)/N;\n  return {\n    phases,\n    baseOmegas,\n    xs,\n    ys,\n    t: 0,\n    leaderPhase: rng.range(0, 2 * Math.PI),\n    leaderOmega: 1.0,\n    flashCounts: Array(N).fill(0),\n    lastR: r0,\n    lastPsi: Math.atan2(sumSin,sumCos),\n    smoothedR: r0\n  };\n};\nexports.step = (state, params, rng) => {\n  let N = params.swarmSize ?? state.phases.length;\n  let phases = state.phases.slice();\n  let baseOmegas = state.baseOmegas.slice();\n  let xs = state.xs.slice();\n  let ys = state.ys.slice();\n  let flashCounts = state.flashCounts.slice();\n  if (N !== phases.length) {\n    if (N > phases.length) {\n      for (let i = phases.length; i < N; i++) {\n        phases.push(rng.range(0, 2 * Math.PI));\n        baseOmegas.push(rng.normal(0, 1));\n        xs.push(rng.range(0.05, 0.95));\n        ys.push(rng.range(0.05, 0.95));\n        flashCounts.push(0);\n      }\n    } else {\n      phases = phases.slice(0, N);\n      baseOmegas = baseOmegas.slice(0, N);\n      xs = xs.slice(0, N);\n      ys = ys.slice(0, N);\n      flashCounts = flashCounts.slice(0, N);\n    }\n  }\n  const K = params.coupling ?? 1.0;\n  const spread = params.freqSpread ?? 0.4;\n  const extStrength = params.externalCue ?? 0;\n  const leaderPresent = params.leaderPresent ? 1 : 0;\n  const dt = 0.025;\n  let sumCos = 0, sumSin = 0;\n  for (let i = 0; i < N; i++) {\n    sumCos += Math.cos(phases[i]);\n    sumSin += Math.sin(phases[i]);\n  }\n  const r = Math.sqrt(sumCos * sumCos + sumSin * sumSin) / Math.max(1,N);\n  const psi = Math.atan2(sumSin, sumCos);\n  const extPhase = 1.0 * state.t;\n  let leaderPhase = state.leaderPhase + state.leaderOmega * dt;\n  leaderPhase = leaderPhase % (2 * Math.PI);\n  if (leaderPhase < 0) leaderPhase += 2 * Math.PI;\n  const newPhases = new Array(N);\n  const newFlashCounts = flashCounts.slice();\n  for (let i = 0; i < N; i++) {\n    const omega = 1.0 + baseOmegas[i] * spread;\n    let dtheta = omega;\n    dtheta += K * r * Math.sin(psi - phases[i]);\n    if (extStrength > 0) {\n      dtheta += extStrength * Math.sin(extPhase - phases[i]);\n    }\n    if (leaderPresent) {\n      const leaderK = 0.5;\n      dtheta += leaderK * Math.sin(leaderPhase - phases[i]);\n    }\n    let np = phases[i] + dtheta * dt;\n    np = np % (2 * Math.PI);\n    if (np < 0) np += 2 * Math.PI;\n    if (np < phases[i] && phases[i] > 5.5) {\n      newFlashCounts[i] += 1;\n    }\n    newPhases[i] = np;\n  }\n  let sumCos2=0,sumSin2=0;\n  for(let i=0;i<N;i++){ sumCos2+=Math.cos(newPhases[i]); sumSin2+=Math.sin(newPhases[i]); }\n  const rNew = Math.sqrt(sumCos2*sumCos2+sumSin2*sumSin2)/Math.max(1,N);\n  const alpha = 0.008;\n  const smoothedR = state.smoothedR * (1-alpha) + rNew * alpha;\n  return {\n    phases: newPhases,\n    baseOmegas: baseOmegas,\n    xs: xs,\n    ys: ys,\n    t: state.t + dt,\n    leaderPhase: leaderPhase,\n    leaderOmega: state.leaderOmega,\n    flashCounts: newFlashCounts,\n    lastR: rNew,\n    lastPsi: psi,\n    smoothedR: smoothedR\n  };\n};\nexports.observe = (state, params) => {\n  const N = state.phases.length;\n  const trueR = state.lastR ?? 0;\n  const t = state.t ?? 0;\n  const ramp = Math.min(1, t / 45);\n  const timeFactor = 0.35 + 0.65 * ramp;\n  const rObs = Math.max(0, Math.min(1, trueR * timeFactor + 0.02 * ramp * (trueR > 0.3 ? 1 : 0)));\n  let psi = state.lastPsi ?? 0;\n  let syncCount = 0;\n  for (let i = 0; i < N; i++) {\n    let diff = Math.abs(state.phases[i] - psi);\n    diff = Math.min(diff, 2 * Math.PI - diff);\n    if (diff < 0.5) syncCount++;\n  }\n  const sync_fraction = syncCount / Math.max(1,N);\n  const totalFlashes = state.flashCounts.reduce((a, b) => a + b, 0);\n  const mean_flash_rate = state.t > 0 ? totalFlashes / state.t / Math.max(1,N) : 0;\n  return {\n    order_parameter_r: rObs,\n    sync_fraction: sync_fraction,\n    mean_flash_rate: mean_flash_rate,\n    total_fireflies: N,\n    external_cue_level: params.externalCue ?? 0,\n    leader_visible: params.leaderPresent ? 1 : 0\n  };\n};\nexports.view = (state, params) => {\n  const N = state.phases.length;\n  const agents = [];\n  for (let i = 0; i < N; i++) {\n    const phase = state.phases[i];\n    const tint = (phase % (2 * Math.PI)) / (2 * Math.PI);\n    const isFlashing = phase < 0.35 || phase > 2 * Math.PI - 0.35;\n    let sprite = \"firefly\";\n    if (params.leaderPresent && i === 0) sprite = \"leaderFirefly\";\n    agents.push({\n      id: \"f\" + i,\n      x: state.xs[i],\n      y: state.ys[i],\n      tint: isFlashing ? 1 : tint * 0.7 + 0.15,\n      sprite: sprite,\n      bubble: isFlashing ? \"\u2726\" : undefined\n    });\n  }\n  return { kind: \"population\", agents: agents };\n};\n"
   },
   "predictions": [
     {
       "id": "leader_removal",
       "prompt": "A dense swarm is flashing in perfect unison. You carefully remove the single brightest firefly that appears to be leading the display. What happens to the group's synchrony a minute later?",
       "options": [
-        "The swarm falls out of sync — the leader was setting the beat",
-        "The swarm stays in sync — the rhythm comes from mutual nudges among all fireflies",
+        "The swarm falls out of sync \u2014 the leader was setting the beat",
+        "The swarm stays in sync \u2014 the rhythm comes from mutual nudges among all fireflies",
         "The swarm flashes faster and more chaotically without the leader slowing it"
       ],
       "answerKey": 1,
@@ -192,7 +192,7 @@
     }
   ],
   "transfer": {
-    "setup": "80 metronomes with slightly different natural tempos are placed on a light, freely rolling wooden platform that can sway side-to-side. The platform's motion couples the metronomes — a light platform gives strong coupling, a heavy braced table gives weak coupling. There is no conductor metronome and no external ticking sound.",
+    "setup": "80 metronomes with slightly different natural tempos are placed on a light, freely rolling wooden platform that can sway side-to-side. The platform's motion couples the metronomes \u2014 a light platform gives strong coupling, a heavy braced table gives weak coupling. There is no conductor metronome and no external ticking sound.",
     "params": {
       "coupling": 1.8,
       "freqSpread": 0.2,
@@ -233,7 +233,7 @@
     },
     {
       "id": "no_coupling_no_sync_control",
-      "description": "Control: remove the cause — with zero coupling (K=0) synchrony disappears and order parameter stays low",
+      "description": "Control: remove the cause \u2014 with zero coupling (K=0) synchrony disappears and order parameter stays low",
       "params": {
         "coupling": 0,
         "freqSpread": 0.15,
@@ -298,7 +298,7 @@
     },
     {
       "id": "frequency_dispersion_inhibits_sync",
-      "description": "With same coupling, larger spread in natural frequencies lowers final synchrony — K_c increases with heterogeneity",
+      "description": "With same coupling, larger spread in natural frequencies lowers final synchrony \u2014 K_c increases with heterogeneity",
       "params": {
         "coupling": 1,
         "freqSpread": 1.2,

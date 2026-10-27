@@ -15,6 +15,9 @@ Write like a great game, not a textbook. The words appear on screen beside the w
 - story.mystery: ONE question, at most 20 words, that the player can feel. ("Could one whisper bring down a healthy bank?")
 - story.goal: one sentence, at most 16 words, starting with a verb.
 - Knob labels: plain words a 12-year-old understands, at most 5 words, no units in brackets unless essential.
+- Observable labels: plain words a 12-year-old understands, at most 6 words, naming something you can see ("Hares alive", not "Hare cycle strength" or "synchrony").
+- Observable units: plain words ("metres per second", "hares") or leave the unit out. No symbols such as m/s, (m/s)², °C, or "relative".
+- At least two observables must be amounts that move while the world runs, so a chart of them shows the change (hares alive over time, not only one correlation at the end).
 - Prediction prompts: one sentence; options short (at most 10 words) and each plausible.
 
 Rules source contract (plain JS, no imports, no Math.random — use the provided rng):

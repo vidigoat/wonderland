@@ -1,0 +1,32 @@
+# Night 1
+
+Started Tue 27 Oct 2026, about 10:15 PM IST. This checkout had no `.spend/ledger.json` and no API keys in the environment, so no live spend was read and none was made.
+
+## W1 · Readings and the dune
+
+Shipped in the commit that adds this note.
+
+- A chart under the stage during Experiment, for every archetype except pipeline and every world except Rumour Town. Up to three numbers. Counts that move are drawn first. The previous run stays as a faint line on the same scale.
+- The stage readout stays hidden until the first run. Tiny values print as 0, so `-0.00` is gone. Shares print as percents. Units like `m/s` and `(m/s)²` become plain words or drop out.
+- The seven generated worlds now name what you can see ("Hares alive", "Hottest spot", "Traffic jams"). The designer prompt asks for the same on the next worlds, and for amounts that move during a run.
+- A field that is filled under a ridge is drawn as one sand shape. A heat field is sampled smoothly. On a painting, the hard frame around that field is left off.
+
+Checked with `pnpm check` (206 tests). Screenshots after one run, production server on port 3300, headed Chrome with SwiftShader, in `docs/progress/night-1/`:
+
+| World | 1440×900 | 390×844 | What the picture showed |
+|---|---|---|---|
+| predator-prey-valley | yes | yes | 87 hares, 8 lynx. The hare line rises. |
+| dune-march | yes | yes | A smooth sand pile on the painting. The crest line rises; the readout is still 0 dune widths because one run barely moves it. |
+| heat-diffusion-plate | yes | yes | A soft hot spot. The lines fall. 63.9 degrees. |
+| firefly-sync-kuramoto | yes | yes | 100 fireflies. Flashing together as a percent. |
+| hallway-lanes | yes | yes | Lanes, 0 head-on bumps, a moving chart. The wide shot was taken while Fire was still in motion. |
+| murmuration-sky | yes | yes | 61% facing the same way. |
+| phantom-jam-ring-road | yes | yes | 1 jam, −3.57 metres per second, cars each hour. The wide shot was taken while Fire was still in motion. |
+
+Dev mode on this machine never hydrated (the HMR socket failed), so the shots are from `next start`, not `pnpm dev`.
+
+Judgement: the dune's numbers stay near zero for a short run. The chart shows the creep. I did not speed the dune up, because the checks depend on the slow rate.
+
+## Not started
+
+W2, W3, W4, W5.

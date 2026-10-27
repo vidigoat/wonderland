@@ -1,6 +1,6 @@
 import type { Observation, Params } from "@/engine/rules";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { formatReading } from "./readings";
+import { formatHudValue } from "./readings";
 
 /**
  * Readings drawn on the stage itself, so cause and effect sit in one place: you change a control,
@@ -54,27 +54,23 @@ function TownHud({ obs, params }: { obs: Observation | null; params: Params }) {
   );
 }
 
-function isShare(id: string, label: string, value: unknown): boolean {
-  return typeof value === "number" && value >= 0 && value <= 1 && /share|fraction|proportion/i.test(`${id} ${label}`);
-}
-
-function GenericHud({ spec, obs }: { spec: PublicWorldSpec; obs: Observation | null }) {
-  if (!obs) return null;
+function GenericHud({ spec, obs, revealed }: { spec: PublicWorldSpec; obs: Observation | null; revealed: boolean }) {
+  if (!revealed || !obs) return null;
   const items = spec.observables
     .filter((item) => item.id !== "query" && obs[item.id] != null && String(obs[item.id]).length <= 24)
+    .sort((a, b) => Number(a.display !== "counter") - Number(b.display !== "counter"))
     .slice(0, 4);
   if (items.length === 0) return null;
   return (
     <div className="hud" aria-live="polite">
       {items.map((item) => {
-        const raw = obs[item.id];
-        const value = isShare(item.id, item.label, raw) ? `${Math.round(Number(raw) * 100)}%` : formatReading(raw, item.display);
+        const formatted = formatHudValue(item.id, item.label, obs[item.id], item.display, item.unit);
         return (
           <div key={item.id} className="hud-card">
             <p className="hud-label">{item.label}</p>
             <p className="hud-big">
-              {value}
-              {item.unit ? <small> {item.unit}</small> : null}
+              {formatted.text}
+              {formatted.unit ? <small> {formatted.unit}</small> : null}
             </p>
           </div>
         );
@@ -83,11 +79,21 @@ function GenericHud({ spec, obs }: { spec: PublicWorldSpec; obs: Observation | n
   );
 }
 
-export function StageHud({ spec, obs, params }: { spec: PublicWorldSpec; obs: Observation | null; params: Params }) {
+export function StageHud({
+  spec,
+  obs,
+  params,
+  revealed,
+}: {
+  spec: PublicWorldSpec;
+  obs: Observation | null;
+  params: Params;
+  revealed: boolean;
+}) {
   if (spec.id === "rumour-town") return <TownHud obs={obs} params={params} />;
   // The pipeline stage already labels every station with its state; chips would only repeat it.
   if (spec.archetype === "pipeline") return null;
-  return <GenericHud spec={spec} obs={obs} />;
+  return <GenericHud spec={spec} obs={obs} revealed={revealed} />;
 }
 
 /** What the colours on the stage mean, for worlds where colour is the reading. */

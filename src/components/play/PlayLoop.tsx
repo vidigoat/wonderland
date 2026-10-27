@@ -13,6 +13,7 @@ import { builtinRules } from "@/worlds/builtins";
 import { AdaNote, type AdaEntry } from "./AdaNote";
 import { PhaseTrail } from "./PhaseTrail";
 import { Instruments } from "./Instruments";
+import { ReadingChart } from "./ReadingChart";
 import { StageHud, StageLegend } from "./StageHud";
 import { experimentHint, stepLabel } from "./guide";
 import { ReceiptCard } from "./ReceiptCard";
@@ -102,6 +103,9 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const [obs, setObs] = useState<Observation | null>(null);
   const [view, setView] = useState<WorldView | null>(null);
   const [playing, setPlaying] = useState(false);
+  const [ran, setRan] = useState(false);
+  const [trace, setTrace] = useState<Observation[]>([]);
+  const [priorTrace, setPriorTrace] = useState<Observation[] | null>(null);
   const [ready, setReady] = useState(false);
   const [copied, setCopied] = useState(false);
   const [seedError, setSeedError] = useState<string | null>(null);
@@ -159,6 +163,15 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const quietObs = useRef<Set<Observation>>(new Set());
   const hideWitness = useRef(false);
   const originRef = useRef<Observation | null>(null);
+  const runStart = useRef(0);
+  const worldStamp = `${spec.id}:${retry}`;
+  const [stamp, setStamp] = useState(worldStamp);
+  if (stamp !== worldStamp) {
+    setStamp(worldStamp);
+    setRan(false);
+    setTrace([]);
+    setPriorTrace(null);
+  }
   const playingRef = useRef(false);
   const cancelRef = useRef(false);
   const rafRef = useRef(0);
@@ -191,6 +204,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     const last = session.history[session.history.length - 1] ?? null;
     setObs(last);
     setView(asWorldView(session.view(), spec.archetype));
+    setTrace(session.history.slice(runStart.current));
   }
 
   useEffect(() => {
@@ -198,6 +212,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     if (!rules) return;
     let cancel = false;
     cancelRef.current = false;
+    runStart.current = 0;
     void mintSession(spec.id, window.location.search)
       .then(async (mint) => {
         if (cancel) return;
@@ -465,16 +480,22 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     armChime();
     playingRef.current = true;
     setPlaying(true);
+    setRan(true);
     setRunError(null);
     setSuggestion(null);
+    const finished = session.history.slice(runStart.current);
+    if (finished.length > 1) setPriorTrace(finished);
     if (seedRef.current != null && freshStart(spec.id, spec.archetype, birthRef.current, paramsRef.current)) {
       const rules = rulesFor(spec);
       if (rules) {
         session = await new WorldSession(rules, { ...paramsRef.current }, seedRef.current).start();
         sessionRef.current = session;
         birthRef.current = { ...paramsRef.current };
+        runStart.current = 0;
         if (!cancelRef.current) publish(session);
       }
+    } else if (finished.length > 1) {
+      runStart.current = session.history.length - 1;
     }
     for (const [id, value] of Object.entries(paramsRef.current)) session.setParam(id, value);
     originRef.current = session.history[session.history.length - 1] ?? null;
@@ -517,9 +538,14 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     const seed = seedRef.current;
     if (!rules || seed == null || playingRef.current) return;
     birthRef.current = { ...paramsRef.current };
+    const current = sessionRef.current;
+    if (current && current.history.length - runStart.current > 1) {
+      setPriorTrace(current.history.slice(runStart.current));
+    }
     const session = await new WorldSession(rules, { ...paramsRef.current }, seed).start();
     if (cancelRef.current) return;
     sessionRef.current = session;
+    runStart.current = 0;
     publish(session);
     setWitness(null);
   }
@@ -737,6 +763,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
       <PhaseTrail phase={play.phase} concept={spec.concept} />
       <div className="play-body">
         <section className="stage-pane" aria-label={spec.title} data-situation={newSituation ? "yes" : undefined}>
+          <div className="stage-stack">
           <StageSlot
             view={view}
             archetype={spec.archetype}
@@ -749,7 +776,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
             beatId={beat?.id ?? 0}
           />
           {/* From the first screen, so the set-up (the bank's cash, the moths' colour) is visible before you predict. */}
-          {!newSituation && play.phase !== "receipt" ? <StageHud spec={spec} obs={obs} params={params} /> : null}
+          {!newSituation && play.phase !== "receipt" ? <StageHud spec={spec} obs={obs} params={params} revealed={ran} /> : null}
           {witness && !newSituation ? <p className="witness">{witness}</p> : null}
           {play.phase !== "intro" && !newSituation ? <StageLegend worldId={spec.id} /> : null}
           {spec.id === "firebreak" && !newSituation ? (
@@ -770,6 +797,10 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
               <p className="kicker">A new situation</p>
               <p>{spec.transfer.setup}</p>
             </div>
+          ) : null}
+          </div>
+          {play.phase === "experiment" && spec.archetype !== "pipeline" && spec.id !== "rumour-town" ? (
+            <ReadingChart spec={spec} history={trace} previous={priorTrace} />
           ) : null}
         </section>
         <aside className="notebook">

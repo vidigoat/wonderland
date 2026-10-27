@@ -59,20 +59,20 @@
   "observables": [
     {
       "id": "crestDisplacement",
-      "label": "Crest Drift",
-      "unit": "widths",
+      "label": "How far the crest has walked",
+      "unit": "dune widths",
       "display": "series"
     },
     {
       "id": "migrationSpeed",
-      "label": "Migration Speed",
-      "unit": "relative",
+      "label": "How fast the dune walks",
+      "unit": "",
       "display": "counter"
     },
     {
       "id": "stossErosionRate",
-      "label": "Upwind Change",
-      "unit": "per step",
+      "label": "Sand lost on the windward face",
+      "unit": "each step",
       "display": "series"
     }
   ],

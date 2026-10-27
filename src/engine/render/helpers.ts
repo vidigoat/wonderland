@@ -204,6 +204,86 @@ export function fieldColor(value: number, scale: FieldScale = "continuous"): num
   return lerpColor(FIELD_COLORS.ink, FIELD_COLORS.gold, clamp01(value));
 }
 
+function fieldCell(grid: number[][], y: number, x: number): number {
+  const value = grid[y]?.[x];
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
+}
+
+/** Sample a grid at a fractional cell. Used to turn a coarse field into a smooth one. */
+export function bilinearSample(grid: number[][], x: number, y: number): number {
+  const rows = grid.length;
+  const cols = grid[0]?.length ?? 0;
+  if (rows === 0 || cols === 0) return 0;
+  const xClamped = Math.min(cols - 1, Math.max(0, x));
+  const yClamped = Math.min(rows - 1, Math.max(0, y));
+  const x0 = Math.floor(xClamped);
+  const y0 = Math.floor(yClamped);
+  const tx = xClamped - x0;
+  const ty = yClamped - y0;
+  const x1 = Math.min(x0 + 1, cols - 1);
+  const y1 = Math.min(y0 + 1, rows - 1);
+  const a = fieldCell(grid, y0, x0);
+  const b = fieldCell(grid, y0, x1);
+  const c = fieldCell(grid, y1, x0);
+  const d = fieldCell(grid, y1, x1);
+  return a * (1 - tx) * (1 - ty) + b * tx * (1 - ty) + c * (1 - tx) * ty + d * tx * ty;
+}
+
+/**
+ * A taller copy of a continuous field. Each output cell is a bilinear sample, so a heat
+ * spot fades instead of stepping from cell to cell.
+ */
+export function smoothField(grid: number[][], longest = 180): number[][] {
+  const rows = grid.length;
+  const cols = grid[0]?.length ?? 0;
+  if (rows === 0 || cols === 0) return grid;
+  const scale = Math.max(1, Math.min(4, Math.floor(longest / Math.max(rows, cols))));
+  if (scale <= 1) return grid;
+  const height = rows * scale;
+  const width = cols * scale;
+  const out: number[][] = [];
+  for (let y = 0; y < height; y++) {
+    const gy = rows === 1 ? 0 : (y / (height - 1)) * (rows - 1);
+    const row: number[] = [];
+    for (let x = 0; x < width; x++) {
+      const gx = cols === 1 ? 0 : (x / (width - 1)) * (cols - 1);
+      row.push(bilinearSample(grid, gx, gy));
+    }
+    out.push(row);
+  }
+  return out;
+}
+
+export type HeightSilhouette = { heights: number[] };
+
+/**
+ * A dune is a grid that is empty above a ridge and filled beneath it.
+ * Returns the fill height of each column, from 0 to 1, or null when the grid is a real heat map.
+ */
+export function heightSilhouette(grid: number[][]): HeightSilhouette | null {
+  const rows = grid.length;
+  const cols = grid[0]?.length ?? 0;
+  if (rows < 4 || cols < 4) return null;
+  const heights: number[] = [];
+  let matched = 0;
+  let shaped = false;
+  for (let x = 0; x < cols; x++) {
+    let filled = 0;
+    for (let y = rows - 1; y >= 0; y--) {
+      if (fieldCell(grid, y, x) >= 0.5) filled++;
+      else break;
+    }
+    let ones = 0;
+    for (let y = 0; y < rows; y++) if (fieldCell(grid, y, x) >= 0.5) ones++;
+    if (ones === filled) matched++;
+    const height = filled / rows;
+    if (height > 0.05 && height < 0.95) shaped = true;
+    heights.push(height);
+  }
+  if (!shaped || matched < cols * 0.85) return null;
+  return { heights };
+}
+
 function scanLiterals(query: string): Literal[] {
   const literals: Literal[] = [];
   let i = 0;

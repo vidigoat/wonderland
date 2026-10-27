@@ -4,7 +4,10 @@ import {
   CANNON_STEP_DT,
   FIELD_COLORS,
   fieldColor,
+  bilinearSample,
   fieldScale,
+  heightSilhouette,
+  smoothField,
   landedApart,
   injectionHighlightRange,
   phaseOffset,
@@ -214,6 +217,27 @@ describe("fieldColor", () => {
     expect(luminance(fieldColor(0.25, "continuous"))).toBeLessThan(luminance(fieldColor(0.75, "continuous")));
     expect(fieldColor(0.2, "firebreak")).toBe(fieldColor(0.2, "continuous"));
     expect(fieldColor(0.12 + 1e-4, "firebreak")).not.toBe(FIELD_COLORS.ash);
+  });
+
+  it("smooths a coarse field and recognises a dune silhouette", () => {
+    expect(bilinearSample([[0, 1], [0, 1]], 0.5, 0)).toBeCloseTo(0.5);
+    const smoothed = smoothField(
+      [
+        [0, 0],
+        [0, 1],
+      ],
+      8,
+    );
+    expect(smoothed.length).toBeGreaterThan(2);
+    expect(smoothed[0]?.[0]).toBeCloseTo(0);
+    const dune = Array.from({ length: 8 }, (_, y) =>
+      Array.from({ length: 10 }, (_, x) => (y >= 7 - (5 - Math.abs(x - 4)) ? 1 : 0)),
+    );
+    const silhouette = heightSilhouette(dune);
+    expect(silhouette).not.toBeNull();
+    expect(silhouette?.heights[4]).toBeGreaterThan(silhouette?.heights[0] ?? 1);
+    const heat = Array.from({ length: 8 }, (_, y) => Array.from({ length: 8 }, (_, x) => (x === 3 && y === 3 ? 1 : 0.1)));
+    expect(heightSilhouette(heat)).toBeNull();
   });
 
   it("chooses a scale from the world or from the values actually present", () => {

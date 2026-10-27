@@ -1,5 +1,5 @@
 import { Container, Graphics, Sprite, Texture, BufferImageSource } from "pixi.js";
-import { FIELD_COLORS, clearedStrip, fieldColor, fieldScale, phaseOffset, type FieldScale } from "./helpers";
+import { FIELD_COLORS, clearedStrip, fieldColor, fieldScale, heightSilhouette, phaseOffset, smoothField, type FieldScale } from "./helpers";
 import type { Frame, Scene } from "./scene";
 import { createBackdrop } from "./backdrop";
 import { isPaintedWorld } from "./sprites";
@@ -10,8 +10,9 @@ export function createFieldScene(): Scene {
   const painting = createBackdrop();
   const sprite = new Sprite(Texture.EMPTY);
   const trees = new Graphics();
+  const relief = new Graphics();
   const frame = new Graphics();
-  root.addChild(ground, painting.view, sprite, trees, frame);
+  root.addChild(ground, painting.view, sprite, trees, relief, frame);
 
   let signature = "";
   let owned: Texture | null = null;
@@ -28,18 +29,30 @@ export function createFieldScene(): Scene {
     signature = sig;
     const box = valleyBox(next, columns, grid.length);
     strokeValley(frame, ground, next, box, scale);
-    frame.alpha = isPaintedWorld(next.worldId) ? 0.35 : 1;
+    frame.alpha = isPaintedWorld(next.worldId) && scale !== "firebreak" ? 0 : isPaintedWorld(next.worldId) ? 0.35 : 1;
     if (scale === "firebreak") {
       sprite.visible = false;
+      relief.visible = false;
+      relief.clear();
       trees.visible = true;
       drawValley(trees, grid, box, isPaintedWorld(next.worldId));
       return;
     }
     trees.visible = false;
     trees.clear();
+    const dune = heightSilhouette(grid);
+    if (dune) {
+      sprite.visible = false;
+      relief.visible = true;
+      frame.alpha = isPaintedWorld(next.worldId) ? 0 : 0.45;
+      drawDune(relief, dune.heights, box, isPaintedWorld(next.worldId));
+      return;
+    }
+    relief.visible = false;
+    relief.clear();
     sprite.visible = true;
     // Over a Muse Image painting the field glows where it is strong and lets the painting show where it is empty.
-    const texture = paintGrid(grid, scale, isPaintedWorld(next.worldId));
+    const texture = paintGrid(smoothField(grid), scale, isPaintedWorld(next.worldId));
     sprite.texture = texture;
     owned?.destroy(true);
     owned = texture;
@@ -118,6 +131,36 @@ function drawValley(g: Graphics, grid: number[][], box: Box, painted = false): v
 
 function close(value: number, level: number): boolean {
   return Math.abs(value - level) <= 1e-9;
+}
+
+/** A sand ridge: one smooth fill, not a column of hard cells. */
+function drawDune(g: Graphics, heights: number[], box: Box, painted: boolean): void {
+  g.clear();
+  const count = heights.length;
+  if (count < 2) return;
+  const smooth = heights.map((_, index) => {
+    const left = heights[Math.max(0, index - 1)] ?? 0;
+    const mid = heights[index] ?? 0;
+    const right = heights[Math.min(count - 1, index + 1)] ?? 0;
+    return (left + mid + right) / 3;
+  });
+  let start = 0;
+  let end = count - 1;
+  while (start < end && (smooth[start] ?? 0) < 0.02) start++;
+  while (end > start && (smooth[end] ?? 0) < 0.02) end--;
+  start = Math.max(0, start - 1);
+  end = Math.min(count - 1, end + 1);
+  const ridge: number[] = [];
+  for (let index = start; index <= end; index++) {
+    ridge.push(box.x + (index / (count - 1)) * box.w, box.y + box.h - (smooth[index] ?? 0) * box.h);
+  }
+  const left = ridge[0] ?? box.x;
+  const right = ridge[ridge.length - 2] ?? box.x + box.w;
+  g.poly([...ridge, right, box.y + box.h, left, box.y + box.h]).fill({
+    color: FIELD_COLORS.gold,
+    alpha: painted ? 0.78 : 0.92,
+  });
+  g.poly(ridge).stroke({ width: Math.max(2, box.h * 0.012), color: 0xf3ddb0, alpha: 0.95, cap: "round", join: "round" });
 }
 
 function pine(g: Graphics, x: number, y: number, size: number): void {

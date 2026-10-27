@@ -1764,3 +1764,80 @@
   color: #a3a3a3;
   font-weight: 500;
 }
+
+/* The run, under the stage. The stage keeps the picture; the chart keeps the comparison. */
+.stage-pane:has(.reading-chart) {
+  display: flex;
+  flex-direction: column;
+}
+.stage-stack {
+  position: relative;
+  min-height: 0;
+  height: 100%;
+}
+.stage-pane:has(.reading-chart) > .stage-stack {
+  flex: 1 1 auto;
+  height: auto;
+}
+.stage-pane:has(.reading-chart) > .stage-stack > .stage-frame,
+.stage-pane:has(.reading-chart) > .stage-stack > .stage-fallback {
+  height: 100%;
+}
+@media (max-width: 640px) {
+  .hud-card {
+    min-width: 0;
+    padding: 5px 8px 6px;
+  }
+  .hud-label {
+    font-size: 10px;
+  }
+  .hud-big {
+    font-size: 16px;
+  }
+  .reading-chart svg {
+    height: 72px;
+  }
+}
+.reading-chart {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 8px 14px 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.78);
+  color: #fafafa;
+}
+.reading-chart figcaption {
+  margin: 0 0 2px;
+  color: #a3a3a3;
+  font-size: 12px;
+  font-weight: 500;
+}
+.reading-chart svg {
+  display: block;
+  width: 100%;
+  height: 96px;
+}
+.reading-chart ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+}
+.reading-chart li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.reading-chart i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.reading-chart-wait {
+  margin: 10px 0 8px;
+  color: #a3a3a3;
+  font-size: 13px;
+}

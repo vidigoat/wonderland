@@ -3,7 +3,7 @@
   "version": 1,
   "concept": "Why do traffic jams appear out of nowhere?",
   "title": "Ghost Jam Circuit",
-  "tagline": "A flawless loop with no bottleneck — yet traffic still snarls",
+  "tagline": "A flawless loop with no bottleneck \u2014 yet traffic still snarls",
   "archetype": "bodies",
   "science": {
     "hiddenLaw": "On a uniform road with no bottleneck, phantom jams arise by string instability: above a critical vehicle density, finite driver reaction delay combined with safe-distance car-following causes any small braking perturbation to amplify upstream into a backward-propagating stop-and-go wave that lowers mean flow; below critical density or with zero delay the same perturbation decays and no jam forms.",
@@ -16,7 +16,7 @@
     ],
     "sources": [
       {
-        "title": "Sugiyama et al. (2008) Traffic jams without bottlenecks — experimental evidence for the physical mechanism of the formation of a jam, New Journal of Physics",
+        "title": "Sugiyama et al. (2008) Traffic jams without bottlenecks \u2014 experimental evidence for the physical mechanism of the formation of a jam, New Journal of Physics",
         "url": "https://iopscience.iop.org/article/10.1088/1367-2630/10/3/033001"
       },
       {
@@ -34,7 +34,7 @@
     ]
   },
   "story": {
-    "setting": "A pristine circular test track in the desert, filmed from above. No intersections, no accidents, no lane closures — just a perfect loop of asphalt and a fleet of identical test cars driving autonomously. You control the fleet size, the track length, how drivers react, and you can tap one car's brakes.",
+    "setting": "A pristine circular test track in the desert, filmed from above. No intersections, no accidents, no lane closures \u2014 just a perfect loop of asphalt and a fleet of identical test cars driving autonomously. You control the fleet size, the track length, how drivers react, and you can tap one car's brakes.",
     "mystery": "Engineers swear the road has no bottleneck, yet at certain times a cluster of stopped cars appears out of nowhere, crawls backwards against traffic, and chokes the flow. Other times the same tiny brake tap vanishes without a trace. The jam seems to have a life of its own.",
     "goal": "Find the hidden rule that decides when a whisper of braking becomes a ghost jam. Learn to predict when the wave will form, which way it moves, and why packing cars tighter can make fewer cars get through."
   },
@@ -103,32 +103,32 @@
   "observables": [
     {
       "id": "jamCount",
-      "label": "Jam Clusters",
-      "unit": "clusters",
+      "label": "Traffic jams",
+      "unit": "jams",
       "display": "counter"
     },
     {
       "id": "waveSpeed",
-      "label": "Jam Wave Speed",
-      "unit": "m/s",
+      "label": "How fast the jam travels",
+      "unit": "metres per second",
       "display": "series"
     },
     {
       "id": "meanSpeed",
-      "label": "Average Speed",
-      "unit": "m/s",
+      "label": "Average speed",
+      "unit": "metres per second",
       "display": "series"
     },
     {
       "id": "flowRate",
-      "label": "Throughput",
-      "unit": "veh/h",
+      "label": "Cars passing",
+      "unit": "cars each hour",
       "display": "series"
     },
     {
       "id": "speedVariance",
-      "label": "Speed Spread",
-      "unit": "(m/s)²",
+      "label": "How uneven the speeds are",
+      "unit": "",
       "display": "series"
     }
   ],
@@ -156,7 +156,7 @@
       "prompt": "On this perfect loop with no accident, traffic light, or lane closure, you pack 30 cars onto a 300 m track, drivers react after 1.2 s, and you tap one brake by 2 m/s. What happens after 2 minutes?",
       "options": [
         "A stop-and-go jam forms and persists even though there is no bottleneck",
-        "Nothing — without a bottleneck a jam cannot form, traffic just smooths out"
+        "Nothing \u2014 without a bottleneck a jam cannot form, traffic just smooths out"
       ],
       "answerKey": 0,
       "tryWith": {
@@ -172,8 +172,8 @@
       "id": "throughput_myth",
       "prompt": "The track is crowded (30 cars, 300 m, 1.2 s reaction). You raise the speed limit from 30 to 40 m/s while drivers keep the same 2 s preferred gap. What happens to throughput (cars per hour)?",
       "options": [
-        "Throughput falls as jams get worse — faster and closer does not always mean more flow",
-        "Throughput rises proportionally — faster and closer always means more cars per hour"
+        "Throughput falls as jams get worse \u2014 faster and closer does not always mean more flow",
+        "Throughput rises proportionally \u2014 faster and closer always means more cars per hour"
       ],
       "answerKey": 0,
       "tryWith": {
@@ -189,7 +189,7 @@
       "id": "wave_direction",
       "prompt": "A jam has formed on the loop. Which way does the jam itself move relative to the cars?",
       "options": [
-        "Backwards, upstream against traffic — the wave travels opposite to the cars",
+        "Backwards, upstream against traffic \u2014 the wave travels opposite to the cars",
         "Forwards with the cars that created it, or stays fixed in place"
       ],
       "answerKey": 0,
@@ -206,8 +206,8 @@
       "id": "bad_drivers_myth",
       "prompt": "You replace all drivers with identical, skillful drivers who all follow the same safe rule with 1.2 s reaction delay, keep the road crowded (30 cars, 300 m), and give one 2 m/s brake tap. What happens?",
       "options": [
-        "A jam still emerges — it is a collective instability of dense flow, not just a few bad drivers",
-        "No jam forms — with skillful drivers the tap smooths out and jams need bad drivers"
+        "A jam still emerges \u2014 it is a collective instability of dense flow, not just a few bad drivers",
+        "No jam forms \u2014 with skillful drivers the tap smooths out and jams need bad drivers"
       ],
       "answerKey": 0,
       "tryWith": {

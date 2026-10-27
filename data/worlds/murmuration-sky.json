@@ -6,10 +6,10 @@
   "tagline": "Hundreds turn as one, but no one leads.",
   "archetype": "population",
   "science": {
-    "hiddenLaw": "Leaderless flocking emerges from three local interaction rules applied to only the ~6-7 nearest neighbors: short-range separation (repulsion to avoid crowding/collisions), intermediate-range alignment (steer toward neighbors' average heading), and long-range cohesion (steer toward neighbors' average position) — with no global information, no leader, and no choreographed plan.",
+    "hiddenLaw": "Leaderless flocking emerges from three local interaction rules applied to only the ~6-7 nearest neighbors: short-range separation (repulsion to avoid crowding/collisions), intermediate-range alignment (steer toward neighbors' average heading), and long-range cohesion (steer toward neighbors' average position) \u2014 with no global information, no leader, and no choreographed plan.",
     "plainStatement": "Starlings don't follow a leader. Each bird watches just its 6-7 closest neighbors and follows three simple rules: keep a little distance, fly the same direction, and stay near the group. The huge swirling flock pattern emerges on its own from those local rules.",
     "misconceptions": [
-      "A lead bird at the front directs the flock and others follow it — so without a leader the flock would be disordered.",
+      "A lead bird at the front directs the flock and others follow it \u2014 so without a leader the flock would be disordered.",
       "Each bird needs to see or know what the entire flock is doing to stay coordinated.",
       "Birds avoid mid-air crashes by planning long-range trajectories or communicating across the flock, not by simple short-range repulsion from immediate neighbors."
     ],
@@ -98,19 +98,19 @@
   "observables": [
     {
       "id": "collision_rate",
-      "label": "Collision Rate",
+      "label": "Birds bumping",
       "unit": "",
       "display": "series"
     },
     {
       "id": "polarization",
-      "label": "Flock Alignment",
+      "label": "Birds facing the same way",
       "unit": "",
       "display": "series"
     },
     {
       "id": "flock_radius",
-      "label": "Flock Spread",
+      "label": "How spread out the flock is",
       "unit": "",
       "display": "series"
     }

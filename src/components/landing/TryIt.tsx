@@ -126,7 +126,7 @@ export function TryIt({ spec }: { spec: PublicWorldSpec }) {
         </div>
         <div className="try-canvas">
           <StageSlot view={view} archetype={spec.archetype} worldId={spec.id} artStyle={spec.art.style} painted={spec.art.painted} playing={phase === "running"} params={params} beat={null} beatId={0} />
-          {obs ? <StageHud spec={spec} obs={obs} params={params} /> : null}
+          {obs ? <StageHud spec={spec} obs={obs} params={params} revealed /> : null}
           {phase !== "predict" ? <StageLegend worldId={spec.id} /> : null}
           <p className="try-caption" aria-live="polite">
             {caption(obs, phase)}

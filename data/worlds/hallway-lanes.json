@@ -3,19 +3,19 @@
   "version": 1,
   "concept": "Why do crowds walking in opposite directions form lanes?",
   "title": "Hallway Lanes",
-  "tagline": "Two crowds, one corridor — watch order appear from chaos",
+  "tagline": "Two crowds, one corridor \u2014 watch order appear from chaos",
   "archetype": "bodies",
   "science": {
     "hiddenLaw": "Bidirectional pedestrian flow spontaneously self-organizes into lanes because local repulsive avoidance of oncoming individuals creates positive feedback for following same-direction predecessors, minimizing head-on collisions and maximizing throughput without central coordination.",
     "plainStatement": "When crowds move opposite ways, each person sidesteps oncoming people. Once a few people happen to line up behind someone going the same way, it becomes easier to follow than to keep weaving, so separate lanes emerge on their own and everyone moves faster.",
     "misconceptions": [
-      "Lanes form because they are deliberately planned, signaled, or directed by a leader — they are top-down rather than emergent from local interactions.",
+      "Lanes form because they are deliberately planned, signaled, or directed by a leader \u2014 they are top-down rather than emergent from local interactions.",
       "Lanes require a cultural rule like 'keep right' or a built-in left/right bias; without side bias lanes cannot form.",
       "Individuals act independently so higher density always means proportionally slower flow, and lanes do not improve efficiency or reduce collisions."
     ],
     "sources": [
       {
-        "title": "Helbing & Molnár (1995) Social force model for pedestrian dynamics. Phys. Rev. E 51, 4282",
+        "title": "Helbing & Moln\u00e1r (1995) Social force model for pedestrian dynamics. Phys. Rev. E 51, 4282",
         "url": "https://journals.aps.org/pre/abstract/10.1103/PhysRevE.51.4282"
       },
       {
@@ -23,7 +23,7 @@
         "url": "https://journals.sagepub.com/doi/10.1068/b2697"
       },
       {
-        "title": "Moussaïd et al. (2011) How simple rules determine pedestrian behavior and crowd disasters. PNAS 108, 6884-6888",
+        "title": "Moussa\u00efd et al. (2011) How simple rules determine pedestrian behavior and crowd disasters. PNAS 108, 6884-6888",
         "url": "https://www.pnas.org/doi/10.1073/pnas.1016507108"
       }
     ]
@@ -78,19 +78,19 @@
   "observables": [
     {
       "id": "laneOrderParameter",
-      "label": "Lane order",
+      "label": "How clearly the lanes formed",
       "unit": "",
       "display": "series"
     },
     {
       "id": "headOnCollisionRate",
-      "label": "Head-on encounters",
+      "label": "Head-on bumps",
       "unit": "per person",
       "display": "series"
     },
     {
       "id": "avgSpeed",
-      "label": "Average speed",
+      "label": "Walking speed",
       "unit": "",
       "display": "series"
     }

@@ -4,7 +4,7 @@ Started Tue 27 Oct 2026, about 10:15 PM IST. This checkout had no `.spend/ledger
 
 ## W1 · Readings and the dune
 
-Shipped in the commit that adds this note.
+Shipped in `b377b1e`.
 
 - A chart under the stage during Experiment, for every archetype except pipeline and every world except Rumour Town. Up to three numbers. Counts that move are drawn first. The previous run stays as a faint line on the same scale.
 - The stage readout stays hidden until the first run. Tiny values print as 0, so `-0.00` is gone. Shares print as percents. Units like `m/s` and `(m/s)²` become plain words or drop out.

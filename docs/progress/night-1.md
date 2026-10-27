@@ -103,6 +103,8 @@ Walking speed on the hallway was the crowd's wished-for pace times a collision f
 
 Stopped cars on the ring road wore the same painting as the ones still moving, so the jam was only a pile, and the sliders said m/s. Commit `f6ff03b`. A stopped car now goes red. The controls read "How many cars", "Length of the track", "Time to notice", "Speed they aim for", "Gap they keep", and "Brake tap". On the production server one drive finishes in about ten seconds: 1 jam, travelling at -3.79 metres per second, average speed 11 metres per second, speeds differing by 14.1 metres per second. The red knot sits in the line of cars. `pnpm check` is 234 tests.
 
+The starlings could report that they faced the same way while every painted bird still pointed up. A starling was also drawn as a glow, because the name contains "star". Commit `de6fe5f`. Each bird now turns with its own heading. The controls read "Flock size", "How far they look", "Personal space", "Copy a neighbor", "Stay with the flock", and "Wind jitter". On the production server one pass finishes in about six seconds. One run ended at 64% facing the same way, the birds turned along that drift, and 0% bumping. A phone run ended at 95% facing the same way, 0% bumping, and the flock 18.4 from the centre. `pnpm check` is 237 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

@@ -231,6 +231,8 @@ export function runSteps(archetype: string, worldId?: string, params?: Params): 
 export function tickBatch(steps: number, worldId?: string): number {
   // A valley frame draws the whole meadow. A hundred of them holds the button on "In motion".
   if (worldId === "predator-prey-valley") return Math.max(1, Math.ceil(steps / 32));
+  // Cars and walkers are the same. A cannon still paints every few steps so the shot stays smooth.
+  if (worldId === "phantom-jam-ring-road" || worldId === "hallway-lanes") return Math.max(1, Math.ceil(steps / 28));
   if (steps <= 80) return 1;
   if (steps <= 600) return 4;
   return Math.max(1, Math.ceil(steps / 24));

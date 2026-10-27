@@ -109,6 +109,8 @@ describe("phase machine", () => {
     expect(duneRunSteps(5, 10)).toBeGreaterThan(1000);
     expect(duneRunSteps(5, 20)).toBeGreaterThan(duneRunSteps(5, 10));
     expect(tickBatch(560)).toBe(4);
+    expect(Math.ceil(560 / tickBatch(560, "phantom-jam-ring-road"))).toBeLessThanOrEqual(28);
+    expect(Math.ceil(560 / tickBatch(560, "hallway-lanes"))).toBeLessThanOrEqual(28);
     const duneSteps = runSteps("field", "dune-march", { windSpeed: 5, initialHeight: 10 });
     expect(Math.ceil(duneSteps / tickBatch(duneSteps))).toBeLessThanOrEqual(24);
     expect(freshStart("newtons-cannon", "bodies", { speed: 0.5 }, { speed: 0.5 })).toBe(true);

@@ -187,3 +187,12 @@ describe("generateWorld", () => {
     expect(worlds).toHaveLength(1);
   });
 });
+
+describe("worldId", () => {
+  it("turns model ids into storage-safe kebab-case", async () => {
+    const { worldId } = await import("./pipeline");
+    expect(worldId("counterflowCorridor", "x")).toBe("counterflow-corridor");
+    expect(worldId("Ghost Jam Circuit!", "x")).toBe("ghost-jam-circuit");
+    expect(worldId("", "The Meadow")).toBe("the-meadow");
+  });
+});

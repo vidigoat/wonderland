@@ -71,6 +71,18 @@ function parseJson(raw: string): unknown {
   }
 }
 
+/** kebab-case world id from the model's id (or the title), safe for storage and URLs. Exported for tests. */
+export function worldId(id: string, title: string): string {
+  const slug = (value: string) =>
+    value
+      .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60);
+  return slug(id) || slug(title) || "world";
+}
+
 function cause(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
@@ -189,6 +201,8 @@ async function* generateLiveBody(
     let spec: WorldSpecT;
     try {
       spec = WorldSpec.parse(parseJson(raw));
+      // Models write ids like "counterflowCorridor"; storage needs kebab-case. Normalise rather than lose a verified world.
+      spec = { ...spec, id: worldId(spec.id, spec.title) };
     } catch (error) {
       if (round === maxRepairs) break;
       yield stage("repair", "Spec didn't validate — repairing. The law stays ███.", undefined, brief);

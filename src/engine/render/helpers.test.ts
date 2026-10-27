@@ -350,6 +350,19 @@ describe("a phone forest keeps moths visible", () => {
       desk.cap,
     );
     expect(drawn.filter((agent) => agent.sprite === "predator")).toHaveLength(7);
+    expect(drawn.filter((agent) => agent.sprite === "prey").length).toBeGreaterThan(0);
+  });
+
+  it("on a phone still draws hares when the lynx would fill the picture", () => {
+    const phone = populationCrowd({ width: 390, height: 320, count: 138, painted: true, rumour: false, hero: false });
+    expect(phone.cap).toBe(36);
+    expect(phone.scale).toBeGreaterThanOrEqual(0.5);
+    const drawn = crowdToDraw(
+      [...Array.from({ length: 112 }, () => ({ sprite: "prey" })), ...Array.from({ length: 26 }, () => ({ sprite: "predator" }))],
+      phone.cap,
+    );
+    expect(drawn.filter((agent) => agent.sprite === "prey").length).toBeGreaterThan(8);
+    expect(drawn.filter((agent) => agent.sprite === "predator").length).toBeGreaterThan(4);
   });
 });
 

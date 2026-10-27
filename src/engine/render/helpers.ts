@@ -711,12 +711,13 @@ function featuredSprite(sprite?: string): boolean {
 
 export function populationCrowd(input: { width: number; height: number; count: number; painted: boolean; rumour: boolean; hero: boolean }): { cap: number; scale: number } {
   const narrow = input.width < 520 && input.hero && !input.rumour;
-  let cap = Math.min(Math.max(0, input.count), narrow ? 36 : 600);
+  const phoneMeadow = input.width < 520 && !input.hero && !input.rumour && input.painted;
+  let cap = Math.min(Math.max(0, input.count), narrow || phoneMeadow ? 36 : 600);
   const unit = Math.min(input.width, input.height);
   const shrink = input.painted && !input.rumour;
   const base = Math.max(0.85, Math.min(1.55, unit / 640));
   // A generated meadow can hold a hundred creatures. On a desk the old formula drew them at ~20px, so a lynx looked like another hare.
-  if (shrink && !input.hero && input.count > 1) {
+  if (shrink && !input.hero && !phoneMeadow && input.count > 1) {
     const divisor = 230;
     const need = (0.48 / base) * divisor;
     const fit = Math.max(8, Math.floor((input.width * input.height) / (need * need)));
@@ -726,6 +727,7 @@ export function populationCrowd(input: { width: number; height: number; count: n
   const crowd = !shrink ? 1 : Math.min(1, spacing / (input.hero ? 150 : 230));
   let scale = base * crowd;
   if (narrow) scale = Math.max(scale, 0.52);
+  else if (phoneMeadow) scale = Math.max(scale, 0.5);
   return { cap, scale };
 }
 
@@ -733,9 +735,15 @@ export function populationCrowd(input: { width: number; height: number; count: n
 export function crowdToDraw<T extends { sprite?: string }>(agents: readonly T[], cap: number): T[] {
   if (agents.length <= cap) return [...agents];
   const featured = agents.filter((agent) => featuredSprite(agent.sprite));
-  const room = Math.max(0, cap - featured.length);
   const rest = agents.filter((agent) => !featuredSprite(agent.sprite));
-  return [...rest.slice(0, room), ...featured];
+  let featureRoom = featured.length;
+  let restRoom = Math.max(0, cap - featureRoom);
+  // A lynx-heavy moment must not spend the whole picture on lynx and leave the hares out.
+  if (rest.length > 0 && restRoom < Math.ceil(cap * 0.4)) {
+    restRoom = Math.min(rest.length, Math.ceil(cap * 0.6));
+    featureRoom = Math.min(featured.length, Math.max(0, cap - restRoom));
+  }
+  return [...rest.slice(0, restRoom), ...featured.slice(0, featureRoom)];
 }
 
 /** One frame of the journey. A trip that has begun stays at its station after the send. */

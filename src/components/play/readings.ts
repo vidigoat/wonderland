@@ -233,6 +233,8 @@ export function tickBatch(steps: number, worldId?: string): number {
   if (worldId === "predator-prey-valley") return Math.max(1, Math.ceil(steps / 32));
   // Cars and walkers are the same. A cannon still paints every few steps so the shot stays smooth.
   if (worldId === "phantom-jam-ring-road" || worldId === "hallway-lanes") return Math.max(1, Math.ceil(steps / 28));
+  // Each heat frame builds a fresh picture of the plate. Forty-eight of them holds the button.
+  if (worldId === "heat-diffusion-plate") return Math.max(1, Math.ceil(steps / 12));
   if (steps <= 80) return 1;
   if (steps <= 600) return 4;
   return Math.max(1, Math.ceil(steps / 24));

@@ -139,6 +139,22 @@ export function shutVaultNote(query: string, error: string | null, rowCount: num
   return "The spell ran. The vault stayed shut.";
 }
 
+/** How many figures a shelf card draws. A flock is a sample, so each bird is large enough to show its heading. */
+export function thumbCrowd(count: number, headed: boolean): number {
+  if (count <= 0) return 0;
+  if (!headed) return Math.min(400, count);
+  return Math.min(64, count);
+}
+
+/** An even sample across the flock, so both sides of a spread murmuration are on the card. */
+export function thumbSample<T>(agents: readonly T[], headed: boolean): T[] {
+  const cap = thumbCrowd(agents.length, headed);
+  if (cap >= agents.length) return agents.slice(0, cap);
+  const picked: T[] = [];
+  for (let i = 0; i < cap; i++) picked.push(agents[Math.floor((i + 0.5) * agents.length / cap)]!);
+  return picked;
+}
+
 /**
  * How far a shelf card runs before it is drawn. The still uses seed 11.
  * The meadow's shared flash is at step 1000. The flock faces one way by step 400.

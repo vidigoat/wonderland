@@ -13,6 +13,8 @@ import {
   thumbBodyPx,
   thumbJamHalo,
   thumbJamInk,
+  thumbCrowd,
+  thumbSample,
   thumbSteps,
   figureTint,
   flockFacing,
@@ -358,6 +360,13 @@ describe("a shelf card", () => {
     expect(thumbSteps("firefly-sync-kuramoto")).toBe(1000);
     expect(thumbSteps("murmuration-sky")).toBe(400);
     expect(thumbSteps("predator-prey-valley")).toBe(200);
+    expect(thumbCrowd(500, true)).toBe(64);
+    expect(thumbCrowd(30, true)).toBe(30);
+    expect(thumbCrowd(500, false)).toBe(400);
+    const sample = thumbSample([0, 1, 2, 3, 4, 5, 6, 7], true);
+    expect(sample.length).toBeLessThanOrEqual(64);
+    expect(sample[0]).toBe(0);
+    expect(sample[sample.length - 1]).toBe(7);
     expect(thumbBodyPx("phantom-jam-ring-road", 0)).toBeGreaterThan(thumbBodyPx("phantom-jam-ring-road", 12));
     expect(thumbJamHalo("phantom-jam-ring-road", 0)).toBeGreaterThan(thumbBodyPx("phantom-jam-ring-road", 0) / 2);
     expect(thumbJamHalo("phantom-jam-ring-road", 12)).toBe(0);

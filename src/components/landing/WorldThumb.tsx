@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { compileRules, type RulesModule } from "@/engine/rules";
 import { WorldSession } from "@/engine/runtime";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { bodyFacing, cssHex, figureTint, flockFacing, heightSilhouette, softenRidge, thumbBodyPx, thumbJamHalo, thumbJamInk, thumbSteps } from "@/engine/render/helpers";
+import { bodyFacing, cssHex, figureTint, flockFacing, heightSilhouette, softenRidge, thumbBodyPx, thumbJamHalo, thumbJamInk, thumbSample, thumbSteps } from "@/engine/render/helpers";
 import { asWorldView, isParticlesView } from "@/engine/view";
 
 /**
@@ -120,16 +120,18 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
         const pad = 0.12;
         const at = (x: number, y: number) => [w * (pad + x * (1 - 2 * pad)), h * (pad * 0.6 + y * (1 - 2 * pad))] as const;
         if (view.kind === "population") {
-          const agents = view.agents.slice(0, 400);
-          const size = Math.min(w, h) * Math.min(0.2, 0.85 / Math.sqrt(Math.max(1, agents.length)));
+          const headed = view.agents.some((agent) => typeof agent.heading === "number" && Number.isFinite(agent.heading));
+          const agents = thumbSample(view.agents, headed);
+          const edge = Math.min(w, h);
+          const size = edge * Math.min(headed ? 0.18 : 0.2, (headed ? 1.4 : 0.85) / Math.sqrt(Math.max(1, agents.length)));
           for (const agent of agents) {
             const [x, y] = at(agent.x, agent.y);
             const image = sprites.size > 0 ? spriteOf(String(agent.sprite ?? "")) : undefined;
             if (image) {
               const heading = agent.heading;
-              const headed = typeof heading === "number" && Number.isFinite(heading);
-              const turn = headed ? flockFacing(heading) : 0;
-              const alpha = headed ? 0.92 : 0.55 + Math.max(0, Math.min(1, agent.tint)) * 0.45;
+              const hasHeading = typeof heading === "number" && Number.isFinite(heading);
+              const turn = hasHeading ? flockFacing(heading) : 0;
+              const alpha = hasHeading ? 0.92 : 0.55 + Math.max(0, Math.min(1, agent.tint)) * 0.45;
               drawSprite(image, x, y, size, alpha, turn);
               continue;
             }

@@ -8,6 +8,9 @@ import {
   landedApart,
   injectionHighlightRange,
   phaseOffset,
+  SCROLL_TRIP_MS,
+  scrollRest,
+  scrollTravel,
   smoothstep,
   launchPreview,
   onSurface,
@@ -223,6 +226,20 @@ describe("helpers stay deterministic", () => {
   it("does not call Math.random", () => {
     const source = readFileSync(new URL("./helpers.ts", import.meta.url), "utf8");
     expect(source).not.toMatch(/Math\.random\s*\(/);
+  });
+
+  it("sends the scroll from the desk to the station the spell reached", () => {
+    const stages = ["scroll", "scribe", "ledger", "vault"];
+    expect(scrollRest(stages, { error: true, open: false })).toBeCloseTo(1 / 3);
+    expect(scrollRest(stages, { error: false, open: true })).toBe(1);
+    expect(scrollRest(stages, { error: false, open: false })).toBeCloseTo(2 / 3);
+    expect(scrollRest(["scroll"], { error: true, open: true })).toBe(0);
+    expect(scrollTravel(true, false, 0, 1)).toBe(0);
+    expect(scrollTravel(true, false, SCROLL_TRIP_MS, 1)).toBe(1);
+    expect(scrollTravel(true, false, SCROLL_TRIP_MS / 2, 1)).toBeGreaterThan(0.4);
+    expect(scrollTravel(true, false, SCROLL_TRIP_MS / 2, 1)).toBeLessThan(0.6);
+    expect(scrollTravel(false, false, 0, 1)).toBe(1);
+    expect(scrollTravel(true, true, 0, 2 / 3)).toBeCloseTo(2 / 3);
   });
 
   it("keeps phase and smoothstep in range", () => {

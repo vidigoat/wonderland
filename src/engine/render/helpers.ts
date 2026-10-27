@@ -378,3 +378,28 @@ export function readBoolean(params: Record<string, number | boolean | string>, k
   if (value === "false") return false;
   return fallback;
 }
+
+/** A sent scroll crosses the archive, then the play loop holds a short beat longer. */
+export const SCROLL_TRIP_MS = 1500;
+export const SCROLL_HOLD_MS = SCROLL_TRIP_MS + 200;
+
+/** Where a spell comes to rest: the scribe if it broke, the vault if it opened, otherwise the ledger. */
+export function scrollRest(stages: readonly string[], outcome: { error: boolean; open: boolean }): number {
+  const count = stages.length;
+  if (count <= 1) return 0;
+  const span = count - 1;
+  if (outcome.error) {
+    const scribe = stages.findIndex((stage) => /scribe/i.test(stage));
+    return (scribe < 0 ? 1 : scribe) / span;
+  }
+  if (outcome.open) return 1;
+  const ledger = stages.findIndex((stage) => /ledger/i.test(stage));
+  return (ledger < 0 ? Math.max(0, count - 2) : ledger) / span;
+}
+
+/** The scroll leaves the desk and eases to where this spell came to rest. */
+export function scrollTravel(playing: boolean, reduced: boolean, elapsedMs: number, destination: number): number {
+  if (reduced || !playing) return destination;
+  const along = smoothstep(clamp01(elapsedMs / SCROLL_TRIP_MS));
+  return destination * along;
+}

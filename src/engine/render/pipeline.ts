@@ -1,5 +1,5 @@
 import { Container, Graphics, Text } from "pixi.js";
-import { clamp01, injectionHighlightRange, lerp, readBoolean, smoothstep } from "./helpers";
+import { clamp01, injectionHighlightRange, lerp, readBoolean, SCROLL_TRIP_MS, scrollRest, scrollTravel } from "./helpers";
 import { pixelRatio, stageFont } from "./fonts";
 import type { WorldPalette } from "./palette";
 import type { Frame, Scene } from "./scene";
@@ -36,6 +36,8 @@ export function createPipelineScene(): Scene {
   let points: { x: number; y: number }[] = [];
   let stationFigures: Figure[] = [];
   let alive = true;
+  let tripStart: number | null = null;
+  let traveled = false;
 
   const update = (frame: Frame) => {
     if (!alive) return;
@@ -69,7 +71,19 @@ export function createPipelineScene(): Scene {
     }
 
     travelerFigure.show(frame.worldId, "scroll", frame.palette.parchment);
-    const travel = travelAmount(frame);
+    const open = rows.length > 0;
+    const destination = scrollRest(stages, { error: Boolean(error), open });
+    let travel = traveled ? destination : 0;
+    if (frame.playing && !frame.reducedMotion) {
+      if (tripStart == null) tripStart = frame.time;
+      const elapsed = frame.time - tripStart;
+      travel = scrollTravel(true, false, elapsed, destination);
+      if (elapsed >= SCROLL_TRIP_MS) traveled = true;
+    } else {
+      tripStart = null;
+      if (frame.reducedMotion && frame.playing) traveled = true;
+      travel = traveled ? destination : 0;
+    }
     const at = along(points, travel);
     const bob = frame.playing || frame.reducedMotion ? 0 : Math.sin(frame.time / 700) * 5;
     traveler.position.set(at.x, at.y + bob);
@@ -91,15 +105,6 @@ export function createPipelineScene(): Scene {
       root.destroy({ children: true });
     },
   };
-}
-
-function travelAmount(frame: Frame): number {
-  if (!frame.playing) return 0;
-  if (frame.reducedMotion) return 0.33;
-  const cycle = 6800;
-  const u = (frame.time % cycle) / cycle;
-  if (u < 0.82) return smoothstep(u / 0.82);
-  return 1;
 }
 
 function stationPoints(count: number, width: number, height: number): { x: number; y: number }[] {

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Observation, Params, RulesModule } from "@/engine/rules";
 import { WorldSession } from "@/engine/runtime";
 import type { PublicWorldSpec } from "@/engine/spec";
+import { SCROLL_HOLD_MS } from "@/engine/render/helpers";
 import { asWorldView, type WorldView } from "@/engine/view";
 import { builtinRules } from "@/worlds/builtins";
 import { AdaNote, type AdaEntry } from "./AdaNote";
@@ -463,7 +464,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
       } else if (spec.archetype === "pipeline") {
         await session.tick(1);
         if (!cancelRef.current) publish(session);
-        if (!reduce && !cancelRef.current) await hold(runDuration(1));
+        if (!reduce && !cancelRef.current) await hold(SCROLL_HOLD_MS);
       } else if (reduce) {
         await session.tick(steps);
         if (!cancelRef.current) publish(session);

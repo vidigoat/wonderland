@@ -127,6 +127,8 @@ A long prediction on that card stopped on the word "because". Commit `6413fcb`. 
 
 The fire cards said "Far ridge no" and "Flames no" after the fire had stopped. Commit `8087160`. They now say untouched or reached, and out or still going. The science checks still see yes and no. On the production server a default burn finishes in about six seconds at 10% of the trees burned, the far ridge untouched, and the flames out. `pnpm check` is 239 tests.
 
+Asking about fireflies was matching the valley fire, because the word started with "fire". Commit `09e8838`. A keyword now has to be the word, or the word plus a short ending. A question that is not one of the five heroes is pointed at the worlds already on the shelf. On the production server "Why do fireflies start flashing in sync?" says the model did not write a new world, and the button plays The Meadow That Blinks As One. `pnpm check` is 240 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

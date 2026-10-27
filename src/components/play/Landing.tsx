@@ -6,6 +6,7 @@ import type { ClientPipelineEvent } from "@/engine/client-event";
 import Image from "next/image";
 import { ArrowRight, FlaskConical, MessageCircleQuestion, Telescope } from "lucide-react";
 import { LiveWorld } from "@/components/landing/LiveWorld";
+import { WorldThumb } from "@/components/landing/WorldThumb";
 import { Meadow } from "@/components/landing/Meadow";
 import type { PublicWorldSpec } from "@/engine/spec";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +23,7 @@ import { drainSse, toMontageItem, type MontageItem } from "./sse";
 type LogEntry = MontageItem & { key: number };
 
 /** A world the generator wrote, verified and bound. Public fields only. */
-export type WrittenCard = { id: string; title: string; tagline: string; concept: string; archetype: string };
+export type WrittenCard = { id: string; title: string; tagline: string; concept: string; archetype: string; spec?: PublicWorldSpec };
 
 /** The product window plays Rumour Town with two rumours, thin reserves and no insurance. */
 const DEMO_PARAMS = { rumourSeeds: 2, reserveRatio: 0.1, insurance: false, queueVisible: true };
@@ -316,7 +317,7 @@ export function Landing({ places, written = [], demo }: { places: PlaceCard[]; w
           {written.map((world) => (
             <li key={world.id}>
               <Link href={`/w/${world.id}`} className="bw-world bw-world-written">
-                <span className={`scene scene-written scene-written-${world.archetype}`} aria-hidden="true" />
+                {world.spec ? <WorldThumb spec={world.spec} /> : <span className={`scene scene-written scene-written-${world.archetype}`} aria-hidden="true" />}
                 <span className="bw-world-copy">
                   <Badge variant="outline" className="bw-world-badge">
                     Written by Muse Spark Open

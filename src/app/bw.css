@@ -731,3 +731,8 @@
   .bw-stats div { border-left: 0; border-top: 1px solid rgba(255, 255, 255, 0.1); }
   .bw-stats div:first-child { border-top: 0; }
 }
+.bw-world .world-thumb {
+  width: 100%;
+  height: 100%;
+  display: block;
+}

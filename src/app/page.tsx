@@ -23,7 +23,7 @@ async function writtenWorlds(): Promise<WrittenCard[]> {
   const heroIds = new Set(heroWorlds.map((world) => world.id));
   return (await listPublic())
     .filter((world) => !heroIds.has(world.id))
-    .map((world) => ({ id: world.id, title: world.title, tagline: world.tagline, concept: world.concept, archetype: world.archetype }));
+    .map((world) => ({ id: world.id, title: world.title, tagline: world.tagline, concept: world.concept, archetype: world.archetype, spec: world }));
 }
 
 async function LandingWithShelf() {

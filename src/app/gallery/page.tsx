@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { WorldThumb } from "@/components/landing/WorldThumb";
 import { PlaceScene } from "@/components/play/Scenes";
 import { listPublic } from "@/lib/storage/worlds";
 import { heroWorlds } from "@/worlds";
@@ -66,7 +67,7 @@ async function WrittenShelf() {
         {written.map((world) => (
           <li key={world.id}>
             <Link href={`/w/${world.id}`} className="bw-world bw-world-written">
-              <span className={`scene scene-written scene-written-${world.archetype}`} aria-hidden="true" />
+              <WorldThumb spec={world} />
               <span className="bw-world-copy">
                 <span className="bw-world-q">{world.concept}</span>
                 <span className="bw-world-t">{world.title}</span>

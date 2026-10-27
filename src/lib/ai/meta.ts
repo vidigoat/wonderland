@@ -1,7 +1,7 @@
 import "server-only";
 import { toFile } from "openai";
 import { metaClient, openWeights } from "./clients";
-import { metaSource, openWeightsProvider, openWeightsSource, reasoningBackend } from "./mode";
+import { metaSource, reasoningBackend } from "./mode";
 import { MODELS } from "./models";
 
 /**
@@ -96,11 +96,6 @@ export async function segment(opts: { prompt: string; imageUrl: string }): Promi
     input: [{ role: "user", content: [{ type: "input_text", text: opts.prompt }, { type: "input_image", image_url: opts.imageUrl }] }] as never,
   });
   return res.output_text;
-}
-
-/** Whether spoken hypotheses can be transcribed: Muse Voice Transcribe, or Muse Spark Open's audio input on Baseten. */
-export function canTranscribe(): boolean {
-  return metaSource() === "live" || (openWeightsSource() === "live" && openWeightsProvider() === "baseten");
 }
 
 /** Muse Voice Transcribe — WAV in, text out. Docs: https://dev.meta.ai/docs/speech-to-text */

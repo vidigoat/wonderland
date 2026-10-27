@@ -40,3 +40,8 @@ export function reasoningBackend(): ReasoningBackend | null {
 export function reasoningSource(): DataSource {
   return reasoningBackend() ? "live" : "sample";
 }
+
+/** Spoken hypotheses: Muse Voice Transcribe, or Muse Spark Open's audio input on Baseten (Glimmer has no audio). */
+export function canTranscribe(): boolean {
+  return metaSource() === "live" || (openWeightsSource() === "live" && openWeightsProvider() === "baseten");
+}

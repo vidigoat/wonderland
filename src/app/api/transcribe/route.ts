@@ -1,5 +1,6 @@
 import "server-only";
 import { connection } from "next/server";
+import { canTranscribe } from "@/lib/ai/mode";
 import { SAMPLE_NOTICE } from "@/lib/samples/mark";
 
 /**
@@ -19,7 +20,6 @@ function failureMessage(error: unknown): string {
 
 export async function POST(req: Request) {
   await connection();
-  const { canTranscribe } = await import("@/lib/ai/meta");
   if (!canTranscribe()) {
     return Response.json({ source: "sample", text: null, notice: SAMPLE_NOTICE });
   }

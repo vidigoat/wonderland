@@ -1,0 +1,18 @@
+<!-- sample art: not Muse Image output -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 130" width="150" height="130">
+  <path d="M16 118h118v8H16z" fill="#c4a888" stroke="#3a2c28" stroke-width="3"/>
+  <path d="M28 108h94v12H28z" fill="#e7d3b4" stroke="#3a2c28" stroke-width="3"/>
+  <path d="M36 70h78v40H36z" fill="#f3e2c4" stroke="#3a2c28" stroke-width="3"/>
+  <path d="M24 70h102v10H24z" fill="#e7d3b4" stroke="#3a2c28" stroke-width="3"/>
+  <path d="M75 18l58 42H17z" fill="#c46a4a" stroke="#3a2c28" stroke-width="3" stroke-linejoin="round"/>
+  <rect x="46" y="58" width="12" height="50" fill="#f7efe2" stroke="#3a2c28" stroke-width="3"/>
+  <rect x="92" y="58" width="12" height="50" fill="#f7efe2" stroke="#3a2c28" stroke-width="3"/>
+  <path d="M42 54h20v6H42zM88 54h20v6H88z" fill="#e7d3b4" stroke="#3a2c28" stroke-width="2"/>
+  <path d="M64 86h22v24H64z" fill="#6a5344" stroke="#3a2c28" stroke-width="3"/>
+  <circle cx="80" cy="98" r="2" fill="#e7c56b"/>
+  <circle cx="75" cy="42" r="10" fill="#e7c56b" stroke="#3a2c28" stroke-width="3"/>
+  <path d="M75 36v12M69 42h12" stroke="#3a2c28" stroke-width="1.6"/>
+  <path d="M20 118c8-6 10-6 16 0M44 118c8-6 10-6 16 0M68 118c8-6 10-6 16 0M92 118c8-6 10-6 16 0" fill="none" stroke="#3a2c28" stroke-width="2"/>
+  <rect x="40" y="78" width="8" height="12" fill="#f0b15a" opacity=".8"/>
+  <rect x="102" y="78" width="8" height="12" fill="#f0b15a" opacity=".8"/>
+</svg>

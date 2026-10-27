@@ -114,21 +114,23 @@ export const WorldSpec = z.object({
 });
 export type WorldSpec = z.infer<typeof WorldSpec>;
 
-/** What the browser is allowed to see while playing. */
-export type PublicWorldSpec = Omit<WorldSpec, "science" | "predictions" | "transfer"> & {
-  predictions: Omit<Prediction, "answerKey">[];
+/** What the browser is allowed to see while playing. Checks, answers, and suggested knob settings stay on the server. */
+export type PublicWorldSpec = Omit<WorldSpec, "science" | "predictions" | "transfer" | "checks"> & {
+  predictions: Omit<Prediction, "answerKey" | "tryWith">[];
   transfer: Omit<WorldSpec["transfer"], "answerKey">;
 };
 
 export function toPublic(spec: WorldSpec): PublicWorldSpec {
-  const { predictions, transfer, ...rest } = spec;
+  const { predictions, transfer, checks, ...rest } = spec;
   const { science, ...visible } = rest;
   void science;
+  void checks;
   return {
     ...visible,
     predictions: predictions.map((p) => {
-      const { answerKey, ...shown } = p;
+      const { answerKey, tryWith, ...shown } = p;
       void answerKey;
+      void tryWith;
       return shown;
     }),
     transfer: (() => {

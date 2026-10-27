@@ -34,7 +34,7 @@ export const newtonsCannon: RulesModule<CannonState> = {
     let d = s.prevAngle - angle;
     if (d > Math.PI) d -= 2 * Math.PI;
     if (d < -Math.PI) d += 2 * Math.PI;
-    const trail = s.trail.length % 2 === 0 ? [...s.trail, [x, y] as [number, number]].slice(-600) : s.trail;
+    const trail = [...s.trail, [x, y] as [number, number]].slice(-600);
     return {
       t: s.t + 4 * DT,
       x, y, vx, vy,

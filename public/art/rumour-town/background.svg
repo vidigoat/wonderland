@@ -1,0 +1,42 @@
+<!-- sample art: not Muse Image output -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f3b7c4"/>
+      <stop offset="55%" stop-color="#f6c9a8"/>
+      <stop offset="100%" stop-color="#f0d8b0"/>
+    </linearGradient>
+    <radialGradient id="lamp" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f6d48a"/>
+      <stop offset="100%" stop-color="#f6d48a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="750" fill="url(#dusk)"/>
+  <path d="M0 250h1200v80H0z" fill="#e7b89a" opacity=".35"/>
+  <path d="M0 180c80-30 120-10 160 10v80H0z" fill="#f2c1b0"/>
+  <path d="M40 210h70v40H40z" fill="#7f9a86"/>
+  <path d="M50 220h16v14H50zM78 220h16v14H78z" fill="#f6e2a8"/>
+  <path d="M1040 160c70-20 120 0 160 30v90h-160z" fill="#e7a0b0"/>
+  <rect x="1080" y="190" width="80" height="50" fill="#f3e2c4"/>
+  <rect x="1092" y="202" width="18" height="16" fill="#f0b15a"/>
+  <rect x="1122" y="202" width="18" height="16" fill="#f0b15a"/>
+  <path d="M180 300c40-70 90-90 130-70v120H180z" fill="#d9c4e0"/>
+  <rect x="210" y="280" width="70" height="50" fill="#f7efe2"/>
+  <circle cx="245" cy="250" r="16" fill="#e7c56b" stroke="#3a2c28" stroke-width="3"/>
+  <path d="M860 280c30-60 100-70 140-30v130H860z" fill="#b7d0c4"/>
+  <rect x="900" y="300" width="60" height="40" fill="#f7efe2"/>
+  <rect x="912" y="310" width="14" height="16" fill="#f0b15a"/>
+  <rect x="934" y="310" width="14" height="16" fill="#f0b15a"/>
+  <rect y="430" width="1200" height="320" fill="#e7cbb0"/>
+  <g fill="none" stroke="#c4a888" stroke-width="6" stroke-linecap="round">
+    <path d="M40 500c30-16 50-16 80 0s50 16 80 0 50-16 80 0 50 16 80 0 50-16 80 0 50 16 80 0 50-16 80 0 50 16 80 0 50-16 80 0 50 16 80 0 50-16 80 0"/>
+    <path d="M20 560c30-16 50-16 80 0s50 16 80 0 50-16 80 0 50 16 80 0 50-16 80 0 50 16 80 0 50-16 80 0 50 16 80 0 50-16 80 0 50 16 80 0 50-16 80 0"/>
+    <path d="M40 620c30-16 50-16 80 0s50 16 80 0 50-16 80 0 50 16 80 0 50-16 80 0 50 16 80 0 50-16 80 0 50 16 80 0 50-16 80 0 50 16 80 0 50-16 80 0"/>
+    <path d="M20 680c30-16 50-16 80 0s50 16 80 0 50-16 80 0 50 16 80 0 50-16 80 0 50 16 80 0 50-16 80 0 50 16 80 0 50-16 80 0 50 16 80 0 50-16 80 0"/>
+  </g>
+  <path d="M160 430v150" stroke="#5c4e44" stroke-width="6"/>
+  <path d="M148 430h24l-4 16h-16z" fill="#3a2c28"/>
+  <ellipse cx="160" cy="470" rx="70" ry="40" fill="url(#lamp)"/>
+  <path d="M148 448h24v14h-24z" fill="#f6d48a" stroke="#3a2c28" stroke-width="3"/>
+  <circle cx="900" cy="180" r="36" fill="#fff1d2" opacity=".85"/>
+</svg>

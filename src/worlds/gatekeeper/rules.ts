@@ -16,11 +16,15 @@ export type GatekeeperState = {
 };
 
 let dbPromise: Promise<Database> | null = null;
+
+function wasmFile(name: string): string {
+  if (typeof window !== "undefined") return `/${name}`;
+  return `${process.cwd()}/public/${name}`;
+}
+
 async function getDb(): Promise<Database> {
   if (!dbPromise) {
-    dbPromise = initSqlJs(
-      typeof window !== "undefined" ? { locateFile: (f: string) => `/${f}` } : undefined,
-    ).then((SQL) => {
+    dbPromise = initSqlJs({ locateFile: wasmFile }).then((SQL) => {
       const db = new SQL.Database();
       db.run(`CREATE TABLE vault (name TEXT, pass TEXT, treasure TEXT);
               INSERT INTO vault VALUES ('queen', 'crown-of-thorns-9', 'The Royal Seal'),

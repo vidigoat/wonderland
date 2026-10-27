@@ -26,8 +26,14 @@ People who learn with AI assistance understood less: 50% vs 67% in a 2026 random
 | Peppered Forest | Natural selection | Heritable variation + selective predation |
 | Newton's Cannon | Orbits | Velocity-Verlet gravity |
 | Rumour Town | Bank runs | Diamond–Dybvig; citizens powered by Muse Glimmer |
+| The Firebreak | Why fires spread | Site percolation on a grid — a spark crosses only when the trees connect |
 
 Every world must pass machine-checked science assertions on every seed before it ships (`pnpm test`).
+
+## Without API keys
+The app runs with every model switched off. Each call is written for real and takes a labeled sample path when its key is missing: the build matches a checked hero world and says the model did not write it, Ada experiments with the same engine you do, and the judge will not repeat the law. Add `MODEL_API_KEY` and an open-weights key in `.env.local` and those same buttons call the models.
+
+A round is predict, then experiment, then say the law in a sentence, then prove it on a new situation. The knobs stay locked until the first prediction is written down. The stage names what changed. It does not say why. The path a demo can follow is [docs/demo-script.md](docs/demo-script.md).
 
 ## Run it
 ```bash

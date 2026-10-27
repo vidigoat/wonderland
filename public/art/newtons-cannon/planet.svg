@@ -1,0 +1,19 @@
+<!-- sample art: not Muse Image output -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <clipPath id="disc">
+      <circle cx="64" cy="64" r="52"/>
+    </clipPath>
+  </defs>
+  <circle cx="64" cy="64" r="56" fill="none" stroke="#c4894a" stroke-width="3" opacity=".85"/>
+  <g clip-path="url(#disc)">
+    <circle cx="64" cy="64" r="52" fill="#163e52"/>
+    <path d="M20 70c16-20 30-8 42-16 14-8 20 6 34 2 10-4 16 8 22 20-18 16-40 10-58 16-16 6-28-6-40-22z" fill="#7f8f62"/>
+    <path d="M78 28c10 6 8 18-2 22-8-8-12-16-8-24 4 0 8 1 10 2z" fill="#c4a574"/>
+    <path d="M30 40c8 2 12 10 6 16-8-2-14-8-12-14 2-2 4-2 6-2z" fill="#6d7c50"/>
+    <path d="M18 64h92M22 48c20 6 40 8 70 2M24 80c22-6 46-8 68-2" fill="none" stroke="#e6c48a" stroke-width="1" opacity=".7"/>
+    <path d="M64 14v100M40 18c-8 28-8 64 0 92M88 18c8 28 8 64 0 92" fill="none" stroke="#d7b57a" stroke-width="1" opacity=".55"/>
+    <path d="M36 30c16 10 10 28-2 34" fill="none" stroke="#f4efe2" stroke-width="8" stroke-linecap="round" opacity=".35"/>
+  </g>
+  <circle cx="64" cy="64" r="52" fill="none" stroke="#14203a" stroke-width="3"/>
+</svg>

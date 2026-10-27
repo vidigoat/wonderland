@@ -1,15 +1,19 @@
-# 3-minute demo video (draft)
+# Demo path
 
-Judges: Stage 2 scores the video, code and live product; **finals judges score the video live**. It must be beautiful and land in 10 seconds.
+Three minutes, on the running app. The buttons below are the ones on the screen.
 
-| Time | Beat |
+| Time | What you do |
 |---|---|
-| 0:00–0:12 | Hook. "In a 2026 trial, people who learned with AI scored 17 points lower. We built the opposite." Type: *Why does SQL injection work?* |
-| 0:12–0:40 | Build montage: law found (███ redacted), Muse Image paints, SAM 3.1 masks glow as sprites are cut, checks tick ✅ "4/4 science checks passed". |
-| 0:40–1:30 | Play the Gatekeeper: predict "O'Brien" → scribe chokes → poke → `' OR '1'='1` → vault opens. Ada (open-weights rival) thinking aloud beside you. |
-| 1:30–1:50 | Say the law out loud (Voice Transcribe) → judge: discovered → transfer challenge (library search box) → pass. Receipt 30% → 90%. |
-| 1:50–2:30 | Montage: Peppered Forest, Newton's Cannon, Rumour Town (40 Glimmer citizens gossiping into a bank run), one live-generated world. |
-| 2:30–2:50 | Evidence: mini user study (N people) — read-an-explanation vs play-the-world transfer scores. |
-| 2:50–3:00 | "AI that builds the world, not the answer." URL. |
+| 0:00 | The landing is already up. Read the line: “The AI builds the world. You find the law.” The ribbon says the models are on sample data if no key is set. |
+| 0:08 | Type `Why does SQL injection work?` and press Build. The montage names The Gatekeeper’s Ledger and says the model did not write it. Checks show a count, not the answer. Enter. |
+| 0:40 | Read the mystery. Press **I have a guess**. Choose “Choke — the spell breaks” for O’Brien. Press **Write it down**. The knobs were locked until now. You are not told if you were right. |
+| 1:00 | Set the name to `O'Brien`. Press **Send the scroll**. The scribe stops. The line across the stage says “The scribe stopped.” |
+| 1:15 | Set the name and the password to `' OR '1'='1`. Send the scroll again. The vault lightens, the room shakes, a short note sounds, and the line says “The vault is open.” After it fades, the notebook still says you saw it. Ada, on the sample lane, has been trying one knob at a time beside you. Her readings differ from yours. |
+| 1:35 | Press **I can say it**. **Hold to speak** records and posts the audio; with no key it says no words came back and leaves the box for typing. Type: a quote ends the words, so the rest of the scroll is run as the spell. Press **Offer this sentence**. The world dims. A slip says a library search is waiting. The judge does not repeat the law. |
+| 1:50 | For the library, type: Close the quote and add a condition that is always true. The librarian should use parameterised queries. Press **Offer the proof**. On the second question, choose **No — your words stay words**. **Keep this card** downloads the receipt. The card says what you saw, and that the law is not printed on it. |
+| 2:10 | The shelf: Peppered Forest, Newton’s Cannon, Rumour Town, The Firebreak. In the forest, move the soot and press **A generation** until the line says the moths are not the colour they were. In the firebreak, plant densely, turn the strip on, and press **Let it burn**. The line says the fire stopped: ash, a gap, then living trees. |
+| 2:40 | “The model built the room. You found the law.” |
 
-Rules: only show what was built during the hackathon. Real footage, no mock screens.
+Sample mode is labeled. With `MODEL_API_KEY` and an open-weights key, the same buttons call the models: the montage generates, Ada thinks on open weights, and Rumour Town takes one citizen round from that model before the checked brain continues.
+
+Only show what was built during the hackathon. Real footage, no mock screens.

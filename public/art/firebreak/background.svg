@@ -1,0 +1,8 @@
+<!-- sample art: not Muse Image output -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" preserveAspectRatio="xMidYMid slice">
+  <rect width="1200" height="750" fill="#14182e"/>
+  <path d="M0 80c160 40 280 20 400-10 180-40 320 10 480 30 120 16 220-10 320-30v80c-140 30-260 10-400-10-180-24-300 20-460 30C220 180 100 160 0 140z" fill="#1c2454"/>
+  <path d="M0 520c200-40 360-20 520 10 200 36 340-10 500-20 80-6 140 8 180 20v220H0z" fill="#10162f"/>
+  <path d="M0 640h1200" stroke="#243056" stroke-width="2"/>
+  <path d="M0 700c80-16 140-8 200 4 90 18 160 8 240-8 100-20 180 4 260 12 90 8 160-10 240-6 70 4 140 16 260 4v44H0z" fill="#0c1024"/>
+</svg>

@@ -1,8 +1,37 @@
+import "server-only";
+import { connection } from "next/server";
+import { judgeStatement, ModelCallError, redactMessage } from "@/agents/judge";
+import { getHeroWorld } from "@/worlds";
+
 /**
- * POST { worldId, statement, history? } → { verdict: "discovered" | "warmer" | "colder", reply: string, nextExperiment?: Record<string, unknown> }
- * Uses Muse Spark 1.3 with src/agents/prompts/judge.md. Must NEVER leak spec.science.hiddenLaw.
- * TODO(agent: play-loop): implement + add a leak test (judge output must not contain key phrases of the law).
+ * POST { worldId, statement }
+ * → { verdict: "discovered" | "warmer" | "colder", reply, nextExperiment?, source, notice? }
+ * Live: Muse Spark with src/agents/prompts/judge.md, then scrubReply.
+ * Sample: server-side rubric and fixed replies. The hidden law is never returned.
  */
-export async function POST() {
-  return Response.json({ error: "not implemented" }, { status: 501 });
+export async function POST(req: Request) {
+  await connection();
+  let body: { worldId?: unknown; statement?: unknown };
+  try {
+    body = (await req.json()) as { worldId?: unknown; statement?: unknown };
+  } catch {
+    return Response.json({ error: "invalid json" }, { status: 400 });
+  }
+  if (typeof body.worldId !== "string" || typeof body.statement !== "string") {
+    return Response.json({ error: "worldId and statement are required" }, { status: 400 });
+  }
+  if (body.statement.length > 4_000) {
+    return Response.json({ error: "statement is too long" }, { status: 400 });
+  }
+  const spec = getHeroWorld(body.worldId);
+  if (!spec) return Response.json({ error: "unknown world" }, { status: 404 });
+  try {
+    const result = await judgeStatement(spec, body.statement);
+    return Response.json(result);
+  } catch (error) {
+    if (error instanceof ModelCallError) {
+      return Response.json({ source: error.source, message: error.message }, { status: 502 });
+    }
+    return Response.json({ error: redactMessage(error, spec) }, { status: 500 });
+  }
 }

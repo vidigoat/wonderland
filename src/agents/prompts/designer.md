@@ -14,7 +14,13 @@ Rules source contract (plain JS, no imports, no Math.random — use the provided
   exports.observe = (state, params) => ({ ...numbers or short strings keyed by observable id })
   exports.view = (state, params) => ({ kind: "<archetype>", ... })   // what the renderer draws
 rng has next(), range(a,b), int(a,b), normal(mean,sd), pick(arr), chance(p).
+The rules run in a sandbox: no process, require, fetch, or other host globals. Math.random throws.
 Keep state JSON-serialisable and small (≤ 500 entities). Steps must be fast (< 1 ms).
 
-If the checker returns failures, you get them back with details. Fix the rules (not the checks) unless a check is
-genuinely wrong, in which case say why.
+Playability lint (the engine sends the world back if this fails):
+- Every knob, moved across its range, must change at least one observable compared with the default run.
+- Every prediction.tryWith must change at least one observable compared with the defaults.
+
+Return only the WorldSpec JSON for the schema you were given. Do not wrap it in markdown.
+If the checker or the playability lint returns failures, you get them back as repair notes. Fix the rules
+(not the checks) unless a check is genuinely wrong. Player-facing copy must still hide the law.

@@ -74,7 +74,8 @@ If you need a file you don't own: write the request in `docs/handoffs.md` and ke
 - [ ] Spike result recorded; demo script runs clean 3× in a row
 
 ## Non-negotiables
-- The AI **never reveals** the hidden law. `science`, `answerKey`s never reach the browser (`toPublic`).
+- The AI **never reveals** the hidden law. `science`, `answerKey`s, and check details never reach the browser (`toPublic`, `toClientPipelineEvent`).
+- **No keys yet.** Every model call stays real and switches to clearly marked sample data (`docs/sample-mode.md`). Never pretend a sample is a model.
 - Every world ships only if its **checks pass on every seed**.
 - No medical advice, nothing political/war, no sports coaching (hackathon anti-project list).
 - Only Meta models for intelligence (Muse Spark/Wonder/Image/SAM/Transcribe + Glimmer/Spark Open). No other LLM vendors in product code.

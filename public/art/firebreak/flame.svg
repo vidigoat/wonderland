@@ -1,0 +1,7 @@
+<!-- sample art: not Muse Image output -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 120" width="80" height="120">
+  <path d="M40 6l10 18 8-6 4 20 12 8-8 14 10 10-14 16 6 18-18 8-10 12-12-14-16-6 8-16-12-12 10-14-6-16 14-8 4-18z" fill="#e36a32" stroke="#14182e" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M40 36l6 14 8-4-2 16 8 6-10 12 4 14-14 6-8 12-6-14-10-4 6-12-8-10 10-8-2-14 8-4z" fill="#f6c15a" stroke="#14182e" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M40 62c4 8 4 16 0 28-6-8-8-16-4-24 2-2 3-3 4-4z" fill="#fff1c8"/>
+  <path d="M28 28l6 8M54 24l-4 10" stroke="#f3ead7" stroke-width="3" stroke-linecap="round"/>
+</svg>

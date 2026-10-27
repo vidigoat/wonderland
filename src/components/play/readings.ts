@@ -69,7 +69,7 @@ function countUnit(unit: string | null, text: string): string | null {
 /** A 0–1 amount that is a share, a fraction, or a "how together" score. */
 export function isShareReading(id: string, label: string, value: unknown): value is number {
   if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 1) return false;
-  return /share|fraction|proportion|percent|synchrony|alignment|polariz|order|bumping|collision/i.test(`${id} ${label}`);
+  return /share|fraction|proportion|percent|synchrony|alignment|polariz|order|bumping|collision|darkness/i.test(`${id} ${label}`);
 }
 
 export function formatHudValue(

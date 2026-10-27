@@ -35,6 +35,10 @@ describe("reading numbers", () => {
   it("shows shares as percents and units as words", () => {
     expect(isShareReading("sync_fraction", "Fireflies flashing together", 0.42)).toBe(true);
     expect(isShareReading("hares", "Hares alive", 40)).toBe(false);
+    expect(formatHudValue("meanDarkness", "Average moth darkness", 0.2, "series", "")).toEqual({
+      text: "20%",
+      unit: null,
+    });
     expect(formatHudValue("sync_fraction", "Fireflies flashing together", 0.42, "series", "")).toEqual({
       text: "42%",
       unit: null,

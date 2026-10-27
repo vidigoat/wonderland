@@ -1889,6 +1889,20 @@
   .reading-chart svg {
     height: 72px;
   }
+  /* The dune is the picture. Three stacked cards were covering its windward slope. */
+  .play[data-world="dune-march"] .stage-stack .hud {
+    max-width: calc(100% - 16px);
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .play[data-world="dune-march"] .hud-card {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .play[data-world="dune-march"] .hud-big {
+    font-size: 15px;
+  }
 }
 .reading-chart {
   flex: 0 0 auto;

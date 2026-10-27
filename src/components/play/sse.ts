@@ -55,7 +55,8 @@ export function toMontageItem(event: ClientPipelineEvent): MontageItem | null {
   if (event.type === "world") {
     const card = readCard(event.spec);
     if (!card) return null;
-    return { type: "world", ...card, href: heroHref(card.id), notice };
+    // Hero worlds, and generated worlds that were verified and saved to the shelf by the pipeline.
+    return { type: "world", ...card, href: heroHref(card.id) ?? (/^[a-z0-9-]+$/.test(card.id) ? `/w/${card.id}` : null), notice };
   }
   if (event.type === "choose") {
     return {

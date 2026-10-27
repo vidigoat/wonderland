@@ -251,6 +251,13 @@ describe("pipeline events", () => {
     expect(toMontageItem(drained.events[1] ?? drained.events[0]!)?.type).toBe("checks");
   });
 
+  it("links a verified generated world, and refuses an unsafe id", () => {
+    const world = (id: string) =>
+      toMontageItem({ type: "world", spec: { id, title: "The Meadow That Blinks As One", tagline: "t", concept: "c" }, source: "live" } as never);
+    expect(world("firefly-sync-kuramoto")).toMatchObject({ type: "world", href: "/w/firefly-sync-kuramoto" });
+    expect(world("../etc/passwd")).toMatchObject({ type: "world", href: null });
+  });
+
   it("shows counts only, and a sample notice verbatim", () => {
     const item = toMontageItem({
       type: "checks",

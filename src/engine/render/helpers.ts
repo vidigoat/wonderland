@@ -501,6 +501,31 @@ export function scrollTravel(playing: boolean, reduced: boolean, elapsedMs: numb
 
 export type ScrollTrip = { started: number | null; traveled: boolean };
 
+/**
+ * How many figures to draw, and how large.
+ * A painted crowd shrinks so it reads as a crowd. On a phone the same formula
+ * turns a hundred moths into specks, so the stage draws fewer and keeps each one big enough to see.
+ */
+export function populationCrowd(input: { width: number; height: number; count: number; painted: boolean; rumour: boolean; hero: boolean }): { cap: number; scale: number } {
+  const narrow = input.width < 520 && input.hero && !input.rumour;
+  const cap = Math.min(Math.max(0, input.count), narrow ? 36 : 600);
+  const unit = Math.min(input.width, input.height);
+  const spacing = Math.sqrt((input.width * input.height) / Math.max(1, cap));
+  const crowd = !input.painted || input.rumour ? 1 : Math.min(1, spacing / (input.hero ? 150 : 230));
+  let scale = Math.max(0.85, Math.min(1.55, unit / 640)) * crowd;
+  if (narrow) scale = Math.max(scale, 0.52);
+  return { cap, scale };
+}
+
+/** Keep the bird when a phone stage draws only part of the flock. */
+export function crowdToDraw<T extends { sprite?: string }>(agents: readonly T[], cap: number): T[] {
+  if (agents.length <= cap) return [...agents];
+  const featured = agents.filter((agent) => agent.sprite === "bird");
+  const room = Math.max(0, cap - featured.length);
+  const rest = agents.filter((agent) => agent.sprite !== "bird");
+  return [...rest.slice(0, room), ...featured];
+}
+
 /** One frame of the journey. A trip that has begun stays at its station after the send. */
 export function stepScroll(trip: ScrollTrip, playing: boolean, reduced: boolean, now: number, destination: number): { trip: ScrollTrip; travel: number } {
   if (playing && !reduced) {

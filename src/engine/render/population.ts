@@ -1,6 +1,6 @@
 import { Container, Graphics, Text } from "pixi.js";
 import type { PopulationAgent } from "@/engine/view";
-import { clamp01, landedApart, phaseOffset, readNumber, smoothstep, spokenIds, townFoot } from "./helpers";
+import { clamp01, crowdToDraw, landedApart, phaseOffset, populationCrowd, readNumber, smoothstep, spokenIds, townFoot } from "./helpers";
 import { pixelRatio, stageFont } from "./fonts";
 import { barkColor, isHeroWorld, populationTint } from "./palette";
 import type { Scene, Frame } from "./scene";
@@ -79,14 +79,21 @@ export function createPopulationScene(): Scene {
 
     const seen = new Set<string>();
     const speakers = spokenIds(agents);
-    const unit = Math.min(frame.width, frame.height);
     // Painted worlds can hold a hundred creatures: shrink each so the crowd reads as a crowd, not a wall.
-    const spacing = Math.sqrt((frame.width * frame.height) / Math.max(1, agents.length));
-    const crowd = !isPaintedWorld(frame.worldId) || frame.worldId === "rumour-town" ? 1 : Math.min(1, spacing / (isHeroWorld(frame.worldId) ? 150 : 230));
-    const figureScale = Math.max(0.85, Math.min(1.55, unit / 640)) * crowd;
+    // A phone keeps fewer moths, each large enough to tell pale from dark.
+    const crowd = populationCrowd({
+      width: frame.width,
+      height: frame.height,
+      count: agents.length,
+      painted: isPaintedWorld(frame.worldId),
+      rumour: frame.worldId === "rumour-town",
+      hero: isHeroWorld(frame.worldId),
+    });
+    const figureScale = crowd.scale;
+    const drawn = crowdToDraw(agents, crowd.cap);
     placeBank(bank, shutters, frame, figureScale);
 
-    for (const agent of agents.slice(0, 600)) {
+    for (const agent of drawn) {
       const id = String(agent.id);
       seen.add(id);
       let node = nodes.get(id);

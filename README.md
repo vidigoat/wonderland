@@ -15,7 +15,7 @@
   <img alt="Meta Muse Spark Open" src="https://img.shields.io/badge/Muse%20Spark%20Open-reasoning%20%C2%B7%20Ada%20%C2%B7%20judge%20%C2%B7%2040%20citizens-0866FF?style=flat-square&logo=meta&logoColor=white" />
   <img alt="Muse Image + SAM 3.1" src="https://img.shields.io/badge/Muse%20Image%20%2B%20SAM%203.1-every%20world%20painted-0866FF?style=flat-square&logo=meta&logoColor=white" />
   <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000?style=flat-square&logo=nextdotjs" />
-  <img alt="Tests" src="https://img.shields.io/badge/tests-200%20passing-2ea44f?style=flat-square" />
+  <img alt="Tests" src="https://img.shields.io/badge/tests-225%20passing-2ea44f?style=flat-square" />
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178C6?style=flat-square&logo=typescript&logoColor=white" />
 </p>
 
@@ -238,7 +238,7 @@ pnpm dev                       # http://localhost:3000
 
 | Command | |
 |---|---|
-| `pnpm check` | Typecheck, lint and the full test suite (224 tests, including every world's science checks). |
+| `pnpm check` | Typecheck, lint and the full test suite (225 tests, including every world's science checks). |
 | `pnpm build && pnpm start` | Production build. |
 | `pnpm paint <id> \| --all` | Paint saved worlds with Muse Image + SAM 3.1. |
 | `pnpm smoke` | One live call to each model. |

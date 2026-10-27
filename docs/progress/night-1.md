@@ -55,6 +55,8 @@ The study pages are ink on the cream page. A first pass had drawn them in white,
 
 The README test count was still 200. It is 223. `pnpm eval` is listed, and `/study` is described as built with no finished replies yet. A typed question, “Why does SQL injection work?”, on the production server matched The Gatekeeper’s Ledger, 4 of 4 checks, and offered Enter.
 
+On a phone the forest drew all 120 moths, each about 19 pixels, so the flock was a field of specks. The stage now draws 36 of them, keeps the bird, and holds each moth at least half a figure. A desk still draws the whole flock. Checked on the production server at 390 pixels wide.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

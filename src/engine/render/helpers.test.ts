@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   CANNON_STEP_DT,
   clampCenter,
+  crowdToDraw,
   FIELD_COLORS,
   fieldColor,
   bilinearSample,
@@ -12,6 +13,7 @@ import {
   landedApart,
   injectionHighlightRange,
   phaseOffset,
+  populationCrowd,
   resolveShotPath,
   SCROLL_TRIP_MS,
   scrollRest,
@@ -246,6 +248,23 @@ describe("fieldColor", () => {
     expect(fieldScale("other", [0, 0.12, 0.35, 1])).toBe("firebreak");
     expect(fieldScale("other", [0, 1, 0.5])).toBe("continuous");
     expect(fieldScale("other", [0, 1, 0, 1])).toBe("continuous");
+  });
+});
+
+describe("a phone forest keeps moths visible", () => {
+  it("draws fewer moths, each at least half a figure, and still includes the bird", () => {
+    const phone = populationCrowd({ width: 390, height: 520, count: 121, painted: true, rumour: false, hero: true });
+    expect(phone.cap).toBe(36);
+    expect(phone.scale).toBeGreaterThanOrEqual(0.52);
+    const desk = populationCrowd({ width: 1100, height: 640, count: 121, painted: true, rumour: false, hero: true });
+    expect(desk.cap).toBe(121);
+    const drawn = crowdToDraw(
+      [...Array.from({ length: 120 }, () => ({ sprite: "moth" })), { sprite: "bird" }],
+      phone.cap,
+    );
+    expect(drawn).toHaveLength(36);
+    expect(drawn.filter((agent) => agent.sprite === "bird")).toHaveLength(1);
+    expect(drawn.filter((agent) => agent.sprite === "moth")).toHaveLength(35);
   });
 });
 

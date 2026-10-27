@@ -1359,3 +1359,76 @@
 @media (prefers-reduced-motion: reduce) {
   .play .ada[data-status="thinking"] h2::before { animation: none; }
 }
+
+/* The mission card on a world's first screen: what you're doing here, in four steps. */
+.notebook .mission {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.notebook .mission-title {
+  color: #fafafa;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.notebook .mission-steps {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding-left: 0;
+  list-style: none;
+  counter-reset: mission;
+}
+.notebook .mission-steps li {
+  position: relative;
+  padding-left: 30px;
+  color: #a3a3a3;
+  font-size: 14px;
+  line-height: 1.45;
+  counter-increment: mission;
+}
+.notebook .mission-steps li::before {
+  content: counter(mission);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fafafa;
+  font-size: 11px;
+  font-weight: 600;
+}
+.notebook .mission-steps b {
+  color: #fafafa;
+  font-weight: 600;
+}
+.notebook .mission-race {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #d4d4d4;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.notebook .provenance {
+  margin-top: 14px;
+  color: #737373;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.notebook .setting {
+  margin-top: 20px;
+  color: #a3a3a3;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.notebook .mission + .press {
+  margin-top: 16px;
+}

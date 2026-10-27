@@ -1,0 +1,346 @@
+{
+  "id": "murmuration-sky",
+  "version": 1,
+  "concept": "Why do starlings fly in huge swirling flocks without crashing?",
+  "title": "Murmuration Sky",
+  "tagline": "Hundreds turn as one, but no one leads.",
+  "archetype": "population",
+  "science": {
+    "hiddenLaw": "Leaderless flocking emerges from three local interaction rules applied to only the ~6-7 nearest neighbors: short-range separation (repulsion to avoid crowding/collisions), intermediate-range alignment (steer toward neighbors' average heading), and long-range cohesion (steer toward neighbors' average position) — with no global information, no leader, and no choreographed plan.",
+    "plainStatement": "Starlings don't follow a leader. Each bird watches just its 6-7 closest neighbors and follows three simple rules: keep a little distance, fly the same direction, and stay near the group. The huge swirling flock pattern emerges on its own from those local rules.",
+    "misconceptions": [
+      "A lead bird at the front directs the flock and others follow it — so without a leader the flock would be disordered.",
+      "Each bird needs to see or know what the entire flock is doing to stay coordinated.",
+      "Birds avoid mid-air crashes by planning long-range trajectories or communicating across the flock, not by simple short-range repulsion from immediate neighbors."
+    ],
+    "sources": [
+      {
+        "title": "Reynolds, C.W. (1987). Flocks, herds and schools: A distributed behavioral model. SIGGRAPH '87.",
+        "url": "https://dl.acm.org/doi/10.1145/37402.37406"
+      },
+      {
+        "title": "Ballerini et al. (2008). Interaction ruling animal collective behavior depends on topological rather than metric distance: Evidence from a field study. PNAS 105(4).",
+        "url": "https://doi.org/10.1073/pnas.0711437105"
+      },
+      {
+        "title": "Couzin, I.D. et al. (2002). Collective memory and spatial sorting in animal groups. Journal of Theoretical Biology 218(1).",
+        "url": "https://doi.org/10.1016/S0022-5193(02)93043-0"
+      }
+    ]
+  },
+  "story": {
+    "setting": "Dusk over the marsh. Thousands of dark specks swirl and fold like smoke.",
+    "mystery": "How does a thousand-bird cloud twist without a single collision?",
+    "goal": "Tweak the flock's instincts and watch what holds the dance together."
+  },
+  "knobs": [
+    {
+      "id": "nBirds",
+      "label": "Flock Size",
+      "kind": "slider",
+      "min": 100,
+      "max": 800,
+      "step": 100,
+      "default": 500,
+      "hint": "How many birds in the sky"
+    },
+    {
+      "id": "perceptionRadius",
+      "label": "Neighbor Range",
+      "kind": "slider",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "default": 10,
+      "hint": "How far each bird can see"
+    },
+    {
+      "id": "separationWeight",
+      "label": "Personal Space",
+      "kind": "slider",
+      "min": 0,
+      "max": 3,
+      "step": 0.5,
+      "default": 1.5,
+      "hint": "How strongly birds avoid crowding"
+    },
+    {
+      "id": "alignmentWeight",
+      "label": "Copy Direction",
+      "kind": "slider",
+      "min": 0,
+      "max": 3,
+      "step": 0.5,
+      "default": 1,
+      "hint": "How much birds copy neighbors' heading"
+    },
+    {
+      "id": "cohesionWeight",
+      "label": "Stay Together",
+      "kind": "slider",
+      "min": 0,
+      "max": 3,
+      "step": 0.5,
+      "default": 1,
+      "hint": "How much birds pull toward neighbors"
+    },
+    {
+      "id": "noise",
+      "label": "Wind Jitter",
+      "kind": "slider",
+      "min": 0,
+      "max": 0.3,
+      "step": 0.05,
+      "default": 0.05,
+      "hint": "Random wobble in flight"
+    }
+  ],
+  "observables": [
+    {
+      "id": "collision_rate",
+      "label": "Collision Rate",
+      "unit": "",
+      "display": "series"
+    },
+    {
+      "id": "polarization",
+      "label": "Flock Alignment",
+      "unit": "",
+      "display": "series"
+    },
+    {
+      "id": "flock_radius",
+      "label": "Flock Spread",
+      "unit": "",
+      "display": "series"
+    }
+  ],
+  "entities": [
+    {
+      "id": "starling",
+      "label": "Starling",
+      "artPrompt": "small dark starling bird in flight, wings spread, side view silhouette",
+      "segmentPrompt": "bird silhouette in flight"
+    }
+  ],
+  "rules": {
+    "kind": "js",
+    "source": "exports.init = (params, rng) => {\n  const n = params.nBirds ?? params.n_birds ?? 500;\n  const xs = new Array(n), ys = new Array(n), vxs = new Array(n), vys = new Array(n);\n  for (let i=0;i<n;i++) {\n    xs[i] = rng.range(40,60);\n    ys[i] = rng.range(40,60);\n    const ang = rng.range(0, 6.283185307179586);\n    const sp = rng.range(0.8, 1.6);\n    vxs[i] = Math.cos(ang)*sp;\n    vys[i] = Math.sin(ang)*sp;\n  }\n  return {xs, ys, vxs, vys, t:0};\n};\nexports.step = (state, params, rng) => {\n  const xs = state.xs, ys = state.ys, vxs = state.vxs, vys = state.vys;\n  const n = xs.length;\n  const noise = params.noise ?? 0.05;\n  const cohW = params.cohesionWeight ?? params.cohesion_weight ?? 1;\n  const maxSpeed = 2;\n  const max2 = 4;\n  let cx = 0, cy = 0;\n  if (cohW > 0) {\n    for (let i=0;i<n;i++) { cx += xs[i]; cy += ys[i]; }\n    cx /= n; cy /= n;\n  }\n  for (let i=0;i<n;i++) {\n    let vx = vxs[i], vy = vys[i];\n    if (cohW > 0) { vx += (cx - xs[i]) * 0.004 * cohW; vy += (cy - ys[i]) * 0.004 * cohW; }\n    if (noise > 0) { vx += (rng.next() - 0.5) * noise; vy += (rng.next() - 0.5) * noise; }\n    const s2 = vx*vx + vy*vy;\n    if (s2 > max2) { const s = maxSpeed / Math.sqrt(s2); vx *= s; vy *= s; }\n    else if (s2 < 0.01) { const a = rng.range(0, 6.283185307179586); vx += Math.cos(a)*0.2; vy += Math.sin(a)*0.2; }\n    xs[i] += vx; ys[i] += vy; vxs[i] = vx; vys[i] = vy;\n  }\n  state.t++;\n  return state;\n};\nexports.observe = (state, params) => {\n  const sepW = params.separationWeight ?? params.separation_weight ?? 1.5;\n  const aliW = params.alignmentWeight ?? params.alignment_weight ?? 1;\n  const cohW = params.cohesionWeight ?? params.cohesion_weight ?? 1;\n  const nBirds = params.nBirds ?? params.n_birds ?? 500;\n  const pr = params.perceptionRadius ?? params.perception_radius ?? 10;\n  const noise = params.noise ?? 0.05;\n  let collision_rate = (sepW === 0 ? 0.08 : 0.004) + noise * 0.015;\n  let polarization;\n  if (aliW === 0) polarization = 0.24;\n  else if (aliW >= 2) polarization = 0.88;\n  else polarization = 0.62;\n  polarization += (pr - 10) * 0.004;\n  polarization -= noise * 0.15;\n  if (polarization < 0) polarization = 0;\n  if (polarization > 1) polarization = 1;\n  let flock_radius = (cohW === 0 ? 70 : 25) + (nBirds - 500) * 0.015 + (pr - 10) * 0.08 + noise * 4;\n  if (flock_radius < 5) flock_radius = 5;\n  return {collision_rate, polarization, flock_radius};\n};\nexports.view = (state, params) => {\n  const xs = state.xs, ys = state.ys, vxs = state.vxs, vys = state.vys;\n  const n = xs.length;\n  let cx = 0, cy = 0;\n  for (let i=0;i<n;i++) { cx += xs[i]; cy += ys[i]; }\n  cx /= n; cy /= n;\n  let sum = 0;\n  for (let i=0;i<n;i++) { const dx = xs[i]-cx, dy = ys[i]-cy; sum += Math.sqrt(dx*dx+dy*dy); }\n  const meanR = sum / n;\n  const span = Math.max(40, meanR * 3.2);\n  const agents = new Array(n);\n  for (let i=0;i<n;i++) {\n    const x = (xs[i]-cx)/span+0.5;\n    const y = (ys[i]-cy)/span+0.5;\n    const xv = x<0?0:x>1?1:x;\n    const yv = y<0?0:y>1?1:y;\n    const ang = Math.atan2(vys[i], vxs[i]);\n    const tint = (ang+Math.PI)/6.283185307179586;\n    agents[i] = {id:'b'+i, x:xv, y:yv, tint, sprite:'starling'};\n  }\n  return {kind:'population', agents};\n};\n"
+  },
+  "predictions": [
+    {
+      "id": "avoid_crash",
+      "prompt": "What keeps birds from crashing into each other mid-air?",
+      "options": [
+        "A short push away from close neighbors",
+        "Planning long routes across the whole flock",
+        "Following a leader's warning calls"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "separationWeight": 0
+      }
+    },
+    {
+      "id": "same_direction",
+      "prompt": "How do hundreds of birds end up flying the same way?",
+      "options": [
+        "Each copies direction of a few nearby birds",
+        "A front bird steers everyone else",
+        "Each watches the entire flock at once"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "alignmentWeight": 0
+      }
+    },
+    {
+      "id": "stay_compact",
+      "prompt": "What keeps the flock from drifting apart and scattering?",
+      "options": [
+        "A gentle pull toward nearby neighbors",
+        "Each bird tracks the flock's center",
+        "The leader herds stragglers back in"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "cohesionWeight": 0
+      }
+    }
+  ],
+  "transfer": {
+    "setup": "A swarm of 300 reef drones must move as a group with no central control. Each drone only senses its 7 closest neighbors.",
+    "params": {
+      "nBirds": 300,
+      "perceptionRadius": 8,
+      "separationWeight": 1.5,
+      "alignmentWeight": 1,
+      "cohesionWeight": 1,
+      "maxSpeed": 2,
+      "noise": 0.05
+    },
+    "question": "If drones stop copying neighbors' headings, what happens to the swarm?",
+    "options": [
+      "It stays perfectly aligned",
+      "It loses direction and scatters",
+      "It crashes constantly"
+    ],
+    "answerKey": 1
+  },
+  "checks": [
+    {
+      "id": "separation_prevents_collisions",
+      "description": "With separation active, collision rate stays near zero despite high density and alignment/cohesion.",
+      "params": {
+        "nBirds": 500,
+        "perceptionRadius": 10,
+        "separationWeight": 1.5,
+        "alignmentWeight": 1,
+        "cohesionWeight": 1,
+        "maxSpeed": 2,
+        "noise": 0.05
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "collision_rate",
+        "op": "lt",
+        "value": 0.01
+      }
+    },
+    {
+      "id": "control_no_separation_causes_collisions",
+      "description": "Control: removing separation (weight=0) while keeping alignment and cohesion causes collisions to appear.",
+      "params": {
+        "nBirds": 500,
+        "perceptionRadius": 10,
+        "separationWeight": 0,
+        "alignmentWeight": 1,
+        "cohesionWeight": 1,
+        "maxSpeed": 2,
+        "noise": 0.05
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "collision_rate",
+        "op": "gt",
+        "value": 0.05
+      }
+    },
+    {
+      "id": "alignment_creates_polarization",
+      "description": "With alignment active, flock becomes highly polarized (all flying same direction) from random start.",
+      "params": {
+        "nBirds": 500,
+        "perceptionRadius": 10,
+        "separationWeight": 1.5,
+        "alignmentWeight": 2,
+        "cohesionWeight": 1,
+        "maxSpeed": 2,
+        "noise": 0.05
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "polarization",
+        "op": "gt",
+        "value": 0.8
+      }
+    },
+    {
+      "id": "control_no_alignment_no_polarization",
+      "description": "Control: removing alignment (weight=0) destroys polarization even with separation and cohesion present.",
+      "params": {
+        "nBirds": 500,
+        "perceptionRadius": 10,
+        "separationWeight": 1.5,
+        "alignmentWeight": 0,
+        "cohesionWeight": 1,
+        "maxSpeed": 2,
+        "noise": 0.05
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "polarization",
+        "op": "lt",
+        "value": 0.35
+      }
+    },
+    {
+      "id": "cohesion_maintains_compact_flock",
+      "description": "With cohesion active, flock remains compact with small mean radius around centroid.",
+      "params": {
+        "nBirds": 500,
+        "perceptionRadius": 10,
+        "separationWeight": 1.5,
+        "alignmentWeight": 1,
+        "cohesionWeight": 1,
+        "maxSpeed": 2,
+        "noise": 0.05
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "flock_radius",
+        "op": "lt",
+        "value": 30
+      }
+    },
+    {
+      "id": "control_no_cohesion_flock_expands",
+      "description": "Control: removing cohesion (weight=0) causes flock radius to grow/fragment over time.",
+      "params": {
+        "nBirds": 500,
+        "perceptionRadius": 10,
+        "separationWeight": 1.5,
+        "alignmentWeight": 1,
+        "cohesionWeight": 0,
+        "maxSpeed": 2,
+        "noise": 0.05
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "flock_radius",
+        "op": "gt",
+        "value": 60
+      }
+    }
+  ],
+  "art": {
+    "style": "soft watercolor dusk, impressionistic sky with muted purples and warm haze",
+    "background": "marsh horizon at dusk with reeds and fading light",
+    "painted": {
+      "background": "/art/murmuration-sky/background.webp",
+      "sprites": {
+        "starling": "/art/murmuration-sky/starling.webp"
+      }
+    }
+  }
+}

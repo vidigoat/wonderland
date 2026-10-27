@@ -4,6 +4,7 @@ import { siteOrigin } from "@/lib/site";
 import "./globals.css";
 import "./night.css";
 import "./bw.css";
+import "./land.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,10 +39,11 @@ const atkinson = Atkinson_Hyperlegible({
 export const metadata: Metadata = {
   metadataBase: siteOrigin(),
   title: {
-    default: "Wonderland",
+    default: "Wonderland: don't ask AI for the answer, ask it for a world",
     template: "%s — Wonderland",
   },
-  description: "The AI builds the world. You find the law.",
+  description:
+    "Type any why question. Wonderland builds a living world where the answer is secretly at work, checks it against real science, and lets you discover it yourself while an AI scientist races you to it.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

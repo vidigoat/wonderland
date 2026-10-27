@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { connection } from "next/server";
 import { generateWorld } from "@/agents/pipeline";
 import { toClientPipelineEvent } from "@/engine/client-event";
@@ -9,19 +10,37 @@ export async function POST(req: Request) {
   if (!concept || concept.length > 300) return Response.json({ error: "concept required (≤ 300 chars)" }, { status: 400 });
 
   const encoder = new TextEncoder();
+  // A world that already cost model calls is always finished and saved, even if the visitor closes the tab mid-build.
+  let open = true;
   const stream = new ReadableStream({
+    cancel() {
+      open = false;
+    },
     async start(controller) {
       const send = (event: unknown) => {
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+        if (!open) return;
+        try {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+        } catch {
+          open = false;
+        }
       };
       try {
         for await (const event of generateWorld(concept)) {
           send(toClientPipelineEvent(event));
+          // A new world is saved: the landing page and the worlds page list it on their next visit.
+          if (event.type === "stage" && event.stage === "done") {
+            try {
+              revalidateTag("worlds", "max");
+            } catch {
+              // Outside a request scope (tests); the lists refresh on the next deploy.
+            }
+          }
         }
       } catch (e) {
         send(toClientPipelineEvent({ type: "error", message: (e as Error).message }));
       } finally {
-        controller.close();
+        if (open) controller.close();
       }
     },
   });

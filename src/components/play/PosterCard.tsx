@@ -1,3 +1,4 @@
+import { markDataUrl } from "@/components/brand/mark-data";
 import type { PosterCopy, PosterMotif } from "./poster";
 
 export function PosterCard({
@@ -28,9 +29,8 @@ export function PosterCard({
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 26, fontWeight: 600, letterSpacing: "-0.02em" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 26, height: 26, borderRadius: 999, border: `3px solid ${ink}` }}>
-          <div style={{ display: "flex", width: 10, height: 10, borderRadius: 999, background: ink }} />
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={markDataUrl()} width={30} height={30} alt="" />
         <div style={{ display: "flex" }}>{kicker}</div>
       </div>
       <div style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "space-between", gap: 48 }}>

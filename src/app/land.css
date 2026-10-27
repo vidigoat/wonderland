@@ -1,0 +1,657 @@
+/*
+ * Wonderland landing, second edition.
+ * The interface stays black, white and Geist. The colour comes from the worlds' own paintings:
+ * a drifting wall of them behind the hero, a playable world in the first section, painted cards below.
+ */
+
+.land {
+  --land-line: rgba(255, 255, 255, 0.1);
+  --land-surface: #0b0b0b;
+  --land-muted: #a3a3a3;
+  --land-faint: #737373;
+  overflow-x: clip;
+}
+
+/* ---------- Painted wall ---------- */
+.wall {
+  position: absolute;
+  inset: -10% -4%;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  transform: rotate(-6deg) scale(1.08);
+  opacity: 0.62;
+  pointer-events: none;
+}
+.wall-quiet {
+  opacity: 0.3;
+}
+.wall-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation-name: wall-drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+.wall-tile {
+  position: relative;
+  flex: none;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #111;
+}
+.wall-tile img {
+  object-fit: cover;
+}
+@keyframes wall-drift {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wall-col {
+    animation: none;
+  }
+}
+
+/* ---------- Hero ---------- */
+.land-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: min(92svh, 920px);
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--land-line);
+}
+.land-hero::after {
+  /* Darkens the paintings where the words sit, and fades them into the page below. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 62% 58% at 50% 46%, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.72) 48%, rgba(0, 0, 0, 0.25) 100%),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.55), transparent 22%, transparent 70%, #000 100%);
+  pointer-events: none;
+}
+.land-hero-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(1180px, 100% - 32px);
+  margin: 0 auto;
+  padding: clamp(64px, 10vw, 120px) 0 clamp(56px, 8vw, 96px);
+  text-align: center;
+}
+.land-badge {
+  gap: 8px;
+  height: auto;
+  padding: 6px 12px;
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.5);
+  color: #e5e5e5;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  animation: bw-in 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.land-title {
+  margin-top: 24px;
+  font-size: clamp(40px, 6.4vw, 84px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+  text-shadow: 0 2px 40px rgba(0, 0, 0, 0.6);
+  animation: bw-in 0.9s 0.06s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.land-lede {
+  max-width: 60ch;
+  margin-top: 24px;
+  color: #d4d4d4;
+  font-size: clamp(16px, 1.6vw, 19px);
+  line-height: 1.55;
+  text-wrap: pretty;
+  animation: bw-in 0.9s 0.12s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.land-ask {
+  width: min(720px, 100%);
+  margin-top: 34px;
+  background: rgba(10, 10, 10, 0.82);
+  backdrop-filter: blur(10px);
+}
+.land-chips {
+  margin-top: 18px;
+}
+.land-chips button {
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+}
+.land-scroll {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 30px;
+  color: #e5e5e5;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  padding-bottom: 2px;
+}
+.land-scroll:hover {
+  border-bottom-color: #fafafa;
+}
+.land-scroll svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* ---------- Sections ---------- */
+.land-section {
+  width: min(1200px, 100% - 32px);
+  margin: 0 auto;
+  padding: clamp(72px, 10vw, 128px) 0 0;
+}
+.land-head {
+  max-width: 760px;
+  margin-bottom: 36px;
+}
+.land-h2 {
+  font-size: clamp(30px, 4vw, 48px);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.land-sub {
+  margin-top: 14px;
+  max-width: 62ch;
+  color: var(--land-muted);
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+/* ---------- Try it ---------- */
+.try {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr);
+  gap: 18px;
+  align-items: stretch;
+}
+.try-stage {
+  overflow: hidden;
+  border: 1px solid var(--land-line);
+  border-radius: 16px;
+  background: var(--land-surface);
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.9);
+}
+.try-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 40px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--land-line);
+}
+.try-dots {
+  display: inline-flex;
+  gap: 6px;
+}
+.try-dots i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #262626;
+}
+.try-url {
+  flex: 1;
+  text-align: center;
+  color: var(--land-faint);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 12px;
+}
+.try-live {
+  min-width: 64px;
+  text-align: right;
+  color: #fafafa;
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.try-live-idle {
+  color: var(--land-faint);
+}
+.try-canvas {
+  position: relative;
+  aspect-ratio: 16 / 10;
+}
+.try-canvas .stage-frame,
+.try-canvas .world-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+}
+.try-caption {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 3;
+  max-width: calc(100% - 32px);
+  padding: 9px 14px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.72);
+  color: #fafafa;
+  font-size: 15px;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+}
+.try-caption:empty {
+  display: none;
+}
+.try-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+  border: 1px solid var(--land-line);
+  border-radius: 16px;
+  background: var(--land-surface);
+}
+.try-step {
+  color: var(--land-faint);
+  font-size: 13px;
+  font-weight: 500;
+}
+.try-q {
+  margin-top: 10px;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  text-wrap: pretty;
+}
+.try-note {
+  margin-top: 14px;
+  color: var(--land-muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+.try-options {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+}
+.try-option {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  background: #111;
+  color: #fafafa;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: left;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    transform 0.15s;
+}
+.try-option:hover {
+  background: #1a1a1a;
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
+}
+.try-knobs {
+  display: grid;
+  gap: 16px;
+  margin-top: 22px;
+}
+.try-knob {
+  display: grid;
+  gap: 10px;
+  font-size: 14px;
+  color: #e5e5e5;
+}
+.try-knob span {
+  display: flex;
+  justify-content: space-between;
+}
+.try-knob b {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.try-knob input[type="range"] {
+  width: 100%;
+  accent-color: #fafafa;
+}
+.try-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  font-size: 14px;
+  color: #e5e5e5;
+  cursor: pointer;
+}
+.try-toggle:has(input:checked) {
+  border-color: rgba(255, 255, 255, 0.45);
+  background: #141414;
+}
+.try-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: #fafafa;
+}
+.try-go {
+  margin-top: 22px;
+  align-self: flex-start;
+}
+.try-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+.try-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 22px;
+  align-self: flex-start;
+  background: none;
+  border: 0;
+  color: var(--land-faint);
+  font-size: 13px;
+}
+.try-reset:hover {
+  color: #fafafa;
+}
+.try-reset svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* ---------- Why ---------- */
+.land-why {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(32px, 6vw, 96px);
+  align-items: start;
+}
+.land-stat {
+  font-size: clamp(96px, 14vw, 180px);
+  font-weight: 600;
+  line-height: 0.85;
+  letter-spacing: -0.07em;
+}
+.land-stat-label {
+  margin-top: 22px;
+  max-width: 34ch;
+  font-size: 18px;
+  line-height: 1.45;
+  color: #e5e5e5;
+}
+.land-src {
+  margin-top: 14px;
+  color: var(--land-faint);
+  font-size: 13px;
+}
+.land-why-copy p {
+  margin-top: 18px;
+  max-width: 58ch;
+  color: var(--land-muted);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+/* ---------- How it plays ---------- */
+.land-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+.land-step {
+  overflow: hidden;
+  border: 1px solid var(--land-line);
+  border-radius: 16px;
+  background: var(--land-surface);
+}
+.land-shot {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-bottom: 1px solid var(--land-line);
+  background: #111;
+}
+.land-shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+.land-step-copy {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 14px;
+  padding: 22px 24px 26px;
+}
+.land-step-n {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-size: 13px;
+  font-weight: 600;
+}
+.land-step-copy h3 {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 30px;
+}
+.land-step-copy p {
+  margin-top: 6px;
+  color: var(--land-muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+/* ---------- Pipeline ---------- */
+.pipe {
+  display: grid;
+  gap: 18px;
+}
+.pipe-lane {
+  padding: 22px;
+  border: 1px solid var(--land-line);
+  border-radius: 16px;
+  background: var(--land-surface);
+}
+.pipe-lane-label {
+  margin-bottom: 16px;
+  color: var(--land-faint);
+  font-size: 13px;
+  font-weight: 500;
+}
+.pipe-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.pipe-node {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: #111;
+}
+.pipe-node[data-gate="yes"] {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: #161616;
+}
+.pipe-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 8px;
+  border-radius: 9px;
+  background: #fafafa;
+  color: #000;
+}
+.pipe-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.75;
+}
+.pipe-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+.pipe-model {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 12px;
+  color: #d4d4d4;
+}
+.pipe-does {
+  margin-top: 6px;
+  color: var(--land-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.pipe-arrow {
+  position: absolute;
+  top: 34px;
+  right: -12px;
+  z-index: 1;
+  width: 10px;
+  height: 10px;
+  border-top: 1.5px solid rgba(255, 255, 255, 0.5);
+  border-right: 1.5px solid rgba(255, 255, 255, 0.5);
+  transform: rotate(45deg);
+}
+.pipe-foot {
+  color: var(--land-faint);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* ---------- Who ---------- */
+.land-who {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.land-who-card {
+  border-color: var(--land-line);
+  background: var(--land-surface);
+}
+.land-who-icon {
+  width: 22px;
+  height: 22px;
+  stroke-width: 1.5;
+}
+.land-who-title {
+  margin-top: 8px;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+}
+.land-who-body {
+  color: var(--land-muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+/* ---------- Closing call ---------- */
+.land-cta {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  margin-top: clamp(80px, 10vw, 140px);
+  border-top: 1px solid var(--land-line);
+}
+.land-cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(ellipse 60% 70% at 50% 50%, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.55));
+}
+.land-cta-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(80px, 12vw, 150px) 16px;
+  text-align: center;
+}
+.land-cta-inner .land-sub {
+  color: #d4d4d4;
+}
+.land-cta .bw-cta-row {
+  margin-top: 30px;
+}
+.land-foot-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 900px) {
+  .try,
+  .land-why,
+  .land-steps {
+    grid-template-columns: 1fr;
+  }
+  .pipe-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .pipe-arrow {
+    display: none;
+  }
+  .land-who {
+    grid-template-columns: 1fr;
+  }
+  .wall {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .wall-col:nth-child(n + 4) {
+    display: none;
+  }
+}
+@media (max-width: 560px) {
+  .pipe-row {
+    grid-template-columns: 1fr;
+  }
+  .try-panel {
+    padding: 22px;
+  }
+  .bw-links {
+    display: none;
+  }
+}

@@ -27,7 +27,7 @@ describe("sandbox", () => {
     expect(observed.roll === 0 || observed.roll === 1).toBe(true);
     expect(observed.host).toBe("undefined,undefined,undefined,undefined");
     expect(rules.view?.(stepped, {})).toEqual({ kind: "field", grid: [1], w: 1, h: 1 });
-    expect(SANDBOX_TIMEOUT_MS).toBe(1000);
+    expect(SANDBOX_TIMEOUT_MS).toBe(250);
   });
 
   it("throws when rules call Math.random", async () => {
@@ -79,5 +79,16 @@ describe("sandbox", () => {
       },
     } as WorldSpec);
     expect(() => rules.step({ n: 0 }, {}, createRng(1))).toThrow(/Math\.random|rng/);
+  });
+
+  it("stops a world that uses up its total time budget", () => {
+    const source = `exports.init = () => ({ n: 0 });
+exports.step = (s) => { let x = 0; for (let i = 0; i < 2e5; i++) x += i; return { n: s.n + 1 + (x > 0 ? 0 : 1) }; };
+exports.observe = (s) => ({ n: s.n });`;
+    const rules = compileSandboxed(source, { budgetMs: 5 });
+    let state = rules.init({}, (() => 0.5) as never);
+    expect(() => {
+      for (let i = 0; i < 500; i++) state = rules.step(state, {}, (() => 0.5) as never);
+    }).toThrow(/too slow to play/);
   });
 });

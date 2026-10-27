@@ -81,7 +81,8 @@ export function createPopulationScene(): Scene {
     const speakers = spokenIds(agents);
     const unit = Math.min(frame.width, frame.height);
     // Painted worlds can hold a hundred creatures: shrink each so the crowd reads as a crowd, not a wall.
-    const crowd = isPaintedWorld(frame.worldId) && !isHeroWorld(frame.worldId) ? Math.min(1, Math.sqrt((frame.width * frame.height) / Math.max(1, agents.length)) / 230) : 1;
+    const spacing = Math.sqrt((frame.width * frame.height) / Math.max(1, agents.length));
+    const crowd = !isPaintedWorld(frame.worldId) || frame.worldId === "rumour-town" ? 1 : Math.min(1, spacing / (isHeroWorld(frame.worldId) ? 150 : 230));
     const figureScale = Math.max(0.85, Math.min(1.55, unit / 640)) * crowd;
     placeBank(bank, shutters, frame, figureScale);
 
@@ -304,7 +305,10 @@ function syncBubble(node: Node, bubble: string | null | undefined, x: number, y:
     layer.addChild(node.bubble);
   }
   const lift = (phaseOffset(id) - 0.5) * 28;
-  node.bubble.position.set(x, (below ? y + 30 : y - 34) + lift);
+  // Keep the whole bubble on the stage: a speaker at the edge still gets every word read.
+  const half = node.bubble.width / 2 + 6;
+  const bx = frame.width > half * 2 ? Math.min(frame.width - half, Math.max(half, x)) : x;
+  node.bubble.position.set(bx, (below ? y + 30 : y - 34) + lift);
 }
 
 function makeBubble(text: string, below: boolean, ink: number, parchment: number, accent: number): Container {

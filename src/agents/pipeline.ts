@@ -117,7 +117,7 @@ async function* finishVerified(spec: WorldSpecT): AsyncGenerator<PipelineEvent> 
     yield { type: "error", message: `Saving the world failed: ${redact(cause(error), spec).replace(/\s+/g, " ").slice(0, 180)}`, source: "live" };
     return;
   }
-  yield stage("done", "World verified.", spec);
+  yield stage("done", "Painted and saved. It's yours to enter and share.", spec);
 }
 
 export async function* generateWorld(concept: string, maxRepairs = 3): AsyncGenerator<PipelineEvent> {

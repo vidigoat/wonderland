@@ -128,15 +128,17 @@ export type WorldSpec = z.infer<typeof WorldSpec>;
 export type PublicWorldSpec = Omit<WorldSpec, "science" | "predictions" | "transfer" | "checks"> & {
   predictions: Omit<Prediction, "answerKey" | "tryWith">[];
   transfer: Omit<WorldSpec["transfer"], "answerKey">;
+  /** How many science checks the world passed on every seed. The checks themselves stay on the server. */
+  checkCount: number;
 };
 
 export function toPublic(spec: WorldSpec): PublicWorldSpec {
   const { predictions, transfer, checks, ...rest } = spec;
   const { science, ...visible } = rest;
   void science;
-  void checks;
   return {
     ...visible,
+    checkCount: checks.length,
     predictions: predictions.map((p) => {
       const { answerKey, tryWith, ...shown } = p;
       void answerKey;

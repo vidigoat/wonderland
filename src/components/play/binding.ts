@@ -18,6 +18,8 @@ export type BindingView = {
   choose: Extract<MontageItem, { type: "choose" }> | null;
   error: string | null;
   notice: string | null;
+  /** The world is painted and saved: only now can its page be opened. */
+  ready: boolean;
 };
 
 /** Collapse the stream into one ceremony. The latest line for each station wins. */
@@ -54,6 +56,10 @@ export function bindingView(items: readonly MontageItem[]): BindingView {
     done: "No new world was made.",
   };
 
+  if (checks && checks.total > 0 && checks.passed === checks.total && world) {
+    messages.set("checker", `All ${checks.total} passed, on every seed.`);
+  }
+
   return {
     steps: ORDER.map((step) => {
       const said = messages.get(step.stage);
@@ -66,5 +72,6 @@ export function bindingView(items: readonly MontageItem[]): BindingView {
     choose,
     error,
     notice,
+    ready: world != null && messages.has("done"),
   };
 }

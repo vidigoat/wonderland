@@ -1,9 +1,11 @@
+import { cacheTag } from "next/cache";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { WorldThumb } from "@/components/landing/WorldThumb";
 import { PlaceScene } from "@/components/play/Scenes";
 import { listPublic } from "@/lib/storage/worlds";
 import { heroWorlds } from "@/worlds";
+import { LogoMark } from "@/components/brand/Logo";
 
 export const metadata: Metadata = {
   title: "Worlds",
@@ -15,7 +17,7 @@ export default function GalleryPage() {
     <div className="bw">
       <header className="bw-nav">
         <Link href="/" className="bw-logo">
-          <span className="bw-logo-mark" aria-hidden="true" />
+          <LogoMark className="bw-logo-svg" />
           Wonderland
         </Link>
         <nav className="bw-links" aria-label="Site">
@@ -42,7 +44,7 @@ export default function GalleryPage() {
       </section>
       <footer className="bw-foot">
         <span className="bw-logo">
-          <span className="bw-logo-mark" aria-hidden="true" />
+          <LogoMark className="bw-logo-svg" />
           Wonderland
         </span>
         <span>Built with Meta&apos;s Muse Spark Open, Muse Spark, Muse Image and SAM 3.1.</span>
@@ -51,9 +53,10 @@ export default function GalleryPage() {
   );
 }
 
-/** Worlds the generator wrote and verified (data/worlds). They change only on deploy, so the list is cached. */
+/** Worlds the generator wrote and verified (data/worlds). Cached; a newly saved world refreshes the "worlds" tag. */
 async function WrittenShelf() {
   "use cache";
+  cacheTag("worlds");
   const heroIds = new Set(heroWorlds.map((world) => world.id));
   const written = (await listPublic()).filter((world) => !heroIds.has(world.id));
   if (written.length === 0) return null;

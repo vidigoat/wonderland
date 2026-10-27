@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { LogoMark } from "@/components/brand/Logo";
 
 export default function WorldMissing() {
   return (
     <main className="missing">
       <Link href="/" className="bw-logo">
-        <span className="bw-logo-mark" aria-hidden="true" />
+        <LogoMark className="bw-logo-svg" />
         Wonderland
       </Link>
       <h1>This world isn&apos;t here.</h1>

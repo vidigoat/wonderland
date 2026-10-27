@@ -1,11 +1,14 @@
 import vm from "node:vm";
 import type { Observation, RulesModule } from "./rules";
 
-/** Per init/step/observe/view call. Tests may pass a shorter timeout. */
-export const SANDBOX_TIMEOUT_MS = 1000;
+/** Per init/step/observe/view call. A step that takes longer could never play smoothly in a browser. Tests may pass a shorter timeout. */
+export const SANDBOX_TIMEOUT_MS = 250;
+/** Total time one compiled world may spend running, across every call. Science checks make thousands of calls; a slow world fails instead of holding the server. */
+export const SANDBOX_BUDGET_MS = 20_000;
 
 export type SandboxOptions = {
   timeoutMs?: number;
+  budgetMs?: number;
 };
 
 const BANNED_GLOBALS = ["process", "require", "fetch", "global", "Buffer", "module"] as const;
@@ -55,12 +58,17 @@ export function compileSandboxed(source: string, options?: SandboxOptions): Rule
   }
 
   const caller = new vm.Script('"use strict"; exports[__wl_fn](...__wl_args)', { filename: "ai-rules-call.js" });
+  const budgetMs = options?.budgetMs ?? SANDBOX_BUDGET_MS;
+  let spent = 0;
   const invoke = (name: string, args: unknown[]): unknown => {
+    if (spent > budgetMs) throw new Error(`These rules are too slow to play: they used more than ${Math.round(budgetMs / 1000)}s of computing time.`);
     raw.__wl_fn = name;
     raw.__wl_args = args;
+    const started = performance.now();
     try {
       return caller.runInContext(context, { timeout: timeoutMs });
     } finally {
+      spent += performance.now() - started;
       raw.__wl_fn = undefined;
       raw.__wl_args = undefined;
     }

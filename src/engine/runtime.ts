@@ -7,6 +7,13 @@ export type RunResult = {
 };
 
 /** Headless run — used by checks, the playtester and the AI rival's `run_experiment` tool. */
+function yieldTurn(): Promise<void> {
+  return new Promise((resolve) => {
+    if (typeof setImmediate === "function") setImmediate(resolve);
+    else setTimeout(resolve, 0);
+  });
+}
+
 export async function runHeadless(
   rules: RulesModule,
   params: Params,
@@ -20,6 +27,8 @@ export async function runHeadless(
   for (let i = 1; i <= steps; i++) {
     state = await rules.step(state, params, rng);
     if (i % sampleEvery === 0 || i === steps) history.push(rules.observe(state, params));
+    // Give the server (or the page) a turn now and then, so a long check never freezes everything else.
+    if (i % 100 === 0) await yieldTurn();
   }
   return { history, final: history[history.length - 1] };
 }

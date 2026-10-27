@@ -40,20 +40,11 @@
   letter-spacing: -0.02em;
   text-decoration: none;
 }
-/* The mark: a lit point inside a ring — a world with one law in it. */
-.bw-logo-mark {
-  position: relative;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 1.5px solid #fafafa;
-}
-.bw-logo-mark::after {
-  content: "";
-  position: absolute;
-  inset: 4.5px;
-  border-radius: 50%;
-  background: #fafafa;
+/* The mark: a world with a keyhole, and another world glowing through it (src/components/brand/Logo.tsx). */
+.bw-logo-svg {
+  flex: none;
+  width: 22px;
+  height: 22px;
 }
 .bw-links {
   display: flex;

@@ -49,6 +49,8 @@ import { startWavCapture, type WavCapture } from "./wav";
 import { armChime, playChime } from "./chime";
 import { bringIntoView } from "./reveal";
 import { rememberSeen, seenOnCard, witnessBeat, witnessLine, type WitnessBeat } from "./witness";
+import { isHeroWorld } from "@/engine/render/palette";
+import { LogoMark } from "@/components/brand/Logo";
 
 /**
  * Hero worlds use their built-in rules. Generated worlds carry AI-written rules that already passed the
@@ -711,7 +713,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     <div className="play" data-world={spec.id} data-archetype={spec.archetype} data-phase={play.phase} data-margin={suggestion ? "yes" : undefined}>
       <header className="play-bar">
         <Link href="/" className="bw-logo">
-          <span className="bw-logo-mark" aria-hidden="true" />
+          <LogoMark className="bw-logo-svg" />
           Wonderland
         </Link>
         <h1>{spec.title}</h1>
@@ -775,12 +777,36 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
 
           {play.phase === "intro" ? (
             <section className="phase">
-              <p className="voice">{spec.story.setting}</p>
+              <p className="kicker">The mystery</p>
               <p className="voice">{spec.story.mystery}</p>
-              <p className="goal">{spec.story.goal}</p>
+              <div className="mission">
+                <p className="mission-title">Something in this world follows a hidden rule. Your job is to find it.</p>
+                <ol className="mission-steps">
+                  <li>
+                    <b>Predict</b> what will happen, before you touch anything.
+                  </li>
+                  <li>
+                    <b>Experiment.</b> Change the controls, run the world, watch the readings.
+                  </li>
+                  <li>
+                    <b>Say it</b> in one sentence, typed or spoken. A judge tells you how close you are.
+                  </li>
+                  <li>
+                    <b>Prove it</b> on a situation you haven&apos;t seen.
+                  </li>
+                </ol>
+                <p className="mission-race">Ada, an AI scientist, is racing you on this same world. She moves after you do.</p>
+              </div>
               <button type="button" className="press" onClick={() => setPlay((state) => leaveIntro(state, performance.now()))}>
-                I have a guess
+                Start: make a prediction
               </button>
+              <p className="setting">{spec.story.setting}</p>
+              <p className="goal">{spec.story.goal}</p>
+              <p className="provenance">
+                {isHeroWorld(spec.id) ? "Built by hand" : "Written by Muse Spark Open"}
+                {spec.art.painted ? ", painted by Muse Image and SAM 3.1" : ""}. Its rules passed {spec.checkCount} science{" "}
+                {spec.checkCount === 1 ? "check" : "checks"} on every seed before you could enter. The rule itself is never sent to your browser.
+              </p>
             </section>
           ) : null}
 
@@ -822,8 +848,8 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
 
           {play.phase === "experiment" ? (
             <section className="phase">
-              <p className="kicker">A trial</p>
-              <p className="voice">Change one thing. Run the world. Watch what the readings do.</p>
+              <p className="kicker">Experiment</p>
+              <p className="voice">Change one control below, press Run, and watch what the readings do. Then change something else. When you think you see the rule, say it.</p>
               <button type="button" className="quiet" onClick={() => setPlay(toHypothesise)}>
                 I can say it
               </button>

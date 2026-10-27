@@ -81,6 +81,8 @@ The leftover heat number, "how fast heat is flowing 2.24", is the change from on
 
 Painting every one of the plate's 48 steps held the button on "In motion" for about fifteen seconds. Commit `84d62cd`. The gesture now paints a dozen frames. On the production server it finishes in about five seconds: 13 degrees of difference, hottest spot 63.9 degrees, 2.24 degrees from one spot to the next, average warmth 6.21 degrees. A fire still paints every step.
 
+"How fast the dune walks" was a bare 1. It is the speed compared with a dune of height 10. On the production server a dune of height 10 walks at 1 times height 10, and the tallest dune, height 25, walks at 0.4 and covers 0.09 dune widths instead of 0.23. Both gestures finish in about eight seconds.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

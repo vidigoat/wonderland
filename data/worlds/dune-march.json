@@ -66,7 +66,7 @@
     {
       "id": "migrationSpeed",
       "label": "How fast the dune walks",
-      "unit": "",
+      "unit": "times height 10",
       "display": "counter"
     },
     {

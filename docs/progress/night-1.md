@@ -115,6 +115,8 @@ On a phone the same town was a 16:10 frame about 210 pixels tall, so the vault c
 
 Average moth darkness was a bare 0.2 beside a percent, and on a phone the colour key sat on the numbers. Commit `a035b2b`. Darkness is a share of full soot, so one generation now reads 21% on a wide screen and 19% on a phone, next to the share of dark moths. The colour key sits in its own column. `pnpm check` is 238 tests.
 
+An orbit held Fire on "In motion" past twenty seconds, because every few steps of the shot were painted. Commit `dff0159`. The trail already carries every point, so one gesture paints two dozen frames. Height above the ground is named in planet radii. On the production server a landing shot still finishes in about two seconds. A launch at speed 1 stays flying, completes 3.36 laps at 0.05 planet radii, and the button returns in about ten seconds. The chart shows the height rise and fall once each lap. `pnpm check` is 238 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

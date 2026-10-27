@@ -271,21 +271,41 @@ export function Landing({ places, written = [] }: { places: PlaceCard[]; written
   );
 }
 
+/** Seconds since the build began, so a long design step reads as work in progress, not a freeze. */
+function useElapsed(running: boolean): number {
+  const [seconds, setSeconds] = useState(0);
+  useEffect(() => {
+    if (!running) return;
+    const start = performance.now();
+    const id = window.setInterval(() => setSeconds(Math.floor((performance.now() - start) / 1000)), 1000);
+    return () => window.clearInterval(id);
+  }, [running]);
+  return seconds;
+}
+
 function Binding({ log, stopped }: { log: LogEntry[]; stopped: boolean }) {
   const view = bindingView(log);
+  const working = !stopped && !view.world && !view.error && !view.choose;
+  const elapsed = useElapsed(working);
+  const current = working ? [...view.steps].reverse().find((step) => step.on)?.stage : undefined;
   const marks = view.checks ? Array.from({ length: view.checks.total }, (_, index) => index < view.checks!.passed) : [];
   return (
     <section className="wl-build" aria-live="polite">
       <SampleNote notice={view.notice} />
       <ol className="wl-build-steps">
         {view.steps.map((step) => (
-          <li key={step.stage} data-on={step.on ? "yes" : "no"}>
+          <li key={step.stage} data-on={step.on ? "yes" : "no"} data-now={step.stage === current ? "yes" : undefined}>
             <span className="wl-build-dot" aria-hidden="true" />
             <span className="wl-build-label">{step.label}</span>
             <span className="wl-build-msg">{step.on ? step.message : "Waiting"}</span>
           </li>
         ))}
       </ol>
+      {working ? (
+        <p className="wl-clock" aria-live="off">
+          Muse Spark is working · {Math.floor(elapsed / 60)}:{String(elapsed % 60).padStart(2, "0")}
+        </p>
+      ) : null}
       {marks.length ? (
         <p className="wl-checks" aria-label={`${view.checks?.passed ?? 0} of ${view.checks?.total ?? 0} science checks passed`}>
           {marks.map((held, index) => (

@@ -862,3 +862,26 @@
 .wl-gallery-sub {
   margin-top: clamp(64px, 9vw, 110px);
 }
+/* The question pill shows focus itself (gold ring); no square outline inside it. */
+.wl .wl-ask-input:focus-visible {
+  outline: none;
+}
+.wl-build-steps li {
+  grid-template-columns: 14px 172px 1fr;
+}
+.wl-build-steps li[data-now="yes"] .wl-build-dot {
+  animation: wl-working 1.2s ease-in-out infinite;
+}
+.wl-build-steps li[data-now="yes"] .wl-build-msg {
+  color: var(--wl-text);
+}
+.wl-clock {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--wl-faint);
+  font-variant-numeric: tabular-nums;
+}
+@keyframes wl-working {
+  0%, 100% { transform: translateY(-1px) scale(1); box-shadow: 0 0 10px var(--wl-lantern); }
+  50% { transform: translateY(-1px) scale(1.7); box-shadow: 0 0 22px var(--wl-lantern); }
+}

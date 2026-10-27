@@ -30,10 +30,12 @@ People who learn with AI assistance understood less: 50% vs 67% in a 2026 random
 
 Every world must pass machine-checked science assertions on every seed before it ships (`pnpm test`).
 
-## Without API keys
-The app runs with every model switched off. Each call is written for real and takes a labeled sample path when its key is missing: the build matches a checked hero world and says the model did not write it, Ada experiments with the same engine you do, and the judge will not repeat the law. Add `MODEL_API_KEY` and an open-weights key in `.env.local` and those same buttons call the models.
+## Live models, and running without keys
+With a Baseten key alone, Wonderland's whole brain runs on **Muse Spark Open** (Meta's open weights): the scientist and designer that write new worlds, the judge, Ada, the forty citizens of Rumour Town, and spoken hypotheses (Spark Open hears audio). With a Meta Model API key, the scientist and designer move to Muse Spark / Muse Wonder, and Muse Image + SAM 3.1 paint and cut the art.
 
-A round is predict, then experiment, then say the law in a sentence, then prove it on a new situation. The knobs stay locked until the first prediction is written down. The stage names what changed. It does not say why. The path a demo can follow is [docs/demo-script.md](docs/demo-script.md).
+Every call passes a hard spend cap (`SPEND_CAP_META_USD`, `SPEND_CAP_BASETEN_USD`; ledger in `.spend/`). With no keys at all, each call takes a clearly labeled sample path and the hero worlds still play.
+
+**Generated so far** (`data/worlds`, all passed every science check): fireflies flashing in sync, phantom traffic jams, predator–prey cycles, heat in a metal plate. See [docs/spike-results.md](docs/spike-results.md).
 
 ## Run it
 ```bash

@@ -50,18 +50,24 @@ async function thinkOpenWeights(opts: Parameters<typeof think>[0]): Promise<stri
       : "",
   ].join("");
   const user = typeof opts.input === "string" ? opts.input : JSON.stringify(opts.input);
-  const completion = await client.chat.completions.create({
-    model,
-    max_tokens: (opts.maxOutputTokens ?? 8000) + 8000,
-    temperature: 0.4,
-    messages: [
-      { role: "system", content: system },
-      { role: "user", content: user },
-    ],
-  });
-  const content = completion.choices[0]?.message?.content;
-  if (typeof content !== "string" || !content.trim()) throw new Error("Muse Spark Open returned no answer (it may have spent its budget reasoning).");
-  return content;
+  // Spark Open sometimes reasons until max_tokens and never answers. Retry once, larger, asking it to think briefly.
+  let lastReason = "";
+  for (const attempt of [0, 1]) {
+    const completion = await client.chat.completions.create({
+      model,
+      max_tokens: (opts.maxOutputTokens ?? 8000) + (attempt === 0 ? 8000 : 16000),
+      temperature: attempt === 0 ? 0.4 : 0.2,
+      messages: [
+        { role: "system", content: attempt === 0 ? system : `${system}\n\nKeep your private reasoning short. Write the final answer now.` },
+        { role: "user", content: user },
+      ],
+    });
+    const choice = completion.choices[0];
+    const content = choice?.message?.content;
+    if (typeof content === "string" && content.trim()) return content;
+    lastReason = choice?.finish_reason ?? "unknown";
+  }
+  throw new Error(`The model thought for too long and ran out of room before answering (finish: ${lastReason}). Try asking again.`);
 }
 
 /** Muse Image — generate (or edit, by passing reference image URLs). Returns base64 image strings. */

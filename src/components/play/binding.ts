@@ -2,11 +2,11 @@ import type { ClientStage } from "@/engine/client-event";
 import type { MontageItem } from "./sse";
 
 const ORDER: { stage: ClientStage; label: string }[] = [
-  { stage: "scientist", label: "The law" },
-  { stage: "designer", label: "The room" },
-  { stage: "checker", label: "The science" },
-  { stage: "artist", label: "The pictures" },
-  { stage: "done", label: "Bound" },
+  { stage: "scientist", label: "Find the law" },
+  { stage: "designer", label: "Build the world" },
+  { stage: "checker", label: "Check the science" },
+  { stage: "artist", label: "Paint it" },
+  { stage: "done", label: "Ready" },
 ];
 
 export type BindingStep = { stage: ClientStage; label: string; message: string; on: boolean };

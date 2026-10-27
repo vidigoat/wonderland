@@ -33,7 +33,7 @@ Judgement: the dune's numbers stay near zero for a short run. The chart shows th
 
 `POST /api/playtest` takes a world id and 1–6 JPEG data URLs. It loads the full spec, asks whether the frames match the law and whether the picture is broken, then runs the reply through the judge's scrub. Notes are saved at `data/playtests/<worldId>.json`. With no key it returns `source: "sample"`, verdict `concern`, and the sentence "No key, so Spark did not watch this world." It does not say the world looked right.
 
-`/w/<id>?playtest=1` runs the world twice (starting controls, then one slider moved), grabs three JPEG frames of each, and posts them. The stage says "Looked right", "Spotted something: …", or, with no key, that Spark did not watch.
+`a4aacd5`: `/w/<id>?playtest=1` runs the world twice (starting controls, then one slider moved), grabs three JPEG frames of each, and posts them. The stage says "Looked right", "Spotted something: …", or, with no key, that Spark did not watch.
 
 Not done yet: the build screen does not start that capture by itself, and it does not show the painting and the cut-outs as they are made. The $0.60 batch over the 12 worlds was not run. This checkout has no `MODEL_API_KEY`.
 

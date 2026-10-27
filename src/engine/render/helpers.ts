@@ -731,6 +731,13 @@ export function populationCrowd(input: { width: number; height: number; count: n
   return { cap, scale };
 }
 
+/** How large one creature is drawn. On a phone a hare stays close to a lynx, so the herd is not hidden under the cats. */
+export function figureBody(sprite: string, phase: number, narrow: boolean, figureScale: number): number {
+  if (sprite === "bird") return figureScale * 2.05;
+  if (/predator|lynx|fox|wolf/i.test(sprite)) return figureScale * (narrow ? 1.25 : 1.7);
+  return figureScale * (narrow ? 1.05 : 0.86 + Math.max(0, Math.min(1, phase)) * 0.28);
+}
+
 /** Keep the bird, and every predator, when the stage draws only part of the crowd. */
 export function crowdToDraw<T extends { sprite?: string }>(agents: readonly T[], cap: number): T[] {
   if (agents.length <= cap) return [...agents];

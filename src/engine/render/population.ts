@@ -1,6 +1,6 @@
 import { Container, Graphics, Text } from "pixi.js";
 import type { PopulationAgent } from "@/engine/view";
-import { clamp01, crowdToDraw, flockFacing, landedApart, phaseOffset, populationCrowd, readNumber, separateSpeech, smoothstep, spokenIds, townFoot } from "./helpers";
+import { clamp01, crowdToDraw, figureBody, flockFacing, landedApart, phaseOffset, populationCrowd, readNumber, separateSpeech, smoothstep, spokenIds, townFoot } from "./helpers";
 import { pixelRatio, stageFont } from "./fonts";
 import { barkColor, isGlowSprite, isHeroWorld, populationTint } from "./palette";
 import type { Scene, Frame } from "./scene";
@@ -154,10 +154,12 @@ export function createPopulationScene(): Scene {
       const drop = hunting ? Math.min(42, frame.height * 0.07) : 0;
       node.figure.view.position.set(at.x, at.y + bob + drop);
       node.figure.view.rotation = typeof agent.heading === "number" && Number.isFinite(agent.heading) ? flockFacing(agent.heading) : wobble;
-      const body = hunting ? figureScale * 2.05 : predator ? figureScale * 1.7 : figureScale * (0.86 + phase * 0.28);
+      const narrow = frame.width < 520;
+      const body = figureBody(hunting ? "bird" : sprite, phase, narrow, figureScale);
       node.figure.view.scale.set(body * (glow ? 0.72 + lit * 0.7 : 1));
       node.figure.view.alpha = glow ? 0.28 + lit * 0.72 : 1;
-      node.figure.view.zIndex = hunting || predator ? frame.height + 20 : at.y;
+      const hareInFront = narrow && !predator && !hunting && phase > 0.5;
+      node.figure.view.zIndex = hunting || (predator && !narrow) ? frame.height + 20 : hareInFront ? at.y + 40 : predator ? at.y + 8 : at.y;
       const keepsOwnColor = hunting;
       node.figure.show(
         frame.worldId,

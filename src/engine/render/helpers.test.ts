@@ -16,6 +16,7 @@ import {
   thumbCrowd,
   thumbSample,
   thumbSteps,
+  figureBody,
   figureTint,
   flockFacing,
   sealedDataLine,
@@ -363,6 +364,8 @@ describe("a phone forest keeps moths visible", () => {
     );
     expect(drawn.filter((agent) => agent.sprite === "prey").length).toBeGreaterThan(8);
     expect(drawn.filter((agent) => agent.sprite === "predator").length).toBeGreaterThan(4);
+    expect(figureBody("prey", 0.5, true, 1)).toBeGreaterThan(figureBody("predator", 0, true, 1) * 0.75);
+    expect(figureBody("predator", 0, false, 1)).toBeGreaterThan(figureBody("prey", 1, false, 1));
   });
 });
 

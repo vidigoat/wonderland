@@ -715,7 +715,6 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const opening = spec.predictions[0];
   const second = spec.predictions[1];
   const showBench = play.phase !== "intro" && play.phase !== "receipt";
-  const showReadings = play.phase === "experiment" || play.phase === "hypothesise" || play.phase === "loop" || play.phase === "transfer";
   const newSituation = play.phase === "transfer" && play.askingPrediction == null;
 
   return (
@@ -749,7 +748,8 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
             beat={beat?.name ?? null}
             beatId={beat?.id ?? 0}
           />
-          {showReadings && !newSituation ? <StageHud spec={spec} obs={obs} params={params} /> : null}
+          {/* From the first screen, so the set-up (the bank's cash, the moths' colour) is visible before you predict. */}
+          {!newSituation && play.phase !== "receipt" ? <StageHud spec={spec} obs={obs} params={params} /> : null}
           {witness && !newSituation ? <p className="witness">{witness}</p> : null}
           {play.phase !== "intro" && !newSituation ? <StageLegend worldId={spec.id} /> : null}
           {spec.id === "firebreak" && !newSituation ? (

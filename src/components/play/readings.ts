@@ -264,8 +264,10 @@ export function runSteps(archetype: string, worldId?: string, params?: Params): 
 export function tickBatch(steps: number, worldId?: string): number {
   // A valley frame draws the whole meadow. A hundred of them holds the button on "In motion".
   if (worldId === "predator-prey-valley") return Math.max(1, Math.ceil(steps / 32));
-  // Cars and walkers are the same. A cannon still paints every few steps so the shot stays smooth.
+  // Cars and walkers are the same.
   if (worldId === "phantom-jam-ring-road" || worldId === "hallway-lanes") return Math.max(1, Math.ceil(steps / 28));
+  // An orbit keeps every point of its trail. Painting all 140 frames holds Fire on "In motion".
+  if (worldId === "newtons-cannon") return Math.max(1, Math.ceil(steps / 24));
   // Each heat frame builds a fresh picture of the plate. Forty-eight of them holds the button.
   if (worldId === "heat-diffusion-plate") return Math.max(1, Math.ceil(steps / 12));
   // The valley is a forest of trees. Painting every step holds "Let it burn" long after the fire has stopped.

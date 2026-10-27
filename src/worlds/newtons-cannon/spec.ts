@@ -21,7 +21,7 @@ export const newtonsCannonSpec: WorldSpec = {
   },
   knobs: [{ id: "speed", label: "Launch speed", kind: "slider", min: 0.1, max: 1.6, step: 0.01, default: 0.5 }],
   observables: [
-    { id: "altitude", label: "Altitude", display: "series" },
+    { id: "altitude", label: "Height above the ground", unit: "planet radii", display: "series" },
     { id: "laps", label: "Laps around the planet", display: "counter" },
     { id: "status", label: "Status", display: "text" },
   ],

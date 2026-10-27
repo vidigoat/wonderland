@@ -116,6 +116,7 @@ describe("phase machine", () => {
     expect(duneRunSteps(5, 10)).toBeGreaterThan(1000);
     expect(duneRunSteps(5, 20)).toBeGreaterThan(duneRunSteps(5, 10));
     expect(tickBatch(560)).toBe(4);
+    expect(Math.ceil(560 / tickBatch(560, "newtons-cannon"))).toBeLessThanOrEqual(24);
     expect(Math.ceil(560 / tickBatch(560, "phantom-jam-ring-road"))).toBeLessThanOrEqual(28);
     expect(Math.ceil(560 / tickBatch(560, "hallway-lanes"))).toBeLessThanOrEqual(28);
     expect(Math.ceil(48 / tickBatch(48, "heat-diffusion-plate"))).toBeLessThanOrEqual(12);

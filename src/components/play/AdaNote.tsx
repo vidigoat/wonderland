@@ -38,7 +38,7 @@ export function AdaNote({
   const bench = describeParams(spec, params);
   const race = raceRows(spec, yours, rival);
   return (
-    <section className="ada" aria-label="Ada">
+    <section title={seedNote ?? undefined} className="ada" aria-label="Ada">
       <header className="ada-head">
         <h2>Ada</h2>
         {canTurn ? (
@@ -82,7 +82,8 @@ export function AdaNote({
           </li>
         ))}
       </ol>
-      {bench.length ? (
+      {/* Her bench appears once she has started; before that the card stays a single line. */}
+      {bench.length && entries.length ? (
         <p className="bench">
           <span>Her bench</span>
           {bench.map((item) => (
@@ -92,7 +93,6 @@ export function AdaNote({
           ))}
         </p>
       ) : null}
-      {seedNote ? <p className="aside">{seedNote}</p> : null}
       </div>
       <SampleNote notice={notice} />
     </section>

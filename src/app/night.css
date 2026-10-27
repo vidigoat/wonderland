@@ -570,3 +570,236 @@
   height: 42%;
   background-position: center center;
 }
+
+/* ── Play screen: the world gets the room, the notebook becomes glass ─────────────
+ * Re-skins the existing markup. Per-world --stage colours stay; the page, notebook,
+ * ink and accent move onto the night system. Gold is you, violet is Ada.
+ */
+.play[data-world] {
+  --room: var(--wl-deep);
+  --paper: #111d3d;
+  --notebook-ink: var(--wl-text);
+  --margin: transparent;
+  --accent: var(--wl-lantern);
+  --brass: var(--wl-lantern);
+  --font-display: var(--wl-display);
+  --font-sans: var(--wl-body);
+  font-family: var(--wl-body);
+  background:
+    radial-gradient(80% 60% at 30% 0%, rgba(26, 42, 85, 0.65), transparent 70%),
+    var(--wl-deep);
+  color: var(--wl-text);
+}
+.play .wordmark {
+  font-family: var(--wl-display);
+  font-weight: 800;
+  font-size: 19px;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+}
+.play-bar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 20px 10px;
+}
+.play-bar h1 {
+  text-align: left;
+  font-family: var(--wl-display);
+  font-weight: 700;
+  font-size: clamp(17px, 1.6vw, 21px);
+  color: var(--wl-muted);
+  letter-spacing: -0.02em;
+}
+.play-links {
+  gap: 10px;
+  align-items: center;
+  font-size: 14px;
+}
+.play-links a, .play-links button {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--wl-line);
+  color: var(--wl-muted);
+  text-decoration: none;
+}
+.play-links a:hover, .play-links button:hover:not(:disabled) {
+  color: var(--wl-text);
+  border-color: rgba(246, 196, 83, 0.5);
+}
+
+/* Progress: sentence case, gold for where you are. */
+.phase-trail {
+  padding: 0 20px 12px;
+}
+.phase-trail li {
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--wl-faint);
+}
+.phase-trail li[data-state="done"] {
+  color: var(--wl-muted);
+}
+.phase-trail li[data-state="now"] {
+  color: var(--wl-lantern);
+  font-weight: 700;
+}
+.phase-trail li[data-state="now"] span {
+  border-bottom: 0;
+}
+
+.play-body {
+  gap: 14px;
+  padding: 0 14px 14px;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+}
+.stage-pane {
+  border-radius: 24px;
+  border: 1px solid var(--wl-line);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+/* What the world just did, written large across the top of the stage. */
+.witness {
+  top: 20px;
+  left: 24px;
+  right: 24px;
+  font-family: var(--wl-display);
+  font-style: normal;
+  font-weight: 800;
+  font-size: clamp(28px, 3.2vw, 46px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: #fff;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.55), 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.notebook {
+  border-radius: 24px;
+  border: 1px solid var(--wl-line);
+  background: rgba(16, 27, 58, 0.78);
+  background-image: none;
+  backdrop-filter: blur(14px);
+  color: var(--wl-text);
+}
+.notebook .voice {
+  font-family: var(--wl-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--wl-text);
+}
+.notebook .goal, .notebook .aside, .notebook .hint {
+  color: var(--wl-muted);
+}
+.play .kicker {
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 700;
+  color: var(--wl-lantern);
+}
+
+/* The one primary action at each step. */
+.play .press {
+  border-radius: 999px;
+  padding: 13px 22px;
+  background: var(--wl-lantern);
+  color: #241a04;
+  font-family: var(--wl-display);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  box-shadow: 0 10px 30px rgba(246, 196, 83, 0.28);
+}
+.play .press:disabled {
+  opacity: 0.5;
+  box-shadow: none;
+}
+.play .quiet {
+  color: var(--wl-muted);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.play input[type="range"], .play input[type="radio"], .play input[type="checkbox"] {
+  accent-color: var(--wl-lantern);
+}
+.play input[type="text"], .play textarea, .play .spell-input {
+  border-radius: 12px;
+  border: 1px solid var(--wl-line);
+  background: rgba(6, 13, 31, 0.6);
+  color: var(--wl-text);
+}
+.play .knob-label, .play .bench > span:first-child {
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--wl-muted);
+}
+.play .slip {
+  color: #ffc2b5;
+}
+
+/* Ada: violet, a presence beside you rather than a footer. */
+.play .ada {
+  margin: 10px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(171, 140, 255, 0.35);
+  background: rgba(171, 140, 255, 0.1);
+}
+.play .ada-head, .play .ada .kicker {
+  color: var(--wl-ada);
+}
+.play .ada .thought, .play .ada .wiring {
+  color: var(--wl-text);
+}
+.play .race .kicker {
+  color: var(--wl-ada);
+}
+
+@media (max-width: 860px) {
+  .play-body { grid-template-columns: 1fr; padding: 0 10px 10px; }
+  .play-bar h1 { display: none; }
+}
+.play .ada h2 {
+  font-family: var(--wl-display);
+  font-style: normal;
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--wl-ada);
+}
+.play .ada h2::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 9px;
+  border-radius: 50%;
+  background: var(--wl-ada);
+  box-shadow: 0 0 14px var(--wl-ada);
+  vertical-align: 3px;
+}
+.play .ada .thought {
+  font-family: var(--wl-display);
+  font-style: normal;
+  font-weight: 600;
+}
+.play .wordmark {
+  font-style: normal;
+}
+.play .quiet, .play .speak, .play-links button {
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 14px;
+}
+.play-links button {
+  text-decoration: none;
+}
+.play .sample-note {
+  border-radius: 12px;
+  border: 1px solid var(--wl-line);
+  background: rgba(6, 13, 31, 0.5);
+  color: var(--wl-muted);
+  font-size: 13px;
+}

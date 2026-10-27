@@ -63,6 +63,11 @@ describe("reading numbers", () => {
     expect(formatHudValue("flies", "Fireflies here", 1, "counter", "fireflies")).toEqual({ text: "1", unit: "firefly" });
     expect(formatHudValue("peak", "Hottest spot", 1, "series", "degrees")).toEqual({ text: "1", unit: "degree" });
     expect(formatHudValue("lag", "Steps from the hare peak to the lynx", 1, "series", "steps")).toEqual({ text: "1", unit: "step" });
+    expect(formatHudValue("crossing", "Far ridge", "no", "text")).toEqual({ text: "untouched", unit: null });
+    expect(formatHudValue("crossing", "Far ridge", "yes", "text")).toEqual({ text: "reached", unit: null });
+    expect(formatHudValue("stillBurning", "Flames", "no", "text")).toEqual({ text: "out", unit: null });
+    expect(formatHudValue("stillBurning", "Flames", "yes", "text")).toEqual({ text: "still going", unit: null });
+    expect(formatHudValue("vaultOpen", "Vault", "shut", "text")).toEqual({ text: "shut", unit: null });
     expect(showWithdrawingKey(null)).toBe(false);
     expect(showWithdrawingKey({ withdrawnShare: 0, bank: "open" })).toBe(false);
     expect(showWithdrawingKey({ withdrawnShare: 0.1, bank: "open" })).toBe(true);

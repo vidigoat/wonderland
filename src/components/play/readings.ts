@@ -72,6 +72,12 @@ export function isShareReading(id: string, label: string, value: unknown): value
   return /share|fraction|proportion|percent|synchrony|alignment|polariz|order|bumping|collision|darkness/i.test(`${id} ${label}`);
 }
 
+/** yes/no readings the science checks still use, spoken the way a person would. */
+const PLAIN_STATUS: Record<string, Record<string, string>> = {
+  crossing: { yes: "reached", no: "untouched" },
+  stillBurning: { yes: "still going", no: "out" },
+};
+
 export function formatHudValue(
   id: string,
   label: string,
@@ -79,6 +85,10 @@ export function formatHudValue(
   display: Observable["display"] = "series",
   unit?: string,
 ): { text: string; unit: string | null } {
+  if (typeof value === "string") {
+    const spoken = PLAIN_STATUS[id]?.[value];
+    if (spoken) return { text: spoken, unit: null };
+  }
   const reading = value;
   if (isShareReading(id, label, value)) return { text: `${Math.round(value * 100)}%`, unit: null };
   // A dune loses a few thousandths of a grain each step. That is real, and it must not print as 0.

@@ -496,6 +496,8 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
       setView(asWorldView(session.view(), spec.archetype));
     }
     setParams(next);
+    // The strip is planted with the valley. Show it as soon as the knob moves.
+    if (spec.id === "firebreak" && id === "firebreak" && !playingRef.current) void resetScene();
   }
 
   async function gradePrediction(predictionId: string, choice: number | string, which: "first" | "second") {

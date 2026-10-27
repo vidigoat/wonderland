@@ -310,7 +310,9 @@ function laySpell(layer: Container, frame: Frame, query: string, error: string |
   }
   const padY = 12;
   const cardH = padY + heading.height + 6 + lines.length * lineHeight + (footer ? footer.height + 8 : 0) + padY;
-  const cardY = frame.height - cardH - Math.max(12, frame.height * 0.03);
+  // The spoken line sits in a strip under this card. Leave that strip clear.
+  const captionStrip = 58;
+  const cardY = Math.max(frame.height * 0.38, frame.height - cardH - Math.max(12, frame.height * 0.03) - captionStrip);
   const plate = new Graphics();
   plate.roundRect(cardX, cardY, cardW, cardH, 12).fill({ color: 0x050505, alpha: 0.86 });
   plate.roundRect(cardX, cardY, cardW, cardH, 12).stroke({ width: 1, color: 0xffffff, alpha: 0.14 });

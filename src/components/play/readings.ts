@@ -219,6 +219,8 @@ export function runSteps(archetype: string, worldId?: string, params?: Params): 
   // Long enough for a shot above circular speed to leave (escape at 1.4 takes ~550 steps).
   if (archetype === "bodies") return 560;
   if (worldId === "dune-march") return duneRunSteps(Number(params?.windSpeed ?? 5), Number(params?.initialHeight ?? 10));
+  // Kuramoto needs on the order of a thousand steps before the swarm locks. Thirty leaves it looking random.
+  if (worldId === "firefly-sync-kuramoto") return 2000;
   if (archetype === "field") return 48;
   return 30;
 }

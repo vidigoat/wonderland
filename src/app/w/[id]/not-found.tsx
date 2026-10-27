@@ -1,14 +1,22 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function WorldMissing() {
   return (
     <main className="missing">
-      <p className="kicker">Wonderland</p>
-      <h1>This world is not on the shelf.</h1>
-      <p>The five bound worlds are still open.</p>
+      <Link href="/" className="bw-logo">
+        <span className="bw-logo-mark" aria-hidden="true" />
+        Wonderland
+      </Link>
+      <h1>This world isn&apos;t here.</h1>
+      <p>It may not have been built yet, or the link is wrong. Every world that exists is on the worlds page.</p>
       <p className="missing-links">
-        <Link href="/gallery">The shelf</Link>
-        <Link href="/">Begin again</Link>
+        <Button asChild>
+          <Link href="/gallery">See every world</Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link href="/">Ask a question</Link>
+        </Button>
       </p>
     </main>
   );

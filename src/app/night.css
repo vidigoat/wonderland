@@ -1244,3 +1244,46 @@
 .play .speak {
   justify-content: center;
 }
+
+/* Loading and not-found screens follow the black-and-white system. */
+.missing, .entering {
+  background: #000;
+  color: #fafafa;
+}
+.entering {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: #737373;
+  place-items: center;
+}
+.missing h1 {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+}
+.missing p, .missing a {
+  color: #a3a3a3;
+}
+.missing {
+  gap: 18px;
+  justify-items: start;
+}
+.missing h1 {
+  margin-top: 28px;
+  font-size: clamp(36px, 5vw, 60px);
+  line-height: 1;
+}
+.missing > p {
+  max-width: 46ch;
+  font-size: 17px;
+}
+.missing-links {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+.missing-links a {
+  color: inherit;
+}

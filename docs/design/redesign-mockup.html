@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wonderland redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* Tokens: night observatory. You = lantern gold, Ada = violet. */
+  :root {
+    --night: #0d1830;      /* the sky the world sits in */
+    --deep: #071022;       /* edges, vignette */
+    --lantern: #f5c45a;    /* you */
+    --ada: #a98bff;        /* the rival */
+    --glass: rgba(220, 230, 255, 0.08);
+    --line: rgba(220, 230, 255, 0.16);
+    --text: #eef2fb;
+    --muted: #9aa8c7;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--deep); color: var(--text); font: 16px/1.5 "Atkinson Hyperlegible", system-ui, sans-serif; height: 100vh; overflow: hidden; }
+  .world { position: fixed; inset: 0; background: radial-gradient(120% 90% at 50% 40%, #16264a 0%, var(--night) 45%, var(--deep) 100%); }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  .bar { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 24px; padding: 20px 28px; }
+  .mark { font: 800 20px/1 "Bricolage Grotesque"; letter-spacing: -0.02em; }
+  .title { font: 600 15px/1 "Bricolage Grotesque"; color: var(--muted); }
+  .path { margin-left: auto; display: flex; gap: 6px; align-items: center; color: var(--muted); font-size: 13px; }
+  .path i { width: 22px; height: 4px; border-radius: 2px; background: var(--line); display: block; }
+  .path i.done { background: var(--lantern); }
+  .path span { margin-left: 8px; }
+
+  .mystery { position: absolute; left: 28px; top: 96px; max-width: 15ch; font: 800 clamp(40px, 5.6vw, 76px)/0.98 "Bricolage Grotesque"; letter-spacing: -0.035em; text-wrap: balance; }
+  .setting { position: absolute; left: 30px; top: calc(96px + 3 * clamp(40px, 5.6vw, 76px) + 28px); max-width: 44ch; color: var(--muted); }
+
+  .ada { position: absolute; right: 28px; top: 96px; width: 300px; padding: 16px 18px; border-radius: 18px; background: rgba(169, 139, 255, 0.10); border: 1px solid rgba(169, 139, 255, 0.35); backdrop-filter: blur(14px); }
+  .ada h2 { font: 700 17px/1 "Bricolage Grotesque"; color: var(--ada); display: flex; align-items: center; gap: 8px; }
+  .ada h2 b { width: 8px; height: 8px; border-radius: 50%; background: var(--ada); box-shadow: 0 0 12px var(--ada); }
+  .ada p { margin-top: 10px; font-size: 17px; line-height: 1.4; }
+  .ada small { display: block; margin-top: 10px; color: var(--muted); font-size: 13px; }
+
+  .tray { position: absolute; left: 20px; right: 20px; bottom: 20px; display: grid; grid-template-columns: 1.4fr 1fr auto; gap: 28px; align-items: center; padding: 18px 22px; border-radius: 22px; background: var(--glass); border: 1px solid var(--line); backdrop-filter: blur(18px); }
+  .knobs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .knob label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .knob input { width: 100%; accent-color: var(--lantern); }
+  .readings { display: grid; gap: 8px; font-size: 14px; }
+  .row { display: grid; grid-template-columns: 1fr 60px 60px; gap: 10px; align-items: baseline; font-variant-numeric: tabular-nums; }
+  .row .you { color: var(--lantern); font-weight: 700; text-align: right; }
+  .row .her { color: var(--ada); font-weight: 700; text-align: right; }
+  .row.head { color: var(--muted); font-size: 12px; }
+  .row.head .you, .row.head .her { font-weight: 400; }
+  .go { font: 700 17px/1 "Bricolage Grotesque"; padding: 18px 26px; border-radius: 14px; border: 0; background: var(--lantern); color: #1b1404; cursor: pointer; white-space: nowrap; box-shadow: 0 8px 30px rgba(245, 196, 90, 0.35); }
+  .go:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  @media (max-width: 860px) {
+    .tray { grid-template-columns: 1fr; } .ada { display: none; } .setting { display: none; }
+  }
+</style>
+</head>
+<body>
+<main class="world" aria-label="The Meadow That Blinks As One">
+  <canvas id="meadow"></canvas>
+  <header class="bar">
+    <span class="mark">Wonderland</span>
+    <span class="title">The Meadow That Blinks As One</span>
+    <nav class="path" aria-label="Your progress: guess made, now experimenting">
+      <i class="done"></i><i class="done"></i><i class="done"></i><i></i><i></i><i></i><span>Experiment</span>
+    </nav>
+  </header>
+
+  <h1 class="mystery">What makes the meadow blink as one?</h1>
+  <p class="setting">A riverside meadow at dusk. No conductor, no shared signal. Some nights the whole bank pulses together; some nights it stays a restless twinkle.</p>
+
+  <aside class="ada" aria-live="polite">
+    <h2><b></b>Ada is thinking</h2>
+    <p>Turning the brightest firefly off. If they still sync, nobody is leading.</p>
+    <small>She ran 3 experiments. You ran 2.</small>
+  </aside>
+
+  <section class="tray" aria-label="Your instruments">
+    <div class="knobs">
+      <div class="knob"><label for="k1">How much they notice neighbours</label><input id="k1" type="range" value="60"></div>
+      <div class="knob"><label for="k2">How different their rhythms are</label><input id="k2" type="range" value="35"></div>
+      <div class="knob"><label for="k3">Fireflies in the meadow</label><input id="k3" type="range" value="70"></div>
+    </div>
+    <div class="readings" aria-label="Readings, you and Ada">
+      <div class="row head"><span></span><span class="you">You</span><span class="her">Ada</span></div>
+      <div class="row"><span>Blinking together</span><span class="you">74%</span><span class="her">12%</span></div>
+      <div class="row"><span>Flashes per second</span><span class="you">1.1</span><span class="her">0.9</span></div>
+    </div>
+    <button class="go">Let the night run</button>
+  </section>
+</main>
+<script>
+  // A living meadow: fireflies drift and gradually pull into one rhythm (Kuramoto-ish), for the mockup only.
+  const c = document.getElementById("meadow"), g = c.getContext("2d");
+  const flies = Array.from({ length: 160 }, () => ({ x: Math.random(), y: 0.25 + Math.random() * 0.55, p: Math.random() * 6.28, w: 1 + (Math.random() - 0.5) * 0.4 }));
+  function size() { c.width = innerWidth * devicePixelRatio; c.height = innerHeight * devicePixelRatio; }
+  addEventListener("resize", size); size();
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function frame() {
+    const mean = Math.atan2(flies.reduce((a, f) => a + Math.sin(f.p), 0), flies.reduce((a, f) => a + Math.cos(f.p), 0));
+    g.clearRect(0, 0, c.width, c.height);
+    for (const f of flies) {
+      f.p += 0.05 * f.w + 0.012 * Math.sin(mean - f.p);
+      f.x += Math.sin(f.p * 0.3) * 0.0004;
+      const lit = Math.max(0, Math.cos(f.p)) ** 6;
+      const x = f.x * c.width, y = f.y * c.height, r = (3 + lit * 9) * devicePixelRatio;
+      const grad = g.createRadialGradient(x, y, 0, x, y, r * 4);
+      grad.addColorStop(0, `rgba(255, 236, 160, ${0.25 + lit * 0.75})`);
+      grad.addColorStop(1, "rgba(255, 210, 90, 0)");
+      g.fillStyle = grad; g.beginPath(); g.arc(x, y, r * 4, 0, 6.28); g.fill();
+    }
+    if (!still) requestAnimationFrame(frame);
+  }
+  frame();
+</script>
+</body>
+</html>

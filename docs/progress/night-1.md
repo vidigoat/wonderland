@@ -35,7 +35,11 @@ Judgement: the dune's numbers stay near zero for a short run. The chart shows th
 
 `a4aacd5`: `/w/<id>?playtest=1` runs the world twice (starting controls, then one slider moved), grabs three JPEG frames of each, and posts them. The stage says "Looked right", "Spotted something: …", or, with no key, that Spark did not watch.
 
-The build screen now shows each painting as it arrives and each cut-out with a short glow, then runs the new world and posts the frames. Sample builds use the pictures already on the shelf. The $0.60 batch over the 12 worlds was not run. This checkout has no `MODEL_API_KEY`.
+`caa7d84`: the build screen shows each painting as it arrives and each cut-out with a short glow, then runs the new world and posts the frames. Sample builds use the pictures already on the shelf. The $0.60 batch over the 12 worlds was not run. This checkout has no `MODEL_API_KEY`.
+
+## W4 · A miss, and the wait
+
+A question that cannot become a world gets one sentence, three questions already on the shelf, and a button to play the closest world. Word overlap picks them. While a build runs, the clock says it usually takes 2–5 minutes, Rumour Town is there to play, and the page says the build continues if the tab is closed. When the world is ready the tab title changes and a chime plays.
 
 ## Not started
 

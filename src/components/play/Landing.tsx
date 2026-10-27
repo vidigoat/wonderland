@@ -17,6 +17,8 @@ import { Input } from "@/components/ui/input";
 import { errorMessage, statusRibbon } from "./http";
 import { PlaceScene, SampleNote, type PlaceCard } from "./Scenes";
 import { bindingView } from "./binding";
+import { armChime, playChime } from "./chime";
+import { missKind, missSentence, suggestWorlds } from "./suggest";
 import { WorldWatch } from "./WorldWatch";
 import { createMontagePacer, MONTAGE_GAP_MS } from "./pacer";
 import { drainSse, toMontageItem, type MontageItem } from "./sse";
@@ -137,6 +139,7 @@ export function Landing({
     event.preventDefault();
     const trimmed = concept.trim();
     if (!trimmed || building) return;
+    armChime();
     setBuilding(true);
     setStopped(false);
     setLog([]);
@@ -269,7 +272,7 @@ export function Landing({
               </a>
             </>
           ) : (
-            <Binding log={log} stopped={stopped} />
+            <Binding log={log} stopped={stopped} concept={concept} shelf={places} demo={demo} />
           )}
           {ribbon ? <p className="bw-ribbon">{ribbon}</p> : null}
         </div>
@@ -454,10 +457,57 @@ function useElapsed(running: boolean): number {
   return seconds;
 }
 
-function Binding({ log, stopped }: { log: LogEntry[]; stopped: boolean }) {
+function MissCard({ concept, message, shelf }: { concept: string; message: string; shelf: PlaceCard[] }) {
+  const kind = missKind(message);
+  const suggestion = suggestWorlds(concept, shelf);
+  return (
+    <div className="bw-miss">
+      <p>{missSentence(kind)}</p>
+      {suggestion ? (
+        <>
+          <p className="bw-watch-kicker">Three questions that will work</p>
+          <ul>
+            {suggestion.questions.map((question) => (
+              <li key={question}>{question}</li>
+            ))}
+          </ul>
+          <Button asChild size="lg" className="bw-enter">
+            <Link href={`/w/${suggestion.closest.id}`}>
+              Play {suggestion.closest.title} <ArrowRight aria-hidden="true" />
+            </Link>
+          </Button>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+function Binding({
+  log,
+  stopped,
+  concept,
+  shelf,
+  demo,
+}: {
+  log: LogEntry[];
+  stopped: boolean;
+  concept: string;
+  shelf: PlaceCard[];
+  demo?: PublicWorldSpec;
+}) {
   const view = bindingView(log);
   const working = !stopped && !view.ready && !view.error && !view.choose;
   const elapsed = useElapsed(working);
+  const title = view.world?.title;
+  useEffect(() => {
+    if (!view.ready || !title) return;
+    const previous = document.title;
+    document.title = `${title} is ready — Wonderland`;
+    playChime("held");
+    return () => {
+      document.title = previous;
+    };
+  }, [view.ready, title]);
   const current = working ? [...view.steps].reverse().find((step) => step.on)?.stage : undefined;
   const marks = view.checks ? Array.from({ length: view.checks.total }, (_, index) => index < view.checks!.passed) : [];
   return (
@@ -474,9 +524,19 @@ function Binding({ log, stopped }: { log: LogEntry[]; stopped: boolean }) {
           ))}
         </ol>
         {working ? (
-          <p className="bw-clock" aria-live="off">
-            {view.world ? "Muse Image is painting" : "Muse Spark is working"} · {Math.floor(elapsed / 60)}:{String(elapsed % 60).padStart(2, "0")}
-          </p>
+          <>
+            <p className="bw-clock" aria-live="off">
+              {view.world ? "Muse Image is painting" : "Muse Spark is working"} · {Math.floor(elapsed / 60)}:
+              {String(elapsed % 60).padStart(2, "0")} · usually 2–5 minutes
+            </p>
+            <p className="bw-clock">You can close this tab. The build keeps going, and the world will be on the shelf.</p>
+            {demo ? (
+              <div className="bw-wait-game">
+                <p className="bw-watch-kicker">While you wait, thirty seconds in Rumour Town.</p>
+                <TryIt spec={demo} />
+              </div>
+            ) : null}
+          </>
         ) : null}
         {marks.length ? (
           <p className="bw-checks" aria-label={`${view.checks?.passed ?? 0} of ${view.checks?.total ?? 0} science checks passed`}>
@@ -517,21 +577,9 @@ function Binding({ log, stopped }: { log: LogEntry[]; stopped: boolean }) {
             )}
           </div>
         ) : null}
-        {view.choose ? (
-          <div className="bw-choose">
-            <p>{view.choose.message}</p>
-            <ul>
-              {view.choose.worlds.map((world) => (
-                <li key={world.id}>
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={world.href}>{world.title}</Link>
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          </div>
+        {view.choose || view.error ? (
+          <MissCard concept={concept} message={view.error ?? view.choose?.message ?? ""} shelf={shelf} />
         ) : null}
-        {view.error ? <p className="bw-error">{view.error}</p> : null}
         {stopped && !view.world && !view.choose && !view.error ? <p className="bw-built-tag">The build stopped before the world was finished. Try asking again.</p> : null}
       </CardContent>
     </Card>

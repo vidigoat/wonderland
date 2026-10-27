@@ -38,7 +38,7 @@ export function AdaNote({
   const bench = describeParams(spec, params);
   const race = raceRows(spec, yours, rival);
   return (
-    <section title={seedNote ?? undefined} className="ada" aria-label="Ada">
+    <section title={seedNote ?? undefined} className="ada" aria-label="Ada" data-status={status}>
       <header className="ada-head">
         <h2>Ada</h2>
         {canTurn ? (

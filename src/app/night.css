@@ -1348,3 +1348,14 @@
 .bw-window-stage .stage-fallback::after {
   background: radial-gradient(ellipse 160px 60px at center, rgba(10, 10, 10, 0.92) 40%, transparent 100%);
 }
+/* While the live model thinks, Ada's light breathes. */
+.play .ada[data-status="thinking"] h2::before {
+  animation: ada-think 1.1s ease-in-out infinite;
+}
+@keyframes ada-think {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.35); }
+  50% { box-shadow: 0 0 0 6px rgba(255, 255, 255, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .play .ada[data-status="thinking"] h2::before { animation: none; }
+}

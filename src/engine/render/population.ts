@@ -125,12 +125,14 @@ export function createPopulationScene(): Scene {
       const wobble = frame.reducedMotion ? 0 : Math.sin(frame.time / 980 + phase * 4) * 0.1;
       const footY = frame.worldId === "rumour-town" ? townFoot(node.drawY) : node.drawY;
       const at = place(node.drawX, footY, frame.width, frame.height);
-      node.figure.view.position.set(at.x, at.y + bob);
-      node.figure.view.rotation = wobble;
-      node.figure.view.scale.set(figureScale * (0.86 + phase * 0.28));
-      node.figure.view.zIndex = at.y;
       const sprite = agent.sprite || "figure";
-      const keepsOwnColor = sprite === "bird";
+      const hunting = sprite === "bird";
+      const drop = hunting ? Math.min(42, frame.height * 0.07) : 0;
+      node.figure.view.position.set(at.x, at.y + bob + drop);
+      node.figure.view.rotation = wobble;
+      node.figure.view.scale.set(hunting ? figureScale * 2.05 : figureScale * (0.86 + phase * 0.28));
+      node.figure.view.zIndex = hunting ? frame.height + 20 : at.y;
+      const keepsOwnColor = hunting;
       node.figure.show(
         frame.worldId,
         sprite,

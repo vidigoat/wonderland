@@ -109,6 +109,8 @@ The meadow, the dune, the hot plate, and the valley still named their controls i
 
 A single jam read "1 jams". Commit `29d3a15`. A count of one now says jam, hare, firefly, degree, or step. On the production server one drive still finishes in about ten seconds at 1 jam, travelling at -3.79 metres per second. `pnpm check` is 238 tests.
 
+The thirty-second bank on the landing still labelled "Getting my money out!" after the bank had held and nobody had taken a coin. Commit `499119c`. That key now appears only once people are withdrawing, or the bank has closed. On the production server the rumour still closes the bank on day 6, hiding the queue still closes it on day 6, and guaranteeing deposits keeps it open for twelve days with the legend reading only Calm and Worried. `pnpm check` is 238 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

@@ -912,9 +912,9 @@ h1, h2, .law-line, .voice, .galley-title, .place-name, .wordmark {
 .play[data-phase="receipt"] .receipt canvas {
   width: auto;
   max-width: 100%;
-  /* The card is a tall portrait. It has to finish above Ada, under the sentence you discovered. */
-  max-height: min(32vh, 340px);
   height: auto;
+  /* Wide card. Tall enough to read, short enough to finish above Ada. */
+  max-height: min(34vh, 320px);
 }
 
 .play[data-phase="receipt"] .receipt-caption {

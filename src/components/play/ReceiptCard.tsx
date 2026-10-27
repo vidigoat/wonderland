@@ -72,7 +72,7 @@ export function ReceiptCard({ model, worldId }: { model: ReceiptModel; worldId: 
         <p className="receipt-kept">The law is not printed on this card.</p>
         <p className="sr">{summary}</p>
       </figcaption>
-      <canvas ref={ref} width={1280} height={1680} role="img" aria-label={summary} />
+      <canvas ref={ref} width={1200} height={640} role="img" aria-label={summary} />
     </figure>
   );
 }

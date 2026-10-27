@@ -262,6 +262,9 @@ describe("receipt copy", () => {
     expect(pictured.textTop).toBeGreaterThan(pictured.y + pictured.h);
     expect(pictured.x).toBeGreaterThan(58);
     expect(pictured.x + pictured.w).toBeLessThan(1280 - 58);
+    const wide = pictureFrame(1200, true, 640);
+    expect(wide.textX).toBeGreaterThan(wide.x + wide.w);
+    expect(wide.y + wide.h).toBeLessThanOrEqual(640);
   });
 });
 

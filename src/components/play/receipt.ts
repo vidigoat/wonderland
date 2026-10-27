@@ -52,14 +52,25 @@ export type ReceiptPicture = {
   figure: CanvasImageSource | null;
 };
 
-/** Where the painting sits, and where the words begin under it. */
-export function pictureFrame(width: number, hasPicture: boolean): { x: number; y: number; w: number; h: number; textTop: number } {
-  if (!hasPicture) return { x: 0, y: 0, w: 0, h: 0, textTop: 160 };
+/** Where the painting sits, and where the words begin. A wide card puts the painting on the left. */
+export function pictureFrame(
+  width: number,
+  hasPicture: boolean,
+  height = 1680,
+): { x: number; y: number; w: number; h: number; textTop: number; textX: number } {
+  if (!hasPicture) return { x: 0, y: 0, w: 0, h: 0, textTop: 160, textX: 92 };
+  if (width > height) {
+    const x = 36;
+    const y = 36;
+    const h = Math.max(0, height - 72);
+    const w = Math.round(width * 0.38);
+    return { x, y, w, h, textTop: 78, textX: x + w + 40 };
+  }
   const x = 80;
   const y = 80;
   const w = Math.max(0, width - 160);
   const h = 340;
-  return { x, y, w, h, textTop: y + h + 72 };
+  return { x, y, w, h, textTop: y + h + 72, textX: 92 };
 }
 
 export function receiptCopy(model: ReceiptModel) {
@@ -129,6 +140,77 @@ function drawFigure(ctx: CanvasRenderingContext2D, image: CanvasImageSource, fra
   ctx.drawImage(image, frame.x + (frame.w - dw) / 2, frame.y + frame.h - dh - 16, dw, dh);
 }
 
+function paintWideReceipt(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  model: ReceiptModel,
+  palette: ReceiptPalette,
+  displayFont: string,
+  uiFont: string,
+  art: ReceiptPicture | null,
+  frame: { x: number; y: number; w: number; h: number; textTop: number; textX: number },
+  copy: ReturnType<typeof receiptCopy>,
+) {
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = palette.paper;
+  ctx.fillRect(0, 0, width, height);
+  ctx.strokeStyle = palette.brass;
+  ctx.lineWidth = 2;
+  ctx.strokeRect(24, 24, width - 48, height - 48);
+
+  if (art?.ground) {
+    drawCover(ctx, art.ground, frame);
+    if (art.figure) drawFigure(ctx, art.figure, frame);
+    ctx.strokeStyle = palette.brass;
+    ctx.lineWidth = 3;
+    ctx.strokeRect(frame.x, frame.y, frame.w, frame.h);
+  }
+
+  const x = frame.textX;
+  const max = width - x - 40;
+  ctx.fillStyle = palette.accent;
+  ctx.font = `500 22px ${uiFont}`;
+  ctx.fillText("Wonderland", x, frame.textTop);
+
+  ctx.font = `600 46px ${displayFont}`;
+  ctx.fillStyle = palette.ink;
+  const titleBottom = wrap(ctx, model.title, x, frame.textTop + 62, max, 52, 2);
+
+  ctx.strokeStyle = palette.brass;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(x, titleBottom + 8);
+  ctx.lineTo(width - 40, titleBottom + 8);
+  ctx.stroke();
+
+  const columnY = titleBottom + 48;
+  ctx.font = `500 20px ${uiFont}`;
+  ctx.fillStyle = palette.accent;
+  ctx.fillText("Before", x, columnY);
+  ctx.fillText("After", x + max * 0.48, columnY);
+
+  ctx.font = `600 42px ${displayFont}`;
+  ctx.fillStyle = palette.ink;
+  ctx.fillText(copy.before, x, columnY + 48);
+  ctx.fillText(copy.after, x + max * 0.48, columnY + 48);
+
+  ctx.font = `400 20px ${uiFont}`;
+  const wordsY = columnY + 84;
+  if (model.beforeWords) wrap(ctx, model.beforeWords, x, wordsY, max * 0.46, 26, 2);
+  ctx.fillText(copy.afterKind, x + max * 0.48, wordsY);
+  if (model.afterWords) wrap(ctx, model.afterWords, x + max * 0.48, wordsY + 30, max * 0.5, 26, 2);
+
+  ctx.font = `500 20px ${uiFont}`;
+  ctx.fillStyle = palette.accent;
+  ctx.fillText("Time until it held", x, height - 118);
+  ctx.font = `600 40px ${displayFont}`;
+  ctx.fillStyle = palette.ink;
+  ctx.fillText(copy.elapsed, x + 250, height - 118);
+  ctx.font = `400 22px ${uiFont}`;
+  ctx.fillText("The law is not printed on this card.", x, height - 64);
+}
+
 export function paintReceipt(
   ctx: CanvasRenderingContext2D,
   width: number,
@@ -140,7 +222,11 @@ export function paintReceipt(
   art: ReceiptPicture | null = null,
 ) {
   const copy = receiptCopy(model);
-  const frame = pictureFrame(width, Boolean(art?.ground));
+  const frame = pictureFrame(width, Boolean(art?.ground), height);
+  if (width > height) {
+    paintWideReceipt(ctx, width, height, model, palette, displayFont, uiFont, art, frame, copy);
+    return;
+  }
   ctx.clearRect(0, 0, width, height);
   ctx.fillStyle = palette.paper;
   ctx.fillRect(0, 0, width, height);

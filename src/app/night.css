@@ -887,3 +887,40 @@
   0%, 100% { transform: translateY(-1px) scale(1); box-shadow: 0 0 10px var(--wl-lantern); }
   50% { transform: translateY(-1px) scale(1.7); box-shadow: 0 0 22px var(--wl-lantern); }
 }
+
+/* Worlds without their own stage colour (all generated worlds) sit on black, not cream. */
+.play .stage-pane {
+  background:
+    radial-gradient(120% 80% at 50% 42%, transparent 42%, rgba(0, 0, 0, 0.25)),
+    var(--stage, #0a0a0a);
+  color: var(--stage-ink, #fafafa);
+}
+.play .scene-wait {
+  font-family: var(--wl-body);
+  font-style: normal;
+  font-size: 14px;
+  color: var(--wl-muted);
+}
+.play .stage-caption {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 11px;
+}
+
+/* Story: the setting is quiet context, the mystery is the one bold question. */
+.notebook .phase .voice:first-child {
+  font-family: var(--wl-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.55;
+  letter-spacing: 0;
+  color: var(--wl-muted);
+}
+.notebook .phase .voice + .voice {
+  font-weight: 600;
+  font-size: clamp(20px, 1.8vw, 24px);
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  color: var(--wl-text);
+}

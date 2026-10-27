@@ -73,6 +73,8 @@ The ring road reported the jam's speed from a formula of the knobs, `-3.57` metr
 
 The gallery card for Marching Dunes drew the sand as a staircase of cells. Commit `b6f45f0`. It now draws one smooth ridge, gentler on the windward side and steeper on the slip face, over the desert painting. The ember plate's hot spot is a soft glow. Checked on the production server.
 
+The stage drew that same ridge from a few rows, so the slope was still a stair. The play view now blurs the ridge and keeps the crest where the sand put it. On the production server the dune is a smooth shape, gentler upwind and steeper on the slip face. `pnpm check` is 228 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { compileRules, type RulesModule } from "@/engine/rules";
 import { WorldSession } from "@/engine/runtime";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { heightSilhouette } from "@/engine/render/helpers";
+import { heightSilhouette, softenRidge } from "@/engine/render/helpers";
 import { asWorldView, isParticlesView } from "@/engine/view";
 
 /**
@@ -12,20 +12,6 @@ import { asWorldView, isParticlesView } from "@/engine/view";
  * a few dozen steps in. Drawn in white over the world's Muse Image painting (or black), so the card shows what that world really looks like.
  */
 const STEPS = 40;
-
-/** A dune grid is only a few rows tall. Blur the ridge so the card shows a slope, not stairs. */
-function softenRidge(heights: number[]): number[] {
-  let current = heights.slice();
-  for (let pass = 0; pass < 8; pass++) {
-    current = current.map((_, index) => {
-      const left = current[Math.max(0, index - 1)] ?? 0;
-      const mid = current[index] ?? 0;
-      const right = current[Math.min(current.length - 1, index + 1)] ?? 0;
-      return (left + 2 * mid + right) / 4;
-    });
-  }
-  return current;
-}
 
 function lightness(t: number): string {
   const v = Math.round(60 + Math.max(0, Math.min(1, t)) * 195);

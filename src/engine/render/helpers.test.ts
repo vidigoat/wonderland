@@ -15,6 +15,7 @@ import {
   phaseOffset,
   populationCrowd,
   resolveShotPath,
+  softenRidge,
   SCROLL_TRIP_MS,
   scrollRest,
   scrollTravel,
@@ -248,6 +249,18 @@ describe("fieldColor", () => {
     expect(fieldScale("other", [0, 0.12, 0.35, 1])).toBe("firebreak");
     expect(fieldScale("other", [0, 1, 0.5])).toBe("continuous");
     expect(fieldScale("other", [0, 1, 0, 1])).toBe("continuous");
+  });
+});
+
+describe("a dune ridge", () => {
+  it("rounds a staircase and keeps the crest where it was", () => {
+    const stairs = [0, 0, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3, 0.15, 0, 0];
+    const soft = softenRidge(stairs);
+    const jump = (values: number[]) => Math.max(...values.slice(1).map((value, index) => Math.abs(value - (values[index] ?? 0))));
+    expect(jump(soft)).toBeLessThan(jump(stairs));
+    const crest = (values: number[]) => values.indexOf(Math.max(...values));
+    expect(Math.abs(crest(soft) - crest(stairs))).toBeLessThanOrEqual(1);
+    expect(soft[0]).toBeLessThan(soft[crest(soft)] ?? 0);
   });
 });
 

@@ -263,6 +263,21 @@ export function smoothField(grid: number[][], longest = 180): number[][] {
   return out;
 }
 
+/** A dune grid is only a few rows tall. Blur the ridge so the slope reads as sand, not stairs. The crest stays put. */
+export function softenRidge(heights: number[], passes = 8): number[] {
+  let current = heights.slice();
+  for (let pass = 0; pass < passes; pass++) {
+    const next = current.map((_, index) => {
+      const left = current[Math.max(0, index - 1)] ?? 0;
+      const mid = current[index] ?? 0;
+      const right = current[Math.min(current.length - 1, index + 1)] ?? 0;
+      return (left + 2 * mid + right) / 4;
+    });
+    current = next;
+  }
+  return current;
+}
+
 export type HeightSilhouette = { heights: number[] };
 
 /**

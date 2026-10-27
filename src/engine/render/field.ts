@@ -1,5 +1,5 @@
 import { Container, Graphics, Sprite, Texture, BufferImageSource } from "pixi.js";
-import { FIELD_COLORS, clearedStrip, fieldColor, fieldScale, heightSilhouette, phaseOffset, smoothField, type FieldScale } from "./helpers";
+import { FIELD_COLORS, clearedStrip, fieldColor, fieldScale, heightSilhouette, phaseOffset, smoothField, softenRidge, type FieldScale } from "./helpers";
 import type { Frame, Scene } from "./scene";
 import { createBackdrop } from "./backdrop";
 import { isPaintedWorld } from "./sprites";
@@ -138,12 +138,7 @@ function drawDune(g: Graphics, heights: number[], box: Box, painted: boolean): v
   g.clear();
   const count = heights.length;
   if (count < 2) return;
-  const smooth = heights.map((_, index) => {
-    const left = heights[Math.max(0, index - 1)] ?? 0;
-    const mid = heights[index] ?? 0;
-    const right = heights[Math.min(count - 1, index + 1)] ?? 0;
-    return (left + mid + right) / 3;
-  });
+  const smooth = softenRidge(heights);
   let start = 0;
   let end = count - 1;
   while (start < end && (smooth[start] ?? 0) < 0.02) start++;

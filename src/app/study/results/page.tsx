@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
+import { connection } from "next/server";
 import { summariseStudy } from "@/lib/study/score";
 import { readStudy } from "@/lib/study/store";
 
@@ -18,7 +20,16 @@ function mark(value: number | null): string {
   return value.toFixed(1);
 }
 
-export default async function StudyResultsPage() {
+export default function StudyResultsPage() {
+  return (
+    <Suspense fallback={<main className="study">Counting real replies.</main>}>
+      <Results />
+    </Suspense>
+  );
+}
+
+async function Results() {
+  await connection();
   const summary = summariseStudy(await readStudy());
   return (
     <main className="study">

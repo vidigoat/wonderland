@@ -6,21 +6,8 @@ import { STUDY_EXPLANATION, STUDY_QUESTIONS, type StudyArm } from "@/lib/study/s
 
 const MINUTES = 6;
 
-type Assignment = { id: string; arm: StudyArm; test: boolean };
-
-function assignmentFrom(search: string): Assignment {
-  const params = new URLSearchParams(search);
-  const test = params.get("test") === "1";
-  let id = params.get("id") ?? "";
-  if (!/^[0-9a-f-]{36}$/i.test(id)) id = crypto.randomUUID();
-  const asked = params.get("arm");
-  const arm: StudyArm =
-    asked === "read" || asked === "play" ? asked : Number.parseInt(id.replace(/-/g, "").slice(0, 2), 16) % 2 === 0 ? "read" : "play";
-  return { id, arm, test };
-}
-
-export function StudyFlow() {
-  const [assignment] = useState<Assignment>(() => assignmentFrom(window.location.search));
+export function StudyFlow({ id, arm, test }: { id: string; arm: StudyArm; test: boolean }) {
+  const assignment = { id, arm, test };
   const [ready, setReady] = useState(false);
   const [left, setLeft] = useState(MINUTES * 60);
   const [choices, setChoices] = useState<(number | null)[]>([null, null, null, null]);
@@ -34,7 +21,7 @@ export function StudyFlow() {
     params.set("id", assignment.id);
     params.set("arm", assignment.arm);
     window.history.replaceState(null, "", `/study?${params.toString()}`);
-  }, [assignment]);
+  }, [assignment.id, assignment.arm, assignment.test]);
 
   useEffect(() => {
     if (assignment.arm !== "play") return;

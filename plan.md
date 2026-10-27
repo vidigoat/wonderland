@@ -10,6 +10,16 @@
 | **Freeze + polish** | Mon Nov 2, 7:30 AM → Wed Nov 4, 7:30 PM | → Wed Nov 4, 9:00 AM | No new features. Bug fixes, copy, README, screenshots, demo video, submission form, repo goes public. |
 | **Submitted** | by **Wed Nov 4, 7:30 PM** | by Wed Nov 4, 9:00 AM | Twelve hours of slack before the real deadline. |
 
+### Build window, in order (set Tue Oct 27 evening)
+1. **Generated worlds as clear as the hand-built ones.** A live chart of every reading over time under the stage; plain-word readouts that only appear once something has happened; fix crude field drawing (the dune triangle).
+2. **The playtester sees the world.** After a build, the browser films the world running and Muse Spark 1.3 (vision, Meta Model API) checks the picture shows the law it claims. Shown as a build step; a failed look is reported, not hidden.
+3. **Ask-anything holds up.** Ten fresh questions through the live pipeline; fix what breaks; publish the real pass rate, time and cost.
+4. **Failure and waiting land well.** A question that can't become a world gets a clear answer and three that can; play a hand-built world while yours builds.
+5. **Evidence people learn.** Anonymous playthrough record (first prediction right? law discovered? new case right?); Vidit runs 3-5 real players; numbers go in the README and video.
+
+### Freeze window
+Deploy (Vercel + Blob storage, keys in Vercel, shared spend ledger) for the live product and the Community Vote gallery; record the video; X thread for Most Viral; submit; repo public.
+
 ## The one-sentence product
 Type any "why/how" → a team of Meta-model agents builds a **playable, scientifically verified world** with a **hidden law** → you **discover** it by predicting and experimenting (the AI never tells you) → you **prove** it on a new situation, racing an **AI rival** that runs on Meta open weights.
 

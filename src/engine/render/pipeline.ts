@@ -271,9 +271,13 @@ function laySpell(layer: Container, frame: Frame, query: string, error: string |
   const maxWidth = cardW - 36;
   const lineHeight = fontSize * 1.5;
   const heading = new Text({
-    text: query ? "The spell the scribe wrote from your scroll (an SQL query)" : "The scribe's desk is clear. Send a scroll to see the spell it writes.",
+    text: query
+      ? cardW < 480
+        ? "The spell from your scroll"
+        : "The spell the scribe wrote from your scroll (an SQL query)"
+      : "The scribe's desk is clear. Send a scroll to see the spell it writes.",
     resolution,
-    style: { fontFamily: stageFont("ui"), fontSize: 12, fill: 0xa3a3a3 },
+    style: { fontFamily: stageFont("ui"), fontSize: 12, fill: 0xa3a3a3, wordWrap: true, wordWrapWidth: maxWidth },
   });
   const measure = measurer(`500 ${fontSize}px ${family}`);
   const lines = query ? wrapLines(query, maxWidth, measure).slice(0, 4) : [];

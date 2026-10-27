@@ -157,6 +157,8 @@ The spoken line sat on the scribe's spell, so a name of `' OR '1'='1` hid the se
 
 The vault drew at most 24 coins, so "enough for 32 of 40 savers" was a row of 24. Commit `9432ad3`. There is now one coin for each saver the vault can pay. On the production server, with the cash on hand at 80%, the card says 32 of 40 and shows 32 coins. `pnpm check` is 246 tests.
 
+On a phone that same card met the colour key, and "Getting my money out!" ran across the coins. Commit `733fd45`, then `7a783bc`. The key stays in its own column, with a gap. On the production server at 390 wide, 32 coins sit in the card and the key sits beside it, including the withdrawing line. They do not cover one another. `pnpm check` is 246 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

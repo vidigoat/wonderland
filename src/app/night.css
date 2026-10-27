@@ -1287,3 +1287,36 @@
 .missing-links a {
   color: inherit;
 }
+
+/* Before WebGL paints (or if it is lost), the fallback plate sits dimmed under a calm label
+ * instead of reading as a washed-out scene. */
+.stage-pane .stage-fallback,
+.bw-window-stage .stage-fallback {
+  position: relative;
+  background: #0a0a0a;
+}
+.stage-pane .stage-fallback > *,
+.bw-window-stage .stage-fallback > * {
+  filter: brightness(0.32) saturate(0.6);
+}
+.stage-pane .stage-fallback::after,
+.bw-window-stage .stage-fallback::after {
+  content: "Loading the world…";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+  color: #a3a3a3;
+  animation: wl-loading 1.6s ease-in-out infinite;
+}
+.stage-pane .stage-fallback .scene-wait,
+.stage-pane .stage-fallback .stage-caption {
+  display: none;
+}
+@keyframes wl-loading {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}

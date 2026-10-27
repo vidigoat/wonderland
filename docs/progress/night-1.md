@@ -71,7 +71,7 @@ The ring road reported the jam's speed from a formula of the knobs, `-3.57` metr
 
 `/api/worlds` listed only the five heroes. Commit `1a6aaa1`. It now lists all twelve playable worlds, and the body has no hidden law and no answer key. Checked on the production server. The ledger was also walked through to the receipt: the discovered sentence is the plain one, the hidden law is not on the page, and the card says the law is not printed. `pnpm check` is 227 tests.
 
-The gallery card for Marching Dunes drew the sand as a staircase of cells. It now draws one smooth ridge, gentler on the windward side and steeper on the slip face, over the desert painting. The ember plate's hot spot is a soft glow. Checked on the production server.
+The gallery card for Marching Dunes drew the sand as a staircase of cells. Commit `b6f45f0`. It now draws one smooth ridge, gentler on the windward side and steeper on the slip face, over the desert painting. The ember plate's hot spot is a soft glow. Checked on the production server.
 
 ## Still blocked on a key
 

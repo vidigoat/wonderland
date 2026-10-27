@@ -37,6 +37,9 @@ Every call passes a hard spend cap (`SPEND_CAP_META_USD`, `SPEND_CAP_BASETEN_USD
 
 **Generated so far** (`data/worlds`, all passed every science check): fireflies flashing in sync, phantom traffic jams, predator–prey cycles, heat in a metal plate. See [docs/spike-results.md](docs/spike-results.md).
 
+## Design
+Black and white, with colour only inside the worlds. Geist, shadcn/ui, real logos, one orchestrated entrance, and a live world running in the landing page's product window. Rules for anyone changing the UI: [docs/design/system.md](docs/design/system.md).
+
 ## Run it
 ```bash
 pnpm install

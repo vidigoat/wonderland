@@ -48,7 +48,7 @@ export function ReceiptCard({ model, worldId }: { model: ReceiptModel; worldId: 
     let cancel = false;
     const draw = (art: ReceiptPicture | null) => {
       if (cancel) return;
-      const display = fontStack("--font-fraunces", "Palatino, serif");
+      const display = fontStack("--font-geist-sans", "sans-serif");
       const ui = fontStack("--font-geist-sans", "sans-serif");
       paintReceipt(ctx, canvas.width, canvas.height, current, paletteFor(worldId), display, ui, art);
     };

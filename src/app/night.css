@@ -924,3 +924,8 @@
   letter-spacing: -0.025em;
   color: var(--wl-text);
 }
+.play .receipt-caption, .play .receipt em, .play .receipt i {
+  font-family: var(--wl-body);
+  font-style: normal;
+  color: var(--wl-muted);
+}

@@ -22,21 +22,10 @@ export type ReceiptPalette = {
   brass: string;
 };
 
+/** Every card is black and white; the world's painting is the only colour on it. */
 export function paletteFor(worldId: string): ReceiptPalette {
-  switch (worldId) {
-    case "gatekeeper":
-      return { paper: "#f7f0df", ink: "#241816", accent: "#6e1d24", brass: "#b8923a" };
-    case "peppered-forest":
-      return { paper: "#f6f3e8", ink: "#1c2418", accent: "#3f6b45", brass: "#a56b3c" };
-    case "newtons-cannon":
-      return { paper: "#f3ead7", ink: "#14110e", accent: "#8d6230", brass: "#c4a36a" };
-    case "rumour-town":
-      return { paper: "#fff8ee", ink: "#3a2a22", accent: "#c46a32", brass: "#d98a4a" };
-    case "firebreak":
-      return { paper: "#f3ead7", ink: "#14110e", accent: "#b85a28", brass: "#e07a3d" };
-    default:
-      return { paper: "#f3ead7", ink: "#14110e", accent: "#a56b3c", brass: "#a56b3c" };
-  }
+  void worldId;
+  return { paper: "#0a0a0a", ink: "#fafafa", accent: "#a3a3a3", brass: "#262626" };
 }
 
 const FIGURES: Record<string, string> = {
@@ -152,17 +141,10 @@ export function paintReceipt(
   ctx.fillStyle = palette.paper;
   ctx.fillRect(0, 0, width, height);
 
-  ctx.strokeStyle = palette.ink;
-  ctx.lineWidth = 6;
-  ctx.strokeRect(40, 40, width - 80, height - 80);
+  // One hairline frame, nothing else: the card is quiet so the words and the painting carry it.
+  ctx.strokeStyle = palette.brass;
   ctx.lineWidth = 2;
-  ctx.strokeRect(58, 58, width - 116, height - 116);
-
-  ctx.fillStyle = palette.accent;
-  ctx.fillRect(58, 58, width - 116, 22);
-
-  ctx.fillStyle = palette.brass;
-  ctx.fillRect(58, height - 80, width - 116, 22);
+  ctx.strokeRect(40, 40, width - 80, height - 80);
 
   if (art?.ground) {
     drawCover(ctx, art.ground, frame);
@@ -173,13 +155,12 @@ export function paintReceipt(
   }
 
   const tracking = ctx as CanvasRenderingContext2D & { letterSpacing?: string };
-  tracking.letterSpacing = "8px";
-  ctx.fillStyle = palette.ink;
+  ctx.fillStyle = palette.accent;
   ctx.font = `500 28px ${uiFont}`;
-  ctx.fillText("WONDERLAND", 92, frame.textTop);
-  tracking.letterSpacing = "0px";
+  ctx.fillText("Wonderland", 92, frame.textTop);
 
-  ctx.font = `560 ${art?.ground ? 64 : 76}px ${displayFont}`;
+  tracking.letterSpacing = "-2px";
+  ctx.font = `600 ${art?.ground ? 64 : 76}px ${displayFont}`;
   ctx.fillStyle = palette.ink;
   const titleBottom = wrap(ctx, model.title, 92, frame.textTop + (art?.ground ? 88 : 110), width - 184, art?.ground ? 72 : 84, 2);
 
@@ -192,44 +173,41 @@ export function paintReceipt(
 
   const tight = Boolean(art?.ground);
   const columnY = titleBottom + (tight ? 72 : 120);
-  ctx.font = `500 26px ${uiFont}`;
-  tracking.letterSpacing = "4px";
-  ctx.fillStyle = palette.accent;
-  ctx.fillText("BEFORE", 92, columnY);
-  ctx.fillText("AFTER", width / 2 + 20, columnY);
   tracking.letterSpacing = "0px";
+  ctx.font = `500 26px ${uiFont}`;
+  ctx.fillStyle = palette.accent;
+  ctx.fillText("Before", 92, columnY);
+  ctx.fillText("After", width / 2 + 20, columnY);
 
-  ctx.font = `560 ${tight ? 68 : 84}px ${displayFont}`;
+  ctx.font = `600 ${tight ? 68 : 84}px ${displayFont}`;
   ctx.fillStyle = palette.ink;
   ctx.fillText(copy.before, 92, columnY + (tight ? 78 : 100));
-  ctx.fillStyle = model.after ? palette.accent : palette.ink;
+  ctx.fillStyle = palette.ink;
   ctx.fillText(copy.after, width / 2 + 20, columnY + (tight ? 78 : 100));
 
   const wordsY = columnY + (tight ? 124 : 156);
-  ctx.font = `italic 28px ${displayFont}`;
+  ctx.font = `400 28px ${uiFont}`;
   ctx.fillStyle = palette.ink;
   ctx.fillText(copy.afterKind, width / 2 + 20, wordsY);
-  ctx.font = `italic 30px ${displayFont}`;
+  ctx.font = `400 30px ${uiFont}`;
   if (model.beforeWords) wrap(ctx, model.beforeWords, 92, wordsY, width / 2 - 150, 32, 2);
   if (model.afterWords) wrap(ctx, model.afterWords, width / 2 + 20, wordsY + 40, width / 2 - 150, 32, 2);
 
   const timeLabelY = wordsY + (model.beforeWords || model.afterWords ? 108 : 70);
   ctx.font = `500 26px ${uiFont}`;
-  tracking.letterSpacing = "4px";
   ctx.fillStyle = palette.accent;
-  ctx.fillText("TIME UNTIL IT HELD", 92, timeLabelY);
-  tracking.letterSpacing = "0px";
-  ctx.font = `560 ${tight ? 72 : 92}px ${displayFont}`;
+  ctx.fillText("Time until it held", 92, timeLabelY);
+  ctx.font = `600 ${tight ? 72 : 92}px ${displayFont}`;
   ctx.fillStyle = palette.ink;
   ctx.fillText(copy.elapsed, 92, timeLabelY + (tight ? 78 : 100));
 
-  ctx.font = `italic 34px ${displayFont}`;
+  ctx.font = `400 34px ${uiFont}`;
   const taglineY = timeLabelY + (tight ? 150 : 190);
   wrap(ctx, model.tagline, 92, taglineY, width - 184, tight ? 42 : 46, 2);
 
   const seenY = taglineY + (tight ? 110 : 180);
   if (model.seen && seenY < height - 340) {
-    ctx.font = `italic 32px ${displayFont}`;
+    ctx.font = `400 32px ${uiFont}`;
     ctx.fillStyle = palette.ink;
     wrap(ctx, model.seen, 92, seenY, width - 184, 42, 2);
   }

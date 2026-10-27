@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Mic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { compileRules, type Observation, type Params, type RulesModule } from "@/engine/rules";
@@ -885,6 +886,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
                     }
                   }}
                 >
+                  <Mic aria-hidden="true" className="speak-icon" />
                   {listening ? "Listening" : "Hold to speak"}
                 </button>
                 <button type="button" className="press" disabled={judging || hypothesis.trim() === ""} onClick={() => void offerHypothesis()}>

@@ -1219,3 +1219,28 @@
 .play .notebook .sealed {
   font-style: normal;
 }
+/* The first guess, sealed: small and quiet — you're not meant to dwell on it. */
+.play .notebook .sealed {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  margin: 0 0 20px;
+  border: 1px dashed var(--wl-line);
+  border-radius: 10px;
+  font-family: var(--wl-body);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--wl-muted);
+}
+.play .notebook .sealed::before {
+  display: none;
+}
+.play .speak .speak-icon {
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.75;
+}
+.play .speak {
+  justify-content: center;
+}

@@ -13,6 +13,13 @@ Rules source contract (plain JS, no imports, no Math.random — use the provided
   exports.step = (state, params, rng) => state     // pure, returns new state
   exports.observe = (state, params) => ({ ...numbers or short strings keyed by observable id })
   exports.view = (state, params) => ({ kind: "<archetype>", ... })   // what the renderer draws
+
+The renderer only understands these view shapes. Use exactly one, matching the archetype:
+- population: { kind: "population", agents: [{ id, x, y, tint, sprite, bubble? }] } — x, y in 0..1; tint 0..1 is the trait being selected or spread; sprite is an entity id; bubble is an optional short spoken line.
+- bodies:     { kind: "bodies", bounds: { x, y, w, h }, bodies: [{ id, x, y, radius?, color? }] } — positions in your own units inside bounds; color "#rrggbb" should encode the state the player must notice (e.g. stopped vs moving).
+- field:      { kind: "field", grid: number[][], w, h } — values 0..1.
+- pipeline:   { kind: "pipeline", stages: string[], query: string, rows: [], error: string | null }.
+Make the law VISIBLE in the view: whatever the player must notice should change colour, size or position.
 rng has next(), range(a,b), int(a,b), normal(mean,sd), pick(arr), chance(p).
 The rules run in a sandbox: no process, require, fetch, or other host globals. Math.random throws.
 Keep state JSON-serialisable and small (≤ 500 entities). Steps must be fast (< 1 ms).

@@ -8,7 +8,7 @@ import type { RulesModule } from "@/engine/rules";
  * This is the deterministic fallback brain. The showcase version replaces `decide` with Muse Glimmer agents
  * (src/agents/citizens.ts) — each citizen reads its neighbours' speech bubbles and decides. Checks always use this fallback.
  */
-type Citizen = { id: number; x: number; y: number; worried: number; withdrawn: boolean; says: string | null };
+type Citizen = { id: number; x: number; y: number; worried: number; withdrawn: boolean; says: string | null; voiced?: boolean };
 export type TownState = { round: number; citizens: Citizen[]; cash: number; failed: boolean };
 
 const N = 40;
@@ -70,7 +70,7 @@ export const rumourTown: RulesModule<TownState> = {
       const external = heard?.get(c.id);
       if (external) {
         if (external.withdraw) cash -= 1;
-        return { ...c, worried: external.worried, withdrawn: external.withdraw, says: external.says };
+        return { ...c, worried: external.worried, withdrawn: external.withdraw, says: external.says, voiced: Boolean(external.says) };
       }
       const neighbours = s.citizens.filter((o) => o.id !== c.id && Math.hypot(o.x - c.x, o.y - c.y) < 0.25);
       const worriedNeighbours = neighbours.filter((o) => o.worried > 0.5).length;
@@ -78,7 +78,9 @@ export const rumourTown: RulesModule<TownState> = {
       if (insured) worried *= 0.15; // deposits are safe whatever others do
       const withdraw = worried > 0.55 && rng.chance(worried);
       if (withdraw) cash -= 1;
-      return { ...c, worried, withdrawn: withdraw, says: withdraw ? "Getting my money out!" : worried > 0.5 ? "People are queuing…" : null };
+      // A line a live citizen chose to say stays in the air until they act; the stock lines fill the silence.
+      const kept = c.voiced && c.says ? c.says : null;
+      return { ...c, worried, withdrawn: withdraw, says: withdraw ? "Getting my money out!" : (kept ?? (worried > 0.5 ? "People are queuing…" : null)), voiced: !withdraw && Boolean(kept) };
     });
     return { round: s.round + 1, citizens, cash, failed: cash < 0 };
   },

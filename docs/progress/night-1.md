@@ -145,6 +145,8 @@ A slow cannon shot's preview was a hop of about a tenth of a planet radius, and 
 
 Forty steps left three shelf cards before their law had appeared. On seed 11 the meadow is still at order 0.22 with 8 fireflies lit, the flock's headings agree only 0.24, and the valley is still a field of hares with a handful of lynx. Commit `3348f7c`. The meadow card now waits until step 1000, a shared flash: order 0.83 and 50 of 100 lit. The flock waits until step 400, when the headings agree 0.97. The valley waits until step 200, when the hares have crashed and the lynx outnumber them. The longer runs yield between chunks so the gallery can still paint. On the production gallery the meadow shows many fireflies bright at once, the valley shows both animals, and the flock has gathered in the sky. `pnpm check` is 243 tests.
 
+That gathered flock was still two black masses, because four hundred birds were drawn at about ten pixels. Commit `dd8caeb`. The card now draws 64 of them, large enough for the wings. On the production gallery the birds show a shared lean, wings out. The meadow still shows the shared flash. `pnpm check` is 243 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

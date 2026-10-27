@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { compileRules, type RulesModule } from "@/engine/rules";
 import { WorldSession } from "@/engine/runtime";
 import type { PublicWorldSpec } from "@/engine/spec";
+import { heightSilhouette } from "@/engine/render/helpers";
 import { asWorldView, isParticlesView } from "@/engine/view";
 
 /**
@@ -11,6 +12,20 @@ import { asWorldView, isParticlesView } from "@/engine/view";
  * a few dozen steps in. Drawn in white over the world's Muse Image painting (or black), so the card shows what that world really looks like.
  */
 const STEPS = 40;
+
+/** A dune grid is only a few rows tall. Blur the ridge so the card shows a slope, not stairs. */
+function softenRidge(heights: number[]): number[] {
+  let current = heights.slice();
+  for (let pass = 0; pass < 8; pass++) {
+    current = current.map((_, index) => {
+      const left = current[Math.max(0, index - 1)] ?? 0;
+      const mid = current[index] ?? 0;
+      const right = current[Math.min(current.length - 1, index + 1)] ?? 0;
+      return (left + 2 * mid + right) / 4;
+    });
+  }
+  return current;
+}
 
 function lightness(t: number): string {
   const v = Math.round(60 + Math.max(0, Math.min(1, t)) * 195);
@@ -123,39 +138,54 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
             ctx.fill();
           }
         } else if (view.kind === "field") {
-          // Crop to where something is happening, so a small dune or a hot spot fills the card.
-          let top = Infinity, bottom = -1, left = Infinity, right = -1;
-          view.grid.forEach((row, r) =>
-            row.forEach((value, c) => {
-              if (value > 0.05) {
-                top = Math.min(top, r);
-                bottom = Math.max(bottom, r);
-                left = Math.min(left, c);
-                right = Math.max(right, c);
-              }
-            }),
-          );
-          if (bottom < 0) return;
-          const margin = 2;
-          top = Math.max(0, top - margin);
-          left = Math.max(0, left - margin);
-          bottom = Math.min(view.grid.length - 1, bottom + margin);
-          right = Math.min((view.grid[0]?.length ?? 1) - 1, right + margin);
-          const rows = bottom - top + 1;
-          const cols = right - left + 1;
-          const size = Math.min((w * (1 - 2 * pad)) / cols, (h * 0.62) / rows);
-          const ox = (w - cols * size) / 2;
-          const oy = h * 0.08 + (h * 0.62 - rows * size) / 2;
-          for (let r = top; r <= bottom; r++) {
-            for (let c = left; c <= right; c++) {
-              const value = view.grid[r]?.[c] ?? 0;
-              ctx.fillStyle = painting ? "#f2b45a" : lightness(value);
-              // Over a painting the field glows where it is strong and leaves the painting visible where it is empty.
-              ctx.globalAlpha = painting ? Math.pow(Math.max(0, Math.min(1, value)), 0.7) * 0.92 : 0.12 + Math.max(0, Math.min(1, value)) * 0.88;
-              ctx.fillRect(ox + (c - left) * size, oy + (r - top) * size, Math.ceil(size), Math.ceil(size));
+          const dune = heightSilhouette(view.grid);
+          if (dune) {
+            const ridge = softenRidge(dune.heights);
+            const count = ridge.length;
+            const peak = Math.max(...ridge, 0.001);
+            const base = h * 0.86;
+            const rise = h * 0.62;
+            ctx.beginPath();
+            ridge.forEach((value, index) => {
+              const x = count === 1 ? w / 2 : (index / (count - 1)) * w;
+              const y = base - (Math.max(0, value) / peak) * rise;
+              if (index === 0) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+            });
+            ctx.lineTo(w, base);
+            ctx.lineTo(0, base);
+            ctx.closePath();
+            ctx.fillStyle = "#e0b15a";
+            ctx.globalAlpha = painting ? 0.9 : 0.95;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            ctx.strokeStyle = "#6a4424";
+            ctx.lineWidth = Math.max(2, h * 0.012);
+            ctx.stroke();
+            return;
+          }
+          // A heat spot is one soft glow, not a grid of hard cells.
+          const rows = view.grid.length;
+          const cols = view.grid[0]?.length ?? 1;
+          const plate = document.createElement("canvas");
+          plate.width = cols;
+          plate.height = rows;
+          const bits = plate.getContext("2d");
+          if (!bits) return;
+          const pixels = bits.createImageData(cols, rows);
+          for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+              const value = Math.max(0, Math.min(1, view.grid[r]?.[c] ?? 0));
+              const index = (r * cols + c) * 4;
+              pixels.data[index] = painting ? 242 : Math.round(60 + value * 195);
+              pixels.data[index + 1] = painting ? 180 : Math.round(60 + value * 195);
+              pixels.data[index + 2] = painting ? 90 : Math.round(60 + value * 195);
+              pixels.data[index + 3] = painting ? Math.round(Math.pow(value, 0.7) * 230) : Math.round(30 + value * 225);
             }
           }
-          ctx.globalAlpha = 1;
+          bits.putImageData(pixels, 0, 0);
+          ctx.imageSmoothingEnabled = true;
+          ctx.drawImage(plate, w * pad, h * 0.08, w * (1 - 2 * pad), h * 0.72);
         }
       } catch {
         // A thumbnail is decoration; the card still links to the world.

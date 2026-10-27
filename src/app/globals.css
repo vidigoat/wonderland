@@ -836,7 +836,8 @@ a {
   line-height: 1.25;
 }
 
-.play[data-phase="transfer"] .ada {
+.play[data-phase="transfer"] .ada,
+.play[data-margin="yes"] .ada {
   max-height: 22%;
 }
 

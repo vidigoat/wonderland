@@ -44,6 +44,7 @@ import { defaultParams, formatParam, freshStart, pictureAction, raceLine, raceRo
 import { mintSession, withSeed } from "./session";
 import { startWavCapture, type WavCapture } from "./wav";
 import { armChime, playChime } from "./chime";
+import { bringIntoView } from "./reveal";
 import { rememberSeen, seenOnCard, witnessBeat, witnessLine, type WitnessBeat } from "./witness";
 
 function rulesFor(spec: PublicWorldSpec): RulesModule | null {
@@ -117,6 +118,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const [beat, setBeat] = useState<{ name: WitnessBeat; id: number } | null>(null);
   const [raceSaid, setRaceSaid] = useState<string | null>(null);
 
+  const suggestionButtonRef = useRef<HTMLButtonElement>(null);
   const paramsRef = useRef(params);
   const sessionRef = useRef<WorldSession | null>(null);
   const seedRef = useRef<number | null>(null);
@@ -208,15 +210,16 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   useEffect(() => {
     if (play.phase !== "transfer") return;
     const frame = window.requestAnimationFrame(() => {
-      const button = document.querySelector<HTMLButtonElement>(".phase .press");
-      if (!button) return;
-      const box = button.getBoundingClientRect();
-      if (box.bottom > window.innerHeight - 12 || box.top < 0) {
-        button.scrollIntoView({ block: "end", inline: "nearest" });
-      }
+      bringIntoView(document.querySelector<HTMLButtonElement>(".phase .press"));
     });
     return () => window.cancelAnimationFrame(frame);
   }, [play.phase, play.askingPrediction]);
+
+  useEffect(() => {
+    if (!suggestion) return;
+    const frame = window.requestAnimationFrame(() => bringIntoView(suggestionButtonRef.current));
+    return () => window.cancelAnimationFrame(frame);
+  }, [suggestion, reply]);
 
   useEffect(() => {
     hideWitness.current = play.phase === "transfer" && play.askingPrediction == null;
@@ -681,7 +684,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const newSituation = play.phase === "transfer" && play.askingPrediction == null;
 
   return (
-    <div className="play" data-world={spec.id} data-archetype={spec.archetype} data-phase={play.phase}>
+    <div className="play" data-world={spec.id} data-archetype={spec.archetype} data-phase={play.phase} data-margin={suggestion ? "yes" : undefined}>
       <header className="play-bar">
         <Link href="/" className="wordmark">
           Wonderland
@@ -818,6 +821,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
                   <button
                     type="button"
                     className="quiet"
+                    ref={suggestionButtonRef}
                     onClick={() => {
                       const next = restageParams(paramsRef.current, suggestion);
                       if (next) applyParams(next);

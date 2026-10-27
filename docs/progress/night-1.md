@@ -85,6 +85,8 @@ Painting every one of the plate's 48 steps held the button on "In motion" for ab
 
 Sand lost on the windward face was printing 0. Commit `5c7efea`. The loss is about 0.0046 of a grain each step, which is real and was under the cutoff that turns tiny numbers into zero. It now reads -0.0046 each step. Other tiny readings still print as 0. Checked on the production server.
 
+The ring road hid how much the cars' speeds differ. That number was a variance, and it was the fifth reading, so the card never showed it. It is now the spread in metres per second, and it sits on the card. On the production server one run finishes with the jam travelling at -3.79 metres per second, an average speed of 11 metres per second, and speeds that differ by 14.1 metres per second. All five jam checks still pass.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

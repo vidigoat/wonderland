@@ -165,6 +165,11 @@ export function figureTint(worldId: string, speed: number | undefined): number {
   return 0xffffff;
 }
 
+/** Shelf-card size in CSS pixels. A stopped car is large enough to read as the jam. */
+export function thumbBodyPx(worldId: string, speed: number | undefined): number {
+  return figureTint(worldId, speed) === 0xffffff ? 16 : 26;
+}
+
 /** A handful of lines, spread across the square, so one sentence is not stacked on itself. */
 export function spokenIds(agents: { id: string | number; x: number; y?: number; bubble?: string | null }[], limit = 6): Set<string> {
   const voiced = agents.filter((agent) => agent.bubble?.trim() && /\p{L}/u.test(agent.bubble)).sort((a, b) => a.x - b.x || (a.y ?? 0) - (b.y ?? 0));

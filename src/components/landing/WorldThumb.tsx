@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { compileRules, type RulesModule } from "@/engine/rules";
 import { WorldSession } from "@/engine/runtime";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { bodyFacing, flockFacing, heightSilhouette, softenRidge, thumbSteps } from "@/engine/render/helpers";
+import { bodyFacing, cssHex, figureTint, flockFacing, heightSilhouette, softenRidge, thumbBodyPx, thumbSteps } from "@/engine/render/helpers";
 import { asWorldView, isParticlesView } from "@/engine/view";
 
 /**
@@ -114,13 +114,22 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
           }
         } else if (view.kind === "bodies" && isParticlesView(view)) {
           const { x: bx, y: by, w: bw, h: bh } = view.bounds;
-          for (const body of view.bodies.slice(0, 400)) {
+          const bodies = [...view.bodies].sort((a, b) => Number(((a as { vx?: number }).vx ?? 1) < 0.5) - Number(((b as { vx?: number }).vx ?? 1) < 0.5));
+          for (const body of bodies.slice(0, 400)) {
             const [x, y] = at((body.x - bx) / bw, (body.y - by) / bh);
+            const speed = (body as { vx?: number }).vx;
+            const tint = figureTint(spec.id, speed);
+            const size = thumbBodyPx(spec.id, speed) * dpr;
+            if (tint !== 0xffffff) {
+              ctx.fillStyle = cssHex(tint);
+              ctx.beginPath();
+              ctx.arc(x, y, size * 0.42, 0, Math.PI * 2);
+              ctx.fill();
+            }
             const image = sprites.size > 0 ? spriteOf(String(body.id ?? "").replace(/[-_]?\d+$/, "")) : undefined;
             if (image) {
-              const speed = (body as { vx?: number }).vx;
               const face = bodyFacing(speed, image.height > image.width * 1.25);
-              drawSprite(image, x, y, 13 * dpr, 1, face.turn, face.flip);
+              drawSprite(image, x, y, size, 1, face.turn, face.flip);
               continue;
             }
             ctx.fillStyle = typeof body.color === "string" ? body.color : "#fafafa";

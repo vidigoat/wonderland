@@ -10,6 +10,7 @@ import {
   bilinearSample,
   fieldScale,
   bodyFacing,
+  thumbBodyPx,
   thumbSteps,
   figureTint,
   flockFacing,
@@ -342,6 +343,8 @@ describe("a shelf card", () => {
     expect(thumbSteps("phantom-jam-ring-road")).toBeGreaterThan(thumbSteps("dune-march"));
     expect(thumbSteps("hallway-lanes")).toBeGreaterThan(40);
     expect(thumbSteps("firefly-sync-kuramoto")).toBe(40);
+    expect(thumbBodyPx("phantom-jam-ring-road", 0)).toBeGreaterThan(thumbBodyPx("phantom-jam-ring-road", 12));
+    expect(thumbBodyPx("hallway-lanes", -1)).toBe(thumbBodyPx("hallway-lanes", 1));
   });
 });
 

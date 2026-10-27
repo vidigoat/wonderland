@@ -9,10 +9,13 @@ import type { DataSource } from "@/lib/samples/mark";
 
 export type ClientStage = "scientist" | "designer" | "checker" | "repair" | "artist" | "playtester" | "done";
 
+export type ArtPiece = { background?: string; sprite?: { id: string; url: string } };
+
 export type ClientPipelineEvent =
   | { type: "stage"; stage: ClientStage; message: string; source?: DataSource; notice?: string }
   | { type: "checks"; results: { id: string; passed: boolean }[]; passed: number; total: number; source?: DataSource; notice?: string }
   | { type: "world"; spec: PublicWorldSpec; source?: DataSource; notice?: string }
+  | { type: "art"; background?: string; sprite?: { id: string; url: string }; source?: DataSource; notice?: string }
   | { type: "choose"; message: string; worlds: { id: string; title: string; concept: string }[]; source: "sample"; notice: string }
   | { type: "error"; message: string; source?: DataSource; notice?: string };
 
@@ -23,9 +26,28 @@ type Incoming = {
   results?: CheckResult[];
   spec?: WorldSpec;
   worlds?: { id: string; title: string; concept: string }[];
+  background?: unknown;
+  sprite?: unknown;
   source?: DataSource;
   notice?: string;
 };
+
+const ART_FILE = /^\/art\/[a-z0-9-]+\/[A-Za-z0-9-]+\.(webp|png|jpg|svg)$/;
+const SPRITE_ID = /^[A-Za-z][A-Za-z0-9-]*$/;
+
+/** A painting or a cut-out. Anything that is not a local art URL is dropped. */
+export function readArtPiece(input: { background?: unknown; sprite?: unknown }): ArtPiece | null {
+  const piece: ArtPiece = {};
+  if (typeof input.background === "string" && ART_FILE.test(input.background)) piece.background = input.background;
+  if (input.sprite && typeof input.sprite === "object") {
+    const id = (input.sprite as { id?: unknown }).id;
+    const url = (input.sprite as { url?: unknown }).url;
+    if (typeof id === "string" && SPRITE_ID.test(id) && typeof url === "string" && ART_FILE.test(url)) {
+      piece.sprite = { id, url };
+    }
+  }
+  return piece.background || piece.sprite ? piece : null;
+}
 
 const LAW_LEAK = /hiddenLaw|answerKey|plainStatement/;
 
@@ -67,6 +89,11 @@ export function toClientPipelineEvent(event: Incoming): ClientPipelineEvent {
       source,
       notice,
     };
+  }
+  if (event.type === "art") {
+    const piece = readArtPiece(event);
+    if (!piece) throw new Error("Refusing to stream an art event without a local picture");
+    return { type: "art", ...piece, source, notice };
   }
   if (event.type === "stage") {
     return { type: "stage", stage: event.stage ?? "designer", message: scrubClientText(event.message ?? ""), source, notice };

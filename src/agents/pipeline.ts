@@ -25,6 +25,7 @@ export type PipelineEvent =
   | { type: "stage"; stage: StageName; message: string; source?: DataSource; notice?: string }
   | { type: "checks"; results: CheckResult[]; source?: DataSource; notice?: string }
   | { type: "world"; spec: WorldSpecT; source?: DataSource; notice?: string }
+  | { type: "art"; background?: string; sprite?: { id: string; url: string }; source?: DataSource; notice?: string }
   | {
       type: "choose";
       message: string;
@@ -98,7 +99,35 @@ async function* finishVerified(spec: WorldSpecT): AsyncGenerator<PipelineEvent> 
   try {
     const art = await import("./artist");
     if (typeof art.illustrate === "function") {
-      const illustration = await art.illustrate(spec);
+      const queue: { background?: string; sprite?: { id: string; url: string } }[] = [];
+      let wake: (() => void) | null = null;
+      let settled = false;
+      let failure: unknown;
+      const done = art
+        .illustrate(spec, undefined, (piece) => {
+          queue.push(piece);
+          wake?.();
+          wake = null;
+        })
+        .then(
+          (value) => value,
+          (error: unknown) => {
+            failure = error;
+            return undefined;
+          },
+        )
+        .finally(() => {
+          settled = true;
+          wake?.();
+          wake = null;
+        });
+      while (!settled || queue.length > 0) {
+        if (queue.length === 0) await new Promise<void>((resolve) => { wake = resolve; });
+        const piece = queue.shift();
+        if (piece) yield { type: "art", ...piece, source: "live" };
+      }
+      const illustration = await done;
+      if (failure) throw failure;
       if (illustration?.source === "live") {
         const { finishIllustration } = await import("./art-finish");
         const path = await import("node:path");

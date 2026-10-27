@@ -3,6 +3,7 @@ import { loadRules } from "@/engine/load";
 import type { WorldSpec } from "@/engine/spec";
 import { SAMPLE_NOTICE } from "@/lib/samples/mark";
 import { heroWorlds } from "@/worlds";
+import { heroArtUrl } from "@/worlds/hero-art";
 
 /**
  * Sample-mode matcher. A missing API key never becomes a made-up law.
@@ -35,6 +36,7 @@ export type SampleEvent =
     }
   | { type: "checks"; results: CheckResult[]; source: "sample"; notice: string }
   | { type: "world"; spec: WorldSpec; source: "sample"; notice: string }
+  | { type: "art"; background?: string; sprite?: { id: string; url: string }; source: "sample"; notice: string }
   | {
       type: "choose";
       message: string;
@@ -147,6 +149,20 @@ export async function* generateSample(concept: string): AsyncGenerator<SampleEve
     source,
     notice,
   };
+  yield {
+    type: "art",
+    background: heroArtUrl(hero.id, "background", `/art/${hero.id}/background.svg`),
+    source,
+    notice,
+  };
+  for (const entity of hero.entities) {
+    yield {
+      type: "art",
+      sprite: { id: entity.id, url: heroArtUrl(hero.id, entity.id, `/art/${hero.id}/${entity.id}.svg`) },
+      source,
+      notice,
+    };
+  }
   yield { type: "world", spec: hero, source, notice };
   yield {
     type: "stage",

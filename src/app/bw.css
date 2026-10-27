@@ -281,6 +281,59 @@
 .bw-checks span {
   margin-left: 6px;
 }
+.bw-art {
+  position: relative;
+  height: 200px;
+  margin-top: 18px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #111;
+}
+.bw-art-bg {
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-size: cover;
+  animation: bw-fade 0.7s ease both;
+}
+.bw-art-sprites {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+.bw-art-sprite {
+  width: 84px;
+  height: 84px;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-size: contain;
+  filter: drop-shadow(0 0 10px rgba(255, 210, 122, 0.85));
+  animation: bw-pop 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.bw-watch {
+  margin-top: 16px;
+}
+.bw-watch-kicker,
+.bw-watch-note {
+  margin: 0;
+  color: #a3a3a3;
+  font-size: 13px;
+}
+.bw-watch-stage {
+  position: relative;
+  height: 240px;
+  margin: 8px 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #000;
+}
+@keyframes bw-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 .bw-built {
   margin-top: 20px;
   padding-top: 20px;

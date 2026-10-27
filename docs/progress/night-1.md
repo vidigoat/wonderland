@@ -35,7 +35,7 @@ Judgement: the dune's numbers stay near zero for a short run. The chart shows th
 
 `a4aacd5`: `/w/<id>?playtest=1` runs the world twice (starting controls, then one slider moved), grabs three JPEG frames of each, and posts them. The stage says "Looked right", "Spotted something: …", or, with no key, that Spark did not watch.
 
-Not done yet: the build screen does not start that capture by itself, and it does not show the painting and the cut-outs as they are made. The $0.60 batch over the 12 worlds was not run. This checkout has no `MODEL_API_KEY`.
+The build screen now shows each painting as it arrives and each cut-out with a short glow, then runs the new world and posts the frames. Sample builds use the pictures already on the shelf. The $0.60 batch over the 12 worlds was not run. This checkout has no `MODEL_API_KEY`.
 
 ## Not started
 

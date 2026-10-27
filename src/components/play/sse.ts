@@ -1,4 +1,6 @@
 import type { ClientPipelineEvent, ClientStage } from "@/engine/client-event";
+import { readArtPiece } from "@/engine/client-event";
+import type { PublicWorldSpec } from "@/engine/spec";
 import { safeText } from "./http";
 
 export const HERO_IDS = ["gatekeeper", "peppered-forest", "newtons-cannon", "rumour-town", "firebreak"] as const;
@@ -14,14 +16,43 @@ export function heroHref(id: string): string | null {
 export type MontageItem =
   | { type: "stage"; stage: ClientStage; message: string; notice?: string }
   | { type: "checks"; passed: number; total: number; notice?: string }
-  | { type: "world"; id: string; title: string; tagline: string; concept: string; href: string | null; notice?: string }
+  | { type: "world"; id: string; title: string; tagline: string; concept: string; href: string | null; playable: PlayableSpec | null; notice?: string }
+  | { type: "art"; background?: string; sprite?: { id: string; url: string }; notice?: string }
   | { type: "choose"; message: string; worlds: { id: string; title: string; concept: string; href: string }[]; notice?: string }
   | { type: "error"; message: string; notice?: string };
 
 export function isPipelineEvent(value: unknown): value is ClientPipelineEvent {
   if (!value || typeof value !== "object") return false;
   const type = (value as { type?: unknown }).type;
-  return type === "stage" || type === "checks" || type === "world" || type === "choose" || type === "error";
+  return type === "stage" || type === "checks" || type === "world" || type === "art" || type === "choose" || type === "error";
+}
+
+export type PlayableSpec = Pick<PublicWorldSpec, "id" | "title" | "archetype" | "knobs" | "observables" | "entities" | "rules" | "art">;
+
+const ARCHETYPES = new Set(["pipeline", "population", "bodies", "field"]);
+
+/** Enough of a public spec to run the stage. Hidden fields are refused, not redacted into the picture. */
+export function readPlayable(spec: unknown): PlayableSpec | null {
+  if (!spec || typeof spec !== "object") return null;
+  const raw = spec as Record<string, unknown>;
+  const id = typeof raw.id === "string" && /^[a-z0-9-]+$/.test(raw.id) ? raw.id : "";
+  const title = typeof raw.title === "string" ? raw.title : "";
+  const archetype = raw.archetype;
+  if (!id || !title || typeof archetype !== "string" || !ARCHETYPES.has(archetype)) return null;
+  if (!raw.rules || typeof raw.rules !== "object" || !Array.isArray(raw.knobs)) return null;
+  const kept = {
+    id,
+    title,
+    archetype,
+    knobs: raw.knobs,
+    observables: raw.observables,
+    entities: raw.entities,
+    rules: raw.rules,
+    art: raw.art,
+  };
+  const blob = JSON.stringify(kept);
+  if (/hiddenLaw|answerKey|plainStatement/.test(blob)) return null;
+  return kept as PlayableSpec;
 }
 
 function noticeOf(event: { source?: string; notice?: string }): string | undefined {
@@ -52,11 +83,22 @@ export function toMontageItem(event: ClientPipelineEvent): MontageItem | null {
     const total = typeof event.total === "number" ? event.total : 0;
     return { type: "checks", passed, total, notice };
   }
+  if (event.type === "art") {
+    const piece = readArtPiece(event);
+    if (!piece) return null;
+    return { type: "art", ...piece, notice };
+  }
   if (event.type === "world") {
     const card = readCard(event.spec);
     if (!card) return null;
     // Hero worlds, and generated worlds that were verified and saved to the shelf by the pipeline.
-    return { type: "world", ...card, href: heroHref(card.id) ?? (/^[a-z0-9-]+$/.test(card.id) ? `/w/${card.id}` : null), notice };
+    return {
+      type: "world",
+      ...card,
+      href: heroHref(card.id) ?? (/^[a-z0-9-]+$/.test(card.id) ? `/w/${card.id}` : null),
+      playable: readPlayable(event.spec),
+      notice,
+    };
   }
   if (event.type === "choose") {
     return {

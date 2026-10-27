@@ -25,6 +25,8 @@ export type Illustration = {
   background: string;
 };
 
+export type ArtProgress = { background?: string; sprite?: { id: string; url: string } };
+
 function assertId(id: string): void {
   if (!ID.test(id)) throw new Error(`Invalid world id "${id}". Ids must match /^[a-z0-9-]+$/.`);
 }
@@ -126,7 +128,7 @@ export function cutOut(entityId: string, png: Buffer, samText: string): Buffer {
   return encodeRgbaPng(cutSprite(entityId, decodePng(png), record, raster));
 }
 
-async function liveIllustration(spec: WorldSpec, artDir: string): Promise<Illustration> {
+async function liveIllustration(spec: WorldSpec, artDir: string, onPiece?: (piece: ArtProgress) => void): Promise<Illustration> {
   const { paint, segment } = await import("@/lib/ai/meta");
   const folder = path.join(artDir, spec.id);
   await mkdir(folder, { recursive: true });
@@ -142,6 +144,7 @@ async function liveIllustration(spec: WorldSpec, artDir: string): Promise<Illust
   if (!backgroundType) throw new Error(`Muse Image returned an unrecognized background for ${spec.id}.`);
   const backgroundExt = backgroundType === "image/jpeg" ? "jpg" : "png";
   await writeFile(path.join(folder, `background.${backgroundExt}`), backgroundBytes);
+  onPiece?.({ background: `/art/${spec.id}/background.${backgroundExt}` });
 
   const written: Record<string, string> = {};
   // A field world is drawn as its grid over the painting; it never shows entity sprites.
@@ -177,6 +180,7 @@ async function liveIllustration(spec: WorldSpec, artDir: string): Promise<Illust
     const sprite = cutSprite(entity.id, image, record, raster);
     await writeFile(path.join(folder, `${entity.id}.png`), encodeRgbaPng(sprite));
     written[entity.id] = `/art/${spec.id}/${entity.id}.png`;
+    onPiece?.({ sprite: { id: entity.id, url: written[entity.id]! } });
   }
   if (spec.id === "rumour-town" && written.citizen) written["citizen-queue"] = written.citizen;
 
@@ -193,8 +197,13 @@ async function liveIllustration(spec: WorldSpec, artDir: string): Promise<Illust
  * Live lane calls Muse Image, then SAM, and writes a transparent PNG.
  * A live failure is rethrown — sample art is never substituted for a failed call.
  */
-export async function illustrate(spec: WorldSpec, artDir?: string): Promise<Illustration> {
+export async function illustrate(spec: WorldSpec, artDir?: string, onPiece?: (piece: ArtProgress) => void): Promise<Illustration> {
   assertId(spec.id);
-  if (metaSource() === "sample") return sampleIllustration(spec);
-  return liveIllustration(spec, artDir ?? path.join(process.cwd(), "public", "art"));
+  if (metaSource() === "sample") {
+    const art = sampleIllustration(spec);
+    onPiece?.({ background: art.background });
+    for (const [id, url] of Object.entries(art.sprites)) onPiece?.({ sprite: { id, url } });
+    return art;
+  }
+  return liveIllustration(spec, artDir ?? path.join(process.cwd(), "public", "art"), onPiece);
 }

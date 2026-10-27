@@ -224,7 +224,12 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     playtestRan.current = true;
     setPlaytestNote("Spark is watching this world run.");
     let cancel = false;
-    void collectShots(spec, rules, () => document.querySelector(".world-stage canvas"), seed)
+    void collectShots(spec, rules, () => document.querySelector(".world-stage canvas"), seed, (next, nextParams) => {
+      if (cancel) return;
+      setParams(nextParams);
+      paramsRef.current = nextParams;
+      setView(asWorldView(next, spec.archetype));
+    })
       .then(async (frames) => {
         if (cancel) return;
         const res = await fetch("/api/playtest", {

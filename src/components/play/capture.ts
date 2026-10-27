@@ -49,11 +49,19 @@ export function canvasJpeg(source: HTMLCanvasElement, max = 768): string {
  * Two short runs: the starting controls, then one control moved.
  * Three frames from each. The caller supplies the live canvas.
  */
+function nextPaint(): Promise<void> {
+  return new Promise((resolve) => {
+    if (typeof requestAnimationFrame === "function") requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+    else setTimeout(resolve, 32);
+  });
+}
+
 export async function collectShots(
   spec: PublicWorldSpec,
   rules: RulesModule,
   canvas: () => HTMLCanvasElement | null,
   seed: number,
+  onView?: (view: unknown, params: Params) => void,
 ): Promise<Shot[]> {
   const shots: Shot[] = [];
   const runs: { params: Params; label: string }[] = [
@@ -65,6 +73,8 @@ export async function collectShots(
     const session = await new WorldSession(rules, { ...run.params }, seed).start();
     for (let index = 0; index < 3; index++) {
       if (index > 0) await session.tick(6);
+      onView?.(session.view(), { ...session.params });
+      await nextPaint();
       const picture = canvas();
       if (!picture || picture.width < 2) throw new Error("The stage was not ready to be watched.");
       shots.push({ dataUrl: canvasJpeg(picture), caption: shotCaption(run.label, index) });

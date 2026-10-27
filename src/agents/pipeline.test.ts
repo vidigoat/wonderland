@@ -77,7 +77,7 @@ async function collect(concept: string, maxRepairs?: number): Promise<PipelineEv
 function visibleText(events: PipelineEvent[]): string {
   return events
     .map((event) => {
-      if (event.type === "world") return "";
+      if (event.type === "world" || event.type === "art") return "";
       if (event.type === "checks") return event.results.map((result) => result.id).join(" ");
       return `${event.message} ${"notice" in event ? event.notice ?? "" : ""}`;
     })

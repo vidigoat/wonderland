@@ -15,6 +15,7 @@ export type BindingView = {
   steps: BindingStep[];
   checks: { passed: number; total: number } | null;
   world: Extract<MontageItem, { type: "world" }> | null;
+  art: { background?: string; sprites: { id: string; url: string }[] };
   choose: Extract<MontageItem, { type: "choose" }> | null;
   error: string | null;
   notice: string | null;
@@ -27,6 +28,8 @@ export function bindingView(items: readonly MontageItem[]): BindingView {
   const messages = new Map<ClientStage, string>();
   let checks: BindingView["checks"] = null;
   let world: BindingView["world"] = null;
+  let background: string | undefined;
+  const sprites: { id: string; url: string }[] = [];
   let choose: BindingView["choose"] = null;
   let error: string | null = null;
   let notice: string | null = null;
@@ -39,6 +42,9 @@ export function bindingView(items: readonly MontageItem[]): BindingView {
       else messages.set(item.stage, item.message);
     } else if (item.type === "checks") {
       checks = { passed: item.passed, total: item.total };
+    } else if (item.type === "art") {
+      if (item.background) background = item.background;
+      if (item.sprite) sprites.push(item.sprite);
     } else if (item.type === "world") {
       world = item;
     } else if (item.type === "choose") {
@@ -69,6 +75,7 @@ export function bindingView(items: readonly MontageItem[]): BindingView {
     }),
     checks,
     world,
+    art: { background, sprites },
     choose,
     error,
     notice,

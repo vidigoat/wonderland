@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { errorMessage, statusRibbon } from "./http";
 import { PlaceScene, SampleNote, type PlaceCard } from "./Scenes";
 import { bindingView } from "./binding";
+import { WorldWatch } from "./WorldWatch";
 import { createMontagePacer, MONTAGE_GAP_MS } from "./pacer";
 import { drainSse, toMontageItem, type MontageItem } from "./sse";
 import { LogoMark } from "@/components/brand/Logo";
@@ -487,6 +488,17 @@ function Binding({ log, stopped }: { log: LogEntry[]; stopped: boolean }) {
             </span>
           </p>
         ) : null}
+        {view.art.background || view.art.sprites.length > 0 ? (
+          <div className="bw-art" aria-hidden="true">
+            {view.art.background ? <div className="bw-art-bg" style={{ backgroundImage: `url(${view.art.background})` }} /> : null}
+            <div className="bw-art-sprites">
+              {view.art.sprites.map((sprite) => (
+                <div key={`${sprite.id}-${sprite.url}`} className="bw-art-sprite" style={{ backgroundImage: `url(${sprite.url})` }} />
+              ))}
+            </div>
+          </div>
+        ) : null}
+        {view.ready && view.world?.playable ? <WorldWatch spec={view.world.playable} /> : null}
         {view.world ? (
           <div className="bw-built">
             <p className="bw-built-kicker">{view.ready || stopped ? "Your world is ready. The law stays hidden." : "The science holds. Now it's being painted."}</p>

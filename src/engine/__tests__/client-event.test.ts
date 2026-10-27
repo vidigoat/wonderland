@@ -48,6 +48,15 @@ describe("public worlds", () => {
     });
   });
 
+  it("streams a local painting and drops anything else", () => {
+    expect(toClientPipelineEvent({ type: "art", background: "/art/gatekeeper/background.webp", source: "live" })).toMatchObject({
+      type: "art",
+      background: "/art/gatekeeper/background.webp",
+    });
+    expect(() => toClientPipelineEvent({ type: "art", background: "https://example.com/secret.png" })).toThrow(/art/);
+    expect(() => toClientPipelineEvent({ type: "art", sprite: { id: "scribe", url: "/tmp/law.png" } })).toThrow(/art/);
+  });
+
   it("scrubs messages that name hidden fields", () => {
     const event = toClientPipelineEvent({ type: "error", message: "bad hiddenLaw: the whole mechanism" });
     expect(event).toMatchObject({ type: "error", message: "That detail stays on the server." });

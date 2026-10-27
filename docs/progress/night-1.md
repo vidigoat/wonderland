@@ -175,6 +175,8 @@ On a phone those three cards stacked down the left and covered the windward slop
 
 On a phone the hot plate's four cards covered most of the metal, so the glow was a sliver beside them. Commit `e719477`. They now sit in two columns. On the production server at 390 wide, one spread reads 13 degrees of difference, a hottest spot of 63.9 degrees, 2.24 degrees from one spot to the next, and an average warmth of 6.21 degrees, with the glow clear under the cards. `pnpm check` is 250 tests.
 
+On a phone the valley drew only lynx, while the card said 112 hares were alive. Commit `9ce48b1`, then `0d8620d`. The picture keeps a share of the hares, drawn large enough to see among the lynx, and the readings sit in two columns. On the production server at 390 wide, one season shows hares and lynx together, and the cards read 26 lynx, 112 hares, a swing of 0.99 of their average, and 42 steps from the hare peak to the lynx. `pnpm check` is 251 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

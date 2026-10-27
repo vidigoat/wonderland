@@ -171,6 +171,8 @@ How fast the dune walks said "1 times height 10". Commit `d4416c4`. It now says 
 
 On the stage that same dune was a low bump, so the two slopes were hard to tell apart. Commit `a228411`. The picture lifts the ridge, and a taller dune still draws taller. On the production server one march shows the long windward slope and the shorter slip face, in the place the crest has walked, with the same three readings. `pnpm check` is 250 tests.
 
+On a phone those three cards stacked down the left and covered the windward slope. Commit `b0ca3b4`. They now sit in one row across the top. On the production server at 390 wide, one march still reads 1 of a height-10 dune's pace, 0.23 dune widths, and -0.0046 each step, and the dune sits clear beneath the cards. `pnpm check` is 250 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

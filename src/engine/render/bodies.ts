@@ -7,6 +7,7 @@ import {
   phaseOffset,
   readNumber,
   readPoint,
+  resolveShotPath,
   trailGhostPoints,
   type Point2,
   type TrailSample,
@@ -73,8 +74,9 @@ export function createBodiesScene(): Scene {
     }
 
     const worldTrail = view.trail.map((sample) => readPoint(sample));
-    remember(samples, view.ball);
-    const path = worldTrail.length >= 2 ? worldTrail : samples;
+    if (worldTrail.length > 0) samples.length = 0;
+    else remember(samples, view.ball);
+    const path = resolveShotPath(worldTrail, samples);
     const radius = view.planet.r || 1;
     const last = path[path.length - 1];
     const buried = last != null && Math.hypot(last.x, last.y) < radius;

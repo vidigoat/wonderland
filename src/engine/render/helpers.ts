@@ -315,6 +315,12 @@ export function onSurface(x: number, y: number, radius = 1): Point2 {
   return { x: (x / r) * radius, y: (y / r) * radius };
 }
 
+/** A trail from the world replaces anything the stage still remembers. An empty trail keeps the memory. */
+export function resolveShotPath(worldTrail: readonly Point2[], remembered: readonly Point2[]): Point2[] {
+  if (worldTrail.length > 0) return worldTrail.map((point) => ({ x: point.x, y: point.y }));
+  return remembered.map((point) => ({ x: point.x, y: point.y }));
+}
+
 /** Ghost from the muzzle at a horizontal launch speed, before the shot has a trail. */
 export function launchPreview(speed: number, steps = 100): Point2[] {
   const r = 1.02;

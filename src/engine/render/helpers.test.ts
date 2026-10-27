@@ -8,6 +8,7 @@ import {
   landedApart,
   injectionHighlightRange,
   phaseOffset,
+  resolveShotPath,
   SCROLL_TRIP_MS,
   scrollRest,
   scrollTravel,
@@ -227,6 +228,17 @@ describe("helpers stay deterministic", () => {
   it("does not call Math.random", () => {
     const source = readFileSync(new URL("./helpers.ts", import.meta.url), "utf8");
     expect(source).not.toMatch(/Math\.random\s*\(/);
+  });
+
+  it("drops a remembered orbit when the world starts a new shot", () => {
+    const orbit = [
+      { x: 1, y: 0 },
+      { x: 0, y: -1 },
+      { x: -1, y: 0 },
+    ];
+    expect(resolveShotPath([{ x: 0, y: 1.02 }], orbit)).toEqual([{ x: 0, y: 1.02 }]);
+    expect(resolveShotPath(orbit, [])).toEqual(orbit);
+    expect(resolveShotPath([], orbit)).toEqual(orbit);
   });
 
   it("sends the scroll from the desk to the station the spell reached", () => {

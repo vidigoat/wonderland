@@ -72,6 +72,12 @@ export function isShareReading(id: string, label: string, value: unknown): value
   return /share|fraction|proportion|percent|synchrony|alignment|polariz|order|bumping|collision|darkness/i.test(`${id} ${label}`);
 }
 
+/** One coin for each saver the vault can pay. The row is not capped, so it matches the sentence. */
+export function vaultCoinCount(reserveRatio: number, savers = 40): number {
+  const reserve = Number.isFinite(reserveRatio) ? reserveRatio : 0.1;
+  return Math.max(1, Math.round(reserve * savers));
+}
+
 /** yes/no readings the science checks still use, spoken the way a person would. */
 const PLAIN_STATUS: Record<string, Record<string, string>> = {
   crossing: { yes: "reached", no: "untouched" },

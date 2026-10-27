@@ -1,6 +1,6 @@
 import type { Observation, Params } from "@/engine/rules";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { formatHudValue, showWithdrawingKey } from "./readings";
+import { formatHudValue, showWithdrawingKey, vaultCoinCount } from "./readings";
 
 /**
  * Readings drawn on the stage itself, so cause and effect sit in one place: you change a control,
@@ -12,7 +12,7 @@ const SAVERS = 40;
 
 function townReadout(obs: Observation | null, params: Params) {
   const reserve = Number(params.reserveRatio ?? 0.1);
-  const coins = Math.max(1, Math.round(reserve * SAVERS));
+  const coins = vaultCoinCount(reserve, SAVERS);
   const withdrawn = Math.round(Number(obs?.withdrawnShare ?? 0) * SAVERS);
   const worried = Math.round(Number(obs?.worriedShare ?? 0) * SAVERS);
   const closed = obs?.bank === "collapsed";
@@ -30,7 +30,7 @@ function TownHud({ obs, params }: { obs: Observation | null; params: Params }) {
           Cash in the vault: enough for {town.left} of {SAVERS} savers
         </p>
         <span className="hud-coins" aria-hidden="true">
-          {Array.from({ length: Math.min(town.coins, 24) }, (_, index) => (
+          {Array.from({ length: town.coins }, (_, index) => (
             <i key={index} data-spent={index >= town.left ? "yes" : undefined} />
           ))}
         </span>

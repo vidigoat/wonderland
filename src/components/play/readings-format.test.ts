@@ -1,9 +1,15 @@
 import { describe, expect, it } from "vitest";
 import type { Observable } from "@/engine/spec";
 import { chartLines, chartSeries } from "./chart";
-import { formatHudValue, formatReading, isShareReading, plainUnit, shotSettled, showWithdrawingKey } from "./readings";
+import { formatHudValue, formatReading, isShareReading, plainUnit, shotSettled, showWithdrawingKey, vaultCoinCount } from "./readings";
 
 describe("reading numbers", () => {
+  it("draws one coin for every saver the vault can pay", () => {
+    expect(vaultCoinCount(0.1)).toBe(4);
+    expect(vaultCoinCount(0.8)).toBe(32);
+    expect(vaultCoinCount(1)).toBe(40);
+  });
+
   it("prints a tiny negative as 0, and keeps a real small change", () => {
     expect(formatReading(-0.004)).toBe("0");
     expect(formatHudValue("stossErosionRate", "Sand lost on the windward face", -0.0046, "series", "each step")).toEqual({

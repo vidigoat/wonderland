@@ -66,6 +66,18 @@ const FIRE: WorldPalette = {
   glow: 0xffb088,
 };
 
+/** Generated worlds without a matching art style: the site's black and white, light sprites on black. */
+const NEUTRAL: WorldPalette = {
+  ground: 0x0a0a0a,
+  ink: 0x6b6b6b,
+  parchment: 0xfafafa,
+  accent: 0xd4d4d4,
+  deep: 0x404040,
+  brass: 0x737373,
+  mist: 0x171717,
+  glow: 0xffffff,
+};
+
 const BY_ID: Record<string, WorldPalette> = {
   gatekeeper: GATEKEEPER,
   "peppered-forest": FOREST,
@@ -83,7 +95,7 @@ export function paletteFor(worldId: string, artStyle: string): WorldPalette {
   if (/pastel|lamplight|cosy|cozy|town/.test(style)) return TOWN;
   if (/gouache|moss|forest|birch|moth/.test(style)) return FOREST;
   if (/manuscript|oxblood|ledger|parchment|gold leaf/.test(style)) return GATEKEEPER;
-  return GATEKEEPER;
+  return NEUTRAL;
 }
 
 /** Birch bark from the soot knob. 0 is cream paper, 1 is soot. */

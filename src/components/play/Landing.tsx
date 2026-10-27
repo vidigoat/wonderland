@@ -422,7 +422,7 @@ function Binding({ log, stopped }: { log: LogEntry[]; stopped: boolean }) {
                 </Link>
               </Button>
             ) : (
-              <p className="bw-built-tag">This world isn&apos;t on the shelf yet.</p>
+              <p className="bw-built-tag">This world couldn&apos;t be saved. Try asking again.</p>
             )}
           </div>
         ) : null}

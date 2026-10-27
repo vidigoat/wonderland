@@ -760,7 +760,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
         </section>
         <aside className="notebook">
           <div className="notebook-scroll">
-          {rulesMissing ? <p className="slip">This world’s rules are not on the shelf yet.</p> : null}
+          {rulesMissing ? <p className="slip">This world’s rules couldn’t be loaded.</p> : null}
           <SampleNote notice={townNote} />
           {seedError ? (
             <p className="slip">

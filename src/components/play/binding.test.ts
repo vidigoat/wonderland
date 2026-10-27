@@ -31,7 +31,7 @@ describe("bindingView", () => {
     expect(view.choose?.message).toBe("Choose one of the five.");
     expect(view.steps.every((step) => step.on)).toBe(true);
     expect(view.steps.find((step) => step.stage === "checker")?.message).toBe("No checks were run.");
-    expect(view.steps.find((step) => step.stage === "done")?.message).toBe("Nothing new was bound.");
+    expect(view.steps.find((step) => step.stage === "done")?.message).toBe("No new world was made.");
     expect(view.world).toBeNull();
   });
 });

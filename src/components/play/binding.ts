@@ -51,7 +51,7 @@ export function bindingView(items: readonly MontageItem[]): BindingView {
     designer: "No room was written.",
     checker: "No checks were run.",
     artist: "No new pictures.",
-    done: "Nothing new was bound.",
+    done: "No new world was made.",
   };
 
   return {

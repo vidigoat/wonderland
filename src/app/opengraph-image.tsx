@@ -13,5 +13,5 @@ export default function Image() {
     tagline: "The AI builds the world. You find the law.",
     archetype: "population",
   });
-  return new ImageResponse(<PosterCard copy={copy} kicker="The shelf" footer="Five worlds are already on the shelf." />, size);
+  return new ImageResponse(<PosterCard copy={copy} kicker="Wonderland" footer="Ask why anything works. Find the law yourself." />, size);
 }

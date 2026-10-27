@@ -139,6 +139,13 @@ export function shutVaultNote(query: string, error: string | null, rowCount: num
   return "The spell ran. The vault stayed shut.";
 }
 
+/** How far a shelf card runs before it is drawn. A jam needs time to bunch; most stills do not. */
+export function thumbSteps(worldId: string): number {
+  if (worldId === "phantom-jam-ring-road") return 220;
+  if (worldId === "hallway-lanes") return 160;
+  return 40;
+}
+
 /** A body sprite: tall vehicles turn to drive along the lane, and a negative heading faces the other way. */
 export function bodyFacing(speed: number | undefined, tall: boolean): { turn: number; flip: boolean } {
   return {

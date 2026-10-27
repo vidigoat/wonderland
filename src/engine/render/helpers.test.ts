@@ -10,6 +10,7 @@ import {
   bilinearSample,
   fieldScale,
   bodyFacing,
+  thumbSteps,
   figureTint,
   flockFacing,
   shutVaultNote,
@@ -333,6 +334,14 @@ describe("a murmuration", () => {
     expect(isGlowSprite("starling")).toBe(false);
     expect(isGlowSprite("firefly")).toBe(true);
     expect(isGlowSprite("star")).toBe(true);
+  });
+});
+
+describe("a shelf card", () => {
+  it("lets a jam bunch before the picture is taken", () => {
+    expect(thumbSteps("phantom-jam-ring-road")).toBeGreaterThan(thumbSteps("dune-march"));
+    expect(thumbSteps("hallway-lanes")).toBeGreaterThan(40);
+    expect(thumbSteps("firefly-sync-kuramoto")).toBe(40);
   });
 });
 

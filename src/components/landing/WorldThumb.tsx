@@ -4,14 +4,13 @@ import { useEffect, useRef } from "react";
 import { compileRules, type RulesModule } from "@/engine/rules";
 import { WorldSession } from "@/engine/runtime";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { bodyFacing, flockFacing, heightSilhouette, softenRidge } from "@/engine/render/helpers";
+import { bodyFacing, flockFacing, heightSilhouette, softenRidge, thumbSteps } from "@/engine/render/helpers";
 import { asWorldView, isParticlesView } from "@/engine/view";
 
 /**
  * A still of a generated world, made by actually running it: its own verified rules, its own default knobs,
- * a few dozen steps in. Drawn in white over the world's Muse Image painting (or black), so the card shows what that world really looks like.
+ * long enough for the picture to show the phenomenon. Drawn over the world's Muse Image painting, so the card shows what that world really looks like.
  */
-const STEPS = 40;
 
 function lightness(t: number): string {
   const v = Math.round(60 + Math.max(0, Math.min(1, t)) * 195);
@@ -45,7 +44,7 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
     void (async () => {
       try {
         const session = await new WorldSession(rules, params, 11).start();
-        await session.tick(STEPS);
+        await session.tick(thumbSteps(spec.id));
         if (!alive) return;
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         const w = (canvas.width = canvas.clientWidth * dpr);

@@ -9,6 +9,8 @@ export type PopulationAgent = {
   /** 0–1. Peppered moths: darkness. Rumour Town: worry. */
   tint: number;
   sprite: string;
+  /** Flight direction, atan2(vy, vx), with +y down the stage. The starling painting points up. */
+  heading?: number;
   bubble?: string | null;
 };
 

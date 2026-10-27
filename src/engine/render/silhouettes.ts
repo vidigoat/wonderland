@@ -12,7 +12,7 @@ export function drawSilhouette(g: Graphics, sprite: string): void {
   if (key.includes("moth")) drawMoth(g);
   else if (key.includes("queue")) drawCitizen(g, true);
   else if (key.includes("citizen") || key.includes("person") || key.includes("towns")) drawCitizen(g, false);
-  else if (key.includes("bird")) drawBird(g);
+  else if (key.includes("bird") || key.includes("starling")) drawBird(g);
   else if (/predator|lynx|fox|wolf|cat|hunter|shark/.test(key)) drawPredator(g);
   else if (/prey|hare|rabbit|mouse|deer|sheep/.test(key)) drawPrey(g);
   else if (/fish|salmon|minnow/.test(key)) drawFish(g);

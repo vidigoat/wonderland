@@ -1,6 +1,6 @@
 import { Container, Graphics, Text } from "pixi.js";
 import type { PopulationAgent } from "@/engine/view";
-import { clamp01, crowdToDraw, landedApart, phaseOffset, populationCrowd, readNumber, separateSpeech, smoothstep, spokenIds, townFoot } from "./helpers";
+import { clamp01, crowdToDraw, flockFacing, landedApart, phaseOffset, populationCrowd, readNumber, separateSpeech, smoothstep, spokenIds, townFoot } from "./helpers";
 import { pixelRatio, stageFont } from "./fonts";
 import { barkColor, isGlowSprite, isHeroWorld, populationTint } from "./palette";
 import type { Scene, Frame } from "./scene";
@@ -153,7 +153,7 @@ export function createPopulationScene(): Scene {
       const lit = glow ? clamp01(node.drawTint) ** 3 : 1;
       const drop = hunting ? Math.min(42, frame.height * 0.07) : 0;
       node.figure.view.position.set(at.x, at.y + bob + drop);
-      node.figure.view.rotation = wobble;
+      node.figure.view.rotation = typeof agent.heading === "number" && Number.isFinite(agent.heading) ? flockFacing(agent.heading) : wobble;
       const body = hunting ? figureScale * 2.05 : predator ? figureScale * 1.7 : figureScale * (0.86 + phase * 0.28);
       node.figure.view.scale.set(body * (glow ? 0.72 + lit * 0.7 : 1));
       node.figure.view.alpha = glow ? 0.28 + lit * 0.72 : 1;

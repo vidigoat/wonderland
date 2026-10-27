@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { compileRules, type RulesModule } from "@/engine/rules";
 import { WorldSession } from "@/engine/runtime";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { heightSilhouette, softenRidge } from "@/engine/render/helpers";
+import { flockFacing, heightSilhouette, softenRidge } from "@/engine/render/helpers";
 import { asWorldView, isParticlesView } from "@/engine/view";
 
 /**
@@ -96,7 +96,11 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
             const [x, y] = at(agent.x, agent.y);
             const image = sprites.size > 0 ? spriteOf(String(agent.sprite ?? "")) : undefined;
             if (image) {
-              drawSprite(image, x, y, size, 0.55 + Math.max(0, Math.min(1, agent.tint)) * 0.45);
+              const heading = agent.heading;
+              const headed = typeof heading === "number" && Number.isFinite(heading);
+              const turn = headed ? flockFacing(heading) : 0;
+              const alpha = headed ? 0.92 : 0.55 + Math.max(0, Math.min(1, agent.tint)) * 0.45;
+              drawSprite(image, x, y, size, alpha, turn);
               continue;
             }
             const r = (2.2 + agent.tint * 2.6) * dpr;

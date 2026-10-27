@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { isGlowSprite } from "./palette";
 import {
   CANNON_STEP_DT,
   clampCenter,
@@ -9,6 +10,7 @@ import {
   bilinearSample,
   fieldScale,
   figureTint,
+  flockFacing,
   heightSilhouette,
   smoothField,
   landedApart,
@@ -306,6 +308,20 @@ describe("a phone forest keeps moths visible", () => {
       desk.cap,
     );
     expect(drawn.filter((agent) => agent.sprite === "predator")).toHaveLength(7);
+  });
+});
+
+describe("a murmuration", () => {
+  it("turns a bird that points up until it faces its heading", () => {
+    expect(flockFacing(0)).toBeCloseTo(Math.PI / 2);
+    expect(flockFacing(-Math.PI / 2)).toBeCloseTo(0);
+    expect(flockFacing(Math.PI / 2)).toBeCloseTo(Math.PI);
+  });
+
+  it("keeps a starling a bird, and a firefly a light", () => {
+    expect(isGlowSprite("starling")).toBe(false);
+    expect(isGlowSprite("firefly")).toBe(true);
+    expect(isGlowSprite("star")).toBe(true);
   });
 });
 

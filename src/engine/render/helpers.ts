@@ -133,6 +133,11 @@ export function cssHex(color: number): string {
   return `#${(color & 0xffffff).toString(16).padStart(6, "0")}`;
 }
 
+/** The starling painting points up. Pixi and the canvas both rotate clockwise, and the flock's +y runs down the stage. */
+export function flockFacing(heading: number): number {
+  return heading + Math.PI / 2;
+}
+
 /** A stopped car on the ring road is red, so the jam reads as a knot. Every other figure keeps its painting. */
 export function figureTint(worldId: string, speed: number | undefined): number {
   if (worldId === "phantom-jam-ring-road" && typeof speed === "number" && speed < 0.5) return 0xff3344;

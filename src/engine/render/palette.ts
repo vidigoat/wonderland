@@ -111,6 +111,7 @@ export function barkColor(darkness: number): number {
 /** Sprites drawn as lights: a high value should read as brighter, not darker. */
 export function isGlowSprite(sprite = ""): boolean {
   const key = sprite.toLowerCase();
+  if (key.includes("starling")) return false;
   return ["firefly", "glow", "light", "spark", "star"].some((word) => key.includes(word));
 }
 

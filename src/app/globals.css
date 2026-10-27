@@ -104,30 +104,12 @@ body {
   line-height: 1.45;
 }
 
-/* Resets live in the base layer so component utilities (shadcn/Tailwind) can override them. */
-@layer base {
-  button,
-  input,
-  textarea,
-  select {
-    font: inherit;
-    color: inherit;
-  }
-
-  button {
-    cursor: pointer;
-    background: none;
-    border: 0;
-  }
-
-  button:disabled {
-    cursor: not-allowed;
-  }
-
-  a {
-    color: inherit;
-  }
+/* Tailwind's preflight already resets buttons, inputs and links inside @layer base.
+ * An unlayered reset here would beat every component utility, so only the cursor is set. */
+button:not(:disabled) {
+  cursor: pointer;
 }
+
 
 :focus-visible {
   outline: 2px solid var(--brass);

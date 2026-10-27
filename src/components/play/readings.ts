@@ -46,6 +46,12 @@ export function plainUnit(unit: string | undefined): string | null {
   return unit;
 }
 
+/** The withdrawing key is a quote of what people are saying. It stays off the stage until someone actually takes money out. */
+export function showWithdrawingKey(obs: { withdrawnShare?: number | string; bank?: number | string } | null | undefined): boolean {
+  if (!obs) return false;
+  return Number(obs.withdrawnShare ?? 0) > 0 || obs.bank === "collapsed";
+}
+
 /** A count of one uses the singular. Anything else keeps the unit as written. */
 const ONE_OF: Record<string, string> = {
   jams: "jam",

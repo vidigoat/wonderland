@@ -1,6 +1,6 @@
 import type { Observation, Params } from "@/engine/rules";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { formatHudValue } from "./readings";
+import { formatHudValue, showWithdrawingKey } from "./readings";
 
 /**
  * Readings drawn on the stage itself, so cause and effect sit in one place: you change a control,
@@ -97,7 +97,7 @@ export function StageHud({
 }
 
 /** What the colours on the stage mean, for worlds where colour is the reading. */
-export function StageLegend({ worldId }: { worldId: string }) {
+export function StageLegend({ worldId, obs }: { worldId: string; obs?: { withdrawnShare?: number | string; bank?: number | string } | null }) {
   if (worldId === "rumour-town") {
     return (
       <ul className="hud-legend" aria-label="What the colours mean">
@@ -107,9 +107,11 @@ export function StageLegend({ worldId }: { worldId: string }) {
         <li>
           <i style={{ background: "#7c3040" }} /> Worried
         </li>
-        <li>
-          <i className="hud-legend-bubble">Getting my money out!</i> Withdrawing
-        </li>
+        {showWithdrawingKey(obs) ? (
+          <li>
+            <i className="hud-legend-bubble">Getting my money out!</i> Withdrawing
+          </li>
+        ) : null}
       </ul>
     );
   }

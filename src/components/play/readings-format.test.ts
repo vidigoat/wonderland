@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Observable } from "@/engine/spec";
 import { chartLines, chartSeries } from "./chart";
-import { formatHudValue, formatReading, isShareReading, plainUnit, shotSettled } from "./readings";
+import { formatHudValue, formatReading, isShareReading, plainUnit, shotSettled, showWithdrawingKey } from "./readings";
 
 describe("reading numbers", () => {
   it("prints a tiny negative as 0, and keeps a real small change", () => {
@@ -59,6 +59,10 @@ describe("reading numbers", () => {
     expect(formatHudValue("flies", "Fireflies here", 1, "counter", "fireflies")).toEqual({ text: "1", unit: "firefly" });
     expect(formatHudValue("peak", "Hottest spot", 1, "series", "degrees")).toEqual({ text: "1", unit: "degree" });
     expect(formatHudValue("lag", "Steps from the hare peak to the lynx", 1, "series", "steps")).toEqual({ text: "1", unit: "step" });
+    expect(showWithdrawingKey(null)).toBe(false);
+    expect(showWithdrawingKey({ withdrawnShare: 0, bank: "open" })).toBe(false);
+    expect(showWithdrawingKey({ withdrawnShare: 0.1, bank: "open" })).toBe(true);
+    expect(showWithdrawingKey({ withdrawnShare: 0, bank: "collapsed" })).toBe(true);
     expect(formatHudValue("waveSpeed", "How fast the jam travels", -2.4, "series", "m/s")).toEqual({
       text: "-2.4",
       unit: "metres per second",

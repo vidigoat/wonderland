@@ -850,7 +850,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
           {!newSituation && play.phase !== "receipt" ? <StageHud spec={spec} obs={obs} params={params} revealed={ran} /> : null}
           {witness && !newSituation ? <p className="witness">{witness}</p> : null}
           {playtestNote ? <p className="witness playtest-note">{playtestNote}</p> : null}
-          {play.phase !== "intro" && !newSituation ? <StageLegend worldId={spec.id} /> : null}
+          {play.phase !== "intro" && !newSituation ? <StageLegend worldId={spec.id} obs={obs} /> : null}
           {spec.id === "firebreak" && !newSituation ? (
             <ul className="legend" aria-label="Valley marks">
               <li>

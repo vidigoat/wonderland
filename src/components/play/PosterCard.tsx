@@ -9,6 +9,9 @@ export function PosterCard({
   kicker?: string;
   footer?: string;
 }) {
+  // Share cards follow the site: black and white, Geist-like sans, the ringed-dot mark.
+  const ink = "#fafafa";
+  const muted = "#a3a3a3";
   return (
     <div
       style={{
@@ -16,22 +19,25 @@ export function PosterCard({
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        background: copy.room,
-        color: copy.ink,
-        padding: "68px 76px 60px",
+        background: "#000000",
+        color: ink,
+        padding: "64px 72px 56px",
       }}
     >
-      <div style={{ display: "flex", fontSize: 22, letterSpacing: "0.22em", textTransform: "uppercase", color: copy.accent }}>
-        {kicker}
+      <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 26, fontWeight: 600, letterSpacing: "-0.02em" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 26, height: 26, borderRadius: 999, border: `3px solid ${ink}` }}>
+          <div style={{ display: "flex", width: 10, height: 10, borderRadius: 999, background: ink }} />
+        </div>
+        <div style={{ display: "flex" }}>{kicker}</div>
       </div>
       <div style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "space-between", gap: 48 }}>
-        <div style={{ display: "flex", flexDirection: "column", maxWidth: 700 }}>
-          <div style={{ display: "flex", fontSize: 72, lineHeight: 1.02, letterSpacing: "-0.03em" }}>{copy.title}</div>
-          <div style={{ display: "flex", fontSize: 30, lineHeight: 1.35, marginTop: 22, maxWidth: 640 }}>{copy.tagline}</div>
+        <div style={{ display: "flex", flexDirection: "column", maxWidth: 720 }}>
+          <div style={{ display: "flex", fontSize: 76, fontWeight: 600, lineHeight: 1, letterSpacing: "-0.05em" }}>{copy.title}</div>
+          <div style={{ display: "flex", fontSize: 30, lineHeight: 1.35, marginTop: 24, maxWidth: 660, color: muted }}>{copy.tagline}</div>
         </div>
-        <Motif motif={copy.motif} ink={copy.ink} accent={copy.accent} paper={copy.paper} />
+        <Motif motif={copy.motif} ink={ink} accent={muted} paper="#262626" />
       </div>
-      <div style={{ display: "flex", fontSize: 22, letterSpacing: "0.01em" }}>{footer}</div>
+      <div style={{ display: "flex", fontSize: 22, color: muted }}>{footer}</div>
     </div>
   );
 }
@@ -65,7 +71,7 @@ function Motif({ motif, ink, accent, paper }: { motif: PosterMotif; ink: string;
               style={{
                 width: 16,
                 height: gap ? 8 : 36 + ((index * 17) % 48),
-                background: gap ? paper : index < 4 ? accent : "#6d8f62",
+                background: gap ? paper : index < 4 ? accent : ink,
                 display: "flex",
               }}
             />

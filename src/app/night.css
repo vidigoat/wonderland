@@ -1854,7 +1854,7 @@
 }
 @media (max-width: 640px) {
   .stage-stack .hud {
-    max-width: calc(100% - 124px);
+    max-width: calc(100% - 136px);
   }
   .stage-stack .hud-legend {
     flex-direction: column;

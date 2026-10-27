@@ -654,7 +654,7 @@
     height: 520px;
   }
   .try-canvas .hud {
-    max-width: calc(100% - 124px);
+    max-width: calc(100% - 136px);
   }
   .try-canvas .hud-legend {
     flex-direction: column;

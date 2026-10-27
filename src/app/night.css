@@ -1344,3 +1344,7 @@
 .play .reading.spell-reading dd {
   text-align: right;
 }
+.stage-pane .stage-fallback::after,
+.bw-window-stage .stage-fallback::after {
+  background: radial-gradient(ellipse 160px 60px at center, rgba(10, 10, 10, 0.92) 40%, transparent 100%);
+}

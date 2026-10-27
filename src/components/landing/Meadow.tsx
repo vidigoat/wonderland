@@ -53,14 +53,14 @@ export function Meadow({ count = 110, className }: { count?: number; className?:
         const x = (f.x + Math.sin(f.drift) * 0.006) * width;
         const y = (f.y + Math.cos(f.drift * 0.8) * 0.006) * height;
         const lit = Math.max(0, Math.cos(f.phase)) ** 8;
-        const r = (3 + lit * 10) * dpr;
-        const glow = ctx.createRadialGradient(x, y, 0, x, y, r * 4.5);
+        const r = (2.4 + lit * 5.5) * dpr;
+        const glow = ctx.createRadialGradient(x, y, 0, x, y, r * 3.6);
         glow.addColorStop(0, `rgba(255, 242, 186, ${0.32 + lit * 0.68})`);
         glow.addColorStop(0.3, `rgba(255, 208, 100, ${0.14 + lit * 0.42})`);
         glow.addColorStop(1, "rgba(255, 190, 70, 0)");
         ctx.fillStyle = glow;
         ctx.beginPath();
-        ctx.arc(x, y, r * 4.5, 0, Math.PI * 2);
+        ctx.arc(x, y, r * 3.6, 0, Math.PI * 2);
         ctx.fill();
       }
     };

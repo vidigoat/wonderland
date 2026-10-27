@@ -9,6 +9,7 @@ import {
   fieldColor,
   bilinearSample,
   fieldScale,
+  bodyFacing,
   figureTint,
   flockFacing,
   shutVaultNote,
@@ -332,6 +333,14 @@ describe("a murmuration", () => {
     expect(isGlowSprite("starling")).toBe(false);
     expect(isGlowSprite("firefly")).toBe(true);
     expect(isGlowSprite("star")).toBe(true);
+  });
+});
+
+describe("which way a body faces", () => {
+  it("turns a tall vehicle along the lane and mirrors a walker going the other way", () => {
+    expect(bodyFacing(4, true)).toEqual({ turn: Math.PI / 2, flip: false });
+    expect(bodyFacing(-1, false)).toEqual({ turn: 0, flip: true });
+    expect(bodyFacing(1, false)).toEqual({ turn: 0, flip: false });
   });
 });
 

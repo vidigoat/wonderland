@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { compileRules, type RulesModule } from "@/engine/rules";
 import { WorldSession } from "@/engine/runtime";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { flockFacing, heightSilhouette, softenRidge } from "@/engine/render/helpers";
+import { bodyFacing, flockFacing, heightSilhouette, softenRidge } from "@/engine/render/helpers";
 import { asWorldView, isParticlesView } from "@/engine/view";
 
 /**
@@ -78,12 +78,13 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
         );
         if (!alive) return;
         const spriteOf = (name: string) => sprites.get(name) ?? sprites.get(names[0] ?? "");
-        const drawSprite = (image: HTMLImageElement, x: number, y: number, size: number, alpha = 1, turn = 0) => {
+        const drawSprite = (image: HTMLImageElement, x: number, y: number, size: number, alpha = 1, turn = 0, flip = false) => {
           const k = size / Math.max(image.width, image.height);
           ctx.save();
           ctx.globalAlpha = alpha;
           ctx.translate(x, y);
           ctx.rotate(turn);
+          if (flip) ctx.scale(-1, 1);
           ctx.drawImage(image, (-image.width * k) / 2, (-image.height * k) / 2, image.width * k, image.height * k);
           ctx.restore();
         };
@@ -118,8 +119,9 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
             const [x, y] = at((body.x - bx) / bw, (body.y - by) / bh);
             const image = sprites.size > 0 ? spriteOf(String(body.id ?? "").replace(/[-_]?\d+$/, "")) : undefined;
             if (image) {
-              const turn = image.height > image.width * 1.25 && typeof (body as { vx?: number }).vx === "number" ? Math.PI / 2 : 0;
-              drawSprite(image, x, y, 13 * dpr, 1, turn);
+              const speed = (body as { vx?: number }).vx;
+              const face = bodyFacing(speed, image.height > image.width * 1.25);
+              drawSprite(image, x, y, 13 * dpr, 1, face.turn, face.flip);
               continue;
             }
             ctx.fillStyle = typeof body.color === "string" ? body.color : "#fafafa";

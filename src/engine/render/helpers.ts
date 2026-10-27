@@ -139,6 +139,14 @@ export function shutVaultNote(query: string, error: string | null, rowCount: num
   return "The spell ran. The vault stayed shut.";
 }
 
+/** A body sprite: tall vehicles turn to drive along the lane, and a negative heading faces the other way. */
+export function bodyFacing(speed: number | undefined, tall: boolean): { turn: number; flip: boolean } {
+  return {
+    turn: tall && typeof speed === "number" ? Math.PI / 2 : 0,
+    flip: typeof speed === "number" && speed < 0,
+  };
+}
+
 /** The starling painting points up. Pixi and the canvas both rotate clockwise, and the flock's +y runs down the stage. */
 export function flockFacing(heading: number): number {
   return heading + Math.PI / 2;

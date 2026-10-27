@@ -232,6 +232,14 @@ export function runVerb(worldId: string, archetype: string): string {
       return "Let them talk";
     case "firebreak":
       return "Let it burn";
+    case "dune-march":
+      return "Let it march";
+    case "firefly-sync-kuramoto":
+      return "Let them blink";
+    case "murmuration-sky":
+      return "Let them fly";
+    case "predator-prey-valley":
+      return "Let a season pass";
     default:
     if (archetype === "pipeline") return "Send it through";
     if (worldId === "hallway-lanes") return "Let them walk";

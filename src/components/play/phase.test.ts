@@ -102,6 +102,11 @@ describe("phase machine", () => {
     expect(runVerb("hallway-lanes", "bodies")).toBe("Let them walk");
     expect(runVerb("phantom-jam-ring-road", "bodies")).toBe("Let them drive");
     expect(runVerb("newtons-cannon", "bodies")).toBe("Fire");
+    expect(runVerb("dune-march", "field")).toBe("Let it march");
+    expect(runVerb("firefly-sync-kuramoto", "population")).toBe("Let them blink");
+    expect(runVerb("murmuration-sky", "population")).toBe("Let them fly");
+    expect(runVerb("predator-prey-valley", "population")).toBe("Let a season pass");
+    expect(runVerb("heat-diffusion-plate", "field")).toBe("Let it spread");
     expect(Math.ceil(2000 / tickBatch(2000, "hallway-lanes"))).toBeLessThanOrEqual(28);
     expect(runDuration(runSteps("bodies"))).toBeGreaterThan(runDuration(1));
     expect(runSteps("population")).toBe(30);

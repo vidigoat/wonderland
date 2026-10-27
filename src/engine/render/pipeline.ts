@@ -1,5 +1,5 @@
 import { Container, Graphics, Text } from "pixi.js";
-import { clamp01, clampCenter, injectionHighlightRange, lerp, readBoolean, scrollRest, shutVaultNote, stepScroll, type ScrollTrip } from "./helpers";
+import { clamp01, clampCenter, injectionHighlightRange, lerp, readBoolean, scrollRest, sealedDataLine, shutVaultNote, splitSealedSpell, stepScroll, type ScrollTrip } from "./helpers";
 import { pixelRatio, stageFont } from "./fonts";
 import type { WorldPalette } from "./palette";
 import type { Frame, Scene } from "./scene";
@@ -279,12 +279,21 @@ function laySpell(layer: Container, frame: Frame, query: string, error: string |
     resolution,
     style: { fontFamily: stageFont("ui"), fontSize: 12, fill: 0xa3a3a3, wordWrap: true, wordWrapWidth: maxWidth },
   });
+  const split = splitSealedSpell(query);
   const measure = measurer(`500 ${fontSize}px ${family}`);
-  const wrapped = query ? wrapLines(query, maxWidth, measure) : [];
+  const wrapped = split.spell ? wrapLines(split.spell, maxWidth, measure) : [];
   const lines = wrapped.slice(0, 6);
   if (wrapped.length > lines.length && lines.length > 0) {
     const last = lines[lines.length - 1]!;
     lines[lines.length - 1] = { text: `${last.text.replace(/\s+$/, "")} …`, start: last.start };
+  }
+  let dataNote: Text | null = null;
+  if (split.data) {
+    dataNote = new Text({
+      text: sealedDataLine(split.data),
+      resolution,
+      style: { fontFamily: stageFont("ui"), fontSize: 13, fontWeight: "600", fill: 0xf6e2a8, wordWrap: true, wordWrapWidth: maxWidth },
+    });
   }
   let footer: Text | null = null;
   const shutNote = shutVaultNote(query, error, rows.length);
@@ -309,7 +318,7 @@ function laySpell(layer: Container, frame: Frame, query: string, error: string |
     });
   }
   const padY = 12;
-  const cardH = padY + heading.height + 6 + lines.length * lineHeight + (footer ? footer.height + 8 : 0) + padY;
+  const cardH = padY + heading.height + 6 + lines.length * lineHeight + (dataNote ? dataNote.height + 8 : 0) + (footer ? footer.height + 8 : 0) + padY;
   // The spoken line sits in a strip under this card. Leave that strip clear.
   const captionStrip = 58;
   const cardY = Math.max(frame.height * 0.38, frame.height - cardH - Math.max(12, frame.height * 0.03) - captionStrip);
@@ -319,10 +328,15 @@ function laySpell(layer: Container, frame: Frame, query: string, error: string |
   layer.addChild(plate);
   heading.position.set(cardX + 18, cardY + padY);
   layer.addChild(heading);
-  const range = sealed ? null : injectionHighlightRange(query);
+  const range = sealed ? null : injectionHighlightRange(split.spell);
   let y = cardY + padY + heading.height + 6;
   for (const line of lines) {
     y = drawLine(layer, line, y, cardX + 18, lineHeight, fontSize, family, range, frame.palette);
+  }
+  if (dataNote) {
+    dataNote.position.set(cardX + 18, y + 4);
+    layer.addChild(dataNote);
+    y += dataNote.height + 4;
   }
   if (footer) {
     footer.position.set(cardX + 18, y + 4);

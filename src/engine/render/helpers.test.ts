@@ -18,7 +18,9 @@ import {
   thumbSteps,
   figureTint,
   flockFacing,
+  sealedDataLine,
   shutVaultNote,
+  splitSealedSpell,
   heightSilhouette,
   smoothField,
   landedApart,
@@ -343,6 +345,14 @@ describe("a phone forest keeps moths visible", () => {
 });
 
 describe("the scribe's spell", () => {
+  it("lifts a sealed scroll's words out of the command", () => {
+    const query = `SELECT * FROM vault WHERE name = ? AND pass = ?   -- sealed: ${JSON.stringify(["' OR '1'='1", "' OR '1'='1"])}`;
+    const split = splitSealedSpell(query);
+    expect(split.spell).toBe("SELECT * FROM vault WHERE name = ? AND pass = ?");
+    expect(sealedDataLine(split.data ?? "")).toBe("Sealed. Kept as data: ' OR '1'='1  ·  ' OR '1'='1");
+    expect(splitSealedSpell("SELECT * FROM vault").data).toBeNull();
+  });
+
   it("says the vault stayed shut when the spell ran and returned nothing", () => {
     expect(shutVaultNote("SELECT * FROM vault", null, 0)).toBe("The spell ran. The vault stayed shut.");
     expect(shutVaultNote("SELECT * FROM vault", null, 2)).toBeNull();

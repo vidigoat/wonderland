@@ -133,6 +133,29 @@ export function cssHex(color: number): string {
   return `#${(color & 0xffffff).toString(16).padStart(6, "0")}`;
 }
 
+/** A sealed scroll stores the words after the spell, not inside it. */
+export function splitSealedSpell(query: string): { spell: string; data: string | null } {
+  const mark = " -- sealed:";
+  const at = query.indexOf(mark);
+  if (at < 0) return { spell: query, data: null };
+  const data = query.slice(at + mark.length).trim();
+  return { spell: query.slice(0, at).trim(), data: data || null };
+}
+
+/** The words the seal kept, spoken as data rather than as part of the command. */
+export function sealedDataLine(data: string): string {
+  try {
+    const parsed = JSON.parse(data) as unknown;
+    if (Array.isArray(parsed)) {
+      const words = parsed.map((part) => String(part)).filter((part) => part.length > 0);
+      if (words.length > 0) return `Sealed. Kept as data: ${words.join("  ·  ")}`;
+    }
+  } catch {
+    // The note was not a list. Show it as it was written.
+  }
+  return `Sealed. Kept as data: ${data}`;
+}
+
 /** The spell was built and ran, and it did not open the vault. */
 export function shutVaultNote(query: string, error: string | null, rowCount: number): string | null {
   if (!query || error || rowCount > 0) return null;

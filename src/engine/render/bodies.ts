@@ -338,10 +338,13 @@ function placeFigures(layer: Container, textures: Map<string, Texture | null>, v
     const r = Math.max(3, Math.min(18, (body.radius ?? 1) * s * 0.9));
     if (sprite.texture !== texture) sprite.texture = texture;
     sprite.visible = true;
-    sprite.scale.set((r * 4.2) / Math.max(texture.width, texture.height));
-    sprite.position.set(ox + body.x * s, oy + body.y * s);
+    const size = (r * 4.2) / Math.max(texture.width, texture.height);
     // A tall cut-out (a car seen from above) on a lane that runs sideways is turned to drive along it.
+    // A figure with a negative heading faces the other way, so two crowds are not copies of one painting.
     const vx = (body as { vx?: number }).vx;
+    const face = typeof vx === "number" && vx < 0 ? -1 : 1;
+    sprite.scale.set(face * size, size);
+    sprite.position.set(ox + body.x * s, oy + body.y * s);
     sprite.rotation = texture.height > texture.width * 1.25 && typeof vx === "number" ? Math.PI / 2 : 0;
   });
 }

@@ -195,8 +195,10 @@ export function runVerb(worldId: string, archetype: string): string {
     case "firebreak":
       return "Let it burn";
     default:
-      if (archetype === "pipeline") return "Send it through";
-      if (archetype === "bodies") return "Fire";
+    if (archetype === "pipeline") return "Send it through";
+    if (worldId === "hallway-lanes") return "Let them walk";
+    if (worldId === "phantom-jam-ring-road") return "Let them drive";
+    if (archetype === "bodies") return "Fire";
       if (archetype === "field") return "Let it spread";
       return "Let time pass";
   }

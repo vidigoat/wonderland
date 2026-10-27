@@ -20,7 +20,7 @@ import {
   TRAIL,
 } from "./phase";
 import { pictureFrame, receiptArtPaths, receiptCopy, receiptSummary } from "./receipt";
-import { duneRunSteps, freshStart, pictureAction, raceLine, raceRows, restageParams, runDuration, runSteps, speakTool, stripMoved, tickBatch } from "./readings";
+import { duneRunSteps, freshStart, pictureAction, raceLine, raceRows, restageParams, runDuration, runSteps, runVerb, speakTool, stripMoved, tickBatch } from "./readings";
 import { drainSse, heroHref, toMontageItem } from "./sse";
 import { encodeWav } from "./wav";
 
@@ -99,6 +99,9 @@ describe("phase machine", () => {
     expect(runSteps("pipeline")).toBe(1);
     expect(runSteps("bodies")).toBeGreaterThanOrEqual(550);
     expect(runSteps("bodies", "hallway-lanes")).toBe(2000);
+    expect(runVerb("hallway-lanes", "bodies")).toBe("Let them walk");
+    expect(runVerb("phantom-jam-ring-road", "bodies")).toBe("Let them drive");
+    expect(runVerb("newtons-cannon", "bodies")).toBe("Fire");
     expect(Math.ceil(2000 / tickBatch(2000, "hallway-lanes"))).toBeLessThanOrEqual(28);
     expect(runDuration(runSteps("bodies"))).toBeGreaterThan(runDuration(1));
     expect(runSteps("population")).toBe(30);

@@ -715,6 +715,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
           Wonderland
         </Link>
         <h1>{spec.title}</h1>
+        <p className="play-concept">{spec.concept}</p>
         <span className="play-links">
           <Button type="button" variant="outline" size="sm" disabled={!ready} onClick={() => void copyWorld()}>
             {copied ? "Copied" : "Copy link"}

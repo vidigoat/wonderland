@@ -1320,3 +1320,19 @@
   0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }
 }
+.play-bar h1 {
+  flex: none;
+}
+.play-concept {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  color: var(--wl-faint);
+}
+@media (max-width: 860px) {
+  .play-concept { display: none; }
+}

@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { ClientPipelineEvent } from "@/engine/client-event";
 import { errorMessage, statusRibbon } from "./http";
 import { PlaceScene, SampleNote, type PlaceCard } from "./Scenes";
 import { bindingView } from "./binding";
+import { createMontagePacer, MONTAGE_GAP_MS } from "./pacer";
 import { drainSse, toMontageItem, type MontageItem } from "./sse";
 
 type LogEntry = MontageItem & { key: number };
@@ -16,6 +17,14 @@ export function Landing({ places }: { places: PlaceCard[] }) {
   const [log, setLog] = useState<LogEntry[]>([]);
   const [ribbon, setRibbon] = useState<string | null>(null);
   const [stopped, setStopped] = useState(false);
+  const alive = useRef(true);
+
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     let live = true;
@@ -52,31 +61,38 @@ export function Landing({ places }: { places: PlaceCard[] }) {
       const decoder = new TextDecoder();
       let buffer = "";
       let key = 0;
-      const push = (eventItem: ClientPipelineEvent) => {
-        const item = toMontageItem(eventItem);
-        if (!item) return;
-        if (item.type === "stage" && !item.message && !item.notice) return;
-        const entry = { ...item, key };
-        key += 1;
-        setLog((prev) => [...prev, entry]);
-      };
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const pacer = createMontagePacer<ClientPipelineEvent>({
+        gapMs: reduce ? 0 : MONTAGE_GAP_MS,
+        onItem: (eventItem) => {
+          if (!alive.current) return;
+          const item = toMontageItem(eventItem);
+          if (!item) return;
+          if (item.type === "stage" && !item.message && !item.notice) return;
+          const entry = { ...item, key };
+          key += 1;
+          setLog((prev) => [...prev, entry]);
+        },
+      });
       while (true) {
         const chunk = await reader.read();
         if (chunk.done) break;
         buffer += decoder.decode(chunk.value, { stream: true });
         const drained = drainSse(buffer);
         buffer = drained.rest;
-        drained.events.forEach(push);
+        pacer.push(drained.events);
       }
       buffer += decoder.decode();
       const tail = drainSse(`${buffer}\n\n`);
-      tail.events.forEach(push);
-      setStopped(true);
+      pacer.push(tail.events);
+      pacer.close();
+      await pacer.finished;
+      if (alive.current) setStopped(true);
     } catch (err) {
       const message = err instanceof Error ? err.message : "The build stopped.";
-      setLog((prev) => [...prev, { type: "error", message, key: prev.length }]);
+      if (alive.current) setLog((prev) => [...prev, { type: "error", message, key: prev.length }]);
     } finally {
-      setBuilding(false);
+      if (alive.current) setBuilding(false);
     }
   }
 

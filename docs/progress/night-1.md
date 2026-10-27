@@ -149,6 +149,8 @@ That gathered flock was still two black masses, because four hundred birds were 
 
 The dune card drew the whole grid, including the flat sand, and the title covered the base, so only a spike showed. Commit `98c234a`. The card now draws the ridge itself, above the title, with the long windward slope and the shorter slip face. On the production gallery that shape sits in the sky of the desert. `pnpm check` is 244 tests.
 
+On a phone the receipt was the wide card shrunk to about 165 pixels tall, so the predictions could not be read. Commit `235dbcb`. A narrow window now gets a taller card, painting on top and the words at full width. On the production server a finished Peppered Forest, at 390 wide, shows Missed beside "Each moth gradually darkens itself to hide", Held beside "Stays roughly the same", 6 seconds, and that the law is not printed. The hidden law is not on the page. The discovered sentence is the plain one. `pnpm check` is 244 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

@@ -59,7 +59,12 @@ export function formatHudValue(
   display: Observable["display"] = "series",
   unit?: string,
 ): { text: string; unit: string | null } {
+  const reading = value;
   if (isShareReading(id, label, value)) return { text: `${Math.round(value * 100)}%`, unit: null };
+  // A dune loses a few thousandths of a grain each step. That is real, and it must not print as 0.
+  if (plainUnit(unit) === "each step" && typeof reading === "number" && Number.isFinite(reading) && Math.abs(reading) >= 0.0005 && Math.abs(reading) < NEAR_ZERO) {
+    return { text: trimZeros(reading.toFixed(4)), unit: "each step" };
+  }
   // A counter that is really a ratio (a dune's speed against a dune of height 10) must keep its fraction.
   if (display === "counter" && typeof value === "number" && Number.isFinite(value) && Math.abs(value) < 20 && Math.abs(value - Math.round(value)) >= 0.05) {
     return { text: formatReading(value, "series"), unit: plainUnit(unit) };

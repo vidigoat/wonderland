@@ -6,6 +6,10 @@ import { formatHudValue, formatReading, isShareReading, plainUnit, shotSettled }
 describe("reading numbers", () => {
   it("prints a tiny negative as 0, and keeps a real small change", () => {
     expect(formatReading(-0.004)).toBe("0");
+    expect(formatHudValue("stossErosionRate", "Sand lost on the windward face", -0.0046, "series", "each step")).toEqual({
+      text: "-0.0046",
+      unit: "each step",
+    });
     expect(formatReading(-0.0004, "series")).toBe("0");
     expect(formatReading(0)).toBe("0");
     expect(formatReading(-0.02)).toBe("-0.02");

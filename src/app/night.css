@@ -1568,6 +1568,10 @@
 }
 
 /* What the world just did: a caption at the foot of the stage, not a headline across it. */
+.play .legend {
+  left: 16px;
+  bottom: 62px;
+}
 .play .witness {
   top: auto;
   right: auto;

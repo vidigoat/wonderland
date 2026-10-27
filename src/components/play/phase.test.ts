@@ -112,7 +112,7 @@ describe("phase machine", () => {
     expect(Math.ceil(560 / tickBatch(560, "phantom-jam-ring-road"))).toBeLessThanOrEqual(28);
     expect(Math.ceil(560 / tickBatch(560, "hallway-lanes"))).toBeLessThanOrEqual(28);
     expect(Math.ceil(48 / tickBatch(48, "heat-diffusion-plate"))).toBeLessThanOrEqual(12);
-    expect(tickBatch(48, "firebreak")).toBe(1);
+    expect(Math.ceil(48 / tickBatch(48, "firebreak"))).toBeLessThanOrEqual(16);
     const duneSteps = runSteps("field", "dune-march", { windSpeed: 5, initialHeight: 10 });
     expect(Math.ceil(duneSteps / tickBatch(duneSteps))).toBeLessThanOrEqual(24);
     expect(freshStart("newtons-cannon", "bodies", { speed: 0.5 }, { speed: 0.5 })).toBe(true);

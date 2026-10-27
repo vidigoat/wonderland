@@ -506,23 +506,37 @@ export type ScrollTrip = { started: number | null; traveled: boolean };
  * A painted crowd shrinks so it reads as a crowd. On a phone the same formula
  * turns a hundred moths into specks, so the stage draws fewer and keeps each one big enough to see.
  */
+function featuredSprite(sprite?: string): boolean {
+  const key = (sprite ?? "").toLowerCase();
+  return key === "bird" || /predator|lynx|fox|wolf/.test(key);
+}
+
 export function populationCrowd(input: { width: number; height: number; count: number; painted: boolean; rumour: boolean; hero: boolean }): { cap: number; scale: number } {
   const narrow = input.width < 520 && input.hero && !input.rumour;
-  const cap = Math.min(Math.max(0, input.count), narrow ? 36 : 600);
+  let cap = Math.min(Math.max(0, input.count), narrow ? 36 : 600);
   const unit = Math.min(input.width, input.height);
+  const shrink = input.painted && !input.rumour;
+  const base = Math.max(0.85, Math.min(1.55, unit / 640));
+  // A generated meadow can hold a hundred creatures. On a desk the old formula drew them at ~20px, so a lynx looked like another hare.
+  if (shrink && !input.hero && input.count > 1) {
+    const divisor = 230;
+    const need = (0.48 / base) * divisor;
+    const fit = Math.max(8, Math.floor((input.width * input.height) / (need * need)));
+    cap = Math.min(cap, fit);
+  }
   const spacing = Math.sqrt((input.width * input.height) / Math.max(1, cap));
-  const crowd = !input.painted || input.rumour ? 1 : Math.min(1, spacing / (input.hero ? 150 : 230));
-  let scale = Math.max(0.85, Math.min(1.55, unit / 640)) * crowd;
+  const crowd = !shrink ? 1 : Math.min(1, spacing / (input.hero ? 150 : 230));
+  let scale = base * crowd;
   if (narrow) scale = Math.max(scale, 0.52);
   return { cap, scale };
 }
 
-/** Keep the bird when a phone stage draws only part of the flock. */
+/** Keep the bird, and every predator, when the stage draws only part of the crowd. */
 export function crowdToDraw<T extends { sprite?: string }>(agents: readonly T[], cap: number): T[] {
   if (agents.length <= cap) return [...agents];
-  const featured = agents.filter((agent) => agent.sprite === "bird");
+  const featured = agents.filter((agent) => featuredSprite(agent.sprite));
   const room = Math.max(0, cap - featured.length);
-  const rest = agents.filter((agent) => agent.sprite !== "bird");
+  const rest = agents.filter((agent) => !featuredSprite(agent.sprite));
   return [...rest.slice(0, room), ...featured];
 }
 

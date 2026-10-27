@@ -2,7 +2,7 @@ import { Container, Graphics, Text } from "pixi.js";
 import type { PopulationAgent } from "@/engine/view";
 import { clamp01, crowdToDraw, landedApart, phaseOffset, populationCrowd, readNumber, smoothstep, spokenIds, townFoot } from "./helpers";
 import { pixelRatio, stageFont } from "./fonts";
-import { barkColor, isHeroWorld, populationTint } from "./palette";
+import { barkColor, isGlowSprite, isHeroWorld, populationTint } from "./palette";
 import type { Scene, Frame } from "./scene";
 import { createBackdrop } from "./backdrop";
 import { createFigure, isPaintedWorld, type Figure } from "./sprites";
@@ -147,11 +147,16 @@ export function createPopulationScene(): Scene {
       const at = place(node.drawX, footY, frame.width, frame.height);
       const sprite = agent.sprite || "figure";
       const hunting = sprite === "bird";
+      const predator = /predator|lynx|fox|wolf/i.test(sprite);
+      const glow = isGlowSprite(sprite);
+      const lit = glow ? clamp01(node.drawTint) ** 3 : 1;
       const drop = hunting ? Math.min(42, frame.height * 0.07) : 0;
       node.figure.view.position.set(at.x, at.y + bob + drop);
       node.figure.view.rotation = wobble;
-      node.figure.view.scale.set(hunting ? figureScale * 2.05 : figureScale * (0.86 + phase * 0.28));
-      node.figure.view.zIndex = hunting ? frame.height + 20 : at.y;
+      const body = hunting ? figureScale * 2.05 : predator ? figureScale * 1.7 : figureScale * (0.86 + phase * 0.28);
+      node.figure.view.scale.set(body * (glow ? 0.72 + lit * 0.7 : 1));
+      node.figure.view.alpha = glow ? 0.28 + lit * 0.72 : 1;
+      node.figure.view.zIndex = hunting || predator ? frame.height + 20 : at.y;
       const keepsOwnColor = hunting;
       node.figure.show(
         frame.worldId,

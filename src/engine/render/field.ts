@@ -160,7 +160,7 @@ function drawDune(g: Graphics, heights: number[], box: Box, painted: boolean): v
     color: FIELD_COLORS.gold,
     alpha: painted ? 0.78 : 0.92,
   });
-  g.poly(ridge).stroke({ width: Math.max(2, box.h * 0.012), color: 0xf3ddb0, alpha: 0.95, cap: "round", join: "round" });
+  g.poly(ridge).stroke({ width: Math.max(1.5, box.h * 0.008), color: painted ? 0x6e4a28 : 0xf3ddb0, alpha: painted ? 0.4 : 0.95, cap: "round", join: "round" });
 }
 
 function pine(g: Graphics, x: number, y: number, size: number): void {

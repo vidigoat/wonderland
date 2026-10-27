@@ -266,6 +266,17 @@ describe("a phone forest keeps moths visible", () => {
     expect(drawn.filter((agent) => agent.sprite === "bird")).toHaveLength(1);
     expect(drawn.filter((agent) => agent.sprite === "moth")).toHaveLength(35);
   });
+
+  it("keeps a generated valley's predators large enough to tell from the hares", () => {
+    const desk = populationCrowd({ width: 900, height: 520, count: 118, painted: true, rumour: false, hero: false });
+    expect(desk.cap).toBeLessThan(40);
+    expect(desk.scale).toBeGreaterThanOrEqual(0.48);
+    const drawn = crowdToDraw(
+      [...Array.from({ length: 111 }, () => ({ sprite: "prey" })), ...Array.from({ length: 7 }, () => ({ sprite: "predator" }))],
+      desk.cap,
+    );
+    expect(drawn.filter((agent) => agent.sprite === "predator")).toHaveLength(7);
+  });
 });
 
 describe("station labels stay on a narrow stage", () => {

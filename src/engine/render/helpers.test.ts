@@ -355,7 +355,9 @@ describe("a shelf card", () => {
   it("lets a jam bunch before the picture is taken", () => {
     expect(thumbSteps("phantom-jam-ring-road")).toBeGreaterThan(thumbSteps("dune-march"));
     expect(thumbSteps("hallway-lanes")).toBeGreaterThan(40);
-    expect(thumbSteps("firefly-sync-kuramoto")).toBe(40);
+    expect(thumbSteps("firefly-sync-kuramoto")).toBe(1000);
+    expect(thumbSteps("murmuration-sky")).toBe(400);
+    expect(thumbSteps("predator-prey-valley")).toBe(200);
     expect(thumbBodyPx("phantom-jam-ring-road", 0)).toBeGreaterThan(thumbBodyPx("phantom-jam-ring-road", 12));
     expect(thumbJamHalo("phantom-jam-ring-road", 0)).toBeGreaterThan(thumbBodyPx("phantom-jam-ring-road", 0) / 2);
     expect(thumbJamHalo("phantom-jam-ring-road", 12)).toBe(0);

@@ -139,9 +139,16 @@ export function shutVaultNote(query: string, error: string | null, rowCount: num
   return "The spell ran. The vault stayed shut.";
 }
 
-/** How far a shelf card runs before it is drawn. A jam needs time to bunch; most stills do not. */
+/**
+ * How far a shelf card runs before it is drawn. The still uses seed 11.
+ * The meadow's shared flash is at step 1000. The flock faces one way by step 400.
+ * The valley's crash, when lynx outnumber hares, is at step 200. A jam needs 220.
+ */
 export function thumbSteps(worldId: string): number {
+  if (worldId === "firefly-sync-kuramoto") return 1000;
+  if (worldId === "murmuration-sky") return 400;
   if (worldId === "phantom-jam-ring-road") return 220;
+  if (worldId === "predator-prey-valley") return 200;
   if (worldId === "hallway-lanes") return 160;
   return 40;
 }

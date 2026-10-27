@@ -44,7 +44,13 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
     void (async () => {
       try {
         const session = await new WorldSession(rules, params, 11).start();
-        await session.tick(thumbSteps(spec.id));
+        const total = thumbSteps(spec.id);
+        const chunk = total > 120 ? 50 : total;
+        for (let done = 0; done < total; done += chunk) {
+          if (!alive) return;
+          await session.tick(Math.min(chunk, total - done));
+          if (done + chunk < total) await new Promise((resolve) => setTimeout(resolve, 0));
+        }
         if (!alive) return;
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         const w = (canvas.width = canvas.clientWidth * dpr);

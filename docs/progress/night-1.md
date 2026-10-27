@@ -95,7 +95,7 @@ Letting the fire burn painted every step, so the button stayed on "In motion" fo
 
 Thirty steps left the starlings only partly facing the same way. Commit `ea545f0`. One gesture now runs 400 steps. On the production server it finishes in about seven seconds with 0% bumping, 100% facing the same way, and the flock 15.3 from the centre.
 
-The hallway used a cannon-length run. On some seeds the two directions were still mixed, and the card said the lanes were 34% formed. One gesture now runs 2,000 steps, in the same number of pictures. On the production server it finishes in about eleven seconds at 100% lanes and 0% head-on bumps.
+The hallway used a cannon-length run. Commit `5315063`. On some seeds the two directions were still mixed, and the card said the lanes were 34% formed. One gesture now runs 2,000 steps, in the same number of pictures. On the production server it finishes in about eleven seconds at 100% lanes and 0% head-on bumps.
 
 ## Still blocked on a key
 

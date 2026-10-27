@@ -52,6 +52,13 @@ describe("reading numbers", () => {
       text: "8",
       unit: "lynx",
     });
+    expect(formatHudValue("jamCount", "Traffic jams", 1, "counter", "jams")).toEqual({ text: "1", unit: "jam" });
+    expect(formatHudValue("jamCount", "Traffic jams", 0, "counter", "jams")).toEqual({ text: "0", unit: "jams" });
+    expect(formatHudValue("jamCount", "Traffic jams", 2, "counter", "jams")).toEqual({ text: "2", unit: "jams" });
+    expect(formatHudValue("hares", "Hares alive", 1, "counter", "hares")).toEqual({ text: "1", unit: "hare" });
+    expect(formatHudValue("flies", "Fireflies here", 1, "counter", "fireflies")).toEqual({ text: "1", unit: "firefly" });
+    expect(formatHudValue("peak", "Hottest spot", 1, "series", "degrees")).toEqual({ text: "1", unit: "degree" });
+    expect(formatHudValue("lag", "Steps from the hare peak to the lynx", 1, "series", "steps")).toEqual({ text: "1", unit: "step" });
     expect(formatHudValue("waveSpeed", "How fast the jam travels", -2.4, "series", "m/s")).toEqual({
       text: "-2.4",
       unit: "metres per second",

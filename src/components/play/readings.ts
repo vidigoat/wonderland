@@ -46,6 +46,20 @@ export function plainUnit(unit: string | undefined): string | null {
   return unit;
 }
 
+/** A count of one uses the singular. Anything else keeps the unit as written. */
+const ONE_OF: Record<string, string> = {
+  jams: "jam",
+  hares: "hare",
+  fireflies: "firefly",
+  degrees: "degree",
+  steps: "step",
+};
+
+function countUnit(unit: string | null, text: string): string | null {
+  if (!unit || text !== "1") return unit;
+  return ONE_OF[unit] ?? unit;
+}
+
 /** A 0–1 amount that is a share, a fraction, or a "how together" score. */
 export function isShareReading(id: string, label: string, value: unknown): value is number {
   if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 1) return false;
@@ -67,9 +81,11 @@ export function formatHudValue(
   }
   // A counter that is really a ratio (a dune's speed against a dune of height 10) must keep its fraction.
   if (display === "counter" && typeof value === "number" && Number.isFinite(value) && Math.abs(value) < 20 && Math.abs(value - Math.round(value)) >= 0.05) {
-    return { text: formatReading(value, "series"), unit: plainUnit(unit) };
+    const text = formatReading(value, "series");
+    return { text, unit: countUnit(plainUnit(unit), text) };
   }
-  return { text: formatReading(value, display), unit: plainUnit(unit) };
+  const text = formatReading(value, display);
+  return { text, unit: countUnit(plainUnit(unit), text) };
 }
 
 export function formatParam(value: Params[string] | undefined): string {

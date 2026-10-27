@@ -68,17 +68,37 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
             ctx.fill();
           }
         } else if (view.kind === "field") {
-          const rows = view.grid.length;
-          const cols = view.grid[0]?.length ?? 0;
-          const cw = (w * (1 - 2 * pad)) / Math.max(1, cols);
-          const ch = (h * (1 - 2 * pad)) / Math.max(1, rows);
+          // Crop to where something is happening, so a small dune or a hot spot fills the card.
+          let top = Infinity, bottom = -1, left = Infinity, right = -1;
           view.grid.forEach((row, r) =>
             row.forEach((value, c) => {
-              ctx.fillStyle = lightness(value);
-              ctx.globalAlpha = 0.15 + Math.max(0, Math.min(1, value)) * 0.85;
-              ctx.fillRect(w * pad + c * cw, h * pad * 0.6 + r * ch, Math.ceil(cw), Math.ceil(ch));
+              if (value > 0.05) {
+                top = Math.min(top, r);
+                bottom = Math.max(bottom, r);
+                left = Math.min(left, c);
+                right = Math.max(right, c);
+              }
             }),
           );
+          if (bottom < 0) return;
+          const margin = 2;
+          top = Math.max(0, top - margin);
+          left = Math.max(0, left - margin);
+          bottom = Math.min(view.grid.length - 1, bottom + margin);
+          right = Math.min((view.grid[0]?.length ?? 1) - 1, right + margin);
+          const rows = bottom - top + 1;
+          const cols = right - left + 1;
+          const size = Math.min((w * (1 - 2 * pad)) / cols, (h * 0.62) / rows);
+          const ox = (w - cols * size) / 2;
+          const oy = h * 0.08 + (h * 0.62 - rows * size) / 2;
+          for (let r = top; r <= bottom; r++) {
+            for (let c = left; c <= right; c++) {
+              const value = view.grid[r]?.[c] ?? 0;
+              ctx.fillStyle = lightness(value);
+              ctx.globalAlpha = 0.12 + Math.max(0, Math.min(1, value)) * 0.88;
+              ctx.fillRect(ox + (c - left) * size, oy + (r - top) * size, Math.ceil(size), Math.ceil(size));
+            }
+          }
           ctx.globalAlpha = 1;
         }
       } catch {

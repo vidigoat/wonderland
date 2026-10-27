@@ -129,6 +129,8 @@ The fire cards said "Far ridge no" and "Flames no" after the fire had stopped. C
 
 Asking about fireflies was matching the valley fire, because the word started with "fire". Commit `09e8838`. A keyword now has to be the word, or the word plus a short ending. A question that is not one of the five heroes is pointed at the worlds already on the shelf. On the production server "Why do fireflies start flashing in sync?" says the model did not write a new world, and the button plays The Meadow That Blinks As One. `pnpm check` is 240 tests.
 
+The hallway shelf card still painted every person facing the same way. Commit `3295f30`. A negative heading now mirrors the figure, the same as on the stage. On the production server the Hallway Lanes card shows both directions. `pnpm check` is 241 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

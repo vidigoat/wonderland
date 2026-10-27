@@ -113,6 +113,8 @@ The thirty-second bank on the landing still labelled "Getting my money out!" aft
 
 On a phone the same town was a 16:10 frame about 210 pixels tall, so the vault card covered the square. Commit `61da95d`. The frame is now 520 pixels tall. On the production server, after the bank closes, the crowd, the shut door, and the caption are all visible under the card. `pnpm check` is 238 tests.
 
+Average moth darkness was a bare 0.2 beside a percent, and on a phone the colour key sat on the numbers. Commit `a035b2b`. Darkness is a share of full soot, so one generation now reads 21% on a wide screen and 19% on a phone, next to the share of dark moths. The colour key sits in its own column. `pnpm check` is 238 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

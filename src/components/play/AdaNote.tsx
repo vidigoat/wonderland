@@ -43,14 +43,14 @@ export function AdaNote({
         <h2>Ada</h2>
         {canTurn ? (
           <button type="button" className="quiet" onClick={onTurn} disabled={status === "thinking"}>
-            {status === "thinking" ? "Thinking" : "Her turn"}
+            {status === "thinking" ? "Thinking…" : "Let her try"}
           </button>
         ) : null}
       </header>
       <div className="ada-scroll">
       {race.length ? (
         <div className="race" aria-label="Where you and Ada differ">
-          <p className="kicker">Not the same</p>
+          <p className="kicker">Where you differ</p>
           <div className="race-head">
             <span />
             <span>You</span>
@@ -70,7 +70,7 @@ export function AdaNote({
         </div>
       ) : null}
       {status === "wiring" ? <p className="wiring">{ADA_WIRING}</p> : null}
-      {status === "quiet" ? <p className="aside">She is in the room, a step behind.</p> : null}
+      {status === "quiet" ? <p className="aside">An AI scientist racing you on this same world. She moves after you do.</p> : null}
       <ol className="ada-notes">
         {entries.map((entry, index) => (
           <li key={`${entry.tool}-${index}`}>

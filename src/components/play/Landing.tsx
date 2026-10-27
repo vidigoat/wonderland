@@ -377,7 +377,7 @@ function Binding({ log, stopped }: { log: LogEntry[]; stopped: boolean }) {
             <li key={step.stage} data-on={step.on ? "yes" : "no"} data-now={step.stage === current ? "yes" : undefined}>
               <span className="bw-build-dot" aria-hidden="true" />
               <span className="bw-build-label">{step.label}</span>
-              <span className="bw-build-msg">{step.on ? step.message : "Waiting"}</span>
+              <span className="bw-build-msg">{step.on ? step.message : view.world && step.stage === "artist" ? "Painted with Muse Image once it's connected" : "Waiting"}</span>
             </li>
           ))}
         </ol>

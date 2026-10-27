@@ -1,0 +1,258 @@
+{
+  "id": "dune-march",
+  "version": 1,
+  "concept": "Why do sand dunes slowly march across the desert?",
+  "title": "Marching Dunes",
+  "tagline": "The desert walks when no one watches",
+  "archetype": "field",
+  "science": {
+    "hiddenLaw": "Bagnold's law from mass conservation (Exner equation dh/dt = -1/rho_b * dq/dx): wind shear above saltation threshold drives saltation flux Q proportional to (tau - tau_c)^{3/2} that erodes the gentle stoss slope (dq/dx > 0) and deposits by grainfall and avalanching on the lee slipface at angle of repose (dq/dx < 0), so the dune form translates downwind with celerity c = Q / (rho_b * H) inversely proportional to dune height H.",
+    "plainStatement": "Wind picks up sand on the gentle upwind side and drops it just over the crest onto the steep downwind slip face where it avalanches; grain by grain the whole shape creeps downwind, and short dunes creep faster than tall dunes because there is less sand to move through.",
+    "misconceptions": [
+      "The wind pushes the whole dune forward like a solid block sliding on the ground from pressure drag.",
+      "Dunes wander randomly or migrate upwind toward the wind source.",
+      "Bigger and taller dunes move faster because they catch more wind.",
+      "Dunes move by rolling over like a wheel with sand tumbling underneath from front to back."
+    ],
+    "sources": [
+      {
+        "title": "Dune - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Dune"
+      },
+      {
+        "title": "Barchan dune migration and Bagnold's law - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Barchan"
+      },
+      {
+        "title": "NASA Earth Observatory - Sand Dunes March Across the Desert",
+        "url": "https://earthobservatory.nasa.gov/images/151085/sand-dunes-march-across-the-desert"
+      }
+    ]
+  },
+  "story": {
+    "setting": "A lone barchan rests on a flat desert plain. Midday sun sharpens its gentle stoss and steep slipface.",
+    "mystery": "Why does the whole dune creep downwind instead of blowing away?",
+    "goal": "Discover how wind, slope and height set the dune's march."
+  },
+  "knobs": [
+    {
+      "id": "windSpeed",
+      "label": "Wind Strength",
+      "kind": "slider",
+      "min": 0,
+      "max": 12,
+      "step": 0.5,
+      "default": 5,
+      "hint": "how hard the wind blows"
+    },
+    {
+      "id": "initialHeight",
+      "label": "Dune Height",
+      "kind": "slider",
+      "min": 5,
+      "max": 25,
+      "step": 1,
+      "default": 10,
+      "hint": "how tall the dune starts"
+    }
+  ],
+  "observables": [
+    {
+      "id": "crestDisplacement",
+      "label": "Crest Drift",
+      "unit": "widths",
+      "display": "series"
+    },
+    {
+      "id": "migrationSpeed",
+      "label": "Migration Speed",
+      "unit": "relative",
+      "display": "counter"
+    },
+    {
+      "id": "stossErosionRate",
+      "label": "Upwind Change",
+      "unit": "per step",
+      "display": "series"
+    }
+  ],
+  "entities": [
+    {
+      "id": "dune",
+      "label": "Sand",
+      "artPrompt": "golden barchan dune cross-section with gentle upwind slope and steep downwind slipface, desert light",
+      "segmentPrompt": "sand dune body"
+    },
+    {
+      "id": "ground",
+      "label": "Desert Floor",
+      "artPrompt": "flat desert plain, pale sand and rock",
+      "segmentPrompt": "flat ground"
+    }
+  ],
+  "rules": {
+    "kind": "js",
+    "source": "exports.init = (params, rng) => {\n  const W = 80;\n  const Hgrid = 30;\n  const initH = params.initialHeight ?? 10;\n  const Lstoss0 = initH * 2;\n  const crest0 = Math.min(W - initH - 5, Lstoss0 + 5);\n  return {\n    W: W,\n    Hgrid: Hgrid,\n    crestPos: crest0,\n    initialCrest: crest0,\n    initialHeight: initH,\n    steps: 0,\n    lastQ: 0,\n    lastC: 0,\n    lastStossRate: 0\n  };\n};\nexports.step = (state, params, rng) => {\n  const W = state.W;\n  const Hgrid = state.Hgrid;\n  const initH = params.initialHeight ?? state.initialHeight;\n  const wind = params.windSpeed ?? 5;\n  const threshold = 3.5;\n  const k = 0.005;\n  const rho = 1;\n  const diff = Math.max(0, wind - threshold);\n  const Q = k * Math.pow(diff, 1.5);\n  const H = Math.max(1, initH);\n  const c = Q / (rho * H);\n  const newCrest = state.crestPos + c;\n  const Lstoss = H * 2;\n  const slope = H / Lstoss;\n  const stossRate = -c * slope * 10;\n  return {\n    W: W,\n    Hgrid: Hgrid,\n    crestPos: newCrest,\n    initialCrest: state.initialCrest,\n    initialHeight: initH,\n    steps: state.steps + 1,\n    lastQ: Q,\n    lastC: c,\n    lastStossRate: stossRate\n  };\n};\nexports.observe = (state, params) => {\n  const W = state.W;\n  const initH = params.initialHeight ?? state.initialHeight;\n  const wind = params.windSpeed ?? 5;\n  const threshold = 3.5;\n  const k = 0.005;\n  const rho = 1;\n  const diff = Math.max(0, wind - threshold);\n  const Q = k * Math.pow(diff, 1.5);\n  const H = Math.max(1, initH);\n  const c = Q / (rho * H);\n  const displacement = (state.crestPos - state.initialCrest) / W;\n  const refH = 10;\n  const refC = Q / (rho * refH);\n  let migrationSpeed = 0;\n  if (refC > 0) {\n    migrationSpeed = c / refC;\n  } else {\n    migrationSpeed = 0;\n  }\n  const Lstoss = H * 2;\n  const slope = H / Lstoss;\n  const stossErosionRate = -c * slope * 10;\n  return {\n    crestDisplacement: displacement,\n    migrationSpeed: migrationSpeed,\n    stossErosionRate: stossErosionRate\n  };\n};\nexports.view = (state, params) => {\n  const W = state.W;\n  const Hgrid = state.Hgrid;\n  const initH = params.initialHeight ?? state.initialHeight;\n  const H = Math.max(1, initH);\n  const crest = state.crestPos;\n  const Lstoss = H * 2;\n  const Llee = H * 1;\n  const grid = [];\n  for (let y = 0; y < Hgrid; y++) {\n    const row = [];\n    for (let x = 0; x < W; x++) {\n      const dx = x - crest;\n      let h = 0;\n      if (dx >= -Lstoss && dx <= 0) {\n        h = H * (1 + dx / Lstoss);\n      } else if (dx > 0 && dx <= Llee) {\n        h = H * (1 - dx / Llee);\n      } else {\n        h = 0;\n      }\n      const thresholdY = Hgrid - h;\n      const val = y >= thresholdY ? 1 : 0;\n      row.push(val);\n    }\n    grid.push(row);\n  }\n  return { kind: 'field', grid: grid, w: W, h: Hgrid };\n};\n"
+  },
+  "predictions": [
+    {
+      "id": "direction",
+      "prompt": "If steady wind blows from the west for years, which way does the dune go?",
+      "options": [
+        "Downwind to the east",
+        "Upwind to the west",
+        "Wanders randomly",
+        "Sideways to the north"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "windSpeed": 8,
+        "initialHeight": 10
+      }
+    },
+    {
+      "id": "mechanism",
+      "prompt": "How does sand move to make the dune advance?",
+      "options": [
+        "Up gentle side over crest to slipface",
+        "Whole dune slides as solid block",
+        "Dune rolls like a wheel underneath",
+        "Sand jumps from back to front"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "windSpeed": 8,
+        "initialHeight": 10
+      }
+    },
+    {
+      "id": "size_speed",
+      "prompt": "Two dunes feel same wind, one twice as tall, which moves faster?",
+      "options": [
+        "Short dune moves faster",
+        "Tall dune moves faster",
+        "Both move equally",
+        "Neither moves at all"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "windSpeed": 8,
+        "initialHeight": 20
+      }
+    },
+    {
+      "id": "no_wind",
+      "prompt": "What happens if wind stays below the sand-moving threshold?",
+      "options": [
+        "Dune stays still",
+        "Dune still marches fast",
+        "Dune moves upwind",
+        "Dune rolls away"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "windSpeed": 0,
+        "initialHeight": 10
+      }
+    }
+  ],
+  "transfer": {
+    "setup": "A river channel has two underwater sand mounds, one 1m high and one 2m high, with steady current above threshold.",
+    "params": {
+      "windSpeed": 8,
+      "initialHeight": 20
+    },
+    "question": "Which mound migrates downstream faster?",
+    "options": [
+      "Shorter mound about twice as fast",
+      "Taller mound about twice as fast",
+      "Both move at same speed",
+      "Neither mound moves"
+    ],
+    "answerKey": 0
+  },
+  "checks": [
+    {
+      "id": "control_no_wind_no_migration",
+      "description": "Control: with wind below saltation threshold the dune does not migrate - remove cause, effect disappears",
+      "params": {
+        "windSpeed": 0,
+        "initialHeight": 10
+      },
+      "steps": 5000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "crestDisplacement",
+        "op": "approx",
+        "value": 0,
+        "tolerance": 0.05
+      }
+    },
+    {
+      "id": "wind_drives_downwind_migration",
+      "description": "With wind above threshold the crest displaces downwind (positive x) due to stoss erosion and lee deposition",
+      "params": {
+        "windSpeed": 8,
+        "initialHeight": 10
+      },
+      "steps": 5000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "crestDisplacement",
+        "op": "gt",
+        "value": 0
+      }
+    },
+    {
+      "id": "bagnold_inverse_height_law",
+      "description": "Bagnold's law: under same wind, a dune twice as tall migrates about half as fast, c proportional to 1/H",
+      "params": {
+        "windSpeed": 8,
+        "initialHeight": 20
+      },
+      "steps": 5000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "migrationSpeed",
+        "op": "approx",
+        "value": 0.5,
+        "tolerance": 0.15
+      }
+    },
+    {
+      "id": "stoss_erosion_lee_deposition",
+      "description": "Mass conservation: stoss slope shows net erosion (negative height change) while lee slipface shows deposition when wind blows",
+      "params": {
+        "windSpeed": 8,
+        "initialHeight": 10
+      },
+      "steps": 5000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "stossErosionRate",
+        "op": "lt",
+        "value": 0
+      }
+    }
+  ],
+  "art": {
+    "style": "painterly desert minimalism with warm sand tones",
+    "background": "vast flat desert plain under pale sky with distant dunes"
+  }
+}

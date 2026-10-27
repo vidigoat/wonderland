@@ -117,6 +117,8 @@ Average moth darkness was a bare 0.2 beside a percent, and on a phone the colour
 
 An orbit held Fire on "In motion" past twenty seconds, because every few steps of the shot were painted. Commit `dff0159`. The trail already carries every point, so one gesture paints two dozen frames. Height above the ground is named in planet radii. On the production server a landing shot still finishes in about two seconds. A launch at speed 1 stays flying, completes 3.36 laps at 0.05 planet radii, and the button returns in about ten seconds. The chart shows the height rise and fall once each lap. `pnpm check` is 238 tests.
 
+A name of `' OR '1'='1` breaks the quotes and still fails the password clause, so the vault stays shut, and the card never said so. Commit `c20ca11`. It now says the spell ran and the vault stayed shut. On the production server the wide stage and the phone both show the whole line, with the broken quote marked, and the vault shut. `pnpm check` is 239 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

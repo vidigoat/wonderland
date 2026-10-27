@@ -1920,6 +1920,38 @@
   .play[data-world="phantom-jam-ring-road"] .hud-card {
     min-width: 0;
   }
+  /* Three stacked cards were covering the fireflies, the left lane, the saplings, and the sky. */
+  .play[data-world="firefly-sync-kuramoto"] .stage-stack .hud,
+  .play[data-world="hallway-lanes"] .stage-stack .hud,
+  .play[data-world="firebreak"] .stage-stack .hud,
+  .play[data-world="newtons-cannon"] .stage-stack .hud {
+    max-width: calc(100% - 16px);
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .play[data-world="firefly-sync-kuramoto"] .hud-card,
+  .play[data-world="hallway-lanes"] .hud-card,
+  .play[data-world="firebreak"] .hud-card,
+  .play[data-world="newtons-cannon"] .hud-card {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .play[data-world="firefly-sync-kuramoto"] .hud-big,
+  .play[data-world="hallway-lanes"] .hud-big,
+  .play[data-world="firebreak"] .hud-big,
+  .play[data-world="newtons-cannon"] .hud-big {
+    font-size: 15px;
+  }
+  /* Four stacked cards were covering the birch. The colour key stays in its column. */
+  .play[data-world="peppered-forest"] .stage-stack .hud {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+  .play[data-world="peppered-forest"] .hud-card {
+    min-width: 0;
+  }
 }
 .reading-chart {
   flex: 0 0 auto;

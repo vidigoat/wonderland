@@ -97,6 +97,8 @@ Thirty steps left the starlings only partly facing the same way. Commit `ea545f0
 
 The hallway used a cannon-length run. Commit `5315063`. On some seeds the two directions were still mixed, and the card said the lanes were 34% formed. One gesture now runs 2,000 steps, in the same number of pictures. On the production server it finishes in about eleven seconds at 100% lanes and 0% head-on bumps.
 
+The meadow's "flashing in step" was a ramp laid over the real order, so the chart kept climbing after the swarm had locked. The card also repeated the sliders and a second percent. Commit `3ca0dfa`. The reading is now the swarm's own order, and a blink counts only when a firefly wraps. On the production server one gesture finishes in about seven seconds at 93% flashing in step and 0.16 flashes each second, with 100 fireflies. The chart rises, then holds. A phone shows the same three cards, at 87% on that run. All five science checks still pass. `pnpm check` is 231 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

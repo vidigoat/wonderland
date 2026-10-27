@@ -83,7 +83,7 @@ Painting every one of the plate's 48 steps held the button on "In motion" for ab
 
 "How fast the dune walks" was a bare 1. Commit `89f00d6`. It is the speed compared with a dune of height 10. On the production server a dune of height 10 walks at 1 times height 10, and the tallest dune, height 25, walks at 0.4 and covers 0.09 dune widths instead of 0.23. Both gestures finish in about eight seconds.
 
-Sand lost on the windward face was printing 0. The loss is about 0.0046 of a grain each step, which is real and was under the cutoff that turns tiny numbers into zero. It now reads -0.0046 each step. Other tiny readings still print as 0. Checked on the production server.
+Sand lost on the windward face was printing 0. Commit `5c7efea`. The loss is about 0.0046 of a grain each step, which is real and was under the cutoff that turns tiny numbers into zero. It now reads -0.0046 each step. Other tiny readings still print as 0. Checked on the production server.
 
 ## Still blocked on a key
 

@@ -47,16 +47,18 @@ export function wordOverlap(question: string, concept: string): number {
   return score;
 }
 
-export type MissKind = "banned" | "not-a-mechanism" | "failed";
+export type MissKind = "banned" | "not-a-mechanism" | "failed" | "shelf";
 
 export function missKind(message: string): MissKind {
   if (/medical|politic|war|sport/i.test(message)) return "banned";
-  if (/mechanism|did not write|no verified|not a world/i.test(message)) return "not-a-mechanism";
+  if (/no verified world matched/i.test(message)) return "shelf";
+  if (/mechanism|did not write|not a world/i.test(message)) return "not-a-mechanism";
   return "failed";
 }
 
 export function missSentence(kind: MissKind): string {
   if (kind === "banned") return "Wonderland does not build that. It stays with how things work.";
+  if (kind === "shelf") return "The model did not write a new world. These questions already have one.";
   if (kind === "not-a-mechanism") return "That question does not name a mechanism you can poke.";
   return "The build tried, and the science did not hold.";
 }

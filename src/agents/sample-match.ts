@@ -50,11 +50,19 @@ function tokens(concept: string): string[] {
   return concept.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
 }
 
+/** A word hits a keyword when it is that word, or that word plus a short ending. "fire" does not eat "fireflies". */
+const ENDING = /^(s|es|ed|ing|d|ion)?$/;
+
+export function keywordHits(word: string, keyword: string): boolean {
+  if (!word.startsWith(keyword)) return false;
+  return ENDING.test(word.slice(keyword.length));
+}
+
 export function matchHeroId(concept: string): string | null {
   const words = tokens(concept);
   let best: { id: string; score: number } | null = null;
   for (const hero of HERO_KEYWORDS) {
-    const score = hero.keywords.filter((keyword) => words.some((word) => word.startsWith(keyword))).length;
+    const score = hero.keywords.filter((keyword) => words.some((word) => keywordHits(word, keyword))).length;
     if (score === 0) continue;
     if (!best || score > best.score) best = { id: hero.id, score };
   }

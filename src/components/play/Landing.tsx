@@ -272,7 +272,22 @@ export function Landing({
               </a>
             </>
           ) : (
-            <Binding log={log} stopped={stopped} concept={concept} shelf={places} demo={demo} />
+            <Binding
+              log={log}
+              stopped={stopped}
+              concept={concept}
+              shelf={[
+                ...places,
+                ...written.map((world) => ({
+                  id: world.id,
+                  title: world.title,
+                  tagline: world.tagline,
+                  concept: world.concept,
+                  archetype: world.archetype,
+                })),
+              ]}
+              demo={demo}
+            />
           )}
           {ribbon ? <p className="bw-ribbon">{ribbon}</p> : null}
         </div>

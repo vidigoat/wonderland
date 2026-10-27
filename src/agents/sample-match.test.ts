@@ -21,6 +21,7 @@ describe("hero keyword match", () => {
     ["Why does one spark take the valley?", "firebreak"],
     ["percolation", "firebreak"],
     ["The Firebreak", "firebreak"],
+    ["Why do fireflies flash in sync?", null],
     ["Why do traffic jams appear out of nowhere?", null],
     ["How does DNS turn a name into an address?", null],
   ] as const)("%s → %s", (concept, id) => {
@@ -31,6 +32,8 @@ describe("hero keyword match", () => {
     expect(matchHeroId("orbit gravity cannon fire")).toBe("newtons-cannon");
     expect(matchHeroId("bank fire")).toBe("rumour-town");
     expect(matchHeroId("cannon spark")).toBe("newtons-cannon");
+    expect(matchHeroId("fireflies")).toBeNull();
+    expect(matchHeroId("fires")).toBe("firebreak");
   });
 
   it("lists the five heroes without their science", () => {

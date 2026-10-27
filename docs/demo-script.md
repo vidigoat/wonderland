@@ -1,19 +1,24 @@
-# Demo path
+# Demo video — 3 minutes
 
-Three minutes, on the running app. The buttons below are the ones on the screen.
+Recorded on the real app with live models (Muse Spark Open on Baseten). Every word on screen below is what the app actually shows. Only show what was built during the hackathon.
 
-| Time | What you do |
-|---|---|
-| 0:00 | The landing is already up. Read the line: “The AI builds the world. You find the law.” The ribbon says the models are on sample data if no key is set. |
-| 0:08 | Type `Why does SQL injection work?` and press Build. The montage names The Gatekeeper’s Ledger and says the model did not write it. Checks show a count, not the answer. Enter. |
-| 0:40 | Read the mystery. Press **I have a guess**. Choose “Choke — the spell breaks” for O’Brien. Press **Write it down**. The knobs were locked until now. You are not told if you were right. |
-| 1:00 | Set the name to `O'Brien`. Press **Send the scroll**. The scribe stops. The line across the stage says “The scribe stopped.” |
-| 1:15 | Set the name and the password to `' OR '1'='1`. Send the scroll again. The vault lightens, the room shakes, a short note sounds, and the line says “The vault is open.” After it fades, the notebook still says you saw it. Ada, on the sample lane, has been trying one knob at a time beside you. Her readings differ from yours. |
-| 1:35 | Press **I can say it**. **Hold to speak** records and posts the audio; with no key it says no words came back and leaves the box for typing. Type: a quote ends the words, so the rest of the scroll is run as the spell. Press **Offer this sentence**. The world dims. A slip says a library search is waiting. The judge does not repeat the law. |
-| 1:50 | For the library, type: Close the quote and add a condition that is always true. The librarian should use parameterised queries. Press **Offer the proof**. On the second question, choose **No — your words stay words**. **Keep this card** downloads the receipt. The card says what you saw, and that the law is not printed on it. |
-| 2:10 | The shelf: Peppered Forest, Newton’s Cannon, Rumour Town, The Firebreak. In the forest, move the soot and press **A generation** until the line says the moths are not the colour they were. In the firebreak, plant densely, turn the strip on, and press **Let it burn**. The line says the fire stopped: ash, a gap, then living trees. |
-| 2:40 | “The model built the room. You found the law.” |
+**Before recording:** `pnpm build && pnpm start` (production is much faster than dev). Open a fresh browser window at 1440×900. Pre-build one new world the night before (it takes ~2 minutes) so the build can be shown in full and then cut.
 
-Sample mode is labeled. With `MODEL_API_KEY` and an open-weights key, the same buttons call the models: the montage generates, Ada thinks on open weights, and Rumour Town takes one citizen round from that model before the checked brain continues.
+| Time | Beat | What's on screen |
+|---|---|---|
+| 0:00 | **Hook** | Landing. Fireflies drift on black and slowly fall into one rhythm. Title: *"The AI builds the world. You find the law."* Voice-over: "People who learned with an AI assistant scored 17 points lower on understanding. So we built the opposite." |
+| 0:10 | **The product, live** | Scroll a little: the product window shows **Rumour Town running live** — one rumour, a queue, *"The bank has closed its doors."* Stats row: worlds you can enter, how many Muse Spark Open wrote, *every check, every seed*. |
+| 0:20 | **Ask anything** | Click into the question box, type a fresh question (e.g. *"Why do sand dunes slowly march across the desert?"*), press **Build my world**. |
+| 0:25 | **The build** (cut to the end) | Steps light up: *Find the law → Build the world → Check the science → Ready*. The law is shown only as ███. The clock reads *Muse Spark is working · 1:40*. Then **4 of 4 science checks passed** and *"Your world is ready. The law stays hidden."* Press **Enter the world**. |
+| 0:45 | **The Gatekeeper** (the hero) | Open The Gatekeeper's Ledger. **I have a guess** → choose *"Choke — the spell breaks"* → **Write it down**. Type `O'Brien` → **Send the scroll**: *"The scribe stopped."* The real SQLite error highlights `Brien`. |
+| 1:10 | **The aha** | Name and password `' OR '1'='1` → **Send the scroll**: *"The vault is open."* The injected part is highlighted in the real query; the ledger leaks the queen's and steward's entries. |
+| 1:25 | **The race** | Point at Ada's card: her live thought (Muse Spark Open), the race table — **You** vs **Ada**, her vault still shut. |
+| 1:35 | **Say it** | **I can say it**. Hold to speak, or type: *"The scribe pastes my words straight into the spell, so a quote ends the name early and the rest runs as command."* **Offer this sentence**. The judge (live) accepts — and never repeats the law. |
+| 1:55 | **Prove it** | A new situation slides over the stage: a library search box. Answer, then choose *"No — your words stay words."* The card: *Before: Held · After: Held · Time until it held*. *"The law is not printed on this card."* |
+| 2:15 | **Rumour Town** | 40 citizens, each voiced by Muse Spark Open in one call: *"Is the queue for the festival? No?"* — **Let them talk** → the run → *"The bank has closed its doors."* Then insurance on: the bank stays open. |
+| 2:35 | **Worlds it wrote** | Every world page → *Written by Muse Spark Open*: fireflies in sync, phantom traffic jams, crowd lanes, heat, dunes, predator–prey. Each card is a still of the world itself. |
+| 2:50 | **Close** | "The AI does the building. You do the thinking." Wonderland. |
 
-Only show what was built during the hackathon. Real footage, no mock screens.
+## Models on screen
+- Muse Spark Open (Meta open weights, Baseten): scientist, designer, judge, Ada, the 40 citizens, spoken hypotheses.
+- With the Meta Model API key enabled: Muse Spark / Muse Wonder for building, Muse Image + SAM 3.1 for art.

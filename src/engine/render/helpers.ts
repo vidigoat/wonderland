@@ -403,3 +403,19 @@ export function scrollTravel(playing: boolean, reduced: boolean, elapsedMs: numb
   const along = smoothstep(clamp01(elapsedMs / SCROLL_TRIP_MS));
   return destination * along;
 }
+
+export type ScrollTrip = { started: number | null; traveled: boolean };
+
+/** One frame of the journey. A trip that has begun stays at its station after the send. */
+export function stepScroll(trip: ScrollTrip, playing: boolean, reduced: boolean, now: number, destination: number): { trip: ScrollTrip; travel: number } {
+  if (playing && !reduced) {
+    const started = trip.started ?? now;
+    const elapsed = now - started;
+    return {
+      trip: { started, traveled: trip.traveled || elapsed >= SCROLL_TRIP_MS },
+      travel: scrollTravel(true, false, elapsed, destination),
+    };
+  }
+  const traveled = trip.traveled || trip.started != null || (reduced && playing);
+  return { trip: { started: null, traveled }, travel: traveled ? destination : 0 };
+}

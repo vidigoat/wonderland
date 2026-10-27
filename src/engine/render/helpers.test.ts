@@ -11,6 +11,7 @@ import {
   SCROLL_TRIP_MS,
   scrollRest,
   scrollTravel,
+  stepScroll,
   smoothstep,
   launchPreview,
   onSurface,
@@ -240,6 +241,18 @@ describe("helpers stay deterministic", () => {
     expect(scrollTravel(true, false, SCROLL_TRIP_MS / 2, 1)).toBeLessThan(0.6);
     expect(scrollTravel(false, false, 0, 1)).toBe(1);
     expect(scrollTravel(true, true, 0, 2 / 3)).toBeCloseTo(2 / 3);
+    const desk = { started: null, traveled: false };
+    expect(stepScroll(desk, false, false, 0, 1).travel).toBe(0);
+    const begun = stepScroll(desk, true, false, 1000, 1);
+    expect(begun.travel).toBe(0);
+    expect(begun.trip.started).toBe(1000);
+    const mid = stepScroll(begun.trip, true, false, 1000 + SCROLL_TRIP_MS / 2, 1);
+    expect(mid.travel).toBeGreaterThan(0.4);
+    expect(mid.travel).toBeLessThan(0.6);
+    const ended = stepScroll(mid.trip, false, false, 1000 + SCROLL_TRIP_MS, 1);
+    expect(ended.travel).toBe(1);
+    expect(ended.trip.traveled).toBe(true);
+    expect(stepScroll(ended.trip, false, false, 9000, 1).travel).toBe(1);
   });
 
   it("keeps phase and smoothstep in range", () => {

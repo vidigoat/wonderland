@@ -91,24 +91,46 @@ export function receiptSummary(model: ReceiptModel): string {
   return `${model.title}. First prediction ${copy.before}${beforeWords}. ${copy.afterKind} ${copy.after}${afterWords}. Time ${copy.elapsed}.${seen} The law is not printed on this card.`;
 }
 
-function wrap(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxWidth: number, lineHeight: number, maxLines: number): number {
+/** Lines that fit a width. A sentence that still has more words ends with an ellipsis, not a cut word. */
+export function clippedLines(text: string, maxWidth: number, measure: (value: string) => number, maxLines: number): string[] {
   const words = text.split(/\s+/).filter(Boolean);
-  let line = "";
-  let lines = 0;
-  for (const word of words) {
-    const next = line ? `${line} ${word}` : word;
-    if (ctx.measureText(next).width > maxWidth && line) {
-      ctx.fillText(line, x, y);
-      y += lineHeight;
-      lines += 1;
-      line = word;
-      if (lines >= maxLines - 1) break;
-    } else {
-      line = next;
+  const rows: string[] = [];
+  let index = 0;
+  while (index < words.length && rows.length < maxLines) {
+    let line = words[index] ?? "";
+    let next = index + 1;
+    while (next < words.length && measure(`${line} ${words[next]}`) <= maxWidth) {
+      line = `${line} ${words[next]}`;
+      next += 1;
     }
+    const last = rows.length === maxLines - 1;
+    if (last && next < words.length) {
+      let cut = words.slice(index).join(" ");
+      if (measure(cut) > maxWidth) {
+        while (cut.length > 1 && measure(`${cut}…`) > maxWidth) cut = cut.slice(0, -1).trimEnd();
+        cut = `${cut}…`;
+      }
+      rows.push(cut);
+      break;
+    }
+    if (measure(line) > maxWidth) {
+      let cut = line;
+      while (cut.length > 1 && measure(`${cut}…`) > maxWidth) cut = cut.slice(0, -1).trimEnd();
+      rows.push(`${cut}…`);
+      break;
+    }
+    rows.push(line);
+    index = next;
   }
-  if (line && lines < maxLines) ctx.fillText(line, x, y);
-  return y + lineHeight;
+  return rows;
+}
+
+function wrap(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxWidth: number, lineHeight: number, maxLines: number): number {
+  for (const line of clippedLines(text, maxWidth, (value) => ctx.measureText(value).width, maxLines)) {
+    ctx.fillText(line, x, y);
+    y += lineHeight;
+  }
+  return y;
 }
 
 function sourceSize(image: CanvasImageSource): { w: number; h: number } {
@@ -197,9 +219,9 @@ function paintWideReceipt(
 
   ctx.font = `400 20px ${uiFont}`;
   const wordsY = columnY + 84;
-  if (model.beforeWords) wrap(ctx, model.beforeWords, x, wordsY, max * 0.46, 26, 2);
+  if (model.beforeWords) wrap(ctx, model.beforeWords, x, wordsY, max * 0.46, 24, 3);
   ctx.fillText(copy.afterKind, x + max * 0.48, wordsY);
-  if (model.afterWords) wrap(ctx, model.afterWords, x + max * 0.48, wordsY + 30, max * 0.5, 26, 2);
+  if (model.afterWords) wrap(ctx, model.afterWords, x + max * 0.48, wordsY + 28, max * 0.5, 24, 3);
 
   ctx.font = `500 20px ${uiFont}`;
   ctx.fillStyle = palette.accent;

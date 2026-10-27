@@ -19,7 +19,7 @@ import {
   toHypothesise,
   TRAIL,
 } from "./phase";
-import { pictureFrame, receiptArtPaths, receiptCopy, receiptSummary } from "./receipt";
+import { clippedLines, pictureFrame, receiptArtPaths, receiptCopy, receiptSummary } from "./receipt";
 import { duneRunSteps, freshStart, pictureAction, raceLine, raceRows, restageParams, runDuration, runSteps, runVerb, speakTool, stripMoved, tickBatch } from "./readings";
 import { drainSse, heroHref, toMontageItem } from "./sse";
 import { encodeWav } from "./wav";
@@ -263,6 +263,9 @@ describe("receipt copy", () => {
     expect(pictured.x).toBeGreaterThan(58);
     expect(pictured.x + pictured.w).toBeLessThan(1280 - 58);
     const wide = pictureFrame(1200, true, 640);
+    const measure = (value: string) => value.length;
+    expect(clippedLines("Dark moths become common because light ones are eaten", 24, measure, 2)[1]).toMatch(/…$/);
+    expect(clippedLines("Stays roughly the same", 40, measure, 2)).toEqual(["Stays roughly the same"]);
     expect(wide.textX).toBeGreaterThan(wide.x + wide.w);
     expect(wide.y + wide.h).toBeLessThanOrEqual(640);
   });

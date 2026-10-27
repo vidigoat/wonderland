@@ -1,6 +1,7 @@
 import "server-only";
 import { toFile } from "openai";
-import { metaClient } from "./clients";
+import { metaClient, openWeights } from "./clients";
+import { reasoningBackend } from "./mode";
 import { MODELS } from "./models";
 
 /**
@@ -22,6 +23,7 @@ export async function think(opts: {
   jsonSchema?: { name: string; schema: Record<string, unknown> };
   maxOutputTokens?: number;
 }): Promise<string> {
+  if (reasoningBackend() === "open-weights") return thinkOpenWeights(opts);
   const res = await metaClient().responses.create({
     model: opts.model ?? MODELS.spark,
     instructions: opts.system,
@@ -31,6 +33,35 @@ export async function think(opts: {
     text: opts.jsonSchema ? ({ format: { type: "json_schema", name: opts.jsonSchema.name, schema: opts.jsonSchema.schema, strict: true } } as never) : undefined,
   });
   return res.output_text;
+}
+
+/**
+ * The same call on Muse Spark Open (Meta open weights, via Baseten or Fireworks).
+ * Spark Open has no structured-output mode, so the schema rides in the system prompt; callers already
+ * validate with zod and repair on failure. It always reasons first, and reasoning counts toward
+ * max_tokens, so the budget is the requested output plus room to think.
+ */
+async function thinkOpenWeights(opts: Parameters<typeof think>[0]): Promise<string> {
+  const { client, model } = openWeights();
+  const system = [
+    opts.system ?? "",
+    opts.jsonSchema
+      ? `\n\nReturn ONLY one JSON object that validates against this JSON Schema (named ${opts.jsonSchema.name}). No prose, no markdown fences.\n${JSON.stringify(opts.jsonSchema.schema)}`
+      : "",
+  ].join("");
+  const user = typeof opts.input === "string" ? opts.input : JSON.stringify(opts.input);
+  const completion = await client.chat.completions.create({
+    model,
+    max_tokens: (opts.maxOutputTokens ?? 8000) + 8000,
+    temperature: 0.4,
+    messages: [
+      { role: "system", content: system },
+      { role: "user", content: user },
+    ],
+  });
+  const content = completion.choices[0]?.message?.content;
+  if (typeof content !== "string" || !content.trim()) throw new Error("Muse Spark Open returned no answer (it may have spent its budget reasoning).");
+  return content;
 }
 
 /** Muse Image — generate (or edit, by passing reference image URLs). Returns base64 image strings. */

@@ -8,7 +8,7 @@ import { runAllChecks, type CheckResult } from "@/engine/checks";
 import { loadJsRules } from "@/engine/load";
 import { WorldSpec, type WorldSpec as WorldSpecT } from "@/engine/spec";
 import { think } from "@/lib/ai/meta";
-import { metaSource } from "@/lib/ai/mode";
+import { reasoningSource } from "@/lib/ai/mode";
 import { MODELS } from "@/lib/ai/models";
 import type { DataSource } from "@/lib/samples/mark";
 
@@ -105,7 +105,7 @@ async function* finishVerified(spec: WorldSpecT): AsyncGenerator<PipelineEvent> 
 }
 
 export async function* generateWorld(concept: string, maxRepairs = 3): AsyncGenerator<PipelineEvent> {
-  if (metaSource() === "sample") {
+  if (reasoningSource() === "sample") {
     yield* generateSample(concept);
     return;
   }

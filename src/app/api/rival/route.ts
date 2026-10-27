@@ -3,7 +3,7 @@ import { connection } from "next/server";
 import type { Params } from "@/engine/rules";
 import { ModelCallError, redactMessage } from "@/agents/judge";
 import { rivalTurn, takeTurn } from "@/agents/rival";
-import { getHeroWorld } from "@/worlds";
+import { findWorld } from "@/worlds/find.server";
 
 /**
  * POST { worldId, seed, params, turn? }
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
   if (body.params != null && (typeof body.params !== "object" || Array.isArray(body.params))) {
     return Response.json({ error: "params must be an object" }, { status: 400 });
   }
-  const spec = getHeroWorld(body.worldId);
+  const spec = await findWorld(body.worldId);
   if (!spec) return Response.json({ error: "unknown world" }, { status: 404 });
   const params = (body.params ?? {}) as Params;
   const turn = takeTurn(body.worldId, body.seed, body.turn);

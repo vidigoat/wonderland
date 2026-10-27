@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Observation, Params, RulesModule } from "@/engine/rules";
+import { compileRules, type Observation, type Params, type RulesModule } from "@/engine/rules";
 import { WorldSession } from "@/engine/runtime";
 import type { PublicWorldSpec } from "@/engine/spec";
 import { SCROLL_HOLD_MS } from "@/engine/render/helpers";
@@ -48,9 +48,21 @@ import { armChime, playChime } from "./chime";
 import { bringIntoView } from "./reveal";
 import { rememberSeen, seenOnCard, witnessBeat, witnessLine, type WitnessBeat } from "./witness";
 
+/**
+ * Hero worlds use their built-in rules. Generated worlds carry AI-written rules that already passed the
+ * server sandbox and every science check before they were saved; here they compile with Math.random blocked.
+ */
+const compiled = new Map<string, RulesModule | null>();
 function rulesFor(spec: PublicWorldSpec): RulesModule | null {
-  if (spec.rules.kind !== "builtin") return null;
-  return builtinRules[spec.rules.module] ?? null;
+  if (spec.rules.kind === "builtin") return builtinRules[spec.rules.module] ?? null;
+  if (!compiled.has(spec.id)) {
+    try {
+      compiled.set(spec.id, compileRules(spec.rules.source));
+    } catch {
+      compiled.set(spec.id, null);
+    }
+  }
+  return compiled.get(spec.id) ?? null;
 }
 
 function ChoiceList({
@@ -407,11 +419,19 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
       if (!Number.isInteger(id)) return [];
       return [{ id, x: agent.x, y: agent.y, worried: agent.tint, says: agent.bubble ?? null }];
     });
-    const res = await fetch("/api/citizens", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ worldId: spec.id, citizens, params: paramsRef.current }),
-    });
+    // A live town takes a few seconds to decide; say so on the stage instead of freezing.
+    const talking = "The square is talking…";
+    setWitness(talking);
+    let res: Response;
+    try {
+      res = await fetch("/api/citizens", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ worldId: spec.id, citizens, params: paramsRef.current }),
+      });
+    } finally {
+      setWitness((current) => (current === talking ? null : current));
+    }
     if (!res.ok) return;
     const body = (await res.json()) as { decisions?: unknown; source?: string; notice?: string };
     if (body.source === "sample") setTownNote(body.notice ?? null);

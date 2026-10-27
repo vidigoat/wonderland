@@ -8,7 +8,7 @@
  */
 import fs from "node:fs/promises";
 import path from "node:path";
-import { metaSource } from "@/lib/ai/mode";
+import { reasoningBackend, reasoningSource } from "@/lib/ai/mode";
 
 const RESULTS = path.join(process.cwd(), "docs/spike-results.md");
 
@@ -33,7 +33,7 @@ const CONCEPTS = [
 ];
 
 async function main(): Promise<void> {
-  if (metaSource() === "sample") {
+  if (reasoningSource() === "sample") {
     await fs.writeFile(RESULTS, SAMPLE_RESULTS);
     console.log("Spike did not run because MODEL_API_KEY is unset.");
     return;
@@ -59,15 +59,17 @@ async function main(): Promise<void> {
     console.log(`${ok ? "✅" : "❌"} ${concept} — ${((Date.now() - t) / 1000).toFixed(0)}s\n`);
   }
   console.log(`\nVERIFIED ${verified}/${concepts.length}`);
-  await fs.writeFile(
-    RESULTS,
-    `# Spike results
-
-MODEL_API_KEY was set. The spike called the model.
-
-VERIFIED ${verified}/${concepts.length}
-`,
-  );
+  const backend = reasoningBackend() === "meta" ? "the Meta Model API (Muse Spark / Muse Wonder)" : "Muse Spark Open (Meta open weights, via the partner)";
+  const line = `- ${new Date().toISOString()} · ${backend} · VERIFIED ${verified}/${concepts.length} · ${concepts.join(" | ")}`;
+  let previous = "";
+  try {
+    previous = await fs.readFile(RESULTS, "utf8");
+  } catch {
+    previous = "";
+  }
+  const header = "# Spike results\n\nEach line is one real `pnpm spike` run. Nothing here is estimated.\n\n";
+  const lines = previous.split("\n").filter((l) => l.startsWith("- "));
+  await fs.writeFile(RESULTS, `${header}${[...lines, line].join("\n")}\n`);
 }
 
 main().catch((error: unknown) => {

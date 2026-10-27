@@ -1,16 +1,25 @@
 import { connection } from "next/server";
-import { metaSource, openWeightsSource } from "@/lib/ai/mode";
+import { metaSource, openWeightsProvider, openWeightsSource, reasoningBackend, reasoningSource } from "@/lib/ai/mode";
+import { spendSummary } from "@/lib/ai/spend";
 import { SAMPLE_NOTICE } from "@/lib/samples/mark";
 
-/** Whether model calls will run live or take the marked sample path. Never returns keys. */
+/**
+ * Whether model calls will run live or take the marked sample path. Never returns keys.
+ * models: text reasoning (generator, judge) — Meta Model API, or Muse Spark Open when only a partner key is set.
+ * art: Muse Image + SAM 3.1 + Voice Transcribe, which need the Meta Model API itself.
+ */
 export async function GET() {
   await connection();
-  const models = metaSource();
+  const models = reasoningSource();
   const openWeights = openWeightsSource();
   const sample = models === "sample" || openWeights === "sample";
   return Response.json({
     models,
+    reasoning: reasoningBackend(),
     openWeights,
+    openWeightsProvider: openWeights === "live" ? openWeightsProvider() : null,
+    art: metaSource(),
+    spend: spendSummary(),
     notice: sample ? SAMPLE_NOTICE : null,
   });
 }

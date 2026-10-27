@@ -19,12 +19,25 @@ export type PopulationView = {
   doors?: "open" | "shut";
 };
 
-export type BodiesView = {
+export type CannonView = {
   kind: "bodies";
   planet: { r: number };
   ball: { x: number; y: number };
   trail: Array<[number, number] | { x: number; y: number }>;
 };
+
+/** Generic many-body view for AI-written worlds: positions inside `bounds`, optional size and colour. */
+export type ParticlesView = {
+  kind: "bodies";
+  bounds: { x: number; y: number; w: number; h: number };
+  bodies: Array<{ id?: string | number; x: number; y: number; radius?: number; color?: string }>;
+};
+
+export type BodiesView = CannonView | ParticlesView;
+
+export function isParticlesView(view: BodiesView): view is ParticlesView {
+  return Array.isArray((view as ParticlesView).bodies);
+}
 
 export type PipelineView = {
   kind: "pipeline";
@@ -53,7 +66,12 @@ export function asWorldView(value: unknown, archetype: Archetype): WorldView | n
   const v = value as { kind?: string };
   if (v.kind !== archetype) return null;
   if (archetype === "population" && Array.isArray((value as PopulationView).agents)) return value as PopulationView;
-  if (archetype === "bodies" && (value as BodiesView).ball && (value as BodiesView).planet) return value as BodiesView;
+  if (archetype === "bodies" && (value as CannonView).ball && (value as CannonView).planet) return value as CannonView;
+  if (archetype === "bodies" && Array.isArray((value as ParticlesView).bodies)) {
+    const b = (value as Partial<ParticlesView>).bounds;
+    const bounds = b && [b.x, b.y, b.w, b.h].every((n) => typeof n === "number" && Number.isFinite(n)) && b.w > 0 && b.h > 0 ? b : { x: 0, y: 0, w: 1, h: 1 };
+    return { kind: "bodies", bounds, bodies: (value as ParticlesView).bodies } as ParticlesView;
+  }
   if (archetype === "pipeline" && typeof (value as PipelineView).query === "string") return value as PipelineView;
   if (archetype === "field" && Array.isArray((value as FieldView).grid)) return value as FieldView;
   return null;

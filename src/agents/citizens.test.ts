@@ -65,7 +65,18 @@ describe("citizens", () => {
   it("live decisions scrub a line that quotes the law", async () => {
     process.env.FIREWORKS_API_KEY = "present";
     const create = vi.fn(async () => ({
-      choices: [{ message: { content: JSON.stringify({ worried: 0.4, withdraw: false, says: rumour.science.hiddenLaw }) } }],
+      choices: [
+        {
+          message: {
+            content: JSON.stringify({
+              citizens: [
+                { id: 0, worried: 0.4, withdraw: false, says: rumour.science.hiddenLaw },
+                { id: 1, worried: 0.4, withdraw: false, says: rumour.science.hiddenLaw },
+              ],
+            }),
+          },
+        },
+      ],
     }));
     vi.mocked(openWeights).mockReturnValue({ model: "test-model", client: { chat: { completions: { create } } } } as never);
     const result = await decideCitizens(rumour, citizens, { insurance: true });
@@ -74,7 +85,7 @@ describe("citizens", () => {
       { id: 0, worried: 0.4, withdraw: false, says: null },
       { id: 1, worried: 0.4, withdraw: false, says: null },
     ]);
-    expect(create).toHaveBeenCalledTimes(2);
+    expect(create).toHaveBeenCalledTimes(1);
     expect(JSON.stringify(result).includes(rumour.science.hiddenLaw)).toBe(false);
     const sent = JSON.stringify(create.mock.calls);
     expect(sent.includes(rumour.science.hiddenLaw)).toBe(false);

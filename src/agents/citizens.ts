@@ -18,9 +18,10 @@ export const OPEN_WEIGHTS_FAILURE_NOTICE = "Open-weights call failed; the determ
 /** Neighbour radius used by the deterministic brain. Kept here so this file does not need to edit world rules. */
 const NEIGHBOUR_RADIUS = 0.25;
 
-export const CITIZEN_SYSTEM = `You are one person walking past the town bank. You hear only your neighbours.
-Return JSON: {"worried": a number from 0 to 1, "withdraw": true or false, "says": a spoken line of at most 12 words, or null}.
-You do not know the rule of this town. Do not explain a theory. Speak like a neighbour, or stay quiet.`;
+export const CITIZEN_SYSTEM = `You voice every person walking past the town bank. Each person hears only their own neighbours.
+For EVERY citizen in the input, decide independently from what that person can hear.
+Return ONLY JSON: {"citizens": [{"id": number, "worried": 0..1, "withdraw": true|false, "says": a spoken line of at most 12 words, or null}, ...]}.
+Nobody knows the rule of this town. Do not explain a theory. Speak like a neighbour, or stay quiet. Most people stay quiet.`;
 
 export type CitizenView = {
   id: number;
@@ -73,33 +74,44 @@ function parseDecision(raw: unknown, id: number, spec: WorldSpec): CitizenDecisi
   return { id, worried: clamp(body.worried), withdraw: body.withdraw, says };
 }
 
-async function askCitizen(client: OpenAI, model: string, citizen: CitizenView, citizens: CitizenView[], spec: WorldSpec, settings: Params): Promise<CitizenDecision> {
-  const nearby = neighboursOf(citizen, citizens).map((other) => ({
-    id: other.id,
-    worried: clamp(other.worried),
-    says: audible(other.says, spec),
+/**
+ * One call decides the whole square: Muse Spark Open has no JSON mode, so the shape rides in the prompt
+ * and every decision is validated. One call per run keeps a live town at about a cent.
+ */
+async function askTown(client: OpenAI, model: string, citizens: CitizenView[], spec: WorldSpec, settings: Params): Promise<CitizenDecision[]> {
+  const people = citizens.map((citizen) => ({
+    id: citizen.id,
+    worried: Math.round(clamp(citizen.worried) * 100) / 100,
+    hears: neighboursOf(citizen, citizens)
+      .map((other) => audible(other.says, spec))
+      .filter((line): line is string => Boolean(line)),
+    worriedNeighbours: neighboursOf(citizen, citizens).filter((other) => other.worried > 0.5).length,
   }));
   const completion = await client.chat.completions.create({
     model,
     temperature: 0.7,
-    max_tokens: 120,
+    // Reasoning counts toward max_tokens on Muse Spark Open.
+    max_tokens: 9000,
     stream: false,
-    response_format: { type: "json_object" },
     messages: [
       { role: "system", content: CITIZEN_SYSTEM },
-      {
-        role: "user",
-        content: JSON.stringify({
-          you: { id: citizen.id, worried: clamp(citizen.worried) },
-          neighbours: nearby,
-          settings,
-        }),
-      },
+      { role: "user", content: JSON.stringify({ settings, citizens: people }) },
     ],
   });
   const content = completion.choices?.[0]?.message?.content;
-  if (typeof content !== "string" || !content.trim()) throw new Error("Citizen decision was empty.");
-  return parseDecision(parseJsonObject(content), citizen.id, spec);
+  if (typeof content !== "string" || !content.trim()) throw new Error("Town decision was empty.");
+  const parsed = parseJsonObject(content) as { citizens?: unknown } | null;
+  const list = parsed && Array.isArray(parsed.citizens) ? parsed.citizens : null;
+  if (!list) throw new Error("Town decision had no citizens list.");
+  const byId = new Map<number, unknown>();
+  for (const item of list) {
+    if (item && typeof item === "object" && typeof (item as { id?: unknown }).id === "number") byId.set((item as { id: number }).id, item);
+  }
+  return citizens.map((citizen) => {
+    const raw = byId.get(citizen.id);
+    if (!raw) throw new Error(`Town decision skipped citizen ${citizen.id}.`);
+    return parseDecision(raw, citizen.id, spec);
+  });
 }
 
 export async function decideCitizens(spec: WorldSpec, citizens: CitizenView[], params: Params | undefined): Promise<CitizenResponse> {
@@ -111,7 +123,7 @@ export async function decideCitizens(spec: WorldSpec, citizens: CitizenView[], p
     const { openWeights } = await import("@/lib/ai/clients");
     const { client, model } = openWeights();
     const settings = benchParams(spec, params);
-    const decisions = await Promise.all(citizens.map((citizen) => askCitizen(client, model, citizen, citizens, spec, settings)));
+    const decisions = await askTown(client, model, citizens, spec, settings);
     return { source: "live", decisions };
   } catch {
     return { source: "sample", notice: OPEN_WEIGHTS_FAILURE_NOTICE, decisions: null };

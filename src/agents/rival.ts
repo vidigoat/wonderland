@@ -1,7 +1,7 @@
 import "server-only";
 import type { Observation, Params } from "@/engine/rules";
 import type { Knob, WorldSpec } from "@/engine/spec";
-import { loadRules } from "@/engine/load";
+import { loadJsRules } from "@/engine/load";
 import { runHeadless } from "@/engine/runtime";
 import { openWeightsSource } from "@/lib/ai/mode";
 import type { DataSource } from "@/lib/samples/mark";
@@ -119,7 +119,7 @@ async function applyTool(spec: WorldSpec, seed: number, params: Params, tool: Ri
   }
   if (tool.name === "hypothesise") return { params: current };
   const steps = tool.name === "run" ? tool.steps : 0;
-  const result = await runHeadless(loadRules(spec), current, steps, seed);
+  const result = await runHeadless(await loadJsRules(spec), current, steps, seed);
   return { params: current, observation: result.final };
 }
 
@@ -261,10 +261,17 @@ function rivalBrief(spec: WorldSpec, params: Params, history: unknown[]): string
   });
 }
 
-function spokenThought(content: string | null | undefined, args: Record<string, unknown>, spec: WorldSpec): string {
+/** The last sentence or two of the model's own reasoning — what Ada was actually thinking just before she acted. */
+function reasoningTail(reasoning: unknown): string {
+  if (typeof reasoning !== "string") return "";
+  const sentences = reasoning.replace(/\s+/g, " ").trim().split(/(?<=[.!?])\s+/).filter((s) => s.length > 3);
+  return sentences.slice(-2).join(" ").slice(0, 240);
+}
+
+function spokenThought(content: string | null | undefined, args: Record<string, unknown>, spec: WorldSpec, reasoning?: unknown): string {
   const fromMessage = typeof content === "string" ? content.trim() : "";
   const fromArgs = typeof args.thought === "string" ? args.thought.trim() : "";
-  return scrubReply(fromMessage || fromArgs, spec).slice(0, 400);
+  return scrubReply(fromMessage || fromArgs || reasoningTail(reasoning), spec).slice(0, 400);
 }
 
 async function liveRival(spec: WorldSpec, seed: number, params: Params, history: unknown): Promise<RivalResponse> {
@@ -276,9 +283,10 @@ async function liveRival(spec: WorldSpec, seed: number, params: Params, history:
     const completion = await client.chat.completions.create({
       model,
       temperature: 0.4,
-      max_tokens: 300,
+      // Muse Spark Open always reasons first and reasoning counts toward max_tokens.
+      max_tokens: 2500,
       stream: false,
-      parallel_tool_calls: false,
+      // No parallel_tool_calls:false — Muse Spark Open on Baseten returns an empty stop with it. Only the first call is used.
       tool_choice: "required",
       tools: TOOLS,
       messages: [
@@ -296,7 +304,7 @@ async function liveRival(spec: WorldSpec, seed: number, params: Params, history:
       args = parsed as Record<string, unknown>;
     }
     const tool = toolFromModel(spec, call.function.name, args);
-    const thought = spokenThought(message?.content, args, spec);
+    const thought = spokenThought(message?.content, args, spec, (message as { reasoning_content?: unknown } | undefined)?.reasoning_content);
     const applied = await applyTool(spec, seed, current, tool);
     const response: RivalResponse = {
       source: "live",

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { StageProps } from "./stage-props";
-import type { BodiesView, FieldView, PipelineView, PopulationView } from "@/engine/view";
+import { isParticlesView, type BodiesView, type CannonView, type FieldView, type ParticlesView, type PipelineView, type PopulationView } from "@/engine/view";
 
 function mix(from: string, to: string, t: number): string {
   const parse = (hex: string) => {
@@ -65,6 +65,24 @@ function pointOf(point: [number, number] | { x: number; y: number }): [number, n
 }
 
 function BodiesPlate({ view }: { view: BodiesView }) {
+  if (isParticlesView(view)) return <ParticlesPlate view={view} />;
+  return <CannonPlate view={view} />;
+}
+
+function ParticlesPlate({ view }: { view: ParticlesView }) {
+  const { x, y, w, h } = view.bounds;
+  return (
+    <div className="bodies-plate">
+      <svg viewBox={`${x} ${y} ${w} ${h}`} className="bodies-svg" role="presentation">
+        {view.bodies.slice(0, 600).map((body, index) => (
+          <circle key={String(body.id ?? index)} cx={body.x} cy={body.y} r={Math.max(w, h) * 0.012 * (body.radius ?? 1)} fill={typeof body.color === "string" ? body.color : "currentColor"} />
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+function CannonPlate({ view }: { view: CannonView }) {
   const trail = view.trail.length > 180 ? view.trail.filter((_, index) => index % Math.ceil(view.trail.length / 180) === 0) : view.trail;
   const points = trail.map(pointOf);
   const last = points[points.length - 1];

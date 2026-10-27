@@ -1,7 +1,7 @@
 import "server-only";
 import { connection } from "next/server";
 import { judgeStatement, ModelCallError, redactMessage } from "@/agents/judge";
-import { getHeroWorld } from "@/worlds";
+import { findWorld } from "@/worlds/find.server";
 
 /**
  * POST { worldId, statement }
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   if (body.statement.length > 4_000) {
     return Response.json({ error: "statement is too long" }, { status: 400 });
   }
-  const spec = getHeroWorld(body.worldId);
+  const spec = await findWorld(body.worldId);
   if (!spec) return Response.json({ error: "unknown world" }, { status: 404 });
   try {
     const result = await judgeStatement(spec, body.statement);

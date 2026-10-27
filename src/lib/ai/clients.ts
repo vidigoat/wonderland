@@ -1,5 +1,7 @@
 import "server-only";
 import OpenAI from "openai";
+import { openWeightsProvider } from "./mode";
+import { guardedFetch } from "./spend";
 
 /**
  * All providers speak the OpenAI wire format, so one SDK covers everything.
@@ -17,7 +19,7 @@ function required(name: string): string {
 
 let meta: OpenAI | null = null;
 export function metaClient(): OpenAI {
-  meta ??= new OpenAI({ baseURL: process.env.META_BASE_URL ?? "https://api.meta.ai/v1", apiKey: required("MODEL_API_KEY") });
+  meta ??= new OpenAI({ baseURL: process.env.META_BASE_URL ?? "https://api.meta.ai/v1", apiKey: required("MODEL_API_KEY"), fetch: guardedFetch("meta") });
   return meta;
 }
 
@@ -29,12 +31,12 @@ export function fireworksClient(): OpenAI {
 
 let baseten: OpenAI | null = null;
 export function basetenClient(): OpenAI {
-  baseten ??= new OpenAI({ baseURL: process.env.BASETEN_BASE_URL ?? "https://inference.baseten.co/v1", apiKey: required("BASETEN_API_KEY") });
+  baseten ??= new OpenAI({ baseURL: process.env.BASETEN_BASE_URL ?? "https://inference.baseten.co/v1", apiKey: required("BASETEN_API_KEY"), fetch: guardedFetch("baseten") });
   return baseten;
 }
 
 /** Which open-weights provider powers the rival + citizens. Both qualify for the open-weights prize. */
 export function openWeights(): { client: OpenAI; model: string } {
-  if (process.env.OPEN_WEIGHTS_PROVIDER === "baseten") return { client: basetenClient(), model: "meta-models/muse-spark-open-1026" };
+  if (openWeightsProvider() === "baseten") return { client: basetenClient(), model: "meta-models/muse-spark-open-1026" };
   return { client: fireworksClient(), model: process.env.FIREWORKS_GLIMMER_MODEL ?? "accounts/fireworks/models/muse-glimmer-30b" };
 }

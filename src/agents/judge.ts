@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import type { Params } from "@/engine/rules";
 import type { Knob, WorldSpec } from "@/engine/spec";
-import { metaSource } from "@/lib/ai/mode";
+import { reasoningSource } from "@/lib/ai/mode";
 import type { DataSource } from "@/lib/samples/mark";
 import { SAMPLE_NOTICE } from "@/lib/samples/mark";
 
@@ -347,7 +347,7 @@ function parseJudgePayload(raw: string): { verdict: JudgeVerdict; reply: string;
 
 /** Live lane calls Muse Spark. Sample lane does not. */
 export async function judgeStatement(spec: WorldSpec, statement: string): Promise<JudgeResponse> {
-  if (metaSource() !== "live") return sampleJudge(spec, statement);
+  if (reasoningSource() !== "live") return sampleJudge(spec, statement);
   try {
     const { think } = await import("@/lib/ai/meta");
     const { MODELS } = await import("@/lib/ai/models");

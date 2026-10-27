@@ -34,7 +34,8 @@ yarn-error.log*
 .env*
 
 # generated world specs (they contain hidden laws)
-/data/
+/data/*
+!/data/worlds/
 
 # vercel
 .vercel
@@ -47,3 +48,4 @@ next-env.d.ts
 .smoke/
 .spike/
 .claude/
+.spend/

@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { PlayLoop } from "@/components/play/PlayLoop";
 import { toPublic } from "@/engine/spec";
-import { getHeroWorld, heroWorlds } from "@/worlds";
+import { heroWorlds } from "@/worlds";
+import { findWorld } from "@/worlds/find.server";
 
 export function generateStaticParams() {
   return heroWorlds.map((world) => ({ id: world.id }));
@@ -11,7 +12,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const spec = getHeroWorld(id);
+  const spec = await findWorld(id);
   if (!spec) return { title: "Missing world" };
   const pub = toPublic(spec);
   return { title: pub.title, description: pub.tagline };
@@ -27,7 +28,7 @@ export default function WorldPage({ params }: { params: Promise<{ id: string }> 
 
 async function World({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const spec = getHeroWorld(id);
+  const spec = await findWorld(id);
   if (!spec) notFound();
   return <PlayLoop key={spec.id} spec={toPublic(spec)} />;
 }

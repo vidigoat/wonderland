@@ -1,5 +1,5 @@
 import { Container, Graphics } from "pixi.js";
-import type { BodiesView } from "@/engine/view";
+import { isParticlesView, type CannonView, type ParticlesView } from "@/engine/view";
 import {
   CANNON_STEP_DT,
   launchPreview,
@@ -27,8 +27,9 @@ export function createBodiesScene(): Scene {
   const ghost = new Graphics();
   const cannon = new Graphics();
   const ball = new Graphics();
+  const particles = new Graphics();
   // The ghost sits above the barrel so a short fall is visible. The trail and the ball stay in front once the shot is fired.
-  root.addChild(sky, painting.view, planet, cannon, ghost, trail, ball);
+  root.addChild(sky, painting.view, planet, cannon, ghost, trail, ball, particles);
 
   const samples: Point2[] = [];
   let viewRadius = 3.2;
@@ -38,10 +39,19 @@ export function createBodiesScene(): Scene {
 
   const update = (frame: Frame) => {
     if (!alive) return;
-    const view = frame.view?.kind === "bodies" ? frame.view : null;
+    const anyView = frame.view?.kind === "bodies" ? frame.view : null;
     paintSky(sky, frame);
     painting.show(frame.worldId, frame.width, frame.height);
     const palette = frame.palette;
+
+    const many = anyView && isParticlesView(anyView) ? anyView : null;
+    for (const g of [planet, cannon, ghost, trail, ball]) g.visible = !many;
+    particles.visible = Boolean(many);
+    if (many) {
+      drawParticles(particles, many, frame, palette);
+      return;
+    }
+    const view = anyView as CannonView | null;
 
     if (!ballReady) {
       drawBall(ball, palette);
@@ -130,7 +140,7 @@ function cameraFor(frame: Frame, current: number, focus: number, commit: (next: 
   };
 }
 
-function targetRadius(view: BodiesView, ghost: Point2[]): number {
+function targetRadius(view: CannonView, ghost: Point2[]): number {
   let maxR = 1.72;
   const consider = (x: number, y: number) => {
     const radius = Math.hypot(x, y);
@@ -257,5 +267,28 @@ function trace(g: Graphics, path: Point2[], camera: Camera): void {
   for (let i = 1; i < path.length; i++) {
     const point = camera.toScreen(path[i]!.x, path[i]!.y);
     g.lineTo(point.x, point.y);
+  }
+}
+
+/** AI-written worlds: draw each body inside the view's bounds, keeping the aspect ratio, with a soft lane behind rows. */
+function drawParticles(g: Graphics, view: ParticlesView, frame: Frame, palette: WorldPalette) {
+  g.clear();
+  const pad = Math.min(frame.width, frame.height) * 0.08;
+  const sx = (frame.width - pad * 2) / view.bounds.w;
+  const sy = (frame.height - pad * 2) / view.bounds.h;
+  const s = Math.min(sx, sy);
+  const ox = (frame.width - view.bounds.w * s) / 2 - view.bounds.x * s;
+  const oy = (frame.height - view.bounds.h * s) / 2 - view.bounds.y * s;
+  const rows = new Set(view.bodies.map((b) => Math.round(b.y * 10) / 10));
+  if (rows.size <= 3) {
+    for (const y of rows) {
+      g.rect(pad, oy + y * s - 9, frame.width - pad * 2, 18).fill({ color: palette.ink, alpha: 0.08 });
+    }
+  }
+  for (const body of view.bodies.slice(0, 600)) {
+    if (!Number.isFinite(body.x) || !Number.isFinite(body.y)) continue;
+    const r = Math.max(3, Math.min(18, (body.radius ?? 1) * s * 0.9));
+    const color = typeof body.color === "string" && /^#[0-9a-fA-F]{6}$/.test(body.color) ? body.color : palette.accent;
+    g.circle(ox + body.x * s, oy + body.y * s, r).fill({ color, alpha: 0.95 }).stroke({ color: palette.ink, width: 1, alpha: 0.35 });
   }
 }

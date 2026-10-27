@@ -1,6 +1,6 @@
 import { connection } from "next/server";
 import { gradeAnswer } from "@/engine/grade";
-import { getHeroWorld } from "@/worlds";
+import { findWorld } from "@/worlds/find.server";
 
 /**
  * POST { worldId, kind: "prediction", predictionId, choice }
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     choice?: number | string;
     statement?: string;
   };
-  const spec = body.worldId ? getHeroWorld(body.worldId) : undefined;
+  const spec = body.worldId ? await findWorld(body.worldId) : undefined;
   if (!spec || (body.kind !== "prediction" && body.kind !== "transfer")) {
     return Response.json({ error: "worldId and kind are required" }, { status: 400 });
   }

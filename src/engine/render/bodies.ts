@@ -241,12 +241,11 @@ function drawTrail(g: Graphics, path: Point2[], camera: Camera, palette: WorldPa
 function drawGhost(g: Graphics, path: Point2[], camera: Camera, palette: WorldPalette): void {
   g.clear();
   if (path.length < 2) return;
-  const stroke = { width: 2, color: palette.parchment, alpha: 0.55, cap: "round" as const };
-  for (let i = 0; i < path.length - 1; i += 2) {
-    const a = camera.toScreen(path[i]!.x, path[i]!.y);
-    const b = camera.toScreen(path[i + 1]!.x, path[i + 1]!.y);
-    g.moveTo(a.x, a.y).lineTo(b.x, b.y).stroke(stroke);
-  }
+  trace(g, path, camera);
+  g.stroke({ width: 2.5, color: palette.parchment, alpha: 0.9, cap: "round", join: "round" });
+  const end = path[path.length - 1]!;
+  const at = camera.toScreen(end.x, end.y);
+  g.circle(at.x, at.y, 4.5).stroke({ width: 1.5, color: palette.parchment, alpha: 0.95 });
 }
 
 function trace(g: Graphics, path: Point2[], camera: Camera): void {

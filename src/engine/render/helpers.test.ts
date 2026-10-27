@@ -11,6 +11,7 @@ import {
   fieldScale,
   figureTint,
   flockFacing,
+  shutVaultNote,
   heightSilhouette,
   smoothField,
   landedApart,
@@ -308,6 +309,15 @@ describe("a phone forest keeps moths visible", () => {
       desk.cap,
     );
     expect(drawn.filter((agent) => agent.sprite === "predator")).toHaveLength(7);
+  });
+});
+
+describe("the scribe's spell", () => {
+  it("says the vault stayed shut when the spell ran and returned nothing", () => {
+    expect(shutVaultNote("SELECT * FROM vault", null, 0)).toBe("The spell ran. The vault stayed shut.");
+    expect(shutVaultNote("SELECT * FROM vault", null, 2)).toBeNull();
+    expect(shutVaultNote("SELECT * FROM vault", "near quote", 0)).toBeNull();
+    expect(shutVaultNote("", null, 0)).toBeNull();
   });
 });
 

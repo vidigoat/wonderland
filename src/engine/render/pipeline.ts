@@ -1,5 +1,5 @@
 import { Container, Graphics, Text } from "pixi.js";
-import { clamp01, clampCenter, injectionHighlightRange, lerp, readBoolean, scrollRest, stepScroll, type ScrollTrip } from "./helpers";
+import { clamp01, clampCenter, injectionHighlightRange, lerp, readBoolean, scrollRest, shutVaultNote, stepScroll, type ScrollTrip } from "./helpers";
 import { pixelRatio, stageFont } from "./fonts";
 import type { WorldPalette } from "./palette";
 import type { Frame, Scene } from "./scene";
@@ -266,7 +266,7 @@ function laySpell(layer: Container, frame: Frame, query: string, error: string |
   const cardW = frame.width - margin * 2;
   const cardX = margin;
   const resolution = pixelRatio();
-  const fontSize = cardW < 520 ? 13 : 15;
+  const fontSize = cardW < 420 ? 12 : cardW < 520 ? 13 : 15;
   const family = stageFont("mono");
   const maxWidth = cardW - 36;
   const lineHeight = fontSize * 1.5;
@@ -280,8 +280,14 @@ function laySpell(layer: Container, frame: Frame, query: string, error: string |
     style: { fontFamily: stageFont("ui"), fontSize: 12, fill: 0xa3a3a3, wordWrap: true, wordWrapWidth: maxWidth },
   });
   const measure = measurer(`500 ${fontSize}px ${family}`);
-  const lines = query ? wrapLines(query, maxWidth, measure).slice(0, 4) : [];
+  const wrapped = query ? wrapLines(query, maxWidth, measure) : [];
+  const lines = wrapped.slice(0, 6);
+  if (wrapped.length > lines.length && lines.length > 0) {
+    const last = lines[lines.length - 1]!;
+    lines[lines.length - 1] = { text: `${last.text.replace(/\s+$/, "")} …`, start: last.start };
+  }
   let footer: Text | null = null;
+  const shutNote = shutVaultNote(query, error, rows.length);
   if (error) {
     footer = new Text({
       text: `The scribe stopped: ${error.replace(/\s+/g, " ").slice(0, 100)}`,
@@ -294,6 +300,12 @@ function laySpell(layer: Container, frame: Frame, query: string, error: string |
       text: `The ledger gave up ${rows.length} ${rows.length === 1 ? "entry" : "entries"}${shown.length ? `: ${shown.join(" · ")}` : ""}`,
       resolution,
       style: { fontFamily: stageFont("ui"), fontSize: 13, fontWeight: "600", fill: 0xffd27a, wordWrap: true, wordWrapWidth: maxWidth },
+    });
+  } else if (shutNote) {
+    footer = new Text({
+      text: shutNote,
+      resolution,
+      style: { fontFamily: stageFont("ui"), fontSize: 13, fill: 0xf5f5f5, wordWrap: true, wordWrapWidth: maxWidth },
     });
   }
   const padY = 12;

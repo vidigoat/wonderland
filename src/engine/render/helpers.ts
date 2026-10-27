@@ -133,6 +133,12 @@ export function cssHex(color: number): string {
   return `#${(color & 0xffffff).toString(16).padStart(6, "0")}`;
 }
 
+/** The spell was built and ran, and it did not open the vault. */
+export function shutVaultNote(query: string, error: string | null, rowCount: number): string | null {
+  if (!query || error || rowCount > 0) return null;
+  return "The spell ran. The vault stayed shut.";
+}
+
 /** The starling painting points up. Pixi and the canvas both rotate clockwise, and the flock's +y runs down the stage. */
 export function flockFacing(heading: number): number {
   return heading + Math.PI / 2;

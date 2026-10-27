@@ -221,6 +221,8 @@ export function duneRunSteps(wind: number, height: number): number {
 
 export function runSteps(archetype: string, worldId?: string, params?: Params): number {
   if (archetype === "pipeline") return 1;
+  // Lanes need longer than a cannon shot. At 560 steps some seeds are still mixed.
+  if (worldId === "hallway-lanes") return 2000;
   // Long enough for a shot above circular speed to leave (escape at 1.4 takes ~550 steps).
   if (archetype === "bodies") return 560;
   if (worldId === "dune-march") return duneRunSteps(Number(params?.windSpeed ?? 5), Number(params?.initialHeight ?? 10));

@@ -98,6 +98,8 @@ describe("phase machine", () => {
   it("gives a cannon shot enough steps to travel", () => {
     expect(runSteps("pipeline")).toBe(1);
     expect(runSteps("bodies")).toBeGreaterThanOrEqual(550);
+    expect(runSteps("bodies", "hallway-lanes")).toBe(2000);
+    expect(Math.ceil(2000 / tickBatch(2000, "hallway-lanes"))).toBeLessThanOrEqual(28);
     expect(runDuration(runSteps("bodies"))).toBeGreaterThan(runDuration(1));
     expect(runSteps("population")).toBe(30);
     expect(runSteps("field", "firebreak")).toBe(48);

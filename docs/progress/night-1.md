@@ -75,7 +75,7 @@ The gallery card for Marching Dunes drew the sand as a staircase of cells. Commi
 
 The stage drew that same ridge from a few rows, so the slope was still a stair. Commit `af4317f`. The play view now blurs the ridge and keeps the crest where the sand put it. On the production server the dune is a smooth shape, gentler upwind and steeper on the slip face. `pnpm check` is 228 tests.
 
-The ember plate said the heat was "170" and "6362". Those were a variance and a sum of every cell. One run now reads 13 degrees of difference, a hottest spot of 63.9 degrees, and an average warmth of 6.21 degrees, which does not change. All five plate checks still pass. Checked on the production server.
+The ember plate said the heat was "170" and "6362". Commit `c2e1336`. Those were a variance and a sum of every cell. One run now reads 13 degrees of difference, a hottest spot of 63.9 degrees, and an average warmth of 6.21 degrees, which does not change. All five plate checks still pass. Checked on the production server.
 
 ## Still blocked on a key
 

@@ -192,7 +192,10 @@ function layStations(
     const role = stationRole(stage, open, error, index, narrow);
     const card = stationCard(role, frame.height < 520 || narrow);
     const bounds = card.getLocalBounds();
-    const drop = (frame.height < 520 ? 30 : 42) * scale + (narrow && index % 2 === 1 ? 36 : 0);
+    // On a phone the scroll travels under the stations. Names go above them, staggered, so they don't sit on the scroll.
+    const drop = narrow
+      ? -bounds.height - 8 - (index % 2 === 1 ? bounds.height + 4 : 0)
+      : (frame.height < 520 ? 30 : 42) * scale;
     card.position.set(clampCenter(at.x, bounds.width, frame.width), at.y + drop);
     layer.addChild(card);
   });

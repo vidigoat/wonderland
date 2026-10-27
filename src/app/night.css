@@ -1860,7 +1860,21 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
-    max-width: 108px;
+    right: 8px;
+    width: 104px;
+    max-width: 104px;
+    box-sizing: border-box;
+    padding: 6px;
+  }
+  .stage-stack .hud-legend li {
+    display: flex;
+    flex-wrap: wrap;
+    white-space: normal;
+    line-height: 1.2;
+  }
+  .hud-legend i.hud-legend-bubble {
+    white-space: normal;
+    line-height: 1.2;
   }
   .hud-card {
     min-width: 0;

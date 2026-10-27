@@ -1769,17 +1769,20 @@
   max-width: 880px;
   margin: 0 auto;
   padding: 32px 20px 64px;
-  color: #fafafa;
+  color: var(--ink, #14110e);
 }
 .study h1 {
   margin: 8px 0 16px;
+  color: var(--ink, #14110e);
   font-size: clamp(32px, 5vw, 48px);
   letter-spacing: -0.04em;
 }
-.study-essay {
+.study-essay,
+.study-questions legend,
+.study-questions label {
   font-size: 17px;
   line-height: 1.55;
-  color: #e5e5e5;
+  color: var(--ink, #14110e);
 }
 .study-frame {
   width: 100%;
@@ -1810,8 +1813,12 @@
 .study-table th,
 .study-table td {
   padding: 8px 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid rgba(20, 17, 14, 0.12);
+  color: var(--ink, #14110e);
   text-align: left;
+}
+.study a {
+  color: var(--ink, #14110e);
 }
 
 /* The run, under the stage. The stage keeps the picture; the chart keeps the comparison. */

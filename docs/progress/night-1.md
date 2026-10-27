@@ -51,6 +51,8 @@ A finished play writes one anonymous line to `data/plays/plays.jsonl`. Nothing f
 
 `pnpm eval` is `scripts/eval-generate.ts`. Run here on Tue 27 Oct 2026, about 11:05 PM IST, with no key. It wrote `docs/eval-results.md` and exited 0. The eight questions were not sent to a model. No fraction, median time, or median cost. The README was not given a number. Failed questions were not re-run, and nothing new was painted.
 
+The study pages are ink on the cream page. A first pass had drawn them in white, which disappeared. Checked on the production server: the read arm, the empty results table, and a question with no mechanism ("Why is the sky blue on a clear day?") which offered three shelf questions and Newton's Cannon.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

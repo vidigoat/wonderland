@@ -177,6 +177,8 @@ On a phone the hot plate's four cards covered most of the metal, so the glow was
 
 On a phone the valley drew only lynx, while the card said 112 hares were alive. Commit `9ce48b1`, then `0d8620d`. The picture keeps a share of the hares, drawn large enough to see among the lynx, and the readings sit in two columns. On the production server at 390 wide, one season shows hares and lynx together, and the cards read 26 lynx, 112 hares, a swing of 0.99 of their average, and 42 steps from the hare peak to the lynx. `pnpm check` is 251 tests.
 
+On a phone the flock's three cards covered the birds on the left. Commit `babd643`. They now sit in one row. On the production server at 390 wide, one flight reads 0% bumping, 81% facing the same way, and the flock 16.7 from the centre, with the birds clear under the cards and turned along that drift. `pnpm check` is 251 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

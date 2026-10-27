@@ -1,5 +1,5 @@
 import { Container, Graphics, Text } from "pixi.js";
-import { clamp01, clampCenter, injectionHighlightRange, lerp, readBoolean, scrollRest, sealedDataLine, shutVaultNote, splitSealedSpell, stepScroll, type ScrollTrip } from "./helpers";
+import { clamp01, clampCenter, injectionHighlightRange, lerp, readBoolean, scribeStopLine, scrollRest, sealedDataLine, shutVaultNote, splitSealedSpell, stepScroll, type ScrollTrip } from "./helpers";
 import { pixelRatio, stageFont } from "./fonts";
 import type { WorldPalette } from "./palette";
 import type { Frame, Scene } from "./scene";
@@ -288,7 +288,7 @@ function laySpell(layer: Container, frame: Frame, query: string, error: string |
   const shutNote = shutVaultNote(query, error, rows.length);
   if (error) {
     footer = new Text({
-      text: `The scribe stopped: ${error.replace(/\s+/g, " ").slice(0, 100)}`,
+      text: scribeStopLine(error),
       resolution,
       style: { fontFamily: stageFont("ui"), fontSize: 13, fill: 0xff8a7a, wordWrap: true, wordWrapWidth: maxWidth },
     });

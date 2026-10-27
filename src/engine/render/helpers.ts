@@ -156,6 +156,14 @@ export function sealedDataLine(data: string): string {
   return `Sealed. Kept as data: ${data}`;
 }
 
+/** What the card says when the scribe cannot finish the spell. A broken quote is named in plain words. */
+export function scribeStopLine(error: string): string {
+  const text = error.replace(/\s+/g, " ").trim();
+  if (/syntax error|near /i.test(text)) return "The scribe stopped. The quote closed too soon.";
+  if (!text) return "The scribe stopped.";
+  return `The scribe stopped. ${text.slice(0, 80)}`;
+}
+
 /** The spell was built and ran, and it did not open the vault. */
 export function shutVaultNote(query: string, error: string | null, rowCount: number): string | null {
   if (!query || error || rowCount > 0) return null;

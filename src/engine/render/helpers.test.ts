@@ -19,6 +19,7 @@ import {
   figureTint,
   flockFacing,
   sealedDataLine,
+  scribeStopLine,
   shutVaultNote,
   splitSealedSpell,
   heightSilhouette,
@@ -351,6 +352,11 @@ describe("the scribe's spell", () => {
     expect(split.spell).toBe("SELECT * FROM vault WHERE name = ? AND pass = ?");
     expect(sealedDataLine(split.data ?? "")).toBe("Sealed. Kept as data: ' OR '1'='1  ·  ' OR '1'='1");
     expect(splitSealedSpell("SELECT * FROM vault").data).toBeNull();
+  });
+
+  it("names a broken quote in plain words", () => {
+    expect(scribeStopLine('near "Brien": syntax error')).toBe("The scribe stopped. The quote closed too soon.");
+    expect(scribeStopLine("disk full")).toBe("The scribe stopped. disk full");
   });
 
   it("says the vault stayed shut when the spell ran and returned nothing", () => {

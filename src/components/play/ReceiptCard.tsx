@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { paintReceipt, paletteFor, receiptArtPaths, receiptCopy, type ReceiptModel, type ReceiptPicture } from "./receipt";
+import { paintReceipt, paletteFor, receiptArtPaths, receiptSummary, type ReceiptModel, type ReceiptPicture } from "./receipt";
 
 function fontStack(variable: string, fallback: string): string {
   const value = getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
@@ -36,9 +36,8 @@ function downloadCanvas(canvas: HTMLCanvasElement, filename: string) {
 
 export function ReceiptCard({ model, worldId }: { model: ReceiptModel; worldId: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
-  const copy = receiptCopy(model);
   const { title, tagline, concept, before, after, afterKind, elapsedMs, seen, beforeWords, afterWords } = model;
-  const summary = `${title}. First prediction ${copy.before}${beforeWords ? `: ${beforeWords}` : ""}. ${copy.afterKind} ${copy.after}${afterWords ? `: ${afterWords}` : ""}. Time ${copy.elapsed}.${seen ? ` You saw: ${seen}` : ""}`;
+  const summary = receiptSummary(model);
 
   useEffect(() => {
     const canvas = ref.current;

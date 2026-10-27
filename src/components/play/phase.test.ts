@@ -19,7 +19,7 @@ import {
   toHypothesise,
   TRAIL,
 } from "./phase";
-import { pictureFrame, receiptArtPaths, receiptCopy } from "./receipt";
+import { pictureFrame, receiptArtPaths, receiptCopy, receiptSummary } from "./receipt";
 import { freshStart, pictureAction, raceLine, raceRows, restageParams, runDuration, runSteps, speakTool } from "./readings";
 import { drainSse, heroHref, toMontageItem } from "./sse";
 import { encodeWav } from "./wav";
@@ -196,6 +196,21 @@ describe("receipt copy", () => {
         elapsedMs: 125_000,
       }),
     ).toMatchObject({ before: "Missed", after: "Held", afterKind: "Second prediction", elapsed: "2m 05s" });
+    const said = receiptSummary({
+      title: "The Gatekeeper's Ledger",
+      tagline: "The scribe copies exactly what you write.",
+      concept: "Why does SQL injection work?",
+      before: true,
+      after: true,
+      afterKind: "prediction",
+      elapsedMs: 4000,
+      beforeWords: "Choke — the spell breaks",
+      afterWords: "No — your words stay words",
+      seen: "The vault is open.",
+    });
+    expect(said).toContain("Choke — the spell breaks");
+    expect(said).toContain("The law is not printed on this card.");
+    expect(said.toLowerCase()).not.toMatch(/hiddenlaw|answerkey/);
   });
 
   it("puts the shelf painting on a hero card and leaves an unknown world as type", () => {

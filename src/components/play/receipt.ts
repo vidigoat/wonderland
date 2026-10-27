@@ -78,6 +78,15 @@ export function receiptCopy(model: ReceiptModel) {
   };
 }
 
+/** The card's spoken name. Same facts as the painting, including that the law is absent. */
+export function receiptSummary(model: ReceiptModel): string {
+  const copy = receiptCopy(model);
+  const beforeWords = model.beforeWords ? `: ${model.beforeWords}` : "";
+  const afterWords = model.afterWords ? `: ${model.afterWords}` : "";
+  const seen = model.seen ? ` You saw: ${model.seen}` : "";
+  return `${model.title}. First prediction ${copy.before}${beforeWords}. ${copy.afterKind} ${copy.after}${afterWords}. Time ${copy.elapsed}.${seen} The law is not printed on this card.`;
+}
+
 function wrap(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxWidth: number, lineHeight: number, maxLines: number): number {
   const words = text.split(/\s+/).filter(Boolean);
   let line = "";

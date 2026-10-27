@@ -169,6 +169,8 @@ The dune, the meadow, the flock, and the valley all shared a generic button. Com
 
 How fast the dune walks said "1 times height 10". Commit `d4416c4`. It now says "1 of a height-10 dune's pace". On the production server one march ends at 0.23 dune widths, sand lost at -0.0046 each step, and that pace. `pnpm check` is 249 tests.
 
+On the stage that same dune was a low bump, so the two slopes were hard to tell apart. Commit `a228411`. The picture lifts the ridge, and a taller dune still draws taller. On the production server one march shows the long windward slope and the shorter slip face, in the place the crest has walked, with the same three readings. `pnpm check` is 250 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

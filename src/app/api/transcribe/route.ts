@@ -1,11 +1,10 @@
 import "server-only";
 import { connection } from "next/server";
-import { metaSource } from "@/lib/ai/mode";
 import { SAMPLE_NOTICE } from "@/lib/samples/mark";
 
 /**
  * POST audio/wav → { source, text, notice? }.
- * Live: Muse Voice Transcribe.
+ * Live: Muse Voice Transcribe, or Muse Spark Open audio input when only a Baseten key is set.
  * Sample: text is null. No invented transcript.
  */
 function failureMessage(error: unknown): string {
@@ -20,7 +19,8 @@ function failureMessage(error: unknown): string {
 
 export async function POST(req: Request) {
   await connection();
-  if (metaSource() !== "live") {
+  const { canTranscribe } = await import("@/lib/ai/meta");
+  if (!canTranscribe()) {
     return Response.json({ source: "sample", text: null, notice: SAMPLE_NOTICE });
   }
   const wav = await req.arrayBuffer();

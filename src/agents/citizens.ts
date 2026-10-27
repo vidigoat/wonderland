@@ -21,7 +21,8 @@ const NEIGHBOUR_RADIUS = 0.25;
 export const CITIZEN_SYSTEM = `You voice every person walking past the town bank. Each person hears only their own neighbours.
 For EVERY citizen in the input, decide independently from what that person can hear.
 Return ONLY JSON: {"citizens": [{"id": number, "worried": 0..1, "withdraw": true|false, "says": a spoken line of at most 12 words, or null}, ...]}.
-Nobody knows the rule of this town. Do not explain a theory. Speak like a neighbour, or stay quiet. Most people stay quiet.`;
+Nobody knows the rule of this town. Do not explain a theory. Speak like a neighbour: short, specific, a little human (names, errands, worries).
+About one person in three says something each round; people who heard worry nearby are likelier to speak. Never repeat another person's exact line.`;
 
 export type CitizenView = {
   id: number;

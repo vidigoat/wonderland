@@ -1,7 +1,7 @@
 import "server-only";
 import { toFile } from "openai";
 import { metaClient, openWeights } from "./clients";
-import { reasoningBackend } from "./mode";
+import { metaSource, openWeightsProvider, openWeightsSource, reasoningBackend } from "./mode";
 import { MODELS } from "./models";
 
 /**
@@ -98,11 +98,39 @@ export async function segment(opts: { prompt: string; imageUrl: string }): Promi
   return res.output_text;
 }
 
+/** Whether spoken hypotheses can be transcribed: Muse Voice Transcribe, or Muse Spark Open's audio input on Baseten. */
+export function canTranscribe(): boolean {
+  return metaSource() === "live" || (openWeightsSource() === "live" && openWeightsProvider() === "baseten");
+}
+
 /** Muse Voice Transcribe — WAV in, text out. Docs: https://dev.meta.ai/docs/speech-to-text */
 export async function transcribe(wav: ArrayBuffer): Promise<string> {
+  if (metaSource() !== "live") return transcribeOpenWeights(wav);
   const res = await metaClient().audio.transcriptions.create({
     model: MODELS.transcribe,
     file: await toFile(Buffer.from(wav), "speech.wav", { type: "audio/wav" }),
   });
   return res.text;
+}
+
+/** Muse Spark Open hears audio directly (Baseten `audio_url` content part). Asked for a verbatim transcript only. */
+async function transcribeOpenWeights(wav: ArrayBuffer): Promise<string> {
+  const { client, model } = openWeights();
+  const url = `data:audio/wav;base64,${Buffer.from(wav).toString("base64")}`;
+  const completion = await client.chat.completions.create({
+    model,
+    temperature: 0,
+    max_tokens: 1500,
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "text", text: "Transcribe this audio verbatim. Reply with only the words spoken, or an empty reply if there is no speech." },
+          { type: "audio_url", audio_url: { url } },
+        ] as never,
+      },
+    ],
+  });
+  const text = completion.choices[0]?.message?.content;
+  return typeof text === "string" ? text.trim() : "";
 }

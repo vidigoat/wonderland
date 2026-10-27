@@ -20,7 +20,7 @@ import {
   TRAIL,
 } from "./phase";
 import { pictureFrame, receiptArtPaths, receiptCopy, receiptSummary } from "./receipt";
-import { freshStart, pictureAction, raceLine, raceRows, restageParams, runDuration, runSteps, speakTool } from "./readings";
+import { freshStart, pictureAction, raceLine, raceRows, restageParams, runDuration, runSteps, speakTool, stripMoved } from "./readings";
 import { drainSse, heroHref, toMontageItem } from "./sse";
 import { encodeWav } from "./wav";
 
@@ -144,6 +144,19 @@ describe("the proof's opening picture", () => {
     expect(pictureAction(1, tundra, { barkDarkness: 0.05 }, trial)).toEqual({ kind: "resume", params: trial });
     expect(pictureAction(1, trial, tundra, null)).toEqual({ kind: "stay" });
     expect(pictureAction(null, { name: "traveller" }, {}, null)).toEqual({ kind: "stay" });
+  });
+
+  it("keeps the other knobs when a penciled suggestion is applied, and replants only when the strip moves", () => {
+    const forest = { birds: true, barkDarkness: 0.2, startDarkness: 0.2 };
+    const quiet = restageParams(forest, { birds: false, barkDarkness: 0.9 });
+    expect(quiet).toEqual({ birds: false, barkDarkness: 0.9, startDarkness: 0.2 });
+    expect(stripMoved("peppered-forest", forest, quiet ?? forest)).toBe(false);
+    const valley = { density: 0.55, firebreak: false, wind: 0 };
+    const penciled = restageParams(valley, { density: 0.9, firebreak: true });
+    expect(penciled).toEqual({ density: 0.9, firebreak: true, wind: 0 });
+    expect(stripMoved("firebreak", valley, penciled ?? valley)).toBe(true);
+    expect(stripMoved("firebreak", penciled ?? valley, restageParams(penciled ?? valley, { density: 0.4 }) ?? valley)).toBe(false);
+    expect(stripMoved("firebreak", { firebreak: true }, { firebreak: false })).toBe(true);
   });
 
   it("opens the valley packed, with no strip, then returns the planting the player left", () => {

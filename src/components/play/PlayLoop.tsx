@@ -40,7 +40,7 @@ import {
   verdictKicker,
   type PlaySnapshot,
 } from "./phase";
-import { defaultParams, formatParam, freshStart, pictureAction, raceLine, raceRows, runDuration, runSteps, summariseObservation } from "./readings";
+import { defaultParams, formatParam, freshStart, pictureAction, raceLine, raceRows, restageParams, runDuration, runSteps, stripMoved, summariseObservation } from "./readings";
 import { mintSession, withSeed } from "./session";
 import { startWavCapture, type WavCapture } from "./wav";
 import { armChime, playChime } from "./chime";
@@ -487,17 +487,22 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     publish(session);
   }
 
-  function onChange(id: string, value: Params[string]) {
-    const next = { ...paramsRef.current, [id]: value };
+  function applyParams(next: Params) {
+    const previous = paramsRef.current;
     paramsRef.current = next;
     const session = sessionRef.current;
     if (session) {
-      session.setParam(id, value);
+      for (const [id, value] of Object.entries(next)) session.setParam(id, value);
       setView(asWorldView(session.view(), spec.archetype));
     }
     setParams(next);
-    // The strip is planted with the valley. Show it as soon as the knob moves.
-    if (spec.id === "firebreak" && id === "firebreak" && !playingRef.current) void resetScene();
+    // The strip is planted with the valley. Show it as soon as that knob moves.
+    if (stripMoved(spec.id, previous, next) && !playingRef.current) void resetScene();
+  }
+
+  function onChange(id: string, value: Params[string]) {
+    const next = restageParams(paramsRef.current, { [id]: value });
+    if (next) applyParams(next);
   }
 
   async function gradePrediction(predictionId: string, choice: number | string, which: "first" | "second") {
@@ -814,12 +819,8 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
                     type="button"
                     className="quiet"
                     onClick={() => {
-                      setParams((prev) => {
-                        const next = { ...prev, ...suggestion };
-                        paramsRef.current = next;
-                        if (sessionRef.current) sessionRef.current.params = next;
-                        return next;
-                      });
+                      const next = restageParams(paramsRef.current, suggestion);
+                      if (next) applyParams(next);
                     }}
                   >
                     Set those knobs

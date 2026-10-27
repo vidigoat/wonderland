@@ -92,6 +92,11 @@ export function restageParams(current: Params, patch: Params | undefined): Param
   return { ...current, ...patch };
 }
 
+/** The cleared strip is sown with the valley, so the picture has to be planted again when that knob moves. */
+export function stripMoved(worldId: string, previous: Params, next: Params): boolean {
+  return worldId === "firebreak" && previous.firebreak !== next.firebreak;
+}
+
 export type PictureAction =
   | { kind: "restage"; params: Params; remember: Params }
   | { kind: "resume"; params: Params }

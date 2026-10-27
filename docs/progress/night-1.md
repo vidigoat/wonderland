@@ -141,6 +141,8 @@ A dense planting on The Firebreak said the far ridge was still burning after the
 
 Those first stumps were a few pixels tall, so the burned valley looked empty. Commit `615321c`. A stump is now a short post with a pale cut, about a third the height of a sapling. On the production server a default burn ends at 11% of the trees burned, the far ridge untouched, the flames out, and the valley still a stand of green saplings. The line says the fire stopped. At 90% the same stage is a field of those stumps, 100% burned, the far ridge reached, the flames out, and the line says the ridge burned. A phone shows that field of stumps under the same three readings. `pnpm check` is 242 tests.
 
+A slow cannon shot's preview was a hop of about a tenth of a planet radius, and the barrel is wider than that, so the pale arc never showed. Commit `aa11ff6`. A short fall is now framed on the mountain. A flight that leaves the peak still frames the whole planet. The shot itself is unchanged. On the production server the default speed shows the arc from the muzzle down to the ground, on a wide window and on a phone. Speed 1 draws the arc around the planet. Firing the default speed lands: 0 laps, height 0 planet radii, status landed, and the line says it met the ground. `pnpm check` is 243 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

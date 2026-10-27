@@ -131,6 +131,8 @@ Asking about fireflies was matching the valley fire, because the word started wi
 
 The hallway shelf card still painted every person facing the same way. Commit `3295f30`. A negative heading now mirrors the figure, the same as on the stage. On the production server the Hallway Lanes card shows both directions. `pnpm check` is 241 tests.
 
+The receipt called the minutes on the world "Time until it held", including when a prediction was missed. Commit `4793a11`. It now says "Time you spent". On the production server a finished Peppered Forest card reads 13s under that label, both predictions held, and that the law is not printed. `pnpm check` is 241 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

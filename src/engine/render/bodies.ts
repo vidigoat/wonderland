@@ -2,6 +2,7 @@ import { Container, Graphics, Sprite, Texture } from "pixi.js";
 import { isParticlesView, type CannonView, type ParticlesView } from "@/engine/view";
 import {
   CANNON_STEP_DT,
+  figureTint,
   launchPreview,
   onSurface,
   phaseOffset,
@@ -345,6 +346,7 @@ function placeFigures(layer: Container, textures: Map<string, Texture | null>, v
     const face = typeof vx === "number" && vx < 0 ? -1 : 1;
     sprite.scale.set(face * size, size);
     sprite.position.set(ox + body.x * s, oy + body.y * s);
+    sprite.tint = figureTint(frame.worldId, vx);
     sprite.rotation = texture.height > texture.width * 1.25 && typeof vx === "number" ? Math.PI / 2 : 0;
   });
 }

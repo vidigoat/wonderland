@@ -133,6 +133,12 @@ export function cssHex(color: number): string {
   return `#${(color & 0xffffff).toString(16).padStart(6, "0")}`;
 }
 
+/** A stopped car on the ring road is red, so the jam reads as a knot. Every other figure keeps its painting. */
+export function figureTint(worldId: string, speed: number | undefined): number {
+  if (worldId === "phantom-jam-ring-road" && typeof speed === "number" && speed < 0.5) return 0xff3344;
+  return 0xffffff;
+}
+
 /** A handful of lines, spread across the square, so one sentence is not stacked on itself. */
 export function spokenIds(agents: { id: string | number; x: number; y?: number; bubble?: string | null }[], limit = 6): Set<string> {
   const voiced = agents.filter((agent) => agent.bubble?.trim() && /\p{L}/u.test(agent.bubble)).sort((a, b) => a.x - b.x || (a.y ?? 0) - (b.y ?? 0));

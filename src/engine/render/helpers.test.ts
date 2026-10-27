@@ -8,6 +8,7 @@ import {
   fieldColor,
   bilinearSample,
   fieldScale,
+  figureTint,
   heightSilhouette,
   smoothField,
   landedApart,
@@ -305,6 +306,21 @@ describe("a phone forest keeps moths visible", () => {
       desk.cap,
     );
     expect(drawn.filter((agent) => agent.sprite === "predator")).toHaveLength(7);
+  });
+});
+
+describe("a ring-road jam", () => {
+  it("paints a stopped car red and leaves every other figure as it was painted", () => {
+    expect(figureTint("phantom-jam-ring-road", 0.2)).toBe(0xff3344);
+    expect(figureTint("phantom-jam-ring-road", 11)).toBe(0xffffff);
+    expect(figureTint("hallway-lanes", -1)).toBe(0xffffff);
+  });
+
+  it("names the controls in plain words", () => {
+    const spec = JSON.parse(readFileSync("data/worlds/phantom-jam-ring-road.json", "utf8")) as { knobs: { label: string }[] };
+    const labels = spec.knobs.map((knob) => knob.label);
+    expect(labels).toEqual(["How many cars", "Length of the track", "Time to notice", "Speed they aim for", "Gap they keep", "Brake tap"]);
+    expect(labels.join(" ")).not.toMatch(/[()]/);
   });
 });
 

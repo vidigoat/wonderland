@@ -910,8 +910,11 @@ h1, h2, .law-line, .voice, .galley-title, .place-name, .wordmark {
 }
 
 .play[data-phase="receipt"] .receipt canvas {
-  width: min(100%, 720px);
-  max-height: none;
+  width: auto;
+  max-width: 100%;
+  /* The card is a tall portrait. A fixed 720px width made it taller than the notebook, so the kept lines were cut off. */
+  max-height: min(54vh, 620px);
+  height: auto;
 }
 
 .play[data-phase="receipt"] .receipt-caption {

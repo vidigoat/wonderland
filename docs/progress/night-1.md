@@ -165,6 +165,8 @@ On a phone the station names sat on the scroll. Commit `5bedc6f`. They now sit a
 
 A name of O'Brien stopped the scribe with the database's own words, "near Brien: syntax error". Commit `09c26f8`. The card now says the quote closed too soon, and still marks Brien in the spell. On the production server the vault stays shut, the scribe's station says the spell broke, and the spoken line sits under the card. `pnpm check` is 248 tests.
 
+The dune, the meadow, the flock, and the valley all shared a generic button. Commit `0d053fe`. They now say "Let it march", "Let them blink", "Let them fly", and "Let a season pass". The hot plate still says "Let it spread". On the production server each of those five buttons reads that way. `pnpm check` is 248 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

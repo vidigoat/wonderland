@@ -13,6 +13,8 @@ export function drawSilhouette(g: Graphics, sprite: string): void {
   else if (key.includes("queue")) drawCitizen(g, true);
   else if (key.includes("citizen") || key.includes("person") || key.includes("towns")) drawCitizen(g, false);
   else if (key.includes("bird")) drawBird(g);
+  // Before "fire": a firefly is a light, not a flame.
+  else if (key.includes("firefly") || key.includes("glow") || key.includes("light") || key.includes("spark") || key.includes("star")) drawGlow(g);
   else if (key.includes("flame") || key.includes("fire") || key.includes("ember")) drawFlame(g);
   else if (key.includes("tree") || key.includes("sapling") || key.includes("pine")) drawTree(g);
   else if (key.includes("cannon")) drawCannon(g);
@@ -120,4 +122,12 @@ function drawSeed(g: Graphics): void {
   g.ellipse(0, 2, 12, 16).fill(fill());
   g.ellipse(0, -8, 5, 8).fill(fill(WHITE, 0.75));
   g.moveTo(0, -16).lineTo(0, -22).stroke({ width: 1.4, color: WHITE, cap: "round" });
+}
+
+/** A soft light: halo rings fading out to a bright core. Tint drives how lit it reads. */
+function drawGlow(g: Graphics): void {
+  g.circle(0, 0, 22).fill(fill(WHITE, 0.08));
+  g.circle(0, 0, 15).fill(fill(WHITE, 0.16));
+  g.circle(0, 0, 9).fill(fill(WHITE, 0.4));
+  g.circle(0, 0, 5).fill(fill(WHITE, 1));
 }

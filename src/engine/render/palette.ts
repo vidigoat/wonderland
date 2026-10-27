@@ -91,8 +91,15 @@ export function barkColor(darkness: number): number {
   return lerpColor(0xe7dcc4, 0x2a2622, clamp01(darkness));
 }
 
-export function populationTint(worldId: string, tint: number, palette: WorldPalette): number {
+/** Sprites drawn as lights: a high value should read as brighter, not darker. */
+export function isGlowSprite(sprite = ""): boolean {
+  const key = sprite.toLowerCase();
+  return ["firefly", "glow", "light", "spark", "star"].some((word) => key.includes(word));
+}
+
+export function populationTint(worldId: string, tint: number, palette: WorldPalette, sprite?: string): number {
   const t = clamp01(tint);
+  if (isGlowSprite(sprite)) return lerpColor(0x4a3416, 0xfff1a8, t);
   if (worldId === "peppered-forest") return lerpColor(0xf4efe2, 0x2a2622, t);
   if (worldId === "rumour-town") return lerpColor(0xf6d7b8, 0x7c3040, t);
   return lerpColor(palette.parchment, palette.ink, t);

@@ -126,7 +126,7 @@ export function cssHex(color: number): string {
 
 /** A handful of lines, spread across the square, so one sentence is not stacked on itself. */
 export function spokenIds(agents: { id: string | number; x: number; y?: number; bubble?: string | null }[], limit = 6): Set<string> {
-  const voiced = agents.filter((agent) => agent.bubble?.trim()).sort((a, b) => a.x - b.x || (a.y ?? 0) - (b.y ?? 0));
+  const voiced = agents.filter((agent) => agent.bubble?.trim() && /\p{L}/u.test(agent.bubble)).sort((a, b) => a.x - b.x || (a.y ?? 0) - (b.y ?? 0));
   const ids = new Set<string>();
   const chosen: { x: number; y: number }[] = [];
   for (const agent of voiced) {

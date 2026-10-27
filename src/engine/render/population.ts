@@ -136,7 +136,7 @@ export function createPopulationScene(): Scene {
       node.figure.show(
         frame.worldId,
         sprite,
-        keepsOwnColor ? 0xffffff : populationTint(frame.worldId, node.drawTint, frame.palette),
+        keepsOwnColor ? 0xffffff : populationTint(frame.worldId, node.drawTint, frame.palette, sprite),
         !keepsOwnColor,
       );
       syncBubble(node, speakers.has(id) ? agent.bubble : null, at.x, at.y + bob, frame, bubbles, id);
@@ -275,7 +275,8 @@ function drawBankScenery(g: Graphics, x: number, y: number, unit: number): void 
 }
 
 function syncBubble(node: Node, bubble: string | null | undefined, x: number, y: number, frame: Frame, layer: Container, id: string): void {
-  const text = bubble?.trim() ? bubble.trim().slice(0, 90) : "";
+  // A bubble must hold words; symbol-only markers (e.g. "✦" for a flash) are not speech.
+  const text = bubble?.trim() && /\p{L}/u.test(bubble) ? bubble.trim().slice(0, 90) : "";
   if (!text) {
     node.bubble?.destroy({ children: true });
     node.bubble = null;

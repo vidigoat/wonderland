@@ -159,6 +159,8 @@ The vault drew at most 24 coins, so "enough for 32 of 40 savers" was a row of 24
 
 On a phone that same card met the colour key, and "Getting my money out!" ran across the coins. Commit `733fd45`, then `7a783bc`. The key stays in its own column, with a gap. On the production server at 390 wide, 32 coins sit in the card and the key sits beside it, including the withdrawing line. They do not cover one another. `pnpm check` is 246 tests.
 
+A sealed scroll put the same quote in a comment on the command, and the word sealed was a badge under the ledger that read as "led". Commit `a3232e5`, then `fbd4dbf`. The spell now shows the question marks, then "Sealed. Kept as data" with the words you typed, then that the vault stayed shut. The badge is gone. On the production server that card is fully visible, the vault says shut, and the spoken line sits under it. `pnpm check` is 247 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

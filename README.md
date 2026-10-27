@@ -114,13 +114,13 @@ flowchart LR
     E --- R[PixiJS renderer]
   end
   subgraph Server["Next.js 16 server"]
-    G[/api/generate<br/>SSE/] --> PL[Build pipeline]
-    J[/api/judge/]
-    A[/api/rival/]
-    C[/api/citizens/]
-    T[/api/transcribe/]
-    GR[/api/grade/]
-    PL --> SB[node:vm sandbox<br/>science checks]
+    G["/api/generate (streamed)"] --> PL[Build pipeline]
+    J["/api/judge"]
+    A["/api/rival"]
+    C["/api/citizens"]
+    T["/api/transcribe"]
+    GR["/api/grade"]
+    PL --> SB["node:vm sandbox<br/>science checks"]
     PL --> ART[Artist]
   end
   subgraph Meta["Meta models"]
@@ -167,7 +167,7 @@ flowchart TD
   D --> C{Science checks<br/>every check × every seed<br/>in a sandbox}
   C -- a check fails --> R[Repair<br/>the failures go back<br/>to the designer]
   R --> C
-  C -- "still failing after 3 repairs" --> X([Not shipped])
+  C -- still failing after 3 repairs --> X([Not shipped])
   C -- all pass --> PL{Playability lint<br/>do the controls matter?}
   PL --> A[Artist<br/>Muse Image + SAM 3.1]
   A --> W([Saved world:<br/>yours to enter and share])
@@ -188,13 +188,13 @@ A failed painting never throws away a world whose science passed: it simply play
 
 ```mermaid
 flowchart LR
-  subgraph Server only
+  subgraph ServerOnly["Server only"]
     H[science.hiddenLaw]
     K[answer keys]
     CH[checks]
     TW[suggested settings]
   end
-  subgraph "Sent to the browser (toPublic)"
+  subgraph Browser["Sent to the browser (toPublic)"]
     ST[story, controls, rules code,<br/>art, predictions without answers,<br/>checkCount]
   end
   H -. never .-> ST

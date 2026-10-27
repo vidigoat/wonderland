@@ -123,6 +123,8 @@ The receipt card was drawn so tall that Ada covered the lines you had earned. Co
 
 That fitted card was still a tall painting shrunk until the words were too small. Commit `c30a50e`. The painting sits on the left and the lines sit beside it. On the production server the card reads Peppered Forest, both predictions held, 14 seconds, and that the law is not printed. Ada sits under the card. The hidden law is not on the page. `pnpm check` is 239 tests.
 
+A long prediction on that card stopped on the word "because". Commit `6413fcb`. The last line now keeps what fits and ends with an ellipsis when the sentence is longer. On the production server the before line reads through "before reproducing", and the after line reads "Stays roughly the same". `pnpm check` is 239 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

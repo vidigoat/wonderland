@@ -125,15 +125,21 @@ export function cssHex(color: number): string {
 }
 
 /** A handful of lines, spread across the square, so one sentence is not stacked on itself. */
-export function spokenIds(agents: { id: string | number; x: number; bubble?: string | null }[], limit = 6): Set<string> {
-  const voiced = agents.filter((agent) => agent.bubble?.trim()).sort((a, b) => a.x - b.x);
+export function spokenIds(agents: { id: string | number; x: number; y?: number; bubble?: string | null }[], limit = 6): Set<string> {
+  const voiced = agents.filter((agent) => agent.bubble?.trim()).sort((a, b) => a.x - b.x || (a.y ?? 0) - (b.y ?? 0));
   const ids = new Set<string>();
-  let lastX = -1;
+  const chosen: { x: number; y: number }[] = [];
   for (const agent of voiced) {
     if (ids.size >= limit) break;
-    if (ids.size > 0 && agent.x - lastX < 0.14) continue;
+    const y = agent.y ?? 0;
+    const crowded = chosen.some((other) => {
+      const dx = Math.abs(agent.x - other.x);
+      if (agent.y == null) return dx < 0.14;
+      return Math.hypot(dx, Math.abs(y - other.y)) < 0.28;
+    });
+    if (crowded) continue;
     ids.add(String(agent.id));
-    lastX = agent.x;
+    chosen.push({ x: agent.x, y });
   }
   return ids;
 }

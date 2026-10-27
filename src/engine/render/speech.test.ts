@@ -22,4 +22,13 @@ describe("spoken lines", () => {
     }));
     expect(spokenIds(agents).size).toBe(6);
   });
+
+  it("keeps two lines when the speakers are stacked in the square", () => {
+    const agents = [
+      { id: "near", x: 0.4, y: 0.62, bubble: "Getting my money out!" },
+      { id: "close", x: 0.45, y: 0.66, bubble: "Getting my money out!" },
+      { id: "far", x: 0.42, y: 0.95, bubble: "People are queuing…" },
+    ];
+    expect([...spokenIds(agents)]).toEqual(["near", "far"]);
+  });
 });

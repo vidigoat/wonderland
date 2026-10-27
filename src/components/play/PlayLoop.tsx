@@ -475,7 +475,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   function spreadTicks(session: WorldSession, steps: number, duration: number) {
     return new Promise<void>((resolve, reject) => {
       const started = performance.now();
-      const batch = tickBatch(steps);
+      const batch = tickBatch(steps, spec.id);
       const frames = Math.ceil(steps / batch);
       let done = 0;
       let frameIndex = 0;

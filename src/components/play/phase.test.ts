@@ -102,6 +102,8 @@ describe("phase machine", () => {
     expect(runSteps("population")).toBe(30);
     expect(runSteps("field", "firebreak")).toBe(48);
     expect(runSteps("population", "firefly-sync-kuramoto")).toBe(2000);
+    expect(runSteps("population", "predator-prey-valley")).toBe(400);
+    expect(Math.ceil(400 / tickBatch(400, "predator-prey-valley"))).toBeLessThanOrEqual(32);
     expect(Math.ceil(2000 / tickBatch(2000))).toBeLessThanOrEqual(24);
     expect(duneRunSteps(0, 10)).toBe(48);
     expect(duneRunSteps(5, 10)).toBeGreaterThan(1000);

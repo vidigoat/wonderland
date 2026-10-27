@@ -221,12 +221,16 @@ export function runSteps(archetype: string, worldId?: string, params?: Params): 
   if (worldId === "dune-march") return duneRunSteps(Number(params?.windSpeed ?? 5), Number(params?.initialHeight ?? 10));
   // Kuramoto needs on the order of a thousand steps before the swarm locks. Thirty leaves it looking random.
   if (worldId === "firefly-sync-kuramoto") return 2000;
+  // One Lotka–Volterra swing: hares boom, crash, and the lynx peak after them. Thirty steps is only the start of the boom.
+  if (worldId === "predator-prey-valley") return 400;
   if (archetype === "field") return 48;
   return 30;
 }
 
 /** How many simulation steps to take per frame, so a long march still finishes in one gesture. */
-export function tickBatch(steps: number): number {
+export function tickBatch(steps: number, worldId?: string): number {
+  // A valley frame draws the whole meadow. A hundred of them holds the button on "In motion".
+  if (worldId === "predator-prey-valley") return Math.max(1, Math.ceil(steps / 32));
   if (steps <= 80) return 1;
   if (steps <= 600) return 4;
   return Math.max(1, Math.ceil(steps / 24));

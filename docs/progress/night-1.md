@@ -65,6 +65,8 @@ Murmuration Sky's readings were a formula of the knobs. Commit `8400980`. Lettin
 
 The meadow used the same thirty steps as a short population run. Commit `202b7d4`. The fireflies had not locked: flashing in step stayed near 2%. One gesture now runs the two thousand steps the science needs. On the production server it finishes in about seven seconds at 88% flashing in step, and the chart climbs from the bottom of the frame to the top.
 
+The valley's thirty steps were only the start of the hare boom. One gesture now runs the four hundred steps of a swing. On the production server it finishes in about twelve seconds: 112 hares, 26 lynx, the swing at 0.99, and the lynx peak 42 steps after the hares. The chart rises, falls, and the lynx line follows the hare line.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

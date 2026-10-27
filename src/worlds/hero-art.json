@@ -1,0 +1,38 @@
+{
+  "rumour-town": {
+    "background": "/art/rumour-town/background.webp",
+    "sprites": {
+      "citizen": "/art/rumour-town/citizen.webp",
+      "bank": "/art/rumour-town/bank.webp",
+      "citizen-queue": "/art/rumour-town/citizen.webp"
+    }
+  },
+  "gatekeeper": {
+    "background": "/art/gatekeeper/background.webp",
+    "sprites": {
+      "scroll": "/art/gatekeeper/scroll.webp",
+      "vault": "/art/gatekeeper/vault.webp",
+      "scribe": "/art/gatekeeper/scribe.webp"
+    }
+  },
+  "peppered-forest": {
+    "background": "/art/peppered-forest/background.webp",
+    "sprites": {
+      "moth": "/art/peppered-forest/moth.webp",
+      "bird": "/art/peppered-forest/bird.webp"
+    }
+  },
+  "newtons-cannon": {
+    "background": "/art/newtons-cannon/background.webp",
+    "sprites": {
+      "cannon": "/art/newtons-cannon/cannon.webp",
+      "planet": "/art/newtons-cannon/planet.webp"
+    }
+  },
+  "firebreak": {
+    "background": "/art/firebreak/background.webp",
+    "sprites": {
+      "flame": "/art/firebreak/flame.webp"
+    }
+  }
+}

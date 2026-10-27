@@ -32,7 +32,7 @@ export function createFieldScene(): Scene {
     if (scale === "firebreak") {
       sprite.visible = false;
       trees.visible = true;
-      drawValley(trees, grid, box);
+      drawValley(trees, grid, box, isPaintedWorld(next.worldId));
       return;
     }
     trees.visible = false;
@@ -85,9 +85,10 @@ function strokeValley(frame: Graphics, ground: Graphics, view: Frame, box: Box, 
   frame.roundRect(box.x - 8, box.y - 8, box.w + 16, box.h + 16, 18).stroke({ width: 2, color: view.palette.accent, alpha: 0.75 });
 }
 
-function drawValley(g: Graphics, grid: number[][], box: Box): void {
+function drawValley(g: Graphics, grid: number[][], box: Box, painted = false): void {
   g.clear();
-  g.rect(box.x, box.y, box.w, box.h).fill({ color: FIELD_COLORS.night });
+  // Over a Muse Image valley the night is a wash, so the painted ground shows between the trees.
+  g.rect(box.x, box.y, box.w, box.h).fill({ color: FIELD_COLORS.night, alpha: painted ? 0.62 : 1 });
   const rows = grid.length;
   const columns = grid[0]?.length ?? 1;
   const cw = box.w / columns;

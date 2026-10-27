@@ -39,8 +39,8 @@ export const pepperedForestSpec: WorldSpec = {
     { id: "generation", label: "Generation", display: "counter" },
   ],
   entities: [
-    { id: "moth", label: "Peppered moth", artPrompt: "a single peppered moth, wings spread, top-down, storybook gouache illustration, plain flat cream background", segmentPrompt: "moth" },
-    { id: "bird", label: "Songbird", artPrompt: "a small songbird mid-swoop, side view, storybook gouache illustration, plain flat cream background", segmentPrompt: "bird" },
+    { id: "moth", label: "Peppered moth", artPrompt: "a single pale cream-white peppered moth with fine grey speckles, wings spread flat, seen from directly above, storybook gouache illustration, plain flat dark green background", segmentPrompt: "moth" },
+    { id: "bird", label: "Songbird", artPrompt: "a small brown songbird mid-swoop with wings open, side view, storybook gouache illustration, plain flat pale grey background", segmentPrompt: "bird" },
   ],
   rules: { kind: "builtin", module: "peppered-forest" },
   predictions: [

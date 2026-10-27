@@ -39,6 +39,10 @@ export function createBackdrop() {
       if (view.visible) cover(width, height);
       return view.visible;
     },
+    /** Multiply the painting by a colour (soot on the birch bark). */
+    tint(color: number) {
+      view.tint = color;
+    },
     destroy() {
       alive = false;
       view.destroy();

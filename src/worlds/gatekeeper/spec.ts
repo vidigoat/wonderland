@@ -31,9 +31,9 @@ export const gatekeeperSpec: WorldSpec = {
     { id: "query", label: "The spell the scribe cast", display: "text" },
   ],
   entities: [
-    { id: "scribe", label: "Scribe", artPrompt: "an old scribe with quill at a tall desk, side view, illuminated-manuscript style, plain flat parchment background", segmentPrompt: "scribe" },
-    { id: "scroll", label: "Scroll", artPrompt: "a single rolled parchment scroll with wax seal, illuminated-manuscript style, plain flat parchment background", segmentPrompt: "scroll" },
-    { id: "vault", label: "Vault door", artPrompt: "a heavy round iron vault door set in stone, illuminated-manuscript style, plain flat parchment background", segmentPrompt: "vault door" },
+    { id: "scribe", label: "Scribe", artPrompt: "an old scribe with a quill at a tall wooden desk, side view, illuminated-manuscript style with gold leaf and deep red robes, plain flat dark background", segmentPrompt: "person" },
+    { id: "scroll", label: "Scroll", artPrompt: "a single rolled parchment scroll with a red wax seal, illuminated-manuscript style, plain flat dark background", segmentPrompt: "scroll" },
+    { id: "vault", label: "Vault door", artPrompt: "a heavy round iron vault door set in a stone arch, illuminated-manuscript style with gold leaf, plain flat dark background", segmentPrompt: "vault door" },
   ],
   rules: { kind: "builtin", module: "gatekeeper" },
   predictions: [
@@ -64,5 +64,5 @@ export const gatekeeperSpec: WorldSpec = {
     { id: "injection-opens", description: "Injection opens the vault without a password", params: { name: "' OR '1'='1", pass: "' OR '1'='1" }, steps: 1, seeds: [1], assert: { observable: "vaultOpen", op: "eq", value: "open" } },
     { id: "sealed-blocks", description: "Sealed scrolls block the same injection", params: { name: "' OR '1'='1", pass: "' OR '1'='1", sealed: true }, steps: 1, seeds: [1], assert: { observable: "vaultOpen", op: "eq", value: "shut" } },
   ],
-  art: { style: "illuminated manuscript, gold leaf, deep reds and parchment", background: "a candle-lit stone archive with shelves of ledgers, illuminated-manuscript style" },
+  art: { style: "illuminated manuscript, gold leaf, deep reds and parchment", background: "a candle-lit stone archive hall with tall shelves of ledgers along both walls and an open stone floor in the middle, no people, illuminated-manuscript style with gold leaf, deep reds and parchment" },
 };

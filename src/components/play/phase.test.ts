@@ -228,8 +228,8 @@ describe("receipt copy", () => {
 
   it("puts the shelf painting on a hero card and leaves an unknown world as type", () => {
     expect(receiptArtPaths("gatekeeper")).toEqual({
-      ground: "/art/gatekeeper/background.svg",
-      figure: "/art/gatekeeper/scribe.svg",
+      ground: "/art/gatekeeper/background.webp",
+      figure: "/art/gatekeeper/scribe.webp",
     });
     expect(receiptArtPaths("made-up")).toBeNull();
     const open = pictureFrame(1280, false);

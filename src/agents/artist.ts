@@ -120,6 +120,12 @@ function largestMask(entityId: string, text: string): { record: SamRecord; raste
   return best;
 }
 
+/** Cut the largest SAM mask out of a painted PNG as a transparent PNG. Used by the paint scripts. */
+export function cutOut(entityId: string, png: Buffer, samText: string): Buffer {
+  const { record, raster } = largestMask(entityId, samText);
+  return encodeRgbaPng(cutSprite(entityId, decodePng(png), record, raster));
+}
+
 async function liveIllustration(spec: WorldSpec, artDir: string): Promise<Illustration> {
   const { paint, segment } = await import("@/lib/ai/meta");
   const folder = path.join(artDir, spec.id);

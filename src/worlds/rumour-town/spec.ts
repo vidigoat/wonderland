@@ -31,8 +31,8 @@ export const rumourTownSpec: WorldSpec = {
     { id: "bank", label: "Bank", display: "text" },
   ],
   entities: [
-    { id: "citizen", label: "Townsperson", artPrompt: "a cheerful townsperson in a scarf, full body, cosy flat illustration, plain flat white background", segmentPrompt: "person" },
-    { id: "bank", label: "Bank", artPrompt: "a small stone bank building with columns, cosy flat illustration, plain flat white background", segmentPrompt: "building" },
+    { id: "citizen", label: "Townsperson", artPrompt: "a cheerful townsperson standing, full body, front view, wearing pale cream and off-white clothes and a pale scarf, cosy flat illustration with rounded shapes, plain flat dark navy background", segmentPrompt: "person" },
+    { id: "bank", label: "Bank", artPrompt: "a small pastel stone bank building with columns and a little clock, front view, cosy flat illustration with rounded shapes, plain flat dark navy background", segmentPrompt: "building" },
   ],
   rules: { kind: "builtin", module: "rumour-town" },
   predictions: [
@@ -55,5 +55,5 @@ export const rumourTownSpec: WorldSpec = {
     { id: "insurance-stops", description: "Deposit insurance stops the run", params: { rumourSeeds: 3, reserveRatio: 0.1, insurance: true }, steps: 30, seeds: [1, 2, 3], assert: { observable: "bank", op: "eq", value: "open" } },
     { id: "no-rumour-calm", description: "No rumour, no run", params: { rumourSeeds: 0 }, steps: 30, seeds: [1, 2, 3], assert: { observable: "bank", op: "eq", value: "open" } },
   ],
-  art: { style: "cosy flat illustration, warm pastels, rounded shapes", background: "a cosy cobbled town square with a small bank, cosy flat illustration" },
+  art: { style: "cosy flat illustration, warm pastels, rounded shapes", background: "a cosy town square at golden hour seen from slightly above, a wide open cobbled plaza filling the lower two thirds, pastel townhouses and lamp posts along the far edge, soft warm sky, no people, no bank, cosy flat illustration with rounded shapes" },
 };

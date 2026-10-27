@@ -1,3 +1,5 @@
+import { heroArtUrl } from "@/worlds/hero-art";
+
 export type PlaceCard = {
   id: string;
   title: string;
@@ -8,9 +10,11 @@ export type PlaceCard = {
 
 export function PlaceScene({ id }: { id: string }) {
   const figure = FIGURES[id] ?? "tree.svg";
+  const ground = heroArtUrl(id, "background", `/art/${id}/background.svg`);
+  const figureUrl = heroArtUrl(id, figure.replace(/\.svg$/, ""), `/art/${id}/${figure}`);
   return (
-    <div className={`scene scene-art scene-${id}`} style={{ backgroundImage: `url(/art/${id}/background.svg)` }} aria-hidden="true">
-      <span className="scene-figure" style={{ backgroundImage: `url(/art/${id}/${figure})` }} />
+    <div className={`scene scene-art scene-${id}`} style={{ backgroundImage: `url(${ground})` }} aria-hidden="true">
+      <span className="scene-figure" style={{ backgroundImage: `url(${figureUrl})` }} />
     </div>
   );
 }

@@ -26,7 +26,7 @@ export const newtonsCannonSpec: WorldSpec = {
     { id: "status", label: "Status", display: "text" },
   ],
   entities: [
-    { id: "cannon", label: "Brass cannon", artPrompt: "an ornate brass cannon on a rocky peak, side view, vintage engraving style, plain flat parchment background", segmentPrompt: "cannon" },
+    { id: "cannon", label: "Brass cannon", artPrompt: "an ornate brass cannon on a rocky peak, side view, vintage engraving style, plain flat dark navy background", segmentPrompt: "cannon" },
     { id: "planet", label: "Small planet", artPrompt: "a small round blue-green planet seen from space, vintage engraving style, plain flat dark navy background", segmentPrompt: "planet" },
   ],
   rules: { kind: "builtin", module: "newtons-cannon" },
@@ -51,5 +51,5 @@ export const newtonsCannonSpec: WorldSpec = {
     { id: "circular-orbits", description: "Circular speed completes a lap without landing", params: { speed: 0.99 }, steps: 400, seeds: [1], assert: { observable: "laps", op: "gt", value: 1 } },
     { id: "escape", description: "Above escape speed the ball leaves", params: { speed: 1.5 }, steps: 3000, seeds: [1], assert: { observable: "status", op: "eq", value: "escaped" } },
   ],
-  art: { style: "vintage scientific engraving, navy and brass, fine linework", background: "a starfield seen from space, vintage engraving style" },
+  art: { style: "vintage scientific engraving, navy and brass, fine linework", background: "a deep navy starfield seen from space, fine engraved stars and faint nebula linework, empty centre, no planets, no moons, vintage scientific engraving style" },
 };

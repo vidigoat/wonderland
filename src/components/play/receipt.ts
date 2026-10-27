@@ -1,4 +1,5 @@
 import { formatElapsed } from "./phase";
+import { heroArtUrl } from "@/worlds/hero-art";
 
 export type ReceiptModel = {
   title: string;
@@ -40,7 +41,10 @@ const FIGURES: Record<string, string> = {
 export function receiptArtPaths(worldId: string): { ground: string; figure: string } | null {
   const figure = FIGURES[worldId];
   if (!figure) return null;
-  return { ground: `/art/${worldId}/background.svg`, figure: `/art/${worldId}/${figure}` };
+  return {
+    ground: heroArtUrl(worldId, "background", `/art/${worldId}/background.svg`),
+    figure: heroArtUrl(worldId, figure.replace(/\.svg$/, ""), `/art/${worldId}/${figure}`),
+  };
 }
 
 export type ReceiptPicture = {

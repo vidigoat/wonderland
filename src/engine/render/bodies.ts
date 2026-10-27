@@ -1,4 +1,4 @@
-import { Container, Graphics, Sprite, type Texture } from "pixi.js";
+import { Container, Graphics, Sprite, Texture } from "pixi.js";
 import { isParticlesView, type CannonView, type ParticlesView } from "@/engine/view";
 import {
   CANNON_STEP_DT,
@@ -30,8 +30,33 @@ export function createBodiesScene(): Scene {
   const ball = new Graphics();
   const particles = new Graphics();
   const figures = new Container();
+  const planetArt = new Sprite(Texture.EMPTY);
+  planetArt.anchor.set(0.5);
+  planetArt.visible = false;
   // The ghost sits above the barrel so a short fall is visible. The trail and the ball stay in front once the shot is fired.
-  root.addChild(sky, painting.view, planet, cannon, ghost, trail, ball, particles, figures);
+  root.addChild(sky, painting.view, planet, planetArt, cannon, ghost, trail, ball, particles, figures);
+  let planetTexture: Texture | null = null;
+  let planetWorld = "";
+  // A painted world (Muse Image + SAM 3.1) lays its planet over the drawn disc; the drawn one stays as the fallback.
+  const placePlanetArt = (frame: Frame, camera: Camera, radius: number) => {
+    if (planetWorld !== frame.worldId) {
+      planetWorld = frame.worldId;
+      planetTexture = null;
+      if (isPaintedWorld(frame.worldId) && paintedSpriteNames(frame.worldId).includes("planet")) {
+        const world = frame.worldId;
+        void loadSprite(world, "planet").then((texture) => {
+          if (alive && planetWorld === world) planetTexture = texture;
+        });
+      }
+    }
+    planetArt.visible = Boolean(planetTexture);
+    if (!planetTexture) return;
+    if (planetArt.texture !== planetTexture) planetArt.texture = planetTexture;
+    const center = camera.toScreen(0, 0);
+    const size = Math.max(16, radius * camera.scale * 2);
+    planetArt.position.set(center.x, center.y);
+    planetArt.scale.set(size / Math.max(planetTexture.width, planetTexture.height));
+  };
   const textures = new Map<string, Texture | null>();
 
   const samples: Point2[] = [];
@@ -49,6 +74,7 @@ export function createBodiesScene(): Scene {
 
     const many = anyView && isParticlesView(anyView) ? anyView : null;
     for (const g of [planet, cannon, ghost, trail, ball]) g.visible = !many;
+    if (many) planetArt.visible = false;
     particles.visible = Boolean(many);
     figures.visible = Boolean(many);
     if (many) {
@@ -80,6 +106,7 @@ export function createBodiesScene(): Scene {
         planetKey = next;
       });
       placeCannon(cannon, camera, 1);
+      placePlanetArt(frame, camera, 1);
       const muzzle = camera.toScreen(0.15, 1.08);
       ball.position.set(muzzle.x, muzzle.y);
       ball.visible = true;
@@ -106,6 +133,7 @@ export function createBodiesScene(): Scene {
       planetKey = next;
     });
     placeCannon(cannon, camera, view.planet.r || 1);
+    placePlanetArt(frame, camera, view.planet.r || 1);
     drawTrail(trail, drawn, camera, palette);
     drawGhost(ghost, preview, camera, palette);
     const landed = onSurface(view.ball.x, view.ball.y, radius);

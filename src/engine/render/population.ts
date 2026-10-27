@@ -2,7 +2,7 @@ import { Container, Graphics, Text } from "pixi.js";
 import type { PopulationAgent } from "@/engine/view";
 import { clamp01, landedApart, phaseOffset, readNumber, smoothstep, spokenIds, townFoot } from "./helpers";
 import { pixelRatio, stageFont } from "./fonts";
-import { barkColor, populationTint } from "./palette";
+import { barkColor, isHeroWorld, populationTint } from "./palette";
 import type { Scene, Frame } from "./scene";
 import { createBackdrop } from "./backdrop";
 import { createFigure, isPaintedWorld, type Figure } from "./sprites";
@@ -62,7 +62,17 @@ export function createPopulationScene(): Scene {
   const update = (frame: Frame) => {
     if (!alive) return;
     const agents = shownAgents(frame);
-    const painted = frame.worldId === "peppered-forest" ? false : painting.show(frame.worldId, frame.width, frame.height);
+    let painted: boolean;
+    if (frame.worldId === "peppered-forest") {
+      // The bark's colour is the science: the painted birch takes the soot knob as a tint, the drawn bark stays beneath.
+      painted = false;
+      if (isPaintedWorld(frame.worldId)) {
+        painting.show(frame.worldId, frame.width, frame.height);
+        painting.tint(barkColor(readNumber(frame.params, "barkDarkness", frame.view ? 0.2 : 0.25)));
+      }
+    } else {
+      painted = painting.show(frame.worldId, frame.width, frame.height);
+    }
     paintBackdrop(backdrop, frame, backdropKey, painted, (next) => {
       backdropKey = next;
     });
@@ -71,7 +81,7 @@ export function createPopulationScene(): Scene {
     const speakers = spokenIds(agents);
     const unit = Math.min(frame.width, frame.height);
     // Painted worlds can hold a hundred creatures: shrink each so the crowd reads as a crowd, not a wall.
-    const crowd = isPaintedWorld(frame.worldId) ? Math.min(1, Math.sqrt((frame.width * frame.height) / Math.max(1, agents.length)) / 230) : 1;
+    const crowd = isPaintedWorld(frame.worldId) && !isHeroWorld(frame.worldId) ? Math.min(1, Math.sqrt((frame.width * frame.height) / Math.max(1, agents.length)) / 230) : 1;
     const figureScale = Math.max(0.85, Math.min(1.55, unit / 640)) * crowd;
     placeBank(bank, shutters, frame, figureScale);
 

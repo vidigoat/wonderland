@@ -86,6 +86,11 @@ const BY_ID: Record<string, WorldPalette> = {
   firebreak: FIRE,
 };
 
+/** The five hand-built worlds, whose sprite colours carry their science (moth darkness, a worried citizen). */
+export function isHeroWorld(worldId: string): boolean {
+  return worldId in BY_ID;
+}
+
 export function paletteFor(worldId: string, artStyle: string): WorldPalette {
   const known = BY_ID[worldId];
   if (known) return known;

@@ -98,7 +98,7 @@ export function LiveWorld({ spec, params }: { spec: PublicWorldSpec; params: Par
         <span className="bw-window-live">Live</span>
       </div>
       <div className="bw-window-stage">
-        <StageSlot view={view} archetype={spec.archetype} worldId={spec.id} artStyle={spec.art.style} playing params={params} beat={null} beatId={0} />
+        <StageSlot view={view} archetype={spec.archetype} worldId={spec.id} artStyle={spec.art.style} painted={spec.art.painted} playing params={params} beat={null} beatId={0} />
         <p className="bw-window-caption" aria-live="polite">
           {caption(obs)}
         </p>

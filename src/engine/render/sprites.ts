@@ -1,5 +1,6 @@
 import { Assets, Container, Graphics, Sprite, type Texture } from "pixi.js";
 import type { PaintedArt } from "@/engine/spec";
+import { isHeroWorld } from "./palette";
 import { drawSilhouette } from "./silhouettes";
 
 const cache = new Map<string, Promise<Texture | null>>();
@@ -93,7 +94,8 @@ export function createFigure(): Figure {
       const nextKey = `${worldId}/${sprite}`;
       if (key !== nextKey) {
         key = nextKey;
-        painting = paintedUrl(worldId, sprite) !== undefined;
+        // Hero worlds' paintings are pale on purpose and take the full tint, so the science colours stay exact.
+        painting = paintedUrl(worldId, sprite) !== undefined && !isHeroWorld(worldId);
         const current = ++token;
         spriteView?.destroy();
         spriteView = null;
@@ -105,7 +107,9 @@ export function createFigure(): Figure {
           if (!alive || current !== token || !texture) return;
           const next = new Sprite(texture);
           next.anchor.set(0.5);
-          next.scale.set(FIGURE / Math.max(texture.height, 1));
+          // Handmade SVGs are drawn to a height; a painted cut-out (a moth with open wings) is sized by its longest side.
+          const side = paintedUrl(worldId, sprite) ? Math.max(texture.width, texture.height) : texture.height;
+          next.scale.set(FIGURE / Math.max(side, 1));
           graphic?.destroy();
           graphic = null;
           spriteView = next;

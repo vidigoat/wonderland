@@ -37,8 +37,8 @@ export const firebreakSpec: WorldSpec = {
     { id: "stillBurning", label: "Flames", display: "text" },
   ],
   entities: [
-    { id: "tree", label: "Sapling", artPrompt: "a single young pine sapling, woodcut print, indigo and moss green, plain flat cream background", segmentPrompt: "tree" },
-    { id: "flame", label: "Flame", artPrompt: "a single stylised flame, woodcut print, ember orange, plain flat cream background", segmentPrompt: "flame" },
+    { id: "tree", label: "Sapling", artPrompt: "a single young pine sapling, woodcut print, indigo and moss green, plain flat dark indigo background", segmentPrompt: "tree" },
+    { id: "flame", label: "Flame", artPrompt: "a single stylised flame, woodcut print, ember orange, plain flat dark indigo background", segmentPrompt: "flame" },
   ],
   rules: { kind: "builtin", module: "firebreak" },
   predictions: [
@@ -107,6 +107,6 @@ export const firebreakSpec: WorldSpec = {
   ],
   art: {
     style: "nocturne woodcut, indigo ink, moss green, ember orange",
-    background: "a dark valley of young pines seen from above, woodcut print, indigo night",
+    background: "a dark empty valley floor seen from directly above at night, bare earth and faint ridgelines, indigo ink woodcut print texture, only indigo, slate and faint moss green, no trees, no fire, no orange, no red, no glowing spots",
   },
 };

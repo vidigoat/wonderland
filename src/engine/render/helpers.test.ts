@@ -31,6 +31,7 @@ import {
   scrollTravel,
   stepScroll,
   smoothstep,
+  cannonLook,
   launchPreview,
   onSurface,
   clearedStrip,
@@ -112,6 +113,16 @@ describe("launchPreview", () => {
     for (const point of round.slice(0, 40)) {
       expect(Math.hypot(point.x, point.y)).toBeGreaterThan(0.98);
     }
+  });
+
+  it("frames a short fall on the mountain and a lap on the whole planet", () => {
+    const hop = cannonLook(launchPreview(0.5));
+    const lap = cannonLook(launchPreview(1));
+    expect(hop.focus).toBeLessThan(0.6);
+    expect(hop.aim.y).toBeGreaterThan(0.9);
+    expect(lap.focus).toBeGreaterThanOrEqual(1.72);
+    expect(lap.aim).toEqual({ x: 0, y: 0 });
+    expect(cannonLook([])).toEqual({ aim: { x: 0, y: 0 }, focus: 1.72 });
   });
 });
 

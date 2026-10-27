@@ -500,6 +500,35 @@ export function resolveShotPath(worldTrail: readonly Point2[], remembered: reado
   return remembered.map((point) => ({ x: point.x, y: point.y }));
 }
 
+/**
+ * Where a cannon stage should look.
+ * A short hop is framed on the peak, because the barrel is wider than that hop.
+ * A flight that leaves the mountain frames the whole planet.
+ */
+export function cannonLook(points: readonly Point2[]): { aim: Point2; focus: number } {
+  const wide = { aim: { x: 0, y: 0 }, focus: 1.72 };
+  if (points.length === 0) return wide;
+  const start = points[0]!;
+  let far = start;
+  let reach = 0;
+  let maxR = 0;
+  for (const point of points) {
+    const along = Math.hypot(point.x - start.x, point.y - start.y);
+    if (along > reach) {
+      reach = along;
+      far = point;
+    }
+    maxR = Math.max(maxR, Math.hypot(point.x, point.y));
+  }
+  if (reach < 0.55 && maxR < 1.5) {
+    return {
+      aim: { x: (start.x + far.x) / 2, y: (start.y + far.y) / 2 },
+      focus: Math.max(0.16, reach * 0.82 + 0.08),
+    };
+  }
+  return { aim: { x: 0, y: 0 }, focus: Math.min(10, Math.max(1.72, maxR * 1.18)) };
+}
+
 /** Ghost from the muzzle at a horizontal launch speed, before the shot has a trail. */
 export function launchPreview(speed: number, steps = 100): Point2[] {
   const r = 1.02;

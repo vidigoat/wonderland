@@ -2,6 +2,7 @@ import { Container, Graphics, Sprite, Texture } from "pixi.js";
 import { isParticlesView, type CannonView, type ParticlesView } from "@/engine/view";
 import {
   CANNON_STEP_DT,
+  cannonLook,
   figureTint,
   launchPreview,
   onSurface,
@@ -11,7 +12,6 @@ import {
   resolveShotPath,
   trailGhostPoints,
   type Point2,
-  type TrailSample,
 } from "./helpers";
 import type { Frame, Scene } from "./scene";
 import type { WorldPalette } from "./palette";
@@ -62,6 +62,8 @@ export function createBodiesScene(): Scene {
 
   const samples: Point2[] = [];
   let viewRadius = 3.2;
+  let aimX = 0;
+  let aimY = 0;
   let planetKey = "";
   let ballReady = false;
   let alive = true;
@@ -100,8 +102,10 @@ export function createBodiesScene(): Scene {
         ],
         42,
       );
-      const camera = cameraFor(frame, viewRadius, 3.1, (next) => {
-        viewRadius = next;
+      const camera = cameraFor(frame, viewRadius, { x: aimX, y: aimY }, cannonLook(idleGhost), (radius, aim) => {
+        viewRadius = radius;
+        aimX = aim.x;
+        aimY = aim.y;
       });
       drawPlanet(planet, camera, 1, palette, planetKey, (next) => {
         planetKey = next;
@@ -125,9 +129,11 @@ export function createBodiesScene(): Scene {
     const buried = last != null && Math.hypot(last.x, last.y) < radius;
     const preview = buried || path.length >= 8 ? (buried ? [] : ghostFrom(path)) : launchPreview(readNumber(frame.params, "speed", 0.5));
     const drawn = path.map((point) => onSurface(point.x, point.y, radius));
-    const focus = Math.max(1.72, targetRadius(view, preview));
-    const camera = cameraFor(frame, viewRadius, focus, (next) => {
+    const look = cannonLook(preview.length > 0 ? preview : drawn);
+    const camera = cameraFor(frame, viewRadius, { x: aimX, y: aimY }, look, (next, aim) => {
       viewRadius = next;
+      aimX = aim.x;
+      aimY = aim.y;
     });
 
     drawPlanet(planet, camera, view.planet.r || 1, palette, planetKey, (next) => {
@@ -159,34 +165,29 @@ type Camera = {
   toScreen(x: number, y: number): Point2;
 };
 
-function cameraFor(frame: Frame, current: number, focus: number, commit: (next: number) => void): Camera {
+function cameraFor(
+  frame: Frame,
+  current: number,
+  currentAim: Point2,
+  look: { aim: Point2; focus: number },
+  commit: (next: number, aim: Point2) => void,
+): Camera {
   const follow = frame.reducedMotion ? 1 : 0.08;
-  const radius = current + (focus - current) * follow;
-  commit(radius);
-  const scale = (Math.min(frame.width, frame.height) * 0.46) / Math.max(radius, 0.5);
+  const radius = current + (look.focus - current) * follow;
+  const aim = {
+    x: currentAim.x + (look.aim.x - currentAim.x) * follow,
+    y: currentAim.y + (look.aim.y - currentAim.y) * follow,
+  };
+  commit(radius, aim);
+  const scale = (Math.min(frame.width, frame.height) * 0.46) / Math.max(radius, 0.12);
   const cx = frame.width / 2;
   const cy = frame.height / 2 + frame.height * 0.02;
   return {
     scale,
     toScreen(x, y) {
-      return { x: cx + x * scale, y: cy - y * scale };
+      return { x: cx + (x - aim.x) * scale, y: cy - (y - aim.y) * scale };
     },
   };
-}
-
-function targetRadius(view: CannonView, ghost: Point2[]): number {
-  let maxR = 1.72;
-  const consider = (x: number, y: number) => {
-    const radius = Math.hypot(x, y);
-    if (Number.isFinite(radius)) maxR = Math.max(maxR, radius * 1.18);
-  };
-  consider(view.ball.x, view.ball.y);
-  for (const sample of view.trail) {
-    const point = readPoint(sample as TrailSample);
-    consider(point.x, point.y);
-  }
-  for (const point of ghost) consider(point.x, point.y);
-  return Math.min(maxR, 10);
 }
 
 function remember(samples: Point2[], ball: { x: number; y: number }): void {

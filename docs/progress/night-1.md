@@ -167,6 +167,8 @@ A name of O'Brien stopped the scribe with the database's own words, "near Brien:
 
 The dune, the meadow, the flock, and the valley all shared a generic button. Commit `0d053fe`. They now say "Let it march", "Let them blink", "Let them fly", and "Let a season pass". The hot plate still says "Let it spread". On the production server each of those five buttons reads that way. `pnpm check` is 248 tests.
 
+How fast the dune walks said "1 times height 10". Commit `d4416c4`. It now says "1 of a height-10 dune's pace". On the production server one march ends at 0.23 dune widths, sand lost at -0.0046 each step, and that pace. `pnpm check` is 249 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

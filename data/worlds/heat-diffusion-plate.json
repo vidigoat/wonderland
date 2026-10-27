@@ -88,8 +88,8 @@
     },
     {
       "id": "meanFluxMagnitude",
-      "label": "How fast heat is flowing",
-      "unit": "",
+      "label": "Change from one spot to the next",
+      "unit": "degrees",
       "display": "series"
     },
     {

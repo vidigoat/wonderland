@@ -35,6 +35,11 @@ describe("reading numbers", () => {
       text: "42%",
       unit: null,
     });
+    expect(formatHudValue("collision_rate", "Birds bumping", 0.16, "series", "")).toEqual({
+      text: "16%",
+      unit: null,
+    });
+    expect(isShareReading("mean_flash_rate", "Flashes each second", 0.23)).toBe(false);
     expect(formatHudValue("migrationSpeed", "How fast the dune walks", 0.5, "counter", "")).toEqual({
       text: "0.5",
       unit: null,

@@ -20,6 +20,7 @@ export function WorldStage(props: {
   artStyle: string;
   playing: boolean;
   params: Record<string, number | boolean | string>;
+  capture?: boolean;
 }): JSX.Element {
   const host = useRef<HTMLDivElement>(null);
   const latest = useRef(props);
@@ -67,7 +68,7 @@ export function WorldStage(props: {
       aria-label={caption(props.archetype, view)}
       style={{ background: cssHex(ground) }}
     >
-      <div ref={host} className="world-stage-host" />
+      <div ref={host} className="world-stage-host" data-capture={props.capture ? "yes" : undefined} />
       {painted ? null : (
         <div className="world-stage-fallback">
           <FallbackStage {...props} view={view} />

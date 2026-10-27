@@ -12,4 +12,6 @@ export type StageProps = {
   params: Params;
   /** Muse Image + SAM 3.1 art for a generated world, when it has been painted. */
   painted?: PaintedArt;
+  /** Keep the WebGL buffer so a playtest can read the canvas. */
+  capture?: boolean;
 };

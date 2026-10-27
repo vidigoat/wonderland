@@ -35,6 +35,7 @@ export function mountWorldStage(host: HTMLElement, read: () => StageProps): () =
         antialias: true,
         background: palette.ground,
         preference: "webgl",
+        preserveDrawingBuffer: host.closest("[data-capture]") != null,
         hello: false,
       });
       if (destroyed) {

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Mic } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { compileRules, type Observation, type Params, type RulesModule } from "@/engine/rules";
 import { WorldSession } from "@/engine/runtime";
 import type { PublicWorldSpec } from "@/engine/spec";
@@ -45,6 +45,7 @@ import {
   verdictKicker,
   type PlaySnapshot,
 } from "./phase";
+import { collectShots } from "./capture";
 import { defaultParams, formatParam, freshStart, pictureAction, raceLine, raceRows, restageParams, runDuration, runSteps, stripMoved, summariseObservation, runVerb } from "./readings";
 import { mintSession, withSeed } from "./session";
 import { startWavCapture, type WavCapture } from "./wav";
@@ -104,6 +105,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const [view, setView] = useState<WorldView | null>(null);
   const [playing, setPlaying] = useState(false);
   const [ran, setRan] = useState(false);
+  const [playtestNote, setPlaytestNote] = useState<string | null>(null);
   const [trace, setTrace] = useState<Observation[]>([]);
   const [priorTrace, setPriorTrace] = useState<Observation[] | null>(null);
   const [ready, setReady] = useState(false);
@@ -164,6 +166,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const hideWitness = useRef(false);
   const originRef = useRef<Observation | null>(null);
   const runStart = useRef(0);
+  const playtestRan = useRef(false);
   const worldStamp = `${spec.id}:${retry}`;
   const [stamp, setStamp] = useState(worldStamp);
   if (stamp !== worldStamp) {
@@ -206,6 +209,49 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     setView(asWorldView(session.view(), spec.archetype));
     setTrace(session.history.slice(runStart.current));
   }
+
+  useLayoutEffect(() => {
+    const watching = new URLSearchParams(window.location.search).get("playtest") === "1";
+    document.querySelector(".stage-pane")?.toggleAttribute("data-capture", watching);
+  }, [spec.id]);
+
+  useEffect(() => {
+    if (!ready || playtestRan.current) return;
+    if (new URLSearchParams(window.location.search).get("playtest") !== "1") return;
+    const rules = rulesFor(spec);
+    const seed = seedRef.current;
+    if (!rules || seed == null) return;
+    playtestRan.current = true;
+    setPlaytestNote("Spark is watching this world run.");
+    let cancel = false;
+    void collectShots(spec, rules, () => document.querySelector(".world-stage canvas"), seed)
+      .then(async (frames) => {
+        if (cancel) return;
+        const res = await fetch("/api/playtest", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ worldId: spec.id, frames }),
+        });
+        const body = (await res.json()) as { verdict?: string; notes?: unknown; source?: string };
+        if (cancel) return;
+        if (!res.ok) {
+          setPlaytestNote("The playtester could not watch.");
+          return;
+        }
+        const notes = Array.isArray(body.notes) ? body.notes.filter((note): note is string => typeof note === "string") : [];
+        if (body.source === "sample") {
+          setPlaytestNote(notes[0] ?? "Spark did not watch this world.");
+          return;
+        }
+        setPlaytestNote(body.verdict === "looks-right" ? "Looked right." : `Spotted something: ${notes[0] ?? "the picture needs another look."}`);
+      })
+      .catch(() => {
+        if (!cancel) setPlaytestNote("The playtester could not watch.");
+      });
+    return () => {
+      cancel = true;
+    };
+  }, [ready, spec]);
 
   useEffect(() => {
     const rules = rulesFor(spec);
@@ -778,6 +824,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
           {/* From the first screen, so the set-up (the bank's cash, the moths' colour) is visible before you predict. */}
           {!newSituation && play.phase !== "receipt" ? <StageHud spec={spec} obs={obs} params={params} revealed={ran} /> : null}
           {witness && !newSituation ? <p className="witness">{witness}</p> : null}
+          {playtestNote ? <p className="witness playtest-note">{playtestNote}</p> : null}
           {play.phase !== "intro" && !newSituation ? <StageLegend worldId={spec.id} /> : null}
           {spec.id === "firebreak" && !newSituation ? (
             <ul className="legend" aria-label="Valley marks">

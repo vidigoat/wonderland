@@ -93,6 +93,8 @@ On the thirty-second bank, several people shouted "Getting my money out!" on top
 
 Letting the fire burn painted every step, so the button stayed on "In motion" for about fifteen seconds after the fire had already stopped, and the caption covered the legend. Commit `e903e3e`. The valley now paints sixteen frames. On the production server it finishes in about six seconds at 14% of the trees burned, the far ridge untouched, and the legend reads sapling, flame, and stump above the caption.
 
+Thirty steps left the starlings only partly facing the same way. One gesture now runs 400 steps. On the production server it finishes in about seven seconds with 0% bumping, 100% facing the same way, and the flock 15.3 from the centre.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

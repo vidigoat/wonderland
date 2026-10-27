@@ -228,6 +228,8 @@ export function runSteps(archetype: string, worldId?: string, params?: Params): 
   if (worldId === "firefly-sync-kuramoto") return 2000;
   // One Lotka–Volterra swing: hares boom, crash, and the lynx peak after them. Thirty steps is only the start of the boom.
   if (worldId === "predator-prey-valley") return 400;
+  // Thirty steps leaves the starlings only partly aligned. By 400, on most seeds, they face the same way.
+  if (worldId === "murmuration-sky") return 400;
   if (archetype === "field") return 48;
   return 30;
 }
@@ -242,6 +244,8 @@ export function tickBatch(steps: number, worldId?: string): number {
   if (worldId === "heat-diffusion-plate") return Math.max(1, Math.ceil(steps / 12));
   // The valley is a forest of trees. Painting every step holds "Let it burn" long after the fire has stopped.
   if (worldId === "firebreak") return Math.max(1, Math.ceil(steps / 16));
+  // A flock step looks at every neighbor. Twenty pictures are enough to see them line up.
+  if (worldId === "murmuration-sky") return Math.max(1, Math.ceil(steps / 20));
   if (steps <= 80) return 1;
   if (steps <= 600) return 4;
   return Math.max(1, Math.ceil(steps / 24));

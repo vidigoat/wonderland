@@ -111,7 +111,7 @@
     {
       "id": "flock_radius",
       "label": "How spread out the flock is",
-      "unit": "",
+      "unit": "from the centre",
       "display": "series"
     }
   ],

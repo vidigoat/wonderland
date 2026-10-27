@@ -67,7 +67,7 @@ The meadow used the same thirty steps as a short population run. Commit `202b7d4
 
 The valley's thirty steps were only the start of the hare boom. Commit `a9a06f9`. One gesture now runs the four hundred steps of a swing. On the production server it finishes in about twelve seconds: 112 hares, 26 lynx, the swing at 0.99, and the lynx peak 42 steps after the hares. The chart rises, falls, and the lynx line follows the hare line.
 
-The ring road reported the jam's speed from a formula of the knobs, `-3.57` metres per second, even when the cars said otherwise. The speed is now the slope of the jam's own position along the ring. All five checks still pass. On the production server one run finishes in about eight seconds at `-3.79` metres per second, which is the measured slope, and the Fire button comes back.
+The ring road reported the jam's speed from a formula of the knobs, `-3.57` metres per second, even when the cars said otherwise. Commit `d656a88`. The speed is now the slope of the jam's own position along the ring. All five checks still pass. On the production server one run finishes in about eight seconds at `-3.79` metres per second, which is the measured slope, and the Fire button comes back.
 
 ## Still blocked on a key
 

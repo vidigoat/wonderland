@@ -119,6 +119,8 @@ An orbit held Fire on "In motion" past twenty seconds, because every few steps o
 
 A name of `' OR '1'='1` breaks the quotes and still fails the password clause, so the vault stays shut, and the card never said so. Commit `c20ca11`. It now says the spell ran and the vault stayed shut. On the production server the wide stage and the phone both show the whole line, with the broken quote marked, and the vault shut. `pnpm check` is 239 tests.
 
+The receipt card was drawn so tall that Ada covered the lines you had earned. Commit `5a25be4`. It now ends inside the notebook. On the production server a finished Peppered Forest shows the plain discovery, both predictions held, 14 seconds, and the line that the law is not printed. The hidden law is not on the page. `pnpm check` is 239 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

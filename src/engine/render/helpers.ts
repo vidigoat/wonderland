@@ -167,7 +167,22 @@ export function figureTint(worldId: string, speed: number | undefined): number {
 
 /** Shelf-card size in CSS pixels. A stopped car is large enough to read as the jam. */
 export function thumbBodyPx(worldId: string, speed: number | undefined): number {
-  return figureTint(worldId, speed) === 0xffffff ? 16 : 26;
+  return figureTint(worldId, speed) === 0xffffff ? 16 : 36;
+}
+
+/**
+ * Radius of the red mark behind a stopped car, in CSS pixels.
+ * It has to reach past the painting, or the car covers the mark and the jam disappears.
+ */
+export function thumbJamHalo(worldId: string, speed: number | undefined): number {
+  if (figureTint(worldId, speed) === 0xffffff) return 0;
+  return thumbBodyPx(worldId, speed) * 0.78;
+}
+
+/** A stopped car is painted over in this dark red, so it sits in the bright mark instead of matching the moving cars. */
+export function thumbJamInk(worldId: string, speed: number | undefined): string | null {
+  if (figureTint(worldId, speed) === 0xffffff) return null;
+  return "#6e1020";
 }
 
 /** A handful of lines, spread across the square, so one sentence is not stacked on itself. */

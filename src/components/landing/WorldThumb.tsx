@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { compileRules, type RulesModule } from "@/engine/rules";
 import { WorldSession } from "@/engine/runtime";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { bodyFacing, cssHex, figureTint, flockFacing, heightSilhouette, softenRidge, thumbBodyPx, thumbSteps } from "@/engine/render/helpers";
+import { bodyFacing, cssHex, figureTint, flockFacing, heightSilhouette, softenRidge, thumbBodyPx, thumbJamHalo, thumbJamInk, thumbSteps } from "@/engine/render/helpers";
 import { asWorldView, isParticlesView } from "@/engine/view";
 
 /**
@@ -87,6 +87,30 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
           ctx.drawImage(image, (-image.width * k) / 2, (-image.height * k) / 2, image.width * k, image.height * k);
           ctx.restore();
         };
+        // A stopped car keeps the cut-out shape and is filled dark, so the bright mark around it stays visible.
+        const drawStuck = (image: HTMLImageElement, x: number, y: number, size: number, ink: string, turn = 0, flip = false) => {
+          const k = size / Math.max(image.width, image.height);
+          const dw = Math.max(1, Math.ceil(image.width * k));
+          const dh = Math.max(1, Math.ceil(image.height * k));
+          const plate = document.createElement("canvas");
+          plate.width = dw;
+          plate.height = dh;
+          const bits = plate.getContext("2d");
+          if (!bits) {
+            drawSprite(image, x, y, size, 1, turn, flip);
+            return;
+          }
+          bits.drawImage(image, 0, 0, dw, dh);
+          bits.globalCompositeOperation = "source-atop";
+          bits.fillStyle = ink;
+          bits.fillRect(0, 0, dw, dh);
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(turn);
+          if (flip) ctx.scale(-1, 1);
+          ctx.drawImage(plate, -dw / 2, -dh / 2);
+          ctx.restore();
+        };
         const pad = 0.12;
         const at = (x: number, y: number) => [w * (pad + x * (1 - 2 * pad)), h * (pad * 0.6 + y * (1 - 2 * pad))] as const;
         if (view.kind === "population") {
@@ -120,16 +144,19 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
             const speed = (body as { vx?: number }).vx;
             const tint = figureTint(spec.id, speed);
             const size = thumbBodyPx(spec.id, speed) * dpr;
-            if (tint !== 0xffffff) {
+            const halo = thumbJamHalo(spec.id, speed) * dpr;
+            if (halo > 0) {
               ctx.fillStyle = cssHex(tint);
               ctx.beginPath();
-              ctx.arc(x, y, size * 0.42, 0, Math.PI * 2);
+              ctx.arc(x, y, halo, 0, Math.PI * 2);
               ctx.fill();
             }
             const image = sprites.size > 0 ? spriteOf(String(body.id ?? "").replace(/[-_]?\d+$/, "")) : undefined;
             if (image) {
               const face = bodyFacing(speed, image.height > image.width * 1.25);
-              drawSprite(image, x, y, size, 1, face.turn, face.flip);
+              const ink = thumbJamInk(spec.id, speed);
+              if (ink) drawStuck(image, x, y, size, ink, face.turn, face.flip);
+              else drawSprite(image, x, y, size, 1, face.turn, face.flip);
               continue;
             }
             ctx.fillStyle = typeof body.color === "string" ? body.color : "#fafafa";

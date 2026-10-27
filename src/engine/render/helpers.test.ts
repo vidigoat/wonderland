@@ -11,6 +11,8 @@ import {
   fieldScale,
   bodyFacing,
   thumbBodyPx,
+  thumbJamHalo,
+  thumbJamInk,
   thumbSteps,
   figureTint,
   flockFacing,
@@ -344,6 +346,10 @@ describe("a shelf card", () => {
     expect(thumbSteps("hallway-lanes")).toBeGreaterThan(40);
     expect(thumbSteps("firefly-sync-kuramoto")).toBe(40);
     expect(thumbBodyPx("phantom-jam-ring-road", 0)).toBeGreaterThan(thumbBodyPx("phantom-jam-ring-road", 12));
+    expect(thumbJamHalo("phantom-jam-ring-road", 0)).toBeGreaterThan(thumbBodyPx("phantom-jam-ring-road", 0) / 2);
+    expect(thumbJamHalo("phantom-jam-ring-road", 12)).toBe(0);
+    expect(thumbJamInk("phantom-jam-ring-road", 0)).toBe("#6e1020");
+    expect(thumbJamInk("hallway-lanes", -1)).toBeNull();
     expect(thumbBodyPx("hallway-lanes", -1)).toBe(thumbBodyPx("hallway-lanes", 1));
   });
 });

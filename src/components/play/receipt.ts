@@ -52,6 +52,13 @@ export type ReceiptPicture = {
   figure: CanvasImageSource | null;
 };
 
+/** A desk card is the wide painting. A phone card is taller than it is wide, so the type survives the narrow column. */
+export function receiptCanvasSize(cssWidth: number, dpr: number, narrow: boolean): { width: number; height: number } {
+  if (!narrow) return { width: 1200, height: 640 };
+  const width = Math.max(280, Math.round(Math.max(1, cssWidth) * Math.min(2, Math.max(1, dpr))));
+  return { width, height: Math.round(width * 1.55) };
+}
+
 /** Where the painting sits, and where the words begin. A wide card puts the painting on the left. */
 export function pictureFrame(
   width: number,
@@ -233,6 +240,87 @@ function paintWideReceipt(
   ctx.fillText("The law is not printed on this card.", x, height - 64);
 }
 
+/** A narrow column. The painting sits on top and the words use the full width at a size you can read. */
+function paintCompactReceipt(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  model: ReceiptModel,
+  palette: ReceiptPalette,
+  displayFont: string,
+  uiFont: string,
+  art: ReceiptPicture | null,
+  copy: ReturnType<typeof receiptCopy>,
+) {
+  const pad = Math.round(width * 0.05);
+  const px = (share: number) => Math.max(12, Math.round(width * share));
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = palette.paper;
+  ctx.fillRect(0, 0, width, height);
+  ctx.strokeStyle = palette.brass;
+  ctx.lineWidth = Math.max(2, Math.round(width * 0.004));
+  ctx.strokeRect(pad * 0.45, pad * 0.45, width - pad * 0.9, height - pad * 0.9);
+
+  const pictureH = Math.round(height * 0.3);
+  if (art?.ground) {
+    const frame = { x: pad, y: pad, w: width - pad * 2, h: pictureH - pad };
+    drawCover(ctx, art.ground, frame);
+    if (art.figure) drawFigure(ctx, art.figure, frame);
+    ctx.strokeStyle = palette.brass;
+    ctx.lineWidth = Math.max(2, Math.round(width * 0.005));
+    ctx.strokeRect(frame.x, frame.y, frame.w, frame.h);
+  }
+
+  let y = pad + pictureH + px(0.08);
+  const textW = width - pad * 2;
+  ctx.fillStyle = palette.accent;
+  ctx.font = `500 ${px(0.034)}px ${uiFont}`;
+  ctx.fillText("Wonderland", pad, y);
+  y += px(0.08);
+
+  ctx.fillStyle = palette.ink;
+  ctx.font = `600 ${px(0.062)}px ${displayFont}`;
+  y = wrap(ctx, model.title, pad, y, textW, px(0.072), 2);
+  y += px(0.03);
+  ctx.strokeStyle = palette.brass;
+  ctx.beginPath();
+  ctx.moveTo(pad, y);
+  ctx.lineTo(width - pad, y);
+  ctx.stroke();
+  y += px(0.07);
+
+  ctx.font = `500 ${px(0.032)}px ${uiFont}`;
+  ctx.fillStyle = palette.accent;
+  ctx.fillText("Before", pad, y);
+  ctx.fillText("After", pad + textW * 0.52, y);
+  y += px(0.075);
+
+  ctx.font = `600 ${px(0.056)}px ${displayFont}`;
+  ctx.fillStyle = palette.ink;
+  ctx.fillText(copy.before, pad, y);
+  ctx.fillText(copy.after, pad + textW * 0.52, y);
+  y += px(0.055);
+
+  ctx.font = `400 ${px(0.04)}px ${uiFont}`;
+  const leftBottom = model.beforeWords ? wrap(ctx, model.beforeWords, pad, y, textW * 0.48, px(0.05), 4) : y;
+  let rightY = y;
+  ctx.fillText(copy.afterKind, pad + textW * 0.52, rightY);
+  rightY += px(0.05);
+  if (model.afterWords) rightY = wrap(ctx, model.afterWords, pad + textW * 0.52, rightY, textW * 0.46, px(0.05), 4);
+  y = Math.max(leftBottom, rightY) + px(0.07);
+
+  ctx.font = `500 ${px(0.032)}px ${uiFont}`;
+  ctx.fillStyle = palette.accent;
+  ctx.fillText("Time you spent", pad, y);
+  ctx.font = `600 ${px(0.05)}px ${displayFont}`;
+  ctx.fillStyle = palette.ink;
+  ctx.fillText(copy.elapsed, pad + textW * 0.58, y);
+  y += px(0.08);
+
+  ctx.font = `400 ${px(0.038)}px ${uiFont}`;
+  wrap(ctx, "The law is not printed on this card.", pad, y, textW, px(0.048), 2);
+}
+
 export function paintReceipt(
   ctx: CanvasRenderingContext2D,
   width: number,
@@ -245,6 +333,10 @@ export function paintReceipt(
 ) {
   const copy = receiptCopy(model);
   const frame = pictureFrame(width, Boolean(art?.ground), height);
+  if (height > width && width < 900) {
+    paintCompactReceipt(ctx, width, height, model, palette, displayFont, uiFont, art, copy);
+    return;
+  }
   if (width > height) {
     paintWideReceipt(ctx, width, height, model, palette, displayFont, uiFont, art, frame, copy);
     return;

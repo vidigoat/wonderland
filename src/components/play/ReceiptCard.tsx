@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { paintReceipt, paletteFor, receiptArtPaths, receiptSummary, type ReceiptModel, type ReceiptPicture } from "./receipt";
+import { paintReceipt, paletteFor, receiptArtPaths, receiptCanvasSize, receiptSummary, type ReceiptModel, type ReceiptPicture } from "./receipt";
 
 function fontStack(variable: string, fallback: string): string {
   const value = getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
@@ -42,6 +42,10 @@ export function ReceiptCard({ model, worldId }: { model: ReceiptModel; worldId: 
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
+    const narrow = window.matchMedia("(max-width: 720px)").matches;
+    const size = receiptCanvasSize(canvas.clientWidth || 320, window.devicePixelRatio || 1, narrow);
+    canvas.width = size.width;
+    canvas.height = size.height;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     const current = { title, tagline, concept, before, after, afterKind, elapsedMs, seen, beforeWords, afterWords };

@@ -19,7 +19,7 @@ import {
   toHypothesise,
   TRAIL,
 } from "./phase";
-import { clippedLines, pictureFrame, receiptArtPaths, receiptCopy, receiptSummary } from "./receipt";
+import { clippedLines, pictureFrame, receiptArtPaths, receiptCanvasSize, receiptCopy, receiptSummary } from "./receipt";
 import { duneRunSteps, freshStart, pictureAction, raceLine, raceRows, restageParams, runDuration, runSteps, runVerb, speakTool, stripMoved, tickBatch } from "./readings";
 import { drainSse, heroHref, toMontageItem } from "./sse";
 import { encodeWav } from "./wav";
@@ -268,6 +268,10 @@ describe("receipt copy", () => {
     expect(clippedLines("Stays roughly the same", 40, measure, 2)).toEqual(["Stays roughly the same"]);
     expect(wide.textX).toBeGreaterThan(wide.x + wide.w);
     expect(wide.y + wide.h).toBeLessThanOrEqual(640);
+    expect(receiptCanvasSize(1100, 2, false)).toEqual({ width: 1200, height: 640 });
+    const phone = receiptCanvasSize(320, 2, true);
+    expect(phone.height).toBeGreaterThan(phone.width);
+    expect(phone.width).toBe(640);
   });
 });
 

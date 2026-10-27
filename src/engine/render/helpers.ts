@@ -370,6 +370,16 @@ export function smoothField(grid: number[][], longest = 180): number[][] {
 }
 
 /**
+ * How high a dune column is drawn, as a fraction of the stage.
+ * The grid stores a low ridge, so the picture lifts it until the windward slope and the slip face can be told apart.
+ * A taller dune still draws taller, up to the sky.
+ */
+export function duneRise(fraction: number): number {
+  if (!Number.isFinite(fraction) || fraction <= 0) return 0;
+  return Math.min(0.9, fraction * 2.2);
+}
+
+/**
  * The columns that are the dune, plus a little flat sand on either side.
  * A shelf card can then draw the shape across the picture instead of a spike in a field of zeros.
  */

@@ -30,6 +30,7 @@ import {
   populationCrowd,
   resolveShotPath,
   separateSpeech,
+  duneRise,
   ridgeWindow,
   softenRidge,
   SCROLL_TRIP_MS,
@@ -295,6 +296,13 @@ describe("speech bubbles", () => {
 });
 
 describe("a dune ridge", () => {
+  it("lifts a low ridge high enough to read, and keeps a taller dune taller", () => {
+    expect(duneRise(0)).toBe(0);
+    expect(duneRise(1 / 3)).toBeGreaterThan(0.6);
+    expect(duneRise(1 / 3)).toBeLessThan(duneRise(0.5));
+    expect(duneRise(1)).toBeLessThanOrEqual(0.9);
+  });
+
   it("rounds a staircase and keeps the crest where it was", () => {
     const stairs = [0, 0, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3, 0.15, 0, 0];
     const soft = softenRidge(stairs);

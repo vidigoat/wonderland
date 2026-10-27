@@ -1,5 +1,5 @@
 import { Container, Graphics, Sprite, Texture, BufferImageSource } from "pixi.js";
-import { FIELD_COLORS, clearedStrip, fieldColor, fieldScale, heightSilhouette, phaseOffset, smoothField, softenRidge, type FieldScale } from "./helpers";
+import { FIELD_COLORS, clearedStrip, duneRise, fieldColor, fieldScale, heightSilhouette, phaseOffset, smoothField, softenRidge, type FieldScale } from "./helpers";
 import type { Frame, Scene } from "./scene";
 import { createBackdrop } from "./backdrop";
 import { isPaintedWorld } from "./sprites";
@@ -147,7 +147,7 @@ function drawDune(g: Graphics, heights: number[], box: Box, painted: boolean): v
   end = Math.min(count - 1, end + 1);
   const ridge: number[] = [];
   for (let index = start; index <= end; index++) {
-    ridge.push(box.x + (index / (count - 1)) * box.w, box.y + box.h - (smooth[index] ?? 0) * box.h);
+    ridge.push(box.x + (index / (count - 1)) * box.w, box.y + box.h - duneRise(smooth[index] ?? 0) * box.h);
   }
   const left = ridge[0] ?? box.x;
   const right = ridge[ridge.length - 2] ?? box.x + box.w;

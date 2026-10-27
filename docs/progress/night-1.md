@@ -63,7 +63,7 @@ Marching Dunes used the same short run as a fire. Commit `3cc291e`. At the defau
 
 Murmuration Sky's readings were a formula of the knobs. Commit `8400980`. Letting time pass did not change them, and the birds did not separate or copy a heading. The flight is now real: birds keep a gap, copy neighbors, and stay with the flock. All six checks pass on seeds 1, 2 and 3. On the production server one run ends at 0 birds bumping, 17% facing the same way, and the flock spread at 15.7, with three lines on the chart.
 
-The meadow used the same thirty steps as a short population run. The fireflies had not locked: flashing in step stayed near 2%. One gesture now runs the two thousand steps the science needs. On the production server it finishes in about seven seconds at 88% flashing in step, and the chart climbs from the bottom of the frame to the top.
+The meadow used the same thirty steps as a short population run. Commit `202b7d4`. The fireflies had not locked: flashing in step stayed near 2%. One gesture now runs the two thousand steps the science needs. On the production server it finishes in about seven seconds at 88% flashing in step, and the chart climbs from the bottom of the frame to the top.
 
 ## Still blocked on a key
 

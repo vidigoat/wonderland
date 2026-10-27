@@ -15,6 +15,10 @@ export function drawSilhouette(g: Graphics, sprite: string): void {
   else if (key.includes("bird")) drawBird(g);
   else if (/predator|lynx|fox|wolf|cat|hunter|shark/.test(key)) drawPredator(g);
   else if (/prey|hare|rabbit|mouse|deer|sheep/.test(key)) drawPrey(g);
+  else if (/fish|salmon|minnow/.test(key)) drawFish(g);
+  else if (/\bbees?\b|\bants?\b|insect|beetle|\bfly\b|\bflies\b/.test(key)) drawInsect(g);
+  else if (/\bcells?\b|bacteri|virus|molecule|particle|\batoms?\b/.test(key)) drawCell(g);
+  else if (/\bcars?\b|vehicle|truck|\bbus\b/.test(key)) drawCar(g);
   // Before "fire": a firefly is a light, not a flame.
   else if (key.includes("firefly") || key.includes("glow") || key.includes("light") || key.includes("spark") || key.includes("star")) drawGlow(g);
   else if (key.includes("flame") || key.includes("fire") || key.includes("ember")) drawFlame(g);
@@ -149,4 +153,27 @@ function drawPredator(g: Graphics): void {
   g.ellipse(0, -10, 10, 8).fill(fill());
   g.ellipse(0, 5, 15, 9).fill(fill());
   g.moveTo(14, 6).quadraticCurveTo(24, 0, 22, -8).stroke({ width: 3, color: WHITE, cap: "round" });
+}
+
+function drawFish(g: Graphics): void {
+  g.ellipse(-2, 0, 15, 8).fill(fill());
+  g.poly([12, 0, 22, -8, 22, 8]).fill(fill());
+}
+
+function drawInsect(g: Graphics): void {
+  g.ellipse(-8, -6, 7, 5).fill(fill(WHITE, 0.55));
+  g.ellipse(8, -6, 7, 5).fill(fill(WHITE, 0.55));
+  g.ellipse(0, 0, 5, 10).fill(fill());
+  g.circle(0, -12, 4).fill(fill());
+}
+
+function drawCell(g: Graphics): void {
+  g.circle(0, 0, 13).fill(fill(WHITE, 0.35));
+  g.circle(0, 0, 13).stroke({ width: 2, color: WHITE });
+  g.circle(2, -1, 5).fill(fill());
+}
+
+function drawCar(g: Graphics): void {
+  g.roundRect(-16, -6, 32, 12, 4).fill(fill());
+  g.roundRect(-8, -13, 16, 8, 3).fill(fill(WHITE, 0.8));
 }

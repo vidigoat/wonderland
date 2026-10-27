@@ -49,7 +49,7 @@
   flex-direction: column;
   overflow: hidden;
   background:
-    radial-gradient(90% 70% at 50% 108%, rgba(64, 92, 60, 0.45), transparent 60%),
+    radial-gradient(90% 70% at 50% 108%, rgba(255, 255, 255, 0.03), transparent 60%),
     radial-gradient(120% 90% at 50% 30%, var(--wl-dusk) 0%, var(--wl-night) 48%, var(--wl-deep) 100%);
 }
 .wl-hero::after {
@@ -194,7 +194,7 @@
   padding: 8px 15px;
   border-radius: 999px;
   border: 1px solid var(--wl-line);
-  background: rgba(10, 18, 40, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   color: var(--wl-muted);
   font-size: 14px;
   backdrop-filter: blur(8px);
@@ -439,7 +439,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: linear-gradient(180deg, transparent 30%, rgba(6, 13, 31, 0.78) 58%, rgba(6, 13, 31, 0.97) 100%);
+  background: linear-gradient(180deg, transparent 30%, rgba(0, 0, 0, 0.78) 58%, rgba(0, 0, 0, 0.97) 100%);
 }
 .wl-world-copy {
   position: absolute;
@@ -578,7 +578,7 @@
  */
 .play[data-world] {
   --room: var(--wl-deep);
-  --paper: #111d3d;
+  --paper: #0a0a0a;
   --notebook-ink: var(--wl-text);
   --margin: transparent;
   --accent: var(--wl-lantern);
@@ -587,7 +587,7 @@
   --font-sans: var(--wl-body);
   font-family: var(--wl-body);
   background:
-    radial-gradient(80% 60% at 30% 0%, rgba(26, 42, 85, 0.65), transparent 70%),
+    radial-gradient(80% 60% at 30% 0%, rgba(255, 255, 255, 0.04), transparent 70%),
     var(--wl-deep);
   color: var(--wl-text);
 }
@@ -656,7 +656,7 @@
   grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
 }
 .stage-pane {
-  border-radius: 24px;
+  border-radius: 16px;
   border: 1px solid var(--wl-line);
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
 }
@@ -677,9 +677,9 @@
 }
 
 .notebook {
-  border-radius: 24px;
+  border-radius: 16px;
   border: 1px solid var(--wl-line);
-  background: rgba(16, 27, 58, 0.78);
+  background: #0a0a0a;
   background-image: none;
   backdrop-filter: blur(14px);
   color: var(--wl-text);
@@ -729,7 +729,7 @@
 .play input[type="text"], .play textarea, .play .spell-input {
   border-radius: 12px;
   border: 1px solid var(--wl-line);
-  background: rgba(6, 13, 31, 0.6);
+  background: rgba(0, 0, 0, 0.6);
   color: var(--wl-text);
 }
 .play .knob-label, .play .bench > span:first-child {
@@ -745,7 +745,7 @@
 .play .ada {
   margin: 10px;
   padding: 14px 16px;
-  border-radius: 18px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.35);
   background: rgba(255, 255, 255, 0.1);
 }
@@ -779,7 +779,7 @@
   margin-right: 9px;
   border-radius: 50%;
   background: var(--wl-ada);
-  box-shadow: 0 0 14px var(--wl-ada);
+  box-shadow: none;
   vertical-align: 3px;
 }
 .play .ada .thought {
@@ -801,7 +801,7 @@
 .play .sample-note {
   border-radius: 12px;
   border: 1px solid var(--wl-line);
-  background: rgba(6, 13, 31, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   color: var(--wl-muted);
   font-size: 13px;
 }
@@ -848,7 +848,7 @@
 .wl-gallery {
   min-height: 100svh;
   background:
-    radial-gradient(70% 50% at 20% 0%, rgba(26, 42, 85, 0.7), transparent 70%),
+    radial-gradient(70% 50% at 20% 0%, rgba(255, 255, 255, 0.04), transparent 70%),
     var(--wl-deep);
 }
 .wl-gallery-body {

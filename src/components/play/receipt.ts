@@ -225,7 +225,7 @@ function paintWideReceipt(
 
   ctx.font = `500 20px ${uiFont}`;
   ctx.fillStyle = palette.accent;
-  ctx.fillText("Time until it held", x, height - 118);
+  ctx.fillText("Time you spent", x, height - 118);
   ctx.font = `600 40px ${displayFont}`;
   ctx.fillStyle = palette.ink;
   ctx.fillText(copy.elapsed, x + 250, height - 118);
@@ -308,7 +308,7 @@ export function paintReceipt(
   const timeLabelY = wordsY + (model.beforeWords || model.afterWords ? 108 : 70);
   ctx.font = `500 26px ${uiFont}`;
   ctx.fillStyle = palette.accent;
-  ctx.fillText("Time until it held", 92, timeLabelY);
+  ctx.fillText("Time you spent", 92, timeLabelY);
   ctx.font = `600 ${tight ? 72 : 92}px ${displayFont}`;
   ctx.fillStyle = palette.ink;
   ctx.fillText(copy.elapsed, 92, timeLabelY + (tight ? 78 : 100));

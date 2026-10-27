@@ -57,7 +57,7 @@ The README test count was still 200. It is 223. `pnpm eval` is listed, and `/stu
 
 On a phone the forest drew all 120 moths, each about 19 pixels, so the flock was a field of specks. Commit `0bca0a1` draws 36 of them, keeps the bird, and holds each moth at least half a figure. A desk still draws the whole flock. `pnpm check` is 225 tests. Checked on the production server at 390 pixels wide: pale moths, dark moths, and the bird are readable on the birch.
 
-The valley drew 111 hares and 7 lynx at about 20 pixels, so the lynx looked like more hares. A generated painted crowd now stays large enough to tell apart, and every predator is kept. A firefly's brightness follows its own phase, so a dark one shrinks. Checked on the production server after one run: the meadow shows spotted lynx among the hares, and only a few fireflies are bright, which matches "flashing in step" at 2%. `pnpm check` is 226 tests.
+The valley drew 111 hares and 7 lynx at about 20 pixels, so the lynx looked like more hares. Commit `3602b13` keeps every predator and draws that crowd large enough to tell apart. A firefly's brightness follows its own phase, so a dark one shrinks. Checked on the production server after one run: the meadow shows spotted lynx among the hares, and only a few fireflies are bright, which matches "flashing in step" at 2%. `pnpm check` is 226 tests.
 
 ## Still blocked on a key
 

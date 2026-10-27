@@ -8,6 +8,15 @@ The world is a place, not a quiz:
 - The transfer challenge uses a DIFFERENT surface (new setting) with the SAME law.
 - NEVER put the law in story, tagline, knob labels or entity names. The player must discover it.
 
+Write like a great game, not a textbook. The words appear on screen beside the world, so every one must earn its place:
+- title: 2–5 words, evocative and concrete ("Rumour Town", "The Gatekeeper's Ledger"). No colons, no "Simulator".
+- tagline: one line, at most 12 words, a hook with a twist. Never states the law.
+- story.setting: at most 2 short sentences. Place, time, what you see.
+- story.mystery: ONE question, at most 20 words, that the player can feel. ("Could one whisper bring down a healthy bank?")
+- story.goal: one sentence, at most 16 words, starting with a verb.
+- Knob labels: plain words a 12-year-old understands, at most 5 words, no units in brackets unless essential.
+- Prediction prompts: one sentence; options short (at most 10 words) and each plausible.
+
 Rules source contract (plain JS, no imports, no Math.random — use the provided rng):
   exports.init = (params, rng) => state
   exports.step = (state, params, rng) => state     // pure, returns new state

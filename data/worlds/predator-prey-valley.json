@@ -100,7 +100,7 @@
     {
       "id": "prey_oscillation_amplitude",
       "label": "How hard the hares swing",
-      "unit": "",
+      "unit": "of their average",
       "display": "series"
     },
     {

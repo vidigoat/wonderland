@@ -89,6 +89,8 @@ The ring road hid how much the cars' speeds differ. Commit `53d5939`. That numbe
 
 On the thirty-second bank, several people shouted "Getting my money out!" on top of each other, and one shout sat under the bank card. Commit `52a17a5`. A phrase is now said once, and on Rumour Town it is placed in the open sky. Checked on the production server: the line is readable above the bank, and the bank still closes on day 6. `pnpm check` is 229 tests.
 
+"How hard the hares swing" was a bare 0.99. That number is the size of the swing divided by the average herd. On the production server one chase finishes at 0.99 of their average, with 112 hares, 26 lynx, and the lynx peak 42 steps later.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

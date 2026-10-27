@@ -91,7 +91,7 @@ On the thirty-second bank, several people shouted "Getting my money out!" on top
 
 "How hard the hares swing" was a bare 0.99. Commit `5d6d25c`. That number is the size of the swing divided by the average herd. On the production server one chase finishes at 0.99 of their average, with 112 hares, 26 lynx, and the lynx peak 42 steps later.
 
-Letting the fire burn painted every step, so the button stayed on "In motion" for about fifteen seconds after the fire had already stopped, and the caption covered the legend. The valley now paints sixteen frames. On the production server it finishes in about six seconds at 14% of the trees burned, the far ridge untouched, and the legend reads sapling, flame, and stump above the caption.
+Letting the fire burn painted every step, so the button stayed on "In motion" for about fifteen seconds after the fire had already stopped, and the caption covered the legend. Commit `e903e3e`. The valley now paints sixteen frames. On the production server it finishes in about six seconds at 14% of the trees burned, the far ridge untouched, and the legend reads sapling, flame, and stump above the caption.
 
 ## Still blocked on a key
 

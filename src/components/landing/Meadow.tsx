@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
  * (Kuramoto coupling). It is the product's promise in motion — order you can watch emerge.
  * Pauses when hidden; a single still frame under prefers-reduced-motion.
  */
-export function Meadow({ count = 150, className }: { count?: number; className?: string }) {
+export function Meadow({ count = 110, className }: { count?: number; className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -46,17 +46,17 @@ export function Meadow({ count = 150, className }: { count?: number; className?:
       }
       const mean = Math.atan2(sx, cy);
       // Coupling rises slowly, then rests: the meadow finds its rhythm about ten seconds in.
-      coupling = Math.min(0.022, coupling + 0.00004);
+      coupling = Math.min(0.03, coupling + 0.00006);
       for (const f of flies) {
         f.phase += 0.045 * f.rate + coupling * Math.sin(mean - f.phase);
         f.drift += 0.004;
         const x = (f.x + Math.sin(f.drift) * 0.006) * width;
         const y = (f.y + Math.cos(f.drift * 0.8) * 0.006) * height;
         const lit = Math.max(0, Math.cos(f.phase)) ** 8;
-        const r = (2.2 + lit * 7) * dpr;
+        const r = (3 + lit * 10) * dpr;
         const glow = ctx.createRadialGradient(x, y, 0, x, y, r * 4.5);
-        glow.addColorStop(0, `rgba(255, 238, 170, ${0.18 + lit * 0.82})`);
-        glow.addColorStop(0.35, `rgba(255, 205, 96, ${0.08 + lit * 0.3})`);
+        glow.addColorStop(0, `rgba(255, 242, 186, ${0.32 + lit * 0.68})`);
+        glow.addColorStop(0.3, `rgba(255, 208, 100, ${0.14 + lit * 0.42})`);
         glow.addColorStop(1, "rgba(255, 190, 70, 0)");
         ctx.fillStyle = glow;
         ctx.beginPath();

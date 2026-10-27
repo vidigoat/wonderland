@@ -841,3 +841,24 @@
   font-size: 13px;
   font-weight: 700;
 }
+
+/* ── Every world ─────────────────────────────────────────── */
+.wl-gallery {
+  min-height: 100svh;
+  background:
+    radial-gradient(70% 50% at 20% 0%, rgba(26, 42, 85, 0.7), transparent 70%),
+    var(--wl-deep);
+}
+.wl-gallery-body {
+  padding-top: clamp(32px, 6vw, 72px);
+  padding-bottom: clamp(56px, 8vw, 110px);
+}
+.wl-gallery-lead {
+  margin-top: 14px;
+  max-width: 52ch;
+  color: var(--wl-muted);
+  font-size: 18px;
+}
+.wl-gallery-sub {
+  margin-top: clamp(64px, 9vw, 110px);
+}

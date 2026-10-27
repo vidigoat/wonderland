@@ -337,7 +337,7 @@ export function Landing({
           <h2 id="inside-title" className="land-h2">
             Under the hood: a team of Meta models
           </h2>
-          <p className="land-sub">Five agents build every world. A world only ships if its science passes on every random seed.</p>
+          <p className="land-sub">Four steps build every world, and four more agents join you while you play. A world only ships if its science passes on every random seed.</p>
         </div>
         <Pipeline />
       </section>

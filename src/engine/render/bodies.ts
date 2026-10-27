@@ -338,7 +338,7 @@ function placeFigures(layer: Container, textures: Map<string, Texture | null>, v
     const r = Math.max(3, Math.min(18, (body.radius ?? 1) * s * 0.9));
     if (sprite.texture !== texture) sprite.texture = texture;
     sprite.visible = true;
-    sprite.scale.set((r * 3.2) / Math.max(texture.width, texture.height));
+    sprite.scale.set((r * 4.2) / Math.max(texture.width, texture.height));
     sprite.position.set(ox + body.x * s, oy + body.y * s);
     // A tall cut-out (a car seen from above) on a lane that runs sideways is turned to drive along it.
     const vx = (body as { vx?: number }).vx;

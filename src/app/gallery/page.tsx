@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PlaceScene } from "@/components/play/Scenes";
+import { listPublic } from "@/lib/storage/worlds";
 import { heroWorlds } from "@/worlds";
 
 export const metadata: Metadata = {
@@ -40,6 +41,42 @@ export default function GalleryPage() {
           </li>
         ))}
       </ul>
+      <WrittenShelf />
     </main>
+  );
+}
+
+/** Worlds the generator wrote and verified (data/worlds). They change only on deploy, so the list is cached. */
+async function WrittenShelf() {
+  "use cache";
+  const heroIds = new Set(heroWorlds.map((world) => world.id));
+  const written = (await listPublic()).filter((world) => !heroIds.has(world.id));
+  return (
+    <>
+      {written.length > 0 ? (
+        <section className="written-shelf">
+          <h2>Written by Muse Spark Open</h2>
+          <p className="gallery-lead">
+            Each began as one typed question. Meta&apos;s open-weights model found the law, built the world, and it passed every science check before it was bound.
+          </p>
+          <ul className="shelf">
+            {written.map((world) => (
+              <li key={world.id}>
+                <Link href={`/w/${world.id}`} className="plate">
+                  <div className={`scene scene-written scene-written-${world.archetype}`} aria-hidden="true">
+                    <span>{world.archetype}</span>
+                  </div>
+                  <div className="plate-copy">
+                    <h2>{world.title}</h2>
+                    <p className="tagline">{world.tagline}</p>
+                    <p className="concept-line">{world.concept}</p>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+    </>
   );
 }

@@ -2120,3 +2120,21 @@ input[type="range"]::-moz-range-thumb {
     scroll-behavior: auto !important;
   }
 }
+
+/* Generated worlds have no painted plate yet: a typographic one, tinted by archetype. */
+.scene-written {
+  display: flex;
+  align-items: flex-end;
+  padding: 1rem;
+  background: radial-gradient(120% 90% at 30% 20%, rgba(198, 161, 90, 0.35), transparent 60%), #1d1814;
+}
+.scene-written span {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(244, 236, 220, 0.75);
+}
+.scene-written-population { background-color: #2a2418; }
+.scene-written-bodies { background-color: #151a24; }
+.scene-written-field { background-color: #2a1a14; }
+.written-shelf { margin-top: 3rem; }

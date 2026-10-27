@@ -41,7 +41,7 @@ type Ledger = { totals: Record<Provider, number>; entries: Entry[] };
 
 function ledgerPath(): string {
   if (process.env.SPEND_LEDGER_PATH) return process.env.SPEND_LEDGER_PATH;
-  const base = process.env.VERCEL ? "/tmp" : path.join(process.cwd(), ".spend");
+  const base = process.env.VERCEL ? "/tmp" : path.join(/* turbopackIgnore: true */ process.cwd(), ".spend");
   return path.join(base, "ledger.json");
 }
 
@@ -50,7 +50,7 @@ let cache: Ledger | null = null;
 function load(): Ledger {
   if (cache) return cache;
   try {
-    cache = JSON.parse(fs.readFileSync(ledgerPath(), "utf8")) as Ledger;
+    cache = JSON.parse(fs.readFileSync(/* turbopackIgnore: true */ ledgerPath(), "utf8")) as Ledger;
   } catch {
     cache = { totals: { meta: 0, baseten: 0 }, entries: [] };
   }
@@ -59,8 +59,8 @@ function load(): Ledger {
 
 function save(ledger: Ledger) {
   try {
-    fs.mkdirSync(path.dirname(ledgerPath()), { recursive: true });
-    fs.writeFileSync(ledgerPath(), JSON.stringify(ledger, null, 2));
+    fs.mkdirSync(/* turbopackIgnore: true */ path.dirname(ledgerPath()), { recursive: true });
+    fs.writeFileSync(/* turbopackIgnore: true */ ledgerPath(), JSON.stringify(ledger, null, 2));
   } catch {
     // Read-only disk: the in-memory total still enforces the cap for this process.
   }

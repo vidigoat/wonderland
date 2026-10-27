@@ -101,6 +101,8 @@ The meadow's "flashing in step" was a ramp laid over the real order, so the char
 
 Walking speed on the hallway was the crowd's wished-for pace times a collision formula, so the card stayed near 1.09. Commit `3266c0a`. It is now the share of their usual pace they manage on that step. The two directions face opposite ways, and the button says "Let them walk". On the production server one gesture finishes in about ten seconds at 100% lanes, 0% head-on bumps, and 1 of their usual pace. With sidestepping turned off it ends at 3% lanes, 17% head-on bumps, and 0.83 of their usual pace. The ring road button says "Let them drive". All seven hallway checks pass. `pnpm check` is 232 tests.
 
+Stopped cars on the ring road wore the same painting as the ones still moving, so the jam was only a pile, and the sliders said m/s. Commit `f6ff03b`. A stopped car now goes red. The controls read "How many cars", "Length of the track", "Time to notice", "Speed they aim for", "Gap they keep", and "Brake tap". On the production server one drive finishes in about ten seconds: 1 jam, travelling at -3.79 metres per second, average speed 11 metres per second, speeds differing by 14.1 metres per second. The red knot sits in the line of cars. `pnpm check` is 234 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

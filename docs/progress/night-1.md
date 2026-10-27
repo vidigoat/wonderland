@@ -135,6 +135,8 @@ The receipt called the minutes on the world "Time until it held", including when
 
 Forty steps left the ring-road shelf card as an even line of cars, before a jam exists. Commit `5a4c3cc`. The card now runs 220 steps, and the hallway card runs long enough for the two directions to sort. On the shelf seed those 220 steps pack 12 stopped cars together and leave the rest moving. The production gallery shows that card. `pnpm check` is 242 tests.
 
+A larger red disc under each stopped car still never showed, because the car painting was drawn on top of it. Commit `bc53f56`. Commit `4820c56` draws that mark past the painting and fills the stopped cars a darker red. On the production gallery, at 1440 wide and on a phone, the bunch is one red knot at the left of the road and the moving cars stay smaller along the lane. `pnpm check` is 242 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

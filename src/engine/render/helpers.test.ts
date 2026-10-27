@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   CANNON_STEP_DT,
+  clampCenter,
   FIELD_COLORS,
   fieldColor,
   bilinearSample,
@@ -245,6 +246,14 @@ describe("fieldColor", () => {
     expect(fieldScale("other", [0, 0.12, 0.35, 1])).toBe("firebreak");
     expect(fieldScale("other", [0, 1, 0.5])).toBe("continuous");
     expect(fieldScale("other", [0, 1, 0, 1])).toBe("continuous");
+  });
+});
+
+describe("station labels stay on a narrow stage", () => {
+  it("pulls a card that would hang off the right edge back inside", () => {
+    expect(clampCenter(360, 120, 390)).toBe(322);
+    expect(clampCenter(40, 120, 390)).toBe(68);
+    expect(clampCenter(200, 80, 390)).toBe(200);
   });
 });
 

@@ -760,8 +760,17 @@
 }
 
 @media (max-width: 860px) {
-  .play-body { grid-template-columns: 1fr; padding: 0 10px 10px; }
+  .play { overflow-x: clip; }
+  .play-body { grid-template-columns: 1fr; padding: 0 10px 10px; max-width: 100%; }
+  .play-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 12px 8px;
+  }
   .play-bar h1 { display: none; }
+  .play-links { margin-left: auto; }
+  .play .goal-bar { margin-left: 10px; margin-right: 10px; }
+  .play .goal-steps { flex-wrap: wrap; }
 }
 .play .ada h2 {
   font-family: var(--wl-display);

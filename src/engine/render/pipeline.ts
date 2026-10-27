@@ -1,5 +1,5 @@
 import { Container, Graphics, Text } from "pixi.js";
-import { clamp01, injectionHighlightRange, lerp, readBoolean, scrollRest, stepScroll, type ScrollTrip } from "./helpers";
+import { clamp01, clampCenter, injectionHighlightRange, lerp, readBoolean, scrollRest, stepScroll, type ScrollTrip } from "./helpers";
 import { pixelRatio, stageFont } from "./fonts";
 import type { WorldPalette } from "./palette";
 import type { Frame, Scene } from "./scene";
@@ -202,17 +202,26 @@ function layStations(
       layer.addChild(blot);
     }
 
-    const role = stationRole(stage, open, error, index);
-    const card = stationCard(role, frame.height < 520);
-    card.position.set(at.x, at.y + (frame.height < 520 ? 30 : 42) * scale);
+    const narrow = frame.width < 520;
+    const role = stationRole(stage, open, error, index, narrow);
+    const card = stationCard(role, frame.height < 520 || narrow);
+    const bounds = card.getLocalBounds();
+    const drop = (frame.height < 520 ? 30 : 42) * scale + (narrow && index % 2 === 1 ? 36 : 0);
+    card.position.set(clampCenter(at.x, bounds.width, frame.width), at.y + drop);
     layer.addChild(card);
   });
   return figures;
 }
 
 /** What each station is called and what it is doing right now, in plain words. */
-function stationRole(stage: string, open: boolean, error: boolean, index: number): { title: string; state: string; alert: boolean } {
+function stationRole(stage: string, open: boolean, error: boolean, index: number, narrow = false): { title: string; state: string; alert: boolean } {
   const n = `${index + 1}`;
+  if (narrow) {
+    if (/scroll/i.test(stage)) return { title: `${n} Scroll`, state: "", alert: false };
+    if (/scribe/i.test(stage)) return { title: `${n} Scribe`, state: error ? "stopped" : "", alert: error };
+    if (/ledger|book/i.test(stage)) return { title: `${n} Ledger`, state: open ? "open" : "", alert: open };
+    if (/vault|door/i.test(stage)) return { title: `${n} Vault`, state: open ? "OPEN" : "shut", alert: open };
+  }
   if (/scroll/i.test(stage)) return { title: `${n}  Your scroll`, state: "what you write", alert: false };
   if (/scribe/i.test(stage)) return { title: `${n}  The scribe`, state: error ? "stopped: the spell broke" : "pastes it into a spell", alert: error };
   if (/ledger|book/i.test(stage)) return { title: `${n}  The ledger`, state: open ? "gave up its entries" : "runs the spell", alert: open };

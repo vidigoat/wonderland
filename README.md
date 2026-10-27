@@ -238,7 +238,7 @@ pnpm dev                       # http://localhost:3000
 
 | Command | |
 |---|---|
-| `pnpm check` | Typecheck, lint and the full test suite (223 tests, including every world's science checks). |
+| `pnpm check` | Typecheck, lint and the full test suite (224 tests, including every world's science checks). |
 | `pnpm build && pnpm start` | Production build. |
 | `pnpm paint <id> \| --all` | Paint saved worlds with Muse Image + SAM 3.1. |
 | `pnpm smoke` | One live call to each model. |

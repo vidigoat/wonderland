@@ -53,6 +53,15 @@ type Literal = {
   closed: boolean;
 };
 
+/** Keep a centered label inside the frame. */
+export function clampCenter(center: number, width: number, frameWidth: number, margin = 8): number {
+  const half = width / 2;
+  const min = margin + half;
+  const max = frameWidth - margin - half;
+  if (max < min) return frameWidth / 2;
+  return Math.min(max, Math.max(min, center));
+}
+
 export function clamp01(value: number): number {
   if (!Number.isFinite(value) || value < 0) return 0;
   if (value > 1) return 1;

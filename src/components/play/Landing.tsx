@@ -212,6 +212,20 @@ export function Landing({ places, written = [], demo }: { places: PlaceCard[]; w
       {demo ? (
         <section className="bw-showcase" aria-label="A world running live">
           <LiveWorld spec={demo} params={DEMO_PARAMS} />
+          <dl className="bw-stats">
+            <div>
+              <dt>Worlds you can enter</dt>
+              <dd>{places.length + written.length}</dd>
+            </div>
+            <div>
+              <dt>Written by Muse Spark Open</dt>
+              <dd>{written.length}</dd>
+            </div>
+            <div>
+              <dt>Science checks a world must pass</dt>
+              <dd>Every one, every seed</dd>
+            </div>
+          </dl>
         </section>
       ) : null}
 

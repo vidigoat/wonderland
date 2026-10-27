@@ -967,3 +967,255 @@
   color: #0a0a0a;
   font-weight: 600;
 }
+
+/* ── Notebook, redesigned ───────────────────────────────────────────────
+ * One rhythm (8px grid), one type scale, hairline sections. Choices are cards, knobs are rows,
+ * the primary action spans the panel. Everything you can touch looks touchable.
+ */
+.play .notebook-scroll {
+  padding: 22px 22px 18px;
+}
+.play .notebook .phase,
+.play .notebook .instruments,
+.play .notebook .readings {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 0 20px;
+  margin: 0 0 20px;
+  border-bottom: 1px solid var(--wl-line);
+}
+.play .notebook .readings:last-child,
+.play .notebook .instruments:last-child {
+  border-bottom: 0;
+  margin-bottom: 0;
+}
+.play .notebook .kicker {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--wl-faint);
+}
+.play .notebook p {
+  margin: 0;
+}
+
+/* Questions and choices */
+.play .choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.play .choices legend {
+  margin-bottom: 12px;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--wl-text);
+}
+.play .choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--wl-line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--wl-muted);
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.play .choice:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+  color: var(--wl-text);
+}
+.play .choice.is-on {
+  border-color: #fafafa;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--wl-text);
+}
+.play .choice.is-on span {
+  font-family: var(--wl-body);
+}
+.play .choice input {
+  margin: 0;
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+/* Free text: one sentence, a hypothesis, a proof */
+.play .free-guess {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+.play .free-guess span {
+  font-family: var(--wl-body);
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--wl-text);
+}
+.play .notebook textarea,
+.play .notebook input[type="text"],
+.play .notebook select {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--wl-line);
+  background: #000;
+  color: var(--wl-text);
+  font-family: var(--wl-body);
+  font-size: 15px;
+  transition: border-color 0.15s;
+}
+.play .notebook textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+.play .notebook textarea:focus,
+.play .notebook input[type="text"]:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.45);
+}
+.play .notebook .spell-input {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 14px;
+}
+
+/* Instruments: label left, value right, control beneath */
+.play .knob-rack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.play .knob-rack[aria-disabled="true"] {
+  opacity: 0.45;
+}
+.play .knob {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.play .knob-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--wl-text);
+}
+.play .knob-label .num {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 13px;
+  color: var(--wl-muted);
+}
+.play .seal-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--wl-muted);
+}
+.play .knob .hint {
+  font-size: 13px;
+  color: var(--wl-faint);
+}
+
+/* Actions: the primary spans the panel; the secondary is a quiet link beneath */
+.play .notebook .phase > .press,
+.play .notebook .instrument-actions .press {
+  width: 100%;
+  justify-content: center;
+}
+.play .instrument-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 4px;
+}
+.play .instrument-actions .quiet {
+  align-self: center;
+  font-size: 13px;
+}
+
+/* Readings: a quiet table */
+.play .reading {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--wl-line);
+  font-size: 14px;
+}
+.play .reading:last-child {
+  border-bottom: 0;
+}
+.play .reading dd {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 13px;
+  color: var(--wl-text);
+}
+.play .reading.spell-reading dd {
+  white-space: normal;
+  word-break: break-all;
+}
+
+/* Ada: compact, a presence at the foot of the panel */
+.play .ada {
+  margin: 0 12px 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--wl-line);
+  background: #111;
+}
+.play .ada h2 {
+  font-family: var(--wl-body);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--wl-text);
+}
+.play .ada h2::before {
+  width: 22px;
+  height: 22px;
+  margin-right: 10px;
+  vertical-align: -6px;
+  background:
+    radial-gradient(circle at 50% 50%, #fafafa 0 3px, transparent 4px),
+    #262626;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.play .ada .thought {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.play .ada .aside {
+  font-size: 13px;
+  color: var(--wl-faint);
+}
+/* A locked-instruments note is guidance, not an error. */
+.play .instruments > .slip {
+  color: var(--wl-faint);
+  font-size: 13px;
+}
+/* Ada never crowds out your instruments: compact card, her bench lives in the race table when it differs. */
+.play .ada {
+  max-height: min(34%, 220px);
+}
+.play .ada .bench {
+  display: none;
+}
+.play .notebook [class*="sealed"] em,
+.play .notebook [class*="sealed"] i,
+.play .notebook .sealed {
+  font-style: normal;
+}

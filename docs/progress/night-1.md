@@ -77,7 +77,7 @@ The stage drew that same ridge from a few rows, so the slope was still a stair. 
 
 The ember plate said the heat was "170" and "6362". Commit `c2e1336`. Those were a variance and a sum of every cell. One run now reads 13 degrees of difference, a hottest spot of 63.9 degrees, and an average warmth of 6.21 degrees, which does not change. All five plate checks still pass. Checked on the production server.
 
-The leftover heat number, "how fast heat is flowing 2.24", is the change from one spot on the metal to the next. It now says that, in degrees. Birds bumping, a share between 0 and 1, shows as a percent. Checked on the production server: 13.2 degrees of difference, hottest spot 65.4 degrees, 2.27 degrees from one spot to the next, average warmth 6.21 degrees.
+The leftover heat number, "how fast heat is flowing 2.24", is the change from one spot on the metal to the next. Commit `fa5029e`. It now says that, in degrees. Birds bumping, a share between 0 and 1, shows as a percent. Checked on the production server: 13.2 degrees of difference, hottest spot 65.4 degrees, 2.27 degrees from one spot to the next, average warmth 6.21 degrees.
 
 ## Still blocked on a key
 

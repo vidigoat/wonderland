@@ -1,6 +1,6 @@
 import { Container, Graphics, Text } from "pixi.js";
 import type { PopulationAgent } from "@/engine/view";
-import { clamp01, phaseOffset, readNumber, smoothstep, spokenIds, townFoot } from "./helpers";
+import { clamp01, landedApart, phaseOffset, readNumber, smoothstep, spokenIds, townFoot } from "./helpers";
 import { pixelRatio, stageFont } from "./fonts";
 import { barkColor, populationTint } from "./palette";
 import type { Scene, Frame } from "./scene";
@@ -100,7 +100,12 @@ export function createPopulationScene(): Scene {
       }
 
       const moved = Math.abs(node.toX - agent.x) > 1e-5 || Math.abs(node.toY - agent.y) > 1e-5 || Math.abs(node.toTint - agent.tint) > 1e-4;
-      if (moved) {
+      if (landedApart(node.toX, node.toY, agent.x, agent.y)) {
+        node.fromX = node.toX = node.drawX = agent.x;
+        node.fromY = node.toY = node.drawY = agent.y;
+        node.fromTint = node.toTint = node.drawTint = agent.tint;
+        node.started = frame.time;
+      } else if (moved) {
         node.fromX = node.drawX;
         node.fromY = node.drawY;
         node.fromTint = node.drawTint;

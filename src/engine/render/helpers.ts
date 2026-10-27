@@ -68,6 +68,14 @@ export function townFoot(y: number): number {
 }
 
 /**
+ * A new generation appears somewhere else on the bark.
+ * That is a landing, not a step, so colour should arrive with it.
+ */
+export function landedApart(fromX: number, fromY: number, toX: number, toY: number): boolean {
+  return Math.hypot(toX - fromX, toY - fromY) > 0.15;
+}
+
+/**
  * A cleared lane: two or more neighbouring columns with nothing in them, top to bottom.
  * One empty column is a gap in the planting. A lane is the strip you can walk through.
  */

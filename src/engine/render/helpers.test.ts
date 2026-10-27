@@ -5,6 +5,7 @@ import {
   FIELD_COLORS,
   fieldColor,
   fieldScale,
+  landedApart,
   injectionHighlightRange,
   phaseOffset,
   smoothstep,
@@ -240,6 +241,11 @@ describe("helpers stay deterministic", () => {
     expect(townFoot(-2)).toBeCloseTo(0.62);
     expect(townFoot(3)).toBeCloseTo(0.96);
     expect(townFoot(0)).toBeGreaterThan(0.58);
+  });
+
+  it("treats a new perch as a landing and a small shift as a step", () => {
+    expect(landedApart(0.1, 0.2, 0.8, 0.7)).toBe(true);
+    expect(landedApart(0.4, 0.4, 0.46, 0.42)).toBe(false);
   });
 
   it("finds a cleared lane and ignores a single empty column", () => {

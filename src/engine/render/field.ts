@@ -152,20 +152,26 @@ function drawDune(g: Graphics, heights: number[], box: Box, painted: boolean): v
   const left = ridge[0] ?? box.x;
   const right = ridge[ridge.length - 2] ?? box.x + box.w;
   const bottom = box.y + box.h;
-  const crest = box.y + box.h * (1 - duneRise(1));
   const sand = new FillGradient({
     type: "linear",
-    textureSpace: "global",
-    start: { x: box.x, y: crest },
-    end: { x: box.x, y: bottom },
+    start: { x: 0.5, y: 0 },
+    end: { x: 0.5, y: 1 },
     colorStops: [
-      { offset: 0, color: "rgba(224, 177, 90, 0.95)" },
-      { offset: 0.62, color: "rgba(224, 177, 90, 0.72)" },
-      { offset: 1, color: "rgba(224, 177, 90, 0)" },
+      { offset: 0, color: "rgba(224, 177, 90, 0.96)" },
+      { offset: 0.45, color: "rgba(224, 177, 90, 0.55)" },
+      { offset: 0.72, color: "rgba(224, 177, 90, 0)" },
     ],
   });
   g.poly([...ridge, right, bottom, left, bottom]).fill(sand);
-  g.poly(ridge).stroke({ width: Math.max(1.5, box.h * 0.008), color: painted ? 0x6e4a28 : 0xf3ddb0, alpha: painted ? 0.4 : 0.95, cap: "round", join: "round" });
+  const stroke: number[] = [];
+  const cutoff = bottom - box.h * 0.22;
+  for (let index = 0; index < ridge.length; index += 2) {
+    const y = ridge[index + 1] ?? bottom;
+    if (y <= cutoff) stroke.push(ridge[index] ?? left, y);
+  }
+  if (stroke.length >= 4) {
+    g.poly(stroke).stroke({ width: Math.max(1.5, box.h * 0.008), color: painted ? 0x6e4a28 : 0xf3ddb0, alpha: painted ? 0.55 : 0.95, cap: "round", join: "round" });
+  }
 }
 
 function pine(g: Graphics, x: number, y: number, size: number): void {

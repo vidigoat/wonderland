@@ -181,6 +181,8 @@ On a phone the flock's three cards covered the birds on the left. Commit `babd64
 
 On a phone the ring road's cards sat on the stopped cars. Commit `c85591e`. They now sit in two columns above the road. On the production server at 390 wide, one drive reads 1 jam, travelling at -3.79 metres per second, an average of 11 metres per second, speeds differing by 14.1 metres per second, and the red knot is on the road under the cards. `pnpm check` is 251 tests.
 
+On a phone the meadow, the hallway, the fire, and the cannon stacked their cards down the left, and the forest stacked four of them over the birch. Commit `f7a57f5`. Those four now sit in one row. The forest's four cards sit in two columns, and the colour key stays in its own column. On the production server at 390 wide, one blink reads 90% flashing in step, 0.17 flashes each second, and 100 fireflies, with the swarm under the cards. One walk reads 100% lanes, 0% head-on bumps, and 1 of their usual pace, with both directions visible. One burn reads 17% of the trees burned, the far ridge untouched, and the flames out, and the line says the fire stopped. One generation reads 12 moths eaten, generation 30, average darkness 23%, and 2% dark moths, with pale moths, dark moths, and the bird clear of the key. A default shot lands at 0 laps, 0 planet radii, status landed, and the arc meets the ground. `pnpm check` is 251 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

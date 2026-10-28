@@ -1,4 +1,4 @@
-import { Container, FillGradient, Graphics, Sprite, Texture, BufferImageSource } from "pixi.js";
+import { Container, Graphics, Sprite, Texture, BufferImageSource } from "pixi.js";
 import { FIELD_COLORS, clearedStrip, duneRise, fieldColor, fieldScale, heightSilhouette, phaseOffset, smoothField, softenRidge, type FieldScale } from "./helpers";
 import type { Frame, Scene } from "./scene";
 import { createBackdrop } from "./backdrop";
@@ -149,25 +149,31 @@ function drawDune(g: Graphics, heights: number[], box: Box, painted: boolean): v
   for (let index = start; index <= end; index++) {
     ridge.push(box.x + (index / (count - 1)) * box.w, box.y + box.h - duneRise(smooth[index] ?? 0) * box.h);
   }
-  const left = ridge[0] ?? box.x;
-  const right = ridge[ridge.length - 2] ?? box.x + box.w;
   const bottom = box.y + box.h;
-  const sand = new FillGradient({
-    type: "linear",
-    start: { x: 0.5, y: 0 },
-    end: { x: 0.5, y: 1 },
-    colorStops: [
-      { offset: 0, color: "rgba(224, 177, 90, 0.96)" },
-      { offset: 0.45, color: "rgba(224, 177, 90, 0.55)" },
-      { offset: 0.72, color: "rgba(224, 177, 90, 0)" },
-    ],
-  });
-  g.poly([...ridge, right, bottom, left, bottom]).fill(sand);
+  const bands = 12;
+  for (let band = 0; band < bands; band++) {
+    const t0 = band / bands;
+    const t1 = (band + 1) / bands;
+    const alpha = (painted ? 0.9 : 0.95) * (1 - t0) * (1 - t0);
+    if (alpha < 0.04) continue;
+    const poly: number[] = [];
+    for (let index = 0; index < ridge.length; index += 2) {
+      const x = ridge[index] ?? box.x;
+      const y = ridge[index + 1] ?? bottom;
+      poly.push(x, y + (bottom - y) * t0);
+    }
+    for (let index = ridge.length - 2; index >= 0; index -= 2) {
+      const x = ridge[index] ?? box.x;
+      const y = ridge[index + 1] ?? bottom;
+      poly.push(x, y + (bottom - y) * t1);
+    }
+    g.poly(poly).fill({ color: FIELD_COLORS.gold, alpha });
+  }
   const stroke: number[] = [];
-  const cutoff = bottom - box.h * 0.22;
+  const cutoff = bottom - box.h * 0.2;
   for (let index = 0; index < ridge.length; index += 2) {
     const y = ridge[index + 1] ?? bottom;
-    if (y <= cutoff) stroke.push(ridge[index] ?? left, y);
+    if (y <= cutoff) stroke.push(ridge[index] ?? box.x, y);
   }
   if (stroke.length >= 4) {
     g.poly(stroke).stroke({ width: Math.max(1.5, box.h * 0.008), color: painted ? 0x6e4a28 : 0xf3ddb0, alpha: painted ? 0.55 : 0.95, cap: "round", join: "round" });

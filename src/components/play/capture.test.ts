@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { changedParams, shotCaption } from "./capture";
+import { changedParams, movedLabel, shotCaption } from "./capture";
 
 const spec = {
   knobs: [
@@ -18,5 +18,10 @@ describe("playtest shots", () => {
   it("names the moment without describing the law", () => {
     expect(shotCaption("Starting controls", 0)).toBe("Starting controls, just started");
     expect(shotCaption("One control moved", 2)).toBe("One control moved, at the end");
+  });
+
+  it("says which control moved, so the watcher knows what to expect", () => {
+    expect(movedLabel(spec, { wind: 2, strip: false }, { wind: 8, strip: false })).toBe("Wind moved from 2 to 8");
+    expect(movedLabel(spec, { wind: 2 }, { wind: 2 })).toBe("One control moved");
   });
 });

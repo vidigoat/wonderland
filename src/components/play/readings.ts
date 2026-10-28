@@ -259,13 +259,18 @@ export function shotSettled(obs: { status?: number | string } | null | undefined
 /**
  * Steps for one gesture on Marching Dunes.
  * The saved rules use k = 0.005 and a saltation threshold of 3.5, so c = k (wind − threshold)^1.5 / height.
- * A fixed short run moves the crest by a fraction of a cell. This asks for about 18 cells, and stays short when the wind is too weak to move sand.
+ * Every press runs the same time, so a stronger wind or a smaller dune visibly walks further: that is the law.
+ * (Sizing the run to a fixed distance hid it: every press looked identical.) A fast dune stops at 30 cells,
+ * before it walks off the stage.
  */
+export const DUNE_RUN_STEPS = 4000;
+const DUNE_MAX_CELLS = 30;
+
 export function duneRunSteps(wind: number, height: number): number {
   const diff = Math.max(0, wind - 3.5);
   const celerity = (0.005 * diff ** 1.5) / Math.max(1, height);
   if (celerity <= 1e-8) return 48;
-  return Math.min(20000, Math.max(48, Math.ceil(18 / celerity)));
+  return Math.max(48, Math.min(DUNE_RUN_STEPS, Math.ceil(DUNE_MAX_CELLS / celerity)));
 }
 
 export function runSteps(archetype: string, worldId?: string, params?: Params): number {

@@ -27,6 +27,8 @@ const IDLE_TOWN: PopulationAgent[] = [
 
 type Node = {
   figure: Figure;
+  /** A warm light behind a glowing figure (a firefly), bright only while it flashes. */
+  halo: Graphics | null;
   bubble: Container | null;
   bubbleText: string;
   bubbleBelow: boolean;
@@ -103,6 +105,7 @@ export function createPopulationScene(): Scene {
         figures.addChild(figure.view);
         node = {
           figure,
+          halo: null,
           bubble: null,
           bubbleText: "",
           bubbleBelow: false,
@@ -160,6 +163,18 @@ export function createPopulationScene(): Scene {
       node.figure.view.alpha = glow ? 0.28 + lit * 0.72 : 1;
       const hareInFront = narrow && !predator && !hunting && phase > 0.5;
       node.figure.view.zIndex = hunting || (predator && !narrow) ? frame.height + 20 : hareInFront ? at.y + 40 : predator ? at.y + 8 : at.y;
+      if (glow) {
+        if (!node.halo) {
+          node.halo = new Graphics().circle(0, 0, 1).fill({ color: 0xffcf5a });
+          node.halo.blendMode = "add";
+          figures.addChild(node.halo);
+        }
+        // A flash should read across the stage: the light swells and brightens only near the flash.
+        node.halo.position.set(at.x, at.y + bob);
+        node.halo.scale.set(body * 30 * (0.5 + lit));
+        node.halo.alpha = lit * 0.85;
+        node.halo.zIndex = node.figure.view.zIndex - 1;
+      }
       const keepsOwnColor = hunting;
       node.figure.show(
         frame.worldId,
@@ -190,6 +205,7 @@ export function createPopulationScene(): Scene {
     for (const [id, node] of nodes) {
       if (seen.has(id)) continue;
       node.figure.destroy();
+      node.halo?.destroy();
       node.bubble?.destroy({ children: true });
       nodes.delete(id);
     }

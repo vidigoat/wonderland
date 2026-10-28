@@ -16,6 +16,13 @@ export function changedParams(spec: Pick<PublicWorldSpec, "knobs">, base: Params
   return { ...base, [knob.id]: next };
 }
 
+/** Say which control moved and how, so the watcher judges the second run against the right expectation. */
+export function movedLabel(spec: Pick<PublicWorldSpec, "knobs">, before: Params, after: Params): string {
+  const knob = spec.knobs.find((item) => before[item.id] !== after[item.id]);
+  if (!knob) return "One control moved";
+  return `${knob.label} moved from ${String(before[knob.id])} to ${String(after[knob.id])}`;
+}
+
 async function waitForCanvas(canvas: () => HTMLCanvasElement | null): Promise<HTMLCanvasElement> {
   for (let attempt = 0; attempt < 40; attempt++) {
     const picture = canvas();
@@ -57,6 +64,7 @@ function nextPaint(): Promise<void> {
 }
 
 const PAINT_GRACE_MS = 2500;
+const SETTLE_MS = 400;
 
 export async function collectShots(
   spec: PublicWorldSpec,
@@ -66,9 +74,11 @@ export async function collectShots(
   onView?: (view: unknown, params: Params) => void,
 ): Promise<Shot[]> {
   const shots: Shot[] = [];
+  const start = defaultParams(spec);
+  const changed = changedParams(spec, start);
   const runs: { params: Params; label: string }[] = [
-    { params: defaultParams(spec), label: "Starting controls" },
-    { params: changedParams(spec, defaultParams(spec)), label: "One control moved" },
+    { params: start, label: "Starting controls" },
+    { params: changed, label: movedLabel(spec, start, changed) },
   ];
   await waitForCanvas(canvas);
   // The painting arrives after the canvas; a frame taken before it shows the drawn stand-in, not the world.
@@ -80,6 +90,9 @@ export async function collectShots(
     for (let index = 0; index < 3; index++) {
       if (index > 0) await session.tick(half);
       onView?.(session.view(), { ...session.params });
+      await nextPaint();
+      // Figures ease to their new place and brightness over ~260 ms; a frame taken sooner shows the old picture.
+      await new Promise((resolve) => window.setTimeout(resolve, SETTLE_MS));
       await nextPaint();
       const picture = canvas();
       if (!picture || picture.width < 2) throw new Error("The stage was not ready to be watched.");

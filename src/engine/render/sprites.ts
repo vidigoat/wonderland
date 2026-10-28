@@ -39,6 +39,15 @@ function brightnessOf(tint: number): number {
 }
 
 /** Load sample art. A missing file resolves to null and never throws. */
+/** Textures that have already arrived, so a figure born mid-run can wear its art on its first frame. */
+const loaded = new Map<string, Texture>();
+
+function loadedSprite(worldId: string, sprite: string): Texture | null {
+  if (!worldId || !sprite) return null;
+  const texture = loaded.get(spriteUrl(worldId, sprite));
+  return texture && !texture.destroyed ? texture : null;
+}
+
 export function loadSprite(worldId: string, sprite: string): Promise<Texture | null> {
   if (!worldId || !sprite) return Promise.resolve(null);
   const url = spriteUrl(worldId, sprite);
@@ -48,6 +57,7 @@ export function loadSprite(worldId: string, sprite: string): Promise<Texture | n
       try {
         const texture = await Assets.load<Texture>(url);
         if (!texture || texture.destroyed || texture.width <= 0 || texture.height <= 0) return null;
+        loaded.set(url, texture);
         return texture;
       } catch {
         return null;
@@ -100,11 +110,8 @@ export function createFigure(): Figure {
         spriteView?.destroy();
         spriteView = null;
         graphic?.destroy();
-        graphic = new Graphics();
-        drawSilhouette(graphic, sprite);
-        view.addChild(graphic);
-        void loadSprite(worldId, sprite).then((texture) => {
-          if (!alive || current !== token || !texture) return;
+        graphic = null;
+        const wear = (texture: Texture) => {
           const next = new Sprite(texture);
           next.anchor.set(0.5);
           // Handmade SVGs are drawn to a height; a painted cut-out (a moth with open wings) is sized by its longest side.
@@ -115,7 +122,19 @@ export function createFigure(): Figure {
           spriteView = next;
           next.tint = artTint();
           view.addChild(next);
-        });
+        };
+        // Already loaded: no silhouette flash. A hare born mid-run used to show up as a blank shape first.
+        const ready = loadedSprite(worldId, sprite);
+        if (ready) wear(ready);
+        else {
+          graphic = new Graphics();
+          drawSilhouette(graphic, sprite);
+          view.addChild(graphic);
+          void loadSprite(worldId, sprite).then((texture) => {
+            if (!alive || current !== token || !texture) return;
+            wear(texture);
+          });
+        }
       }
       applyTint();
     },

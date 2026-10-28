@@ -114,7 +114,7 @@
       "id": "mechanism",
       "prompt": "How does sand move to make the dune advance?",
       "options": [
-        "Up gentle side over crest to slipface",
+        "Up the gentle side, over the crest, and down the slip face",
         "Whole dune slides as solid block",
         "Dune rolls like a wheel underneath",
         "Sand jumps from back to front"
@@ -127,7 +127,7 @@
     },
     {
       "id": "size_speed",
-      "prompt": "Two dunes feel same wind, one twice as tall, which moves faster?",
+      "prompt": "Two dunes feel the same wind. One is twice as tall. Which moves faster?",
       "options": [
         "Short dune moves faster",
         "Tall dune moves faster",
@@ -142,7 +142,7 @@
     },
     {
       "id": "no_wind",
-      "prompt": "What happens if wind stays below the sand-moving threshold?",
+      "prompt": "What happens if the wind stays too weak to lift the sand?",
       "options": [
         "Dune stays still",
         "Dune still marches fast",

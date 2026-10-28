@@ -42,7 +42,7 @@
       "max": 2.5,
       "step": 0.1,
       "default": 1,
-      "hint": "Stronger means each flash nudges neighbors more strongly"
+      "hint": "A brighter neighbor pulls their blink closer"
     },
     {
       "id": "freqSpread",
@@ -52,14 +52,14 @@
       "max": 1.5,
       "step": 0.05,
       "default": 0.4,
-      "hint": "Higher means fireflies have more different innate tempos"
+      "hint": "Higher means their own blinks start further apart"
     },
     {
       "id": "leaderPresent",
       "label": "A bright leader",
       "kind": "toggle",
       "default": false,
-      "hint": "Add a single extra-bright firefly that might act as a leader"
+      "hint": "One extra-bright firefly the others can copy"
     },
     {
       "id": "externalCue",
@@ -69,7 +69,7 @@
       "max": 1,
       "step": 0.1,
       "default": 0,
-      "hint": "Strength of a common cue like a wind flicker or temperature pulse"
+      "hint": "A pulse the whole meadow feels together"
     },
     {
       "id": "swarmSize",
@@ -123,7 +123,7 @@
   "predictions": [
     {
       "id": "leader_removal",
-      "prompt": "A dense swarm is flashing in perfect unison. You carefully remove the single brightest firefly that appears to be leading the display. What happens to the group's synchrony a minute later?",
+      "prompt": "The meadow is flashing together. You take away the brightest firefly. A minute later, what happens?",
       "options": [
         "The swarm falls out of sync \u2014 the leader was setting the beat",
         "The swarm stays in sync \u2014 the rhythm comes from mutual nudges among all fireflies",
@@ -140,11 +140,11 @@
     },
     {
       "id": "diversity_blocks_sync",
-      "prompt": "Two meadows have the same number of fireflies and the same level of mutual attention, but Meadow A has fireflies with almost identical natural blink rates while Meadow B has very diverse natural rates. What does the model predict about their ability to synchronize?",
+      "prompt": "Two meadows have the same number of fireflies, paying each other the same attention. In one, their natural blinks almost match. In the other, the blinks are very different. What happens?",
       "options": [
-        "Neither can synchronize without a leader deciding to coordinate them",
-        "Both will synchronize equally well regardless of diversity",
-        "Meadow A will synchronize strongly, Meadow B will stay disordered unless mutual attention is increased to overcome the diversity"
+        "Neither can flash together unless a leader tells them to",
+        "Both will flash together, no matter how different their blinks are",
+        "The meadow whose blinks match will flash together. The mixed meadow stays scattered unless they pay more attention"
       ],
       "answerKey": 2,
       "tryWith": {
@@ -157,11 +157,11 @@
     },
     {
       "id": "no_external_cue_needed",
-      "prompt": "On a still, uniformly dark night with no wind, temperature pulse, or other shared environmental flash, a large swarm with strong mutual visibility gathers. What does the model predict?",
+      "prompt": "A dark, still night. Nothing outside flashes for them. They can see each other well. What happens?",
       "options": [
-        "No synchrony can appear without a shared external cue to trigger them together",
-        "Synchrony can still emerge spontaneously from firefly-to-firefly interactions alone",
-        "The fireflies will stop flashing entirely without an external cue"
+        "They cannot flash together unless something outside cues them",
+        "They can still fall into step just by watching each other",
+        "They stop flashing if nothing outside cues them"
       ],
       "answerKey": 1,
       "tryWith": {

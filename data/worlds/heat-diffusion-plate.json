@@ -67,7 +67,7 @@
     },
     {
       "id": "insulated",
-      "label": "Sealed edges",
+      "label": "Edges hold the heat",
       "kind": "toggle",
       "default": true,
       "hint": "When on, edges keep all heat inside; when off, edges can lose heat to the room"

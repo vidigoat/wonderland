@@ -120,6 +120,32 @@ describe("phase machine", () => {
     const flock = JSON.parse(readFileSync("data/worlds/murmuration-sky.json", "utf8")) as { knobs: { label: string }[] };
     expect(flock.knobs.map((knob) => knob.label)).toContain("How much they wobble");
     expect(flock.knobs.map((knob) => knob.label).join(" ")).not.toMatch(/jitter/i);
+    const spoken = (file: string) => {
+      const spec = JSON.parse(readFileSync(file, "utf8")) as {
+        knobs: { label: string; hint?: string }[];
+        predictions: { prompt: string; options?: string[] }[];
+        transfer: { setup: string; question: string; options?: string[] };
+      };
+      return [
+        ...spec.knobs.flatMap((knob) => [knob.label, knob.hint ?? ""]),
+        ...spec.predictions.flatMap((item) => [item.prompt, ...(item.options ?? [])]),
+        spec.transfer.setup,
+        spec.transfer.question,
+        ...(spec.transfer.options ?? []),
+      ].join("\n");
+    };
+    const meadow = spoken("data/worlds/firefly-sync-kuramoto.json");
+    expect(meadow).toContain("The meadow is flashing together");
+    expect(meadow).not.toMatch(/innate tempo|the model predict|external cue/i);
+    const valley = spoken("data/worlds/predator-prey-valley.json");
+    expect(valley).toContain("How well a meal makes a lynx");
+    expect(valley).not.toMatch(/Hares turned into lynx/);
+    const sky = spoken("data/worlds/murmuration-sky.json");
+    expect(sky).toContain("If they stop copying the way their neighbors are facing");
+    expect(sky).not.toMatch(/drones|headings/);
+    const plate = spoken("data/worlds/heat-diffusion-plate.json");
+    expect(plate).toContain("Edges hold the heat");
+    expect(plate).not.toMatch(/Sealed edges/);
     expect(Math.ceil(2000 / tickBatch(2000, "hallway-lanes"))).toBeLessThanOrEqual(28);
     expect(runDuration(runSteps("bodies"))).toBeGreaterThan(runDuration(1));
     expect(runSteps("population")).toBe(30);

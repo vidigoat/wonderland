@@ -57,13 +57,13 @@
     },
     {
       "id": "conversionEfficiency",
-      "label": "Hares turned into lynx",
+      "label": "How well a meal makes a lynx",
       "kind": "slider",
       "min": 0.01,
       "max": 0.2,
       "step": 0.01,
       "default": 0.1,
-      "hint": "How well eaten hares turn into new lynx"
+      "hint": "How much of an eaten hare becomes a new lynx"
     },
     {
       "id": "predatorMortality",

@@ -40,6 +40,11 @@ Playability lint (the engine sends the world back if this fails):
 - Every knob, moved across its range, must change at least one observable compared with the default run.
 - Every prediction.tryWith must change at least one observable compared with the defaults.
 
+Honest-readings check (the engine sends the world back if this fails):
+- observe must MEASURE the state the world produced. Never compute a reading from params (no "speed = wind * 0.3", no "collision rate = separation ? 0.004 : 0.08").
+- The engine tests this by observing the default world while passing a moved knob. If a reading jumps to the moved run's value although the world did not change, it was restating the controls.
+- If a quantity is not in the state yet, track it in step (positions, counts, the crest's position over time) and derive the reading from that.
+
 Return only the WorldSpec JSON for the schema you were given. Do not wrap it in markdown.
 If the checker or the playability lint returns failures, you get them back as repair notes. Fix the rules
 (not the checks) unless a check is genuinely wrong. Player-facing copy must still hide the law.

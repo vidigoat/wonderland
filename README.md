@@ -83,7 +83,7 @@ Every screen says where you are: a bar across the top shows **what you're findin
 
 ## The worlds
 
-**Five worlds were built by hand** to set the bar. **Every other world was written, verified and painted by Meta's models on their own**, from a single typed question, and saved only because its science passed on every seed.
+**Five worlds were built by hand** to set the bar. **The other seven were written and painted by Meta's models** from a single typed question, and saved because their science checks passed on every seed. Six of those seven were later **repaired by hand**: we found the models had faked some readings, and the checks hadn't noticed. [What happened, and the check we added so it can't happen again](#when-the-checks-were-fooled).
 
 | World | The question | What's really running |
 |---|---|---|
@@ -92,13 +92,13 @@ Every screen says where you are: a bar across the top shows **what you're findin
 | **Newton's Cannon** | How do orbits work? | Velocity-Verlet gravity. Fire fast enough and you never land. |
 | **Rumour Town** | Why do bank runs happen to healthy banks? | Diamond–Dybvig, with forty citizens whose words are written by Muse Spark Open each round. |
 | **The Firebreak** | Why does one spark sometimes take the whole valley? | Site percolation on a grid: fire crosses only when the trees connect. |
-| *The Meadow That Blinks As One* | Why do fireflies flash in sync? | Coupled oscillators (Kuramoto; Mirollo & Strogatz). **Written by Muse Spark Open.** |
+| *The Meadow That Blinks As One* | Why do fireflies flash in sync? | Coupled oscillators (Kuramoto; Mirollo & Strogatz). **Written by Muse Spark Open**, then repaired by hand. |
 | *The Valley of the Endless Chase* | Why do predator and prey populations cycle? | Lotka–Volterra dynamics. **Written by Muse Spark Open.** |
-| *Ghost Jam Circuit* | Why do traffic jams appear out of nowhere? | Car following on a ring road, after Sugiyama et al. (2008). **Written by Muse Spark Open.** |
-| *Hallway Lanes* | Why do crowds form lanes? | The social-force model of pedestrians (Helbing & Molnár). **Written by Muse Spark Open.** |
-| *The Ember Plate* | How does heat spread through metal? | Fourier's law: the heat equation on a grid. **Written by Muse Spark Open.** |
-| *Marching Dunes* | Why do sand dunes move? | Wind carries sand up one face and it avalanches down the other (barchan migration). **Written by Muse Spark Open.** |
-| *Murmuration Sky* | Why do starlings fly in huge flocks without crashing? | Local flocking rules (separation, alignment, cohesion). **Written live by Muse Spark Open while this README was being written.** |
+| *Ghost Jam Circuit* | Why do traffic jams appear out of nowhere? | Car following on a ring road, after Sugiyama et al. (2008). **Written by Muse Spark Open**, then repaired by hand. |
+| *Hallway Lanes* | Why do crowds form lanes? | The social-force model of pedestrians (Helbing & Molnár). **Written by Muse Spark Open**, then repaired by hand. |
+| *The Ember Plate* | How does heat spread through metal? | Fourier's law: the heat equation on a grid. **Written by Muse Spark Open**, then repaired by hand. |
+| *Marching Dunes* | Why do sand dunes move? | Wind carries sand up one face and it avalanches down the other (barchan migration). **Written by Muse Spark Open**, then repaired by hand. |
+| *Murmuration Sky* | Why do starlings fly in huge flocks without crashing? | Local flocking rules (separation, alignment, cohesion). **Written live by Muse Spark Open**, then repaired by hand. |
 
 <p align="center">
   <img src="docs/readme/worlds.webp" alt="All twelve worlds, as they look in the game" width="100%" />
@@ -171,11 +171,29 @@ flowchart TD
   R --> C
   C -- still failing after 3 repairs --> X([Not shipped])
   C -- all pass --> PL{Playability lint<br/>do the controls matter?}
-  PL --> A[Artist<br/>Muse Image + SAM 3.1]
+  PL --> H{Honest readings<br/>does every reading<br/>measure the world?}
+  H -- a reading restates a control --> R
+  H --> A[Artist<br/>Muse Image + SAM 3.1]
   A --> W([Saved world:<br/>yours to enter and share])
 ```
 
 A world is a typed [`WorldSpec`](src/engine/spec.ts): story, controls, observables, entities, predictions, a transfer question, art direction, **and 2–12 machine-checkable science assertions** (for example *"with insurance on, the bank never collapses"* or *"average moth darkness rises with soot"*). The checks are run by [`src/engine/checks.ts`](src/engine/checks.ts) on many random seeds; a world ships only if every check holds on every seed. While it builds, the page streams each step, with the law redacted to `███`.
+
+### When the checks were fooled
+
+On 28 Oct, while making the worlds easier to read, we found that some readings in the model-written worlds were **not measured from the world at all**. They were formulas of the controls. In the original *Murmuration Sky*, "collision rate" was `separation === 0 ? 0.08 : 0.004`, whatever the birds were doing; the birds didn't even flock. A science check that tests such a number passes, so every world had shipped as "verified".
+
+The fix is a new gate, the **honest-readings check** ([`src/agents/honesty.ts`](src/agents/honesty.ts)). It runs the world on its defaults and again with each control moved. When a reading changes, it observes the *default* world while passing the *moved* setting. A real measurement keeps the default world's value, because nothing in that world changed. A faked reading jumps to the moved run's value. Any world that fails goes back to the designer with notes, like a failed science check, and the designer prompt now spells the rule out. It raises no false alarm on any of the five hand-built worlds.
+
+Run on the original model-written worlds, it flags exactly the problems we had found by eye:
+
+| World (as the model wrote it) | Readings the check flags |
+|---|---|
+| *Murmuration Sky* | flock radius, how aligned the birds are, collision rate |
+| *The Meadow That Blinks As One* | whether the leader is visible, the outside cue |
+| *Marching Dunes* | how fast the dune walks, sand lost on the windward face |
+
+We repaired those worlds by hand so each reading comes from the simulation. Others got fixes we spotted along the way (the ring road's jam speed is now the jam's measured slope; the hot plate reads in degrees instead of a variance). Every change, world by world, is listed in [`docs/repairs.md`](docs/repairs.md). Today every saved world passes all three gates: `pnpm verify-worlds`.
 
 ### How a world is painted
 
@@ -238,7 +256,8 @@ pnpm dev                       # http://localhost:3000
 
 | Command | |
 |---|---|
-| `pnpm check` | Typecheck, lint and the full test suite (229 tests, including every world's science checks). |
+| `pnpm check` | Typecheck, lint and the full test suite (including every hand-built world's science checks). |
+| `pnpm verify-worlds` | Re-run every model-written world's science checks on every seed, the playability lint and the honest-readings check. |
 | `pnpm build && pnpm start` | Production build. |
 | `pnpm paint <id> \| --all` | Paint saved worlds with Muse Image + SAM 3.1. |
 | `pnpm smoke` | One live call to each model. |

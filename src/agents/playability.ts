@@ -17,7 +17,7 @@ export type PlayabilityIssue = {
 const STEPS = 12;
 const SEED = 1;
 
-function defaultsOf(spec: WorldSpec): Params {
+export function defaultsOf(spec: WorldSpec): Params {
   return Object.fromEntries(spec.knobs.map((knob) => [knob.id, knob.default]));
 }
 
@@ -26,7 +26,7 @@ function stable(value: unknown): string {
 }
 
 /** Values a player can actually move the knob to, excluding the default. */
-function valuesAcrossRange(knob: Knob): Array<number | boolean | string> {
+export function valuesAcrossRange(knob: Knob): Array<number | boolean | string> {
   const candidates: Array<number | boolean | string> = [];
   if (knob.kind === "slider") {
     if (typeof knob.min === "number") candidates.push(knob.min);

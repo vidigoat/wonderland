@@ -1,6 +1,7 @@
 import "server-only";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { lintHonestReadings, type HonestyIssue } from "@/agents/honesty";
 import { lintPlayability, type PlayabilityIssue } from "@/agents/playability";
 import { generateSample } from "@/agents/sample-match";
 import { jsonSchemaFor, ScientistBrief, type ScientistBrief as ScientistBriefT } from "@/agents/structured";
@@ -307,6 +308,26 @@ async function* generateLiveBody(
       continue;
     }
 
+    const faked = await lintHonestReadings(rules, spec);
+    if (faked.length > 0) {
+      if (round === maxRepairs) break;
+      yield stage(
+        "repair",
+        `${faked.length} reading(s) restated the controls instead of measuring the world. Sending them back to the designer. The law stays ███.`,
+        spec,
+        brief,
+      );
+      raw = await think({
+        model: MODELS.wonder,
+        system: designerPrompt,
+        input: honestyNotes(faked, spec),
+        effort: "high",
+        maxOutputTokens: 20000,
+        jsonSchema: worldSchema,
+      });
+      continue;
+    }
+
     yield* finishVerified(spec);
     return;
   }
@@ -316,6 +337,19 @@ async function* generateLiveBody(
     message: "Couldn't produce a world that passes its science checks and playability lint. Try rephrasing the concept.",
     source: "live",
   };
+}
+
+function honestyNotes(issues: HonestyIssue[], spec: WorldSpecT): string {
+  return [
+    "Honest-readings check failed. Every observable must be measured from the state the world produced. These readings restate the knob settings: given the default world and a moved knob, they reported the moved run's value although nothing in that world changed.",
+    "",
+    JSON.stringify(issues, null, 2),
+    "",
+    "Current spec:",
+    JSON.stringify(spec),
+    "",
+    "Rewrite observe (and step, if the quantity is not tracked yet) so each reading comes from the state. Then return the full corrected WorldSpec JSON only.",
+  ].join("\n");
 }
 
 function repairNotes(issues: PlayabilityIssue[], spec: WorldSpecT): string {

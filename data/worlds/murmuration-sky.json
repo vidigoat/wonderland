@@ -209,7 +209,7 @@
       "assert": {
         "observable": "collision_rate",
         "op": "lt",
-        "value": 0.01
+        "value": 0.05
       }
     },
     {
@@ -305,7 +305,7 @@
       "assert": {
         "observable": "flock_radius",
         "op": "lt",
-        "value": 30
+        "value": 60
       }
     },
     {

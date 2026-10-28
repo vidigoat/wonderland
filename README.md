@@ -83,9 +83,9 @@ Every screen says where you are: a bar across the top shows **what you're findin
 
 ## The worlds
 
-**Twenty-four worlds, five built by hand.** The other nineteen were written and painted by Meta's models from a single typed question.
+**Twenty-five worlds, five built by hand.** The other twenty were written and painted by Meta's models from a single typed question.
 - **The first seven** were saved because their science checks passed on every seed. Six of them were later **repaired by hand**: we found the models had faked some readings, and the checks hadn't noticed. [What happened, and the check we added so it can't happen again](#when-the-checks-were-fooled).
-- **The other twelve** come from the fresh-question eval and the Lab. They passed all four gates with no hand repairs; four were fixed by the automatic repair loop.
+- **The other thirteen** come from the fresh-question eval, the Lab and one live build from the landing page. They passed all four gates with no hand repairs; five were fixed by the automatic repair loop.
 
 | World | The question | What's really running |
 |---|---|---|
@@ -103,7 +103,7 @@ Every screen says where you are: a bar across the top shows **what you're findin
 | *Murmuration Sky* | Why do starlings fly in huge flocks without crashing? | Local flocking rules (separation, alignment, cohesion). **Written live by Muse Spark Open**, then repaired by hand. |
 
 <details>
-<summary><b>The twelve newest worlds</b>: from the eval and the Lab, no hand repairs</summary>
+<summary><b>The thirteen newest worlds</b>: from the eval, the Lab and a live build, no hand repairs</summary>
 
 | World | The question |
 |---|---|
@@ -119,6 +119,7 @@ Every screen says where you are: a bar across the top shows **what you're findin
 | *Harvest Market* | Why do prices rise when a harvest fails? |
 | *The Locked Moon* | Why does the Moon always show us the same face? |
 | *Shivering Circle* | Why do penguins huddle in a rotating crowd? |
+| *Skyfall Tower* | Why do raindrops fall at a steady speed instead of getting faster and faster? (built live from the landing page; repaired by the loop) |
 
 </details>
 
@@ -229,7 +230,7 @@ We fixed fifteen phenomena from a middle-school science curriculum before runnin
 
 Muse Spark 1.3 watched every world run: six frames, from start to end, with the starting controls and with one control moved. It judged whether the picture shows what the hidden law predicts. On its first pass it flagged three worlds, and all three were real bugs that none of our tests had caught: hares that appeared as blank outlines, fireflies whose flashing couldn't be seen, and dunes sized so that the wind seemed to do nothing. All three are fixed. The whole pass cost under $0.20.
 
-Now the loop is closed. When Spark flags a model-written world, its notes go back to the designer on the server (`/api/repair`), the repaired world must pass every gate again, and Spark watches it again, at most twice per world. **SAM 3.1** counts the figures in the picture as a second opinion: on Rumour Town's square it counted 35 where the stage drew 33. Every world in the gallery today, all 24, looks right to Spark. Details: [`docs/playtest-results.md`](docs/playtest-results.md).
+Now the loop is closed. When Spark flags a model-written world, its notes go back to the designer on the server (`/api/repair`), the repaired world must pass every gate again, and Spark watches it again, at most twice per world. **SAM 3.1** counts the figures in the picture as a second opinion: on Rumour Town's square it counted 35 where the stage drew 33. Every world in the gallery today, all 25, looks right to Spark. Details: [`docs/playtest-results.md`](docs/playtest-results.md).
 
 ### How a world is painted
 

@@ -1,5 +1,13 @@
 # Night 1
 
+## Summary
+
+Shipped on `main` through `e16fd54`. Phone readings sit in one row or two columns (`f7a57f5`). Shelf pictures sit above the title (`be84f5e`, `07afeb0`), valley animals stand on the slope (`fc5db06`), the jam is a short queue of cars (`a6923fc`), hallway figures stay inside the card (`6b649f0`), and the stage dune fades into the sand (`607e303`). The hot spot is sampled finely and softened (`0c2ab36`, `acb236e`). Player-facing names and questions were rewritten in plain words (`d83adc5`, `e313640`, `9678e77`, `e888056`, `b970366`). `pnpm check` is 252 tests. The server on port 3126 was left on the build that includes `acb236e`.
+
+Nothing live was run. This checkout has no `MODEL_API_KEY`, no `BASETEN_API_KEY`, and no `.spend/ledger.json`. The playtester batch, a live `pnpm eval`, and painting new worlds did not run. No pass rate was invented.
+
+No file in `data/worlds/` had its `rules` or `checks` changed by hand. Labels, hints, story lines, prediction prompts, and transfer questions were edited. Answer keys were left as they were.
+
 Started Tue 27 Oct 2026, about 10:15 PM IST. This checkout had no `.spend/ledger.json` and no API keys in the environment, so no live spend was read and none was made.
 
 ## W1 · Readings and the dune

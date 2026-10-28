@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { compileRules, type RulesModule } from "@/engine/rules";
 import { WorldSession } from "@/engine/runtime";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { bodyFacing, cssHex, figureTint, flockFacing, heightSilhouette, ridgeWindow, softenRidge, thumbFigurePx, thumbJamInk, thumbPlace, thumbSample, thumbSky, thumbSpritePx, thumbSteps } from "@/engine/render/helpers";
+import { bodyFacing, cssHex, figureTint, flockFacing, heightSilhouette, ridgeWindow, softenRidge, thumbFigurePx, thumbJamInk, thumbJamQueue, thumbPlace, thumbSample, thumbSky, thumbSpritePx, thumbSteps } from "@/engine/render/helpers";
 import { asWorldView, isParticlesView } from "@/engine/view";
 
 /**
@@ -154,19 +154,15 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
             at: at((body.x - bx) / bw, (body.y - by) / bh),
           }));
           const row = placed.length > 1 && Math.max(...placed.map((item) => item.at[1])) - Math.min(...placed.map((item) => item.at[1])) < 2;
-          for (const item of placed) {
-            const body = item.body;
-            // A single file of cars belongs on the painted road, which sits in the middle of the card, still above the title.
-            const [x, y] = row ? [item.at[0], h * 0.5] : item.at;
+          const skyMin = Math.min(sky.w, sky.h);
+          const roadY = h * 0.5;
+          const drawBody = (body: (typeof placed)[number]["body"], x: number, y: number, stopped: boolean) => {
             const speed = (body as { vx?: number }).vx;
-            const tint = figureTint(spec.id, speed);
-            const stopped = tint !== 0xffffff;
-            const size = thumbFigurePx(Math.min(sky.w, sky.h), stopped);
-            const halo = stopped ? size * 0.78 : 0;
-            if (halo > 0) {
-              ctx.fillStyle = cssHex(tint);
+            const size = thumbFigurePx(skyMin, stopped);
+            if (stopped) {
+              ctx.fillStyle = cssHex(figureTint(spec.id, speed));
               ctx.beginPath();
-              ctx.arc(x, y, halo, 0, Math.PI * 2);
+              ctx.arc(x, y, size * 0.52, 0, Math.PI * 2);
               ctx.fill();
             }
             const image = sprites.size > 0 ? spriteOf(String(body.id ?? "").replace(/[-_]?\d+$/, "")) : undefined;
@@ -175,12 +171,31 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
               const ink = thumbJamInk(spec.id, speed);
               if (ink) drawStuck(image, x, y, size, ink, face.turn, face.flip);
               else drawSprite(image, x, y, size, 1, face.turn, face.flip);
-              continue;
+              return;
             }
             ctx.fillStyle = typeof body.color === "string" ? body.color : "#fafafa";
             ctx.beginPath();
             ctx.arc(x, y, 3.2 * dpr, 0, Math.PI * 2);
             ctx.fill();
+          };
+          const jammed = placed.filter((item) => figureTint(spec.id, (item.body as { vx?: number }).vx) !== 0xffffff);
+          const moving = placed.filter((item) => figureTint(spec.id, (item.body as { vx?: number }).vx) === 0xffffff);
+          for (const item of moving) {
+            const [x, y] = row ? [item.at[0], roadY] : item.at;
+            drawBody(item.body, x, y, false);
+          }
+          if (jammed.length > 0) {
+            const size = thumbFigurePx(skyMin, true);
+            const queue = thumbJamQueue(jammed.length, size);
+            const ordered = [...jammed].sort((a, b) => a.at[0] - b.at[0]);
+            const lead = ordered[0]!.at[0];
+            for (let i = 0; i < queue.shown; i++) {
+              const item = ordered[Math.min(i, ordered.length - 1)]!;
+              const [rawX, rawY] = item.at;
+              const x = row ? lead + i * queue.gap : rawX;
+              const y = row ? roadY : rawY;
+              drawBody(item.body, x, y, true);
+            }
           }
         } else if (view.kind === "field") {
           const dune = heightSilhouette(view.grid);
@@ -207,10 +222,12 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
             ctx.lineTo(w, base);
             ctx.lineTo(0, base);
             ctx.closePath();
-            ctx.fillStyle = "#e0b15a";
-            ctx.globalAlpha = painting ? 0.92 : 0.95;
+            const sand = ctx.createLinearGradient(0, base - rise, 0, base);
+            sand.addColorStop(0, "rgba(224, 177, 90, 0.96)");
+            sand.addColorStop(0.62, "rgba(224, 177, 90, 0.9)");
+            sand.addColorStop(1, "rgba(224, 177, 90, 0)");
+            ctx.fillStyle = sand;
             ctx.fill();
-            ctx.globalAlpha = 1;
             ctx.beginPath();
             body.forEach((_, index) => {
               const [x, y] = pointAt(index);

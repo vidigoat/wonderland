@@ -14,6 +14,7 @@ import {
   thumbFigurePx,
   thumbJamHalo,
   thumbJamInk,
+  thumbJamQueue,
   thumbCrowd,
   thumbSample,
   thumbPlace,
@@ -451,6 +452,12 @@ describe("a shelf card", () => {
     const stopped = thumbFigurePx(Math.min(sky.w, sky.h), true);
     expect(stopped).toBeGreaterThan(moving);
     expect(stopped * 0.78).toBeGreaterThan(stopped / 2);
+    const queue = thumbJamQueue(11, stopped);
+    expect(queue.shown).toBe(6);
+    expect(queue.gap).toBeGreaterThan(stopped * 0.4);
+    expect(queue.gap).toBeLessThan(stopped);
+    expect(thumbJamQueue(2, stopped).shown).toBe(2);
+    expect(thumbJamQueue(0, stopped).shown).toBe(0);
   });
 });
 

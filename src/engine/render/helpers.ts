@@ -254,7 +254,16 @@ export function thumbSpritePx(skyMin: number, count: number, headed: boolean): n
 /** A walker or a car on a shelf card, in the same pixels as `skyMin`. A stopped car is the knot. */
 export function thumbFigurePx(skyMin: number, stopped: boolean): number {
   const moving = Math.max(skyMin * 0.1, Math.min(skyMin * 0.13, 48));
-  return stopped ? moving * 1.8 : moving;
+  return stopped ? moving * 1.45 : moving;
+}
+
+/**
+ * A shelf jam. The stopped cars share a few pixels, so the card shows a short queue
+ * instead of one disc. The gap is smaller than a car, so they stay one knot.
+ */
+export function thumbJamQueue(count: number, size: number): { shown: number; gap: number } {
+  const shown = count <= 0 ? 0 : Math.min(count, 6);
+  return { shown, gap: size * 0.62 };
 }
 
 /**

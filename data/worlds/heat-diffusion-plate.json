@@ -30,9 +30,9 @@
     ]
   },
   "story": {
-    "setting": "You are in a quiet materials lab with a large, thin sheet of dark steel on an insulated table. An overhead infrared camera shows temperature as glowing color \u2014 bright orange-yellow where hot, deep indigo where cold. A precise laser can heat a tiny spot in an instant.",
+    "setting": "A thin sheet of dark steel lies on a table. The picture paints the heat: bright where it is hot, dark where it is cold. You can heat one tiny spot.",
     "mystery": "When the laser fires, the bright spot doesn't stay put \u2014 but it also doesn't behave like a rising bubble or a frozen dot. Does cold rush in? Does heat only go up? Does the glow keep a sharp edge as it moves?",
-    "goal": "Tune the plate and the laser, watch the thermal glow evolve, and figure out the rule that governs how warmth moves through the metal."
+    "goal": "Change the plate, watch the glow, and find the rule for how warmth moves through the metal."
   },
   "knobs": [
     {
@@ -126,7 +126,7 @@
   "predictions": [
     {
       "id": "flow_direction",
-      "prompt": "You heat a tiny spot in the middle of a cold plate and watch the infrared view. What moves first?",
+      "prompt": "You heat a tiny spot in the middle of a cold plate. What moves first?",
       "options": [
         "Cold flows in from the edges toward the center to cancel the hot spot",
         "Heat flows out from the hot spot to its cooler neighbors, warming them gradually",
@@ -177,12 +177,12 @@
     },
     {
       "id": "metal_conduction",
-      "prompt": "What happens if you compare a highly conductive plate to one that barely conducts?",
+      "prompt": "What happens if you compare a plate that shares heat quickly with one that barely shares it?",
       "options": [
-        "Both behave the same; metal is naturally cold so heat never moves far",
-        "The conductive plate smooths out to uniform temperature; the non-conductive one keeps the hot spot sharp for a long time",
-        "The conductive plate keeps the spot sharp; the non-conductive plate spreads heat faster",
-        "Heat disappears in both; metal destroys thermal energy"
+        "Both behave the same. Metal stays cold, so heat never moves far",
+        "The plate that shares heat quickly becomes even. The one that barely shares it keeps a sharp hot spot for a long time",
+        "The quick plate keeps the spot sharp. The slow plate spreads heat faster",
+        "The heat vanishes in both. Metal destroys warmth"
       ],
       "answerKey": 1,
       "tryWith": {

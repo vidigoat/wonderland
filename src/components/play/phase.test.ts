@@ -157,6 +157,15 @@ describe("phase machine", () => {
     const dune = spoken("data/worlds/dune-march.json");
     expect(dune).toContain("strong enough to move sand");
     expect(dune).not.toMatch(/threshold/);
+    const intro = (file: string) => {
+      const spec = JSON.parse(readFileSync(file, "utf8")) as { tagline: string; story: { setting: string; mystery: string; goal: string } };
+      return `${spec.tagline}\n${spec.story.setting}\n${spec.story.mystery}\n${spec.story.goal}`;
+    };
+    expect(intro("data/worlds/dune-march.json")).toContain("long gentle slope");
+    expect(intro("data/worlds/dune-march.json")).not.toMatch(/barchan|stoss|slipface/i);
+    expect(intro("data/worlds/heat-diffusion-plate.json")).toContain("bright where it is hot");
+    expect(intro("data/worlds/heat-diffusion-plate.json")).not.toMatch(/infrared|conductive/i);
+    expect(intro("data/worlds/firefly-sync-kuramoto.json")).not.toMatch(/synchrony|conductor/i);
     expect(Math.ceil(2000 / tickBatch(2000, "hallway-lanes"))).toBeLessThanOrEqual(28);
     expect(runDuration(runSteps("bodies"))).toBeGreaterThan(runDuration(1));
     expect(runSteps("population")).toBe(30);

@@ -191,6 +191,8 @@ The shelf jam was one red disc with a single car in it, and the dune was a gold 
 
 The hallway still named its controls "Crowd density", "Westbound share", "Sidestep tendency", and "Right-side bias". The flock said "Wind jitter". Commit `d83adc5`. They now say "How crowded the hall is", "Share walking west", "How hard they step aside", and "Prefer to pass on the right". The flock says "How much they wobble". On the production server, at 390 wide and at 1440, the hallway shows those four controls, the west share reads 50%, and the hidden law is not on the page. `pnpm check` is 252 tests.
 
+The meadow's first question was a paragraph about synchrony, and it asked what the model predicted. The valley called a conversion "Hares turned into lynx". The flock's new situation was about drones and headings. The plate said "Sealed edges". Commit `e313640`. The meadow now asks what happens a minute after you take away the brightest firefly. The valley says "How well a meal makes a lynx". The flock asks what happens if the birds stop copying the way their neighbors are facing. The plate says "Edges hold the heat". On the production server at 390 wide, that meadow question and its three choices fit on the phone, and the hidden law is not on the page. `pnpm check` is 252 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

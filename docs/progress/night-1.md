@@ -185,6 +185,8 @@ On a phone the meadow, the hallway, the fire, and the cannon stacked their cards
 
 The shelf title covered the lower half of every card, so the flock, the hares, and the jam sat in that black band. Commit `be84f5e`, then `07afeb0`. The picture now sits in the open sky above the title, and a file of cars sits on the painted road. On the production gallery at 390 wide, the flock is two groups of birds, wings out, leaning the same way. The valley shows hares and lynx above the cabin. The hallway shows both directions. The dune shows the long windward slope and the shorter slip face. The meadow shows the shared flash. The jam is a red knot at the left of the road, with smaller cars along the lane. The same jam shows at 1440 wide. `pnpm check` is 252 tests.
 
+Those hares and lynx were standing in the sky, and each starling wore a white disc, so the flock read as two stickers. Commit `fc5db06`. Animals on foot now sit on the slope. The discs are gone. On the production gallery at 390 wide, the hares and the lynx stand on the hillside around the cabin, and the starlings are two dark flocks in the sunset, wings out, leaning the same way. The meadow still shows the shared flash. `pnpm check` is 252 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

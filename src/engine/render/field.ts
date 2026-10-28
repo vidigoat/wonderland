@@ -169,15 +169,6 @@ function drawDune(g: Graphics, heights: number[], box: Box, painted: boolean): v
     }
     g.poly(poly).fill({ color: FIELD_COLORS.gold, alpha });
   }
-  const stroke: number[] = [];
-  const cutoff = bottom - box.h * 0.2;
-  for (let index = 0; index < ridge.length; index += 2) {
-    const y = ridge[index + 1] ?? bottom;
-    if (y <= cutoff) stroke.push(ridge[index] ?? box.x, y);
-  }
-  if (stroke.length >= 4) {
-    g.poly(stroke).stroke({ width: Math.max(1.5, box.h * 0.008), color: painted ? 0x6e4a28 : 0xf3ddb0, alpha: painted ? 0.55 : 0.95, cap: "round", join: "round" });
-  }
 }
 
 function pine(g: Graphics, x: number, y: number, size: number): void {

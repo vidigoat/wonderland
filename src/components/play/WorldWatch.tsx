@@ -8,7 +8,7 @@ import { WorldStage } from "@/components/stage/WorldStage";
 import { registerPaintedArt } from "@/engine/render/sprites";
 import type { PublicWorldSpec } from "@/engine/spec";
 import { drainSse, readPlayable, type PlayableSpec } from "./sse";
-import { collectShots } from "./capture";
+import { collectShots, countLines, type SeenCount } from "./capture";
 import { defaultParams } from "./readings";
 
 /** Keyed by the rules source, so a repaired world compiles again under the same id. */
@@ -106,8 +106,9 @@ export function WorldWatch({ spec }: { spec: PlayableSpec }) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ worldId: current.id, frames }),
         });
-        const body = (await res.json()) as { verdict?: string; notes?: unknown; source?: string };
+        const body = (await res.json()) as { verdict?: string; notes?: unknown; source?: string; counts?: SeenCount[] };
         if (cancel) return;
+        for (const line of countLines(Array.isArray(body.counts) ? body.counts : [])) say(line, "working");
         if (!res.ok || body.source === "sample") {
           const notes = Array.isArray(body.notes) ? body.notes.filter((item): item is string => typeof item === "string") : [];
           say(notes[0] ?? "Spark did not watch this world.", "flag");

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { candidateChanges, changedParams, movedLabel, readingDistance, shotCaption } from "./capture";
+import { candidateChanges, changedParams, countLines, movedLabel, readingDistance, shotCaption } from "./capture";
 
 const spec = {
   knobs: [
@@ -36,5 +36,13 @@ describe("playtest shots", () => {
   it("measures how far two runs ended apart, ignoring words", () => {
     expect(readingDistance({ a: 10, b: "x" }, { a: 10, b: "y" })).toBe(0);
     expect(readingDistance({ a: 10 }, { a: 5 })).toBeCloseTo(0.5);
+  });
+
+  it("reports SAM's count from the end of the starting run only", () => {
+    const lines = countLines([
+      { label: "Hare", caption: "Starting controls, at the end", drawn: 45, seen: 41 },
+      { label: "Hare", caption: "Wind moved, at the end", drawn: 30, seen: 28 },
+    ]);
+    expect(lines).toEqual(["SAM 3.1 counted 41 in the picture where the stage drew 45 (hare)."]);
   });
 });

@@ -6,10 +6,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("server-only", () => ({}));
 
 const look = vi.fn();
-vi.mock("@/lib/ai/meta", () => ({ look: (...args: unknown[]) => look(...args) }));
+const segment = vi.fn();
+vi.mock("@/lib/ai/meta", () => ({ look: (...args: unknown[]) => look(...args), segment: (...args: unknown[]) => segment(...args) }));
 
 import type { WorldSpec } from "@/engine/spec";
-import { playtestPrompt, readFrames, savePlaytest, scrubNotes, watchWorld } from "./playtest";
+import { missingFigures, playtestPrompt, readFrames, savePlaytest, scrubNotes, watchWorld } from "./playtest";
 
 const LAW = "Prey peaks lead predator peaks because each population's growth depends on the other.";
 
@@ -48,6 +49,12 @@ describe("playtest frames", () => {
     expect(readFrames(Array.from({ length: 7 }, () => frame))).toBeNull();
     expect(readFrames([{ dataUrl: "data:image/png;base64,aGVsbG8=", caption: "Default run" }])).toBeNull();
     expect(readFrames([{ dataUrl: frame.dataUrl, caption: "  " }])).toBeNull();
+  });
+
+  it("carries the stage's figure counts, and refuses malformed ones", () => {
+    expect(readFrames([{ ...frame, drawn: { hare: 12 } }])).toEqual([{ ...frame, drawn: { hare: 12 } }]);
+    expect(readFrames([{ ...frame, drawn: { hare: 1.5 } }])).toBeNull();
+    expect(readFrames([{ ...frame, drawn: { "../x": 2 } }])).toBeNull();
   });
 });
 
@@ -96,5 +103,26 @@ describe("watchWorld", () => {
     await savePlaytest("valley", result, dir);
     const saved = JSON.parse(await readFile(path.join(dir, "valley.json"), "utf8")) as { notes: string[] };
     expect(saved.notes.join(" ")).not.toContain("Prey peaks lead");
+  });
+
+  it("records a crowd SAM 3.1 cannot find, without overruling Spark", async () => {
+    process.env.MODEL_API_KEY = "test-key";
+    look.mockResolvedValue(JSON.stringify({ verdict: "looks-right", notes: ["The herd grew."] }));
+    segment.mockReset();
+    segment.mockResolvedValue("");
+    const result = await watchWorld(spec(), [{ ...frame, caption: "Starting controls, at the end", drawn: { hare: 9 } }]);
+    expect(segment).toHaveBeenCalled();
+    expect(result.verdict).toBe("looks-right");
+    expect(result.counts).toEqual([{ entity: "hare", label: "Hare", caption: "Starting controls, at the end", drawn: 9, seen: 0 }]);
+    expect(result.notes.join(" ")).toContain("SAM 3.1 found no hare");
+  });
+});
+
+describe("figure counts", () => {
+  it("only calls a crowd missing when SAM finds none of several", () => {
+    const base = { entity: "hare", label: "Hare", caption: "end" };
+    expect(missingFigures([{ ...base, drawn: 9, seen: 0 }])).toHaveLength(1);
+    expect(missingFigures([{ ...base, drawn: 9, seen: 3 }])).toHaveLength(0);
+    expect(missingFigures([{ ...base, drawn: 2, seen: 0 }])).toHaveLength(0);
   });
 });

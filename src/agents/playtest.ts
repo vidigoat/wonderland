@@ -3,11 +3,16 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { scrubReply } from "@/agents/judge";
 import type { WorldSpec } from "@/engine/spec";
-import { look } from "@/lib/ai/meta";
+import { look, segment } from "@/lib/ai/meta";
+import { parseSamOutput } from "@/lib/ai/sam-parse";
+import { segmentPrompts } from "@/agents/artist";
 import { metaSource } from "@/lib/ai/mode";
 import { SAMPLE_NOTICE, type DataSource } from "@/lib/samples/mark";
 
-export type PlayFrame = { dataUrl: string; caption: string };
+export type PlayFrame = { dataUrl: string; caption: string; drawn?: Record<string, number> };
+
+/** SAM 3.1's count of one kind of figure in one frame, against what the stage drew there. */
+export type FigureCount = { entity: string; label: string; caption: string; drawn: number; seen: number };
 
 export type PlaytestVerdict = "looks-right" | "concern";
 
@@ -16,6 +21,8 @@ export type PlaytestResult = {
   notes: string[];
   source: DataSource;
   notice?: string;
+  /** SAM 3.1's counts of the figures in the end frames, when the stage draws a crowd. */
+  counts?: FigureCount[];
   /** How many times Spark's notes have been sent back to the designer for this world. */
   repairs?: number;
 };
@@ -36,9 +43,61 @@ export function readFrames(input: unknown): PlayFrame[] | null {
     if (!JPEG.test(dataUrl) || dataUrl.length > MAX_URL) return null;
     const words = caption.trim();
     if (!words || words.length > 180) return null;
-    frames.push({ dataUrl, caption: words });
+    const drawn = readDrawn((item as { drawn?: unknown }).drawn);
+    if (drawn === null) return null;
+    frames.push(drawn ? { dataUrl, caption: words, drawn } : { dataUrl, caption: words });
   }
   return frames;
+}
+
+/** Optional per-frame figure counts: at most six kinds, each a whole number up to 1000. Null when malformed. */
+function readDrawn(input: unknown): Record<string, number> | undefined | null {
+  if (input === undefined) return undefined;
+  if (!input || typeof input !== "object" || Array.isArray(input)) return null;
+  const entries = Object.entries(input as Record<string, unknown>);
+  if (entries.length > 6) return null;
+  const out: Record<string, number> = {};
+  for (const [key, value] of entries) {
+    if (!/^[A-Za-z0-9_-]{1,40}$/.test(key) || typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 1000) return null;
+    out[key] = value;
+  }
+  return out;
+}
+
+/** At most this many SAM calls per watch: two end frames, two kinds of figure, a shorter phrase if the first finds none. */
+const MAX_SAM_CALLS = 8;
+
+/**
+ * SAM 3.1 as a measuring instrument: count each kind of figure in the end frames and set it against what the
+ * stage drew. A second opinion beside Spark's, recorded with the playtest and shown on the build screen.
+ */
+export async function countFigures(spec: WorldSpec, frames: PlayFrame[]): Promise<FigureCount[]> {
+  const counts: FigureCount[] = [];
+  let calls = 0;
+  for (const frame of frames) {
+    if (!frame.drawn) continue;
+    for (const entity of spec.entities) {
+      const drawn = frame.drawn[entity.id] ?? 0;
+      if (drawn < 1) continue;
+      let seen = 0;
+      // The plain noun first ("hare"), then the artist's full phrase.
+      const [full, head] = segmentPrompts(entity.segmentPrompt);
+      const noun = (head ?? full ?? entity.label).split(/\s+/).pop() ?? entity.label;
+      for (const phrase of [...new Set([noun, full ?? noun])]) {
+        if (calls >= MAX_SAM_CALLS) break;
+        calls++;
+        seen = parseSamOutput(await segment({ prompt: phrase, imageUrl: frame.dataUrl })).length;
+        if (seen > 0) break;
+      }
+      counts.push({ entity: entity.id, label: entity.label, caption: frame.caption, drawn, seen });
+    }
+  }
+  return counts;
+}
+
+/** Counts where SAM found none of several figures the stage drew. */
+export function missingFigures(counts: FigureCount[]): FigureCount[] {
+  return counts.filter((count) => count.drawn >= 3 && count.seen === 0);
 }
 
 export function playtestPrompt(spec: WorldSpec, frames: PlayFrame[]): string {
@@ -96,7 +155,18 @@ export async function watchWorld(spec: WorldSpec, frames: PlayFrame[]): Promise<
   const parsed = JSON.parse(raw) as { verdict?: unknown; notes?: unknown };
   const verdict: PlaytestVerdict = parsed.verdict === "looks-right" ? "looks-right" : "concern";
   const notes = Array.isArray(parsed.notes) ? parsed.notes.filter((note): note is string => typeof note === "string") : [];
-  return { verdict, notes: scrubNotes(notes, spec), source: "live" };
+  let counts: FigureCount[] = [];
+  try {
+    counts = await countFigures(spec, frames);
+  } catch {
+    // Counting is a second opinion; a failed SAM call never hides Spark's verdict.
+  }
+  // Recorded, never a verdict on its own: SAM also misses figures that are hidden on purpose (pale moths on
+  // pale bark are camouflage working) or small in a painted meadow. Spark, who knows the law, judges.
+  for (const missing of missingFigures(counts)) {
+    notes.push(`SAM 3.1 found no ${missing.label.toLowerCase()} in the frame "${missing.caption}", though the stage drew ${missing.drawn}.`);
+  }
+  return { verdict, notes: scrubNotes(notes, spec), source: "live", ...(counts.length ? { counts } : {}) };
 }
 
 export async function savePlaytest(worldId: string, result: PlaytestResult, dir = path.join(process.cwd(), "data", "playtests")): Promise<void> {

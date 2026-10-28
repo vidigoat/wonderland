@@ -30,7 +30,8 @@ export async function POST(req: Request) {
     // What Spark saw can describe the law ("the dark moths outlast the pale ones"), and this reply reaches a
     // player who hasn't found it yet. The notes stay in data/playtests; the page gets the verdict only.
     if (result.source !== "live") return Response.json(result);
-    return Response.json({ verdict: result.verdict, notes: [], source: result.source });
+    // Counts are safe to show: an entity's name and two numbers.
+    return Response.json({ verdict: result.verdict, notes: [], source: result.source, counts: result.counts ?? [] });
   } catch (error) {
     if (error instanceof ModelCallError) {
       return Response.json({ source: error.source, message: error.message }, { status: 502 });

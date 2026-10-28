@@ -49,3 +49,17 @@ The meadow was the first world through it, on 28 Oct:
 3. Spark watched again: **looked right.**
 
 All twelve worlds now look right to Spark.
+
+## SAM 3.1 as a second pair of eyes
+
+On crowd worlds, the browser also records how many of each figure the stage drew at the end of each run, and SAM 3.1 counts them in the picture. The counts are saved with the playtest and shown on the build screen. Results on 28 Oct:
+
+| World | Frame | Stage drew | SAM 3.1 counted |
+|---|---|---:|---:|
+| Rumour Town | starting controls, end | 33 townspeople | 35 |
+| Rumour Town | rumour turned off, end | 40 townspeople | 38 |
+| Peppered Forest | birds not hungry, end | 120 moths | 53 in one watch, 0 in the next |
+| Peppered Forest | starting controls (pale bark), end | 120 moths | 0 |
+| The Valley of the Endless Chase | starting controls, end | 12 hares, 23 lynx | 0, 0 |
+
+On an open square SAM counts a crowd almost exactly. It found *no* moths on the pale bark, which is camouflage doing its job; even a segmentation model can't see them. It also found nothing in the valley, where Spark could see the animals clearly, and its count for the same forest frame changed from 53 to 0 between two watches. So a count of zero is not reliable evidence of a broken picture. SAM's counts are recorded as a second opinion and never overrule Spark, who knows the law.

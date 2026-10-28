@@ -1,9 +1,12 @@
 import type { Params, RulesModule } from "@/engine/rules";
 import type { PublicWorldSpec } from "@/engine/spec";
 import { runHeadless, WorldSession } from "@/engine/runtime";
+import { crowdToDraw, populationCrowd } from "@/engine/render/helpers";
+import { isHeroWorld } from "@/engine/render/palette";
 import { defaultParams, runSteps } from "./readings";
 
-export type Shot = { dataUrl: string; caption: string };
+/** `drawn`: how many of each figure the stage drew in this frame, for SAM 3.1 to count against. */
+export type Shot = { dataUrl: string; caption: string; drawn?: Record<string, number> };
 
 /** Move the first slider to the other end of its range. Other knobs stay put. */
 export function changedParams(spec: Pick<PublicWorldSpec, "knobs">, base: Params): Params {
@@ -73,6 +76,32 @@ export async function tellingChange(spec: PublicWorldSpec, rules: RulesModule, s
   return best;
 }
 
+/**
+ * How many of each figure a population stage draws for this view, using the renderer's own crowd cap, so the
+ * count matches what is on screen rather than every agent the rules hold.
+ */
+export function drawnFigures(view: unknown, size: { width: number; height: number }, worldId: string, painted: boolean): Record<string, number> | undefined {
+  const agents = (view as { kind?: string; agents?: { sprite?: string }[] } | null)?.agents;
+  if ((view as { kind?: string } | null)?.kind !== "population" || !Array.isArray(agents)) return undefined;
+  const crowd = populationCrowd({ ...size, count: agents.length, painted, rumour: worldId === "rumour-town", hero: isHeroWorld(worldId) });
+  const counts: Record<string, number> = {};
+  for (const agent of crowdToDraw(agents, crowd.cap)) {
+    const sprite = agent.sprite || "figure";
+    counts[sprite] = (counts[sprite] ?? 0) + 1;
+  }
+  return counts;
+}
+
+export type SeenCount = { label: string; caption: string; drawn: number; seen: number };
+
+/** One plain line per kind of figure, from the end of the starting run: what SAM 3.1 counted against the stage. */
+export function countLines(counts: SeenCount[]): string[] {
+  const first = counts[0]?.caption;
+  return counts
+    .filter((count) => count.caption === first)
+    .map((count) => `SAM 3.1 counted ${count.seen} in the picture where the stage drew ${count.drawn} (${count.label.toLowerCase()}).`);
+}
+
 async function waitForCanvas(canvas: () => HTMLCanvasElement | null): Promise<HTMLCanvasElement> {
   for (let attempt = 0; attempt < 40; attempt++) {
     const picture = canvas();
@@ -139,14 +168,21 @@ export async function collectShots(
     const half = Math.max(1, Math.ceil(runSteps(spec.archetype, spec.id, run.params) / 2));
     for (let index = 0; index < 3; index++) {
       if (index > 0) await session.tick(half);
-      onView?.(session.view(), { ...session.params });
+      const view = session.view();
+      onView?.(view, { ...session.params });
       await nextPaint();
       // Figures ease to their new place and brightness over ~260 ms; a frame taken sooner shows the old picture.
       await new Promise((resolve) => window.setTimeout(resolve, SETTLE_MS));
       await nextPaint();
       const picture = canvas();
       if (!picture || picture.width < 2) throw new Error("The stage was not ready to be watched.");
-      shots.push({ dataUrl: canvasJpeg(picture), caption: shotCaption(run.label, index) });
+      const shot: Shot = { dataUrl: canvasJpeg(picture), caption: shotCaption(run.label, index) };
+      // The end of each run is counted by SAM 3.1 on the server.
+      if (index === 2) {
+        const drawn = drawnFigures(view, { width: picture.clientWidth || picture.width, height: picture.clientHeight || picture.height }, spec.id, Boolean(spec.art.painted));
+        if (drawn) shot.drawn = drawn;
+      }
+      shots.push(shot);
     }
   }
   return shots;

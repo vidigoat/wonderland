@@ -6,6 +6,7 @@ import type { ClientPipelineEvent } from "@/engine/client-event";
 import Image from "next/image";
 import { ArrowDown, ArrowRight, GraduationCap, Presentation, Sparkles } from "lucide-react";
 import { PaintedWall } from "@/components/landing/PaintedWall";
+import { Gates } from "@/components/landing/Gates";
 import { Pipeline } from "@/components/landing/Pipeline";
 import { TryIt } from "@/components/landing/TryIt";
 import { WorldThumb } from "@/components/landing/WorldThumb";
@@ -359,6 +360,19 @@ export function Landing({
           <p className="land-sub">Four steps build every world, and four more agents join you while you play. A world only ships if its science passes on every random seed.</p>
         </div>
         <Pipeline />
+      </section>
+
+      <section id="checks" className="land-section" aria-labelledby="checks-title">
+        <div className="land-head">
+          <h2 id="checks-title" className="land-h2">
+            It checks its own work
+          </h2>
+          <p className="land-sub">
+            An AI that writes science can get it wrong, or fake it. Ours did. Every world the models write now passes four checks before it reaches you.
+            Of eight fresh questions we had never tried, six became worlds that passed.
+          </p>
+        </div>
+        <Gates />
       </section>
 
       <section className="land-section" aria-labelledby="who-title">

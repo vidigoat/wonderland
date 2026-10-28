@@ -199,6 +199,8 @@ The dune's opening called it a barchan and named the stoss and the slip face. Th
 
 On the stage that dune was a gold triangle cut off in a straight line. Commit `607e303`. The sand now fades into the desert, and the slip face is the steeper side. Checked at 1440 wide and at 390. `pnpm check` is 252 tests.
 
+The hot spot on the plate was a hard circle. Commit `0c2ab36`, then `acb236e`. The picture is sampled more finely and then softened. On the production server at 1440 wide, the resting spot is a warm disk whose edge rises over 14 pixels, and the page says the picture is bright where it is hot. `pnpm check` is 252 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

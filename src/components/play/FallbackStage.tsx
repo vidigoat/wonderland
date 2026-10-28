@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { StageProps } from "./stage-props";
+import { fieldScale, heightSilhouette, ridgeWindow, softenRidge } from "@/engine/render/helpers";
 import { isParticlesView, type BodiesView, type CannonView, type FieldView, type ParticlesView, type PipelineView, type PopulationView } from "@/engine/view";
 
 function mix(from: string, to: string, t: number): string {
@@ -24,7 +25,7 @@ function fieldColor(value: number): string {
   return mix("#14110e", "#d4b36a", value);
 }
 
-function FieldPlate({ view }: { view: FieldView }) {
+function FieldPlate({ view, worldId }: { view: FieldView; worldId: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = ref.current;
@@ -39,24 +40,93 @@ function FieldPlate({ view }: { view: FieldView }) {
       canvas.width = Math.max(1, Math.floor(width * dpr));
       canvas.height = Math.max(1, Math.floor(height * dpr));
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const dune = heightSilhouette(view.grid);
+      if (dune) {
+        ctx.fillStyle = "#cbb892";
+        ctx.fillRect(0, 0, width, height);
+        const ridge = softenRidge(dune.heights);
+        const span = ridgeWindow(ridge);
+        const body = ridge.slice(span.start, span.end + 1);
+        const count = body.length;
+        const peak = Math.max(...body, 0.001);
+        const base = height * 0.78;
+        const rise = height * 0.46;
+        const at = (index: number) => {
+          const x = count === 1 ? width / 2 : (index / (count - 1)) * width;
+          const y = base - (Math.max(0, body[index] ?? 0) / peak) * rise;
+          return [x, y] as const;
+        };
+        ctx.beginPath();
+        body.forEach((_, index) => {
+          const [x, y] = at(index);
+          if (index === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.lineTo(width, base);
+        ctx.lineTo(0, base);
+        ctx.closePath();
+        const sand = ctx.createLinearGradient(0, base - rise, 0, base);
+        sand.addColorStop(0, "rgba(224, 177, 90, 0.98)");
+        sand.addColorStop(0.7, "rgba(224, 177, 90, 0.9)");
+        sand.addColorStop(1, "rgba(224, 177, 90, 0)");
+        ctx.fillStyle = sand;
+        ctx.fill();
+        ctx.beginPath();
+        body.forEach((_, index) => {
+          const [x, y] = at(index);
+          if (index === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.strokeStyle = "#6a4424";
+        ctx.lineWidth = Math.max(2, height * 0.012);
+        ctx.stroke();
+        return;
+      }
       const rows = view.grid.length || 1;
       const cols = view.grid[0]?.length ?? 1;
-      const cw = width / cols;
-      const ch = height / rows;
+      if (fieldScale(worldId, view.grid.flat()) === "firebreak") {
+        const cw = width / cols;
+        const ch = height / rows;
+        for (let y = 0; y < rows; y++) {
+          const row = view.grid[y] ?? [];
+          for (let x = 0; x < cols; x++) {
+            ctx.fillStyle = fieldColor(row[x] ?? 0);
+            ctx.fillRect(x * cw, y * ch, cw + 0.5, ch + 0.5);
+          }
+        }
+        return;
+      }
+      const plate = document.createElement("canvas");
+      plate.width = cols;
+      plate.height = rows;
+      const bits = plate.getContext("2d");
+      if (!bits) return;
+      const pixels = bits.createImageData(cols, rows);
       for (let y = 0; y < rows; y++) {
         const row = view.grid[y] ?? [];
         for (let x = 0; x < cols; x++) {
-          ctx.fillStyle = fieldColor(row[x] ?? 0);
-          ctx.fillRect(x * cw, y * ch, cw + 0.5, ch + 0.5);
+          const value = Math.max(0, Math.min(1, row[x] ?? 0));
+          const index = (y * cols + x) * 4;
+          const ink = fieldColor(value);
+          const parts = ink.startsWith("#")
+            ? [parseInt(ink.slice(1, 3), 16), parseInt(ink.slice(3, 5), 16), parseInt(ink.slice(5, 7), 16)]
+            : ink.replace(/[^\d ]/g, " ").trim().split(/\s+/).map(Number);
+          pixels.data[index] = parts[0] ?? 0;
+          pixels.data[index + 1] = parts[1] ?? 0;
+          pixels.data[index + 2] = parts[2] ?? 0;
+          pixels.data[index + 3] = 255;
         }
       }
+      bits.putImageData(pixels, 0, 0);
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(plate, 0, 0, width, height);
     };
     draw();
     if (typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(draw);
     observer.observe(parent);
     return () => observer.disconnect();
-  }, [view]);
+  }, [view, worldId]);
   return <canvas ref={ref} className="field-plate" />;
 }
 
@@ -156,7 +226,7 @@ function PipelinePlate({ view, playing }: { view: PipelineView; playing: boolean
 export function FallbackStage({ view, archetype, worldId, playing }: StageProps) {
   return (
     <div className={`stage-fallback ${playing ? "is-playing" : "is-still"} archetype-${archetype}`} data-world={worldId}>
-      {view?.kind === "field" ? <FieldPlate view={view} /> : null}
+      {view?.kind === "field" ? <FieldPlate view={view} worldId={worldId} /> : null}
       {view?.kind === "bodies" ? <BodiesPlate view={view} /> : null}
       {view?.kind === "population" ? <PopulationPlate view={view} worldId={worldId} /> : null}
       {view?.kind === "pipeline" ? <PipelinePlate view={view} playing={playing} /> : null}

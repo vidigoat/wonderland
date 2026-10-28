@@ -268,6 +268,8 @@ describe("fieldColor", () => {
     );
     expect(smoothed.length).toBeGreaterThan(2);
     expect(smoothed[0]?.[0]).toBeCloseTo(0);
+    const plate = Array.from({ length: 32 }, () => Array<number>(32).fill(0));
+    expect(smoothField(plate)[0]?.length).toBeGreaterThanOrEqual(200);
     const dune = Array.from({ length: 8 }, (_, y) =>
       Array.from({ length: 10 }, (_, x) => (y >= 7 - (5 - Math.abs(x - 4)) ? 1 : 0)),
     );

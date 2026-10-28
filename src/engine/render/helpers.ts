@@ -390,11 +390,11 @@ export function bilinearSample(grid: number[][], x: number, y: number): number {
  * A taller copy of a continuous field. Each output cell is a bilinear sample, so a heat
  * spot fades instead of stepping from cell to cell.
  */
-export function smoothField(grid: number[][], longest = 180): number[][] {
+export function smoothField(grid: number[][], longest = 320): number[][] {
   const rows = grid.length;
   const cols = grid[0]?.length ?? 0;
   if (rows === 0 || cols === 0) return grid;
-  const scale = Math.max(1, Math.min(4, Math.floor(longest / Math.max(rows, cols))));
+  const scale = Math.max(1, Math.min(8, Math.floor(longest / Math.max(rows, cols))));
   if (scale <= 1) return grid;
   const height = rows * scale;
   const width = cols * scale;

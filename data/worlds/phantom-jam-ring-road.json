@@ -153,10 +153,10 @@
   "predictions": [
     {
       "id": "bottleneck_myth",
-      "prompt": "On this perfect loop with no accident, traffic light, or lane closure, you pack 30 cars onto a 300 m track, drivers react after 1.2 s, and you tap one brake by 2 m/s. What happens after 2 minutes?",
+      "prompt": "The loop has no accident, no light, and no closed lane. The road is crowded, and one driver taps the brake. Two minutes later, what do you see?",
       "options": [
-        "A stop-and-go jam forms and persists even though there is no bottleneck",
-        "Nothing \u2014 without a bottleneck a jam cannot form, traffic just smooths out"
+        "A stop-and-go jam forms and stays, even with nothing blocking the road",
+        "Nothing. Without a blockage, any jam smooths out"
       ],
       "answerKey": 0,
       "tryWith": {
@@ -170,10 +170,10 @@
     },
     {
       "id": "throughput_myth",
-      "prompt": "The track is crowded (30 cars, 300 m, 1.2 s reaction). You raise the speed limit from 30 to 40 m/s while drivers keep the same 2 s preferred gap. What happens to throughput (cars per hour)?",
+      "prompt": "The road is already crowded. You let drivers aim for a higher speed, and they keep the same gap. What happens to how many cars get through each hour?",
       "options": [
-        "Throughput falls as jams get worse \u2014 faster and closer does not always mean more flow",
-        "Throughput rises proportionally \u2014 faster and closer always means more cars per hour"
+        "Fewer cars get through, because the jams get worse",
+        "More cars get through. Faster always means more flow"
       ],
       "answerKey": 0,
       "tryWith": {
@@ -187,10 +187,10 @@
     },
     {
       "id": "wave_direction",
-      "prompt": "A jam has formed on the loop. Which way does the jam itself move relative to the cars?",
+      "prompt": "A jam has formed on the loop. Which way does the jam itself move, compared with the cars?",
       "options": [
-        "Backwards, upstream against traffic \u2014 the wave travels opposite to the cars",
-        "Forwards with the cars that created it, or stays fixed in place"
+        "Backward, against the traffic",
+        "Forward with the cars, or it stays put"
       ],
       "answerKey": 0,
       "tryWith": {
@@ -204,10 +204,10 @@
     },
     {
       "id": "bad_drivers_myth",
-      "prompt": "You replace all drivers with identical, skillful drivers who all follow the same safe rule with 1.2 s reaction delay, keep the road crowded (30 cars, 300 m), and give one 2 m/s brake tap. What happens?",
+      "prompt": "Every driver is equally careful and follows the same rule. The road is still crowded, and one driver taps the brake. What happens?",
       "options": [
-        "A jam still emerges \u2014 it is a collective instability of dense flow, not just a few bad drivers",
-        "No jam forms \u2014 with skillful drivers the tap smooths out and jams need bad drivers"
+        "A jam still appears. It does not take a bad driver",
+        "No jam. Careful drivers smooth the tap out"
       ],
       "answerKey": 0,
       "tryWith": {
@@ -230,12 +230,12 @@
       "safeHeadway": 2,
       "perturbationSize": 2
     },
-    "question": "You increase package density from sparse (10 packages) to crowded (30 packages) while keeping the same reaction delay. What happens after the brief hold-back?",
+    "question": "You go from a few packages to a crowded belt, and each arm still waits the same moment before it reacts. One package is held back briefly. What happens?",
     "options": [
-      "When sparse the wobble fades; when crowded it amplifies into a backward-moving jam of stopped packages that lowers throughput",
-      "The wobble always fades because there is no bottleneck",
+      "When the belt is sparse, the wobble fades. When it is crowded, the wobble grows into a jam of stopped packages that moves backward, and fewer packages get through",
+      "The wobble always fades, because nothing is blocking the belt",
       "The jam moves forward with the packages",
-      "Adding more packages always raises throughput"
+      "More packages always means more get through"
     ],
     "answerKey": 0
   },

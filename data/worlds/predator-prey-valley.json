@@ -225,7 +225,7 @@
     }
   ],
   "transfer": {
-    "setup": "In a coastal lab you culture phytoplankton (tiny plant-like prey) and zooplankton (tiny animal predators) in a tank with constant temperature and light \u2014 no seasons at all. You can add nutrients to make phytoplankton grow faster.",
+    "setup": "A tank holds tiny drifting plants and the animals that eat them. The light and the temperature never change. There are no seasons. You can add food so the plants grow faster.",
     "params": {
       "preyGrowthRate": 0.8,
       "predationRate": 0.02,
@@ -234,12 +234,12 @@
       "initialPrey": 30,
       "initialPredator": 10
     },
-    "question": "You double the nutrients so phytoplankton can grow much faster. What will happen to the long-term average numbers in the tank?",
+    "question": "You add enough food for the plants to grow much faster. Over a long time, what happens to the average numbers?",
     "options": [
-      "More phytoplankton on average, same zooplankton",
-      "More zooplankton on average, same phytoplankton",
-      "Both will increase a lot on average",
-      "Both will crash to extinction"
+      "More plants on average, and the same number of animals",
+      "More animals on average, and the same number of plants",
+      "Both grow a lot, on average",
+      "Both die out"
     ],
     "answerKey": 1
   },

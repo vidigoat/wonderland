@@ -157,12 +157,12 @@
     }
   ],
   "transfer": {
-    "setup": "A river channel has two underwater sand mounds, one 1m high and one 2m high, with steady current above threshold.",
+    "setup": "A river has two underwater sand mounds. One is 1 metre high and one is 2 metres high. The current is steady and strong enough to move sand.",
     "params": {
       "windSpeed": 8,
       "initialHeight": 20
     },
-    "question": "Which mound migrates downstream faster?",
+    "question": "Which mound moves downstream faster?",
     "options": [
       "Shorter mound about twice as fast",
       "Taller mound about twice as fast",

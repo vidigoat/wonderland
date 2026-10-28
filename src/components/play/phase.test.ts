@@ -146,6 +146,15 @@ describe("phase machine", () => {
     const plate = spoken("data/worlds/heat-diffusion-plate.json");
     expect(plate).toContain("Edges hold the heat");
     expect(plate).not.toMatch(/Sealed edges/);
+    const jam = spoken("data/worlds/phantom-jam-ring-road.json");
+    expect(jam).toContain("The loop has no accident");
+    expect(jam).not.toMatch(/m\/s|throughput|bottleneck/i);
+    const chase = spoken("data/worlds/predator-prey-valley.json");
+    expect(chase).toContain("tiny drifting plants");
+    expect(chase).not.toMatch(/phytoplankton|zooplankton/);
+    const dune = spoken("data/worlds/dune-march.json");
+    expect(dune).toContain("strong enough to move sand");
+    expect(dune).not.toMatch(/threshold/);
     expect(Math.ceil(2000 / tickBatch(2000, "hallway-lanes"))).toBeLessThanOrEqual(28);
     expect(runDuration(runSteps("bodies"))).toBeGreaterThan(runDuration(1));
     expect(runSteps("population")).toBe(30);

@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { compileRules, type RulesModule } from "@/engine/rules";
 import { WorldSession } from "@/engine/runtime";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { bodyFacing, cssHex, figureTint, flockFacing, heightSilhouette, ridgeWindow, softenRidge, thumbBodyPx, thumbJamHalo, thumbJamInk, thumbSample, thumbSteps } from "@/engine/render/helpers";
+import { bodyFacing, cssHex, figureTint, flockFacing, heightSilhouette, ridgeWindow, softenRidge, thumbFigurePx, thumbJamInk, thumbSample, thumbSky, thumbSpritePx, thumbSteps } from "@/engine/render/helpers";
 import { asWorldView, isParticlesView } from "@/engine/view";
 
 /**
@@ -117,13 +117,12 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
           ctx.drawImage(plate, -dw / 2, -dh / 2);
           ctx.restore();
         };
-        const pad = 0.12;
-        const at = (x: number, y: number) => [w * (pad + x * (1 - 2 * pad)), h * (pad * 0.6 + y * (1 - 2 * pad))] as const;
+        const sky = thumbSky(w, h);
+        const at = (x: number, y: number) => [sky.x + x * sky.w, sky.y + y * sky.h] as const;
         if (view.kind === "population") {
           const headed = view.agents.some((agent) => typeof agent.heading === "number" && Number.isFinite(agent.heading));
           const agents = thumbSample(view.agents, headed);
-          const edge = Math.min(w, h);
-          const size = edge * Math.min(headed ? 0.18 : 0.2, (headed ? 1.4 : 0.85) / Math.sqrt(Math.max(1, agents.length)));
+          const size = thumbSpritePx(Math.min(sky.w, sky.h), agents.length, headed);
           for (const agent of agents) {
             const [x, y] = at(agent.x, agent.y);
             const image = sprites.size > 0 ? spriteOf(String(agent.sprite ?? "")) : undefined;
@@ -132,6 +131,12 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
               const hasHeading = typeof heading === "number" && Number.isFinite(heading);
               const turn = hasHeading ? flockFacing(heading) : 0;
               const alpha = hasHeading ? 0.92 : 0.55 + Math.max(0, Math.min(1, agent.tint)) * 0.45;
+              if (hasHeading) {
+                ctx.fillStyle = "rgba(255, 244, 220, 0.55)";
+                ctx.beginPath();
+                ctx.arc(x, y, size * 0.42, 0, Math.PI * 2);
+                ctx.fill();
+              }
               drawSprite(image, x, y, size, alpha, turn);
               continue;
             }
@@ -147,12 +152,33 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
         } else if (view.kind === "bodies" && isParticlesView(view)) {
           const { x: bx, y: by, w: bw, h: bh } = view.bounds;
           const bodies = [...view.bodies].sort((a, b) => Number(((a as { vx?: number }).vx ?? 1) < 0.5) - Number(((b as { vx?: number }).vx ?? 1) < 0.5));
-          for (const body of bodies.slice(0, 400)) {
-            const [x, y] = at((body.x - bx) / bw, (body.y - by) / bh);
+          const placed = bodies.slice(0, 400).map((body) => ({
+            body,
+            at: at((body.x - bx) / bw, (body.y - by) / bh),
+          }));
+          const row = placed.length > 1 && Math.max(...placed.map((item) => item.at[1])) - Math.min(...placed.map((item) => item.at[1])) < 2;
+          if (row) {
+            const y = placed[0]!.at[1];
+            const band = Math.min(sky.w, sky.h) * 0.14;
+            ctx.fillStyle = "rgba(42, 42, 48, 0.9)";
+            ctx.fillRect(sky.x, y - band / 2, sky.w, band);
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.75)";
+            ctx.lineWidth = Math.max(1.5, band * 0.08);
+            ctx.setLineDash([band * 0.35, band * 0.28]);
+            ctx.beginPath();
+            ctx.moveTo(sky.x + band, y);
+            ctx.lineTo(sky.x + sky.w - band, y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+          for (const item of placed) {
+            const body = item.body;
+            const [x, y] = item.at;
             const speed = (body as { vx?: number }).vx;
             const tint = figureTint(spec.id, speed);
-            const size = thumbBodyPx(spec.id, speed) * dpr;
-            const halo = thumbJamHalo(spec.id, speed) * dpr;
+            const stopped = tint !== 0xffffff;
+            const size = thumbFigurePx(Math.min(sky.w, sky.h), stopped);
+            const halo = stopped ? size * 0.78 : 0;
             if (halo > 0) {
               ctx.fillStyle = cssHex(tint);
               ctx.beginPath();
@@ -181,8 +207,8 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
             const count = body.length;
             const peak = Math.max(...body, 0.001);
             // The title gradient covers the lower half of the card, so the whole dune has to sit above it.
-            const base = h * 0.5;
-            const rise = h * 0.26;
+            const base = sky.y + sky.h;
+            const rise = sky.h * 0.72;
             const pointAt = (index: number) => {
               const x = count === 1 ? w / 2 : (index / (count - 1)) * w;
               const y = base - (Math.max(0, body[index] ?? 0) / peak) * rise;
@@ -233,7 +259,7 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
           }
           bits.putImageData(pixels, 0, 0);
           ctx.imageSmoothingEnabled = true;
-          ctx.drawImage(plate, w * pad, h * 0.08, w * (1 - 2 * pad), h * 0.72);
+          ctx.drawImage(plate, sky.x, sky.y, sky.w, sky.h);
         }
       } catch {
         // A thumbnail is decoration; the card still links to the world.

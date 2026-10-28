@@ -439,7 +439,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: linear-gradient(180deg, transparent 30%, rgba(0, 0, 0, 0.78) 58%, rgba(0, 0, 0, 0.97) 100%);
+  background: linear-gradient(180deg, transparent 48%, rgba(0, 0, 0, 0.82) 72%, #000 100%);
 }
 .wl-world-copy {
   position: absolute;

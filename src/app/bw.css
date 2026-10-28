@@ -521,7 +521,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: linear-gradient(180deg, transparent 30%, rgba(0, 0, 0, 0.8) 60%, #000 100%);
+  background: linear-gradient(180deg, transparent 48%, rgba(0, 0, 0, 0.82) 72%, #000 100%);
 }
 .bw-world-copy {
   position: absolute;

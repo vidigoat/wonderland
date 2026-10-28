@@ -225,6 +225,31 @@ export function thumbBodyPx(worldId: string, speed: number | undefined): number 
 }
 
 /**
+ * The part of a shelf card the title does not cover.
+ * The gradient owns everything below this rectangle.
+ */
+export function thumbSky(width: number, height: number): { x: number; y: number; w: number; h: number } {
+  return { x: width * 0.06, y: height * 0.04, w: width * 0.88, h: height * 0.44 };
+}
+
+/**
+ * How big a painted creature is on a shelf card, in the same pixels as `skyMin`.
+ * A flock stays large enough to show a wing, and small enough that the birds stay separate.
+ */
+export function thumbSpritePx(skyMin: number, count: number, headed: boolean): number {
+  const gap = skyMin / Math.sqrt(Math.max(1, count));
+  const floor = skyMin * 0.1;
+  if (headed) return Math.max(floor, Math.min(skyMin * 0.2, gap * 1.15));
+  return Math.max(skyMin * 0.12, Math.min(skyMin * 0.22, gap * 1.3));
+}
+
+/** A walker or a car on a shelf card, in the same pixels as `skyMin`. A stopped car is the knot. */
+export function thumbFigurePx(skyMin: number, stopped: boolean): number {
+  const moving = Math.max(skyMin * 0.1, Math.min(skyMin * 0.13, 48));
+  return stopped ? moving * 1.8 : moving;
+}
+
+/**
  * Radius of the red mark behind a stopped car, in CSS pixels.
  * It has to reach past the painting, or the car covers the mark and the jam disappears.
  */

@@ -11,10 +11,13 @@ import {
   fieldScale,
   bodyFacing,
   thumbBodyPx,
+  thumbFigurePx,
   thumbJamHalo,
   thumbJamInk,
   thumbCrowd,
   thumbSample,
+  thumbSky,
+  thumbSpritePx,
   thumbSteps,
   figureBody,
   figureTint,
@@ -425,6 +428,22 @@ describe("a shelf card", () => {
     expect(thumbJamInk("phantom-jam-ring-road", 0)).toBe("#6e1020");
     expect(thumbJamInk("hallway-lanes", -1)).toBeNull();
     expect(thumbBodyPx("hallway-lanes", -1)).toBe(thumbBodyPx("hallway-lanes", 1));
+  });
+
+  it("keeps the world in the sky above the title", () => {
+    const sky = thumbSky(320, 400);
+    expect(sky.y + sky.h).toBeLessThanOrEqual(400 * 0.48);
+    expect(sky.w).toBeGreaterThan(320 * 0.8);
+    const flock = thumbSpritePx(Math.min(sky.w, sky.h), 64, true);
+    const gap = Math.min(sky.w, sky.h) / Math.sqrt(64);
+    expect(flock).toBeGreaterThan(gap * 0.8);
+    expect(flock).toBeLessThan(gap * 1.4);
+    const animals = thumbSpritePx(Math.min(sky.w, sky.h), 32, false);
+    expect(animals).toBeGreaterThan(flock);
+    const moving = thumbFigurePx(Math.min(sky.w, sky.h), false);
+    const stopped = thumbFigurePx(Math.min(sky.w, sky.h), true);
+    expect(stopped).toBeGreaterThan(moving);
+    expect(stopped * 0.78).toBeGreaterThan(stopped / 2);
   });
 });
 

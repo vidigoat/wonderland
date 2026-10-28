@@ -1,0 +1,335 @@
+{
+  "id": "green-tide-cove",
+  "version": 1,
+  "concept": "Why do invasive species take over a new place so quickly?",
+  "title": "Green Tide Cove",
+  "tagline": "A few strangers arrive. Soon the bay looks different.",
+  "archetype": "population",
+  "science": {
+    "hiddenLaw": "Invasive takeover is driven by net per-capita growth r_net = b - m (intrinsic birth rate b minus enemy-induced mortality m) under shared carrying capacity K with Lotka-Volterra competition: dN_inv/dt = r_net_inv * N_inv * (1 - (N_inv + alpha*N_nat)/K), dN_nat/dt = r_net_nat * N_nat * (1 - (N_nat + alpha*N_inv)/K). Enemy release (m_inv << m_nat) and high b_inv gives r_net_inv > r_net_nat > 0, so at low density N_inv grows exponentially and competitively excludes N_nat to dominate near K.",
+    "plainStatement": "When a species arrives where its usual predators, parasites and diseases are missing, its death rate drops. If it also reproduces quickly, its population grows exponentially at first. Because invaders and natives share limited food and space, the faster net-growing population crowds out the other and takes over until the habitat is full.",
+    "misconceptions": [
+      "Invasive species take over because individual invaders are physically stronger, larger, or more aggressive fighters than natives, not because of population-level birth and death rates.",
+      "Invasive success is just about being generally 'better adapted' or intentionally harmful, rather than specifically benefiting from missing enemies (enemy release) combined with high reproductive rate.",
+      "A large initial introduction or a degraded habitat alone guarantees invasion regardless of net per-capita growth; ignoring that establishment requires r_net = birth - mortality > 0 and shared resource competition."
+    ],
+    "sources": [
+      {
+        "title": "Keane & Crawley 2002 - Exotic plant invasions and the enemy release hypothesis",
+        "url": "https://doi.org/10.1016/S0169-5347(02)02499-0"
+      },
+      {
+        "title": "Sakai et al. 2001 - The Population Biology of Invasive Species",
+        "url": "https://doi.org/10.1146/annurev.ecolsys.32.081501.114037"
+      },
+      {
+        "title": "Nature Scitable - The Ecology of Invasive Species",
+        "url": "https://www.nature.com/scitable/knowledge/library/the-ecology-of-invasive-species-127392488/"
+      }
+    ]
+  },
+  "story": {
+    "setting": "A coastal cove in late summer. Green newcomers dot the blue native meadow, sharing the same light and food.",
+    "mystery": "Why do a handful of newcomers explode to crowd out thousands of locals?",
+    "goal": "Tweak birth, danger and food to find what lets invaders take over."
+  },
+  "knobs": [
+    {
+      "id": "invasiveBirthRate",
+      "label": "Newcomer birth speed",
+      "kind": "slider",
+      "min": 0.1,
+      "max": 0.8,
+      "step": 0.05,
+      "default": 0.6,
+      "hint": "How fast newcomers make babies"
+    },
+    {
+      "id": "invasiveEnemyMortality",
+      "label": "Newcomer enemy danger",
+      "kind": "slider",
+      "min": 0,
+      "max": 0.4,
+      "step": 0.05,
+      "default": 0.05,
+      "hint": "How often enemies kill newcomers"
+    },
+    {
+      "id": "nativeBirthRate",
+      "label": "Local birth speed",
+      "kind": "slider",
+      "min": 0.1,
+      "max": 0.5,
+      "step": 0.05,
+      "default": 0.3,
+      "hint": "How fast locals make babies"
+    },
+    {
+      "id": "carryingCapacity",
+      "label": "Habitat food limit",
+      "kind": "slider",
+      "min": 2000,
+      "max": 12000,
+      "step": 500,
+      "default": 10000,
+      "hint": "Total food and space available"
+    },
+    {
+      "id": "competitionAlpha",
+      "label": "Crowding overlap",
+      "kind": "slider",
+      "min": 0.5,
+      "max": 1.5,
+      "step": 0.1,
+      "default": 1,
+      "hint": "How much they share food and space"
+    },
+    {
+      "id": "invasiveAggressiveness",
+      "label": "Newcomer fierceness",
+      "kind": "slider",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 1,
+      "hint": "How big and scary they look"
+    }
+  ],
+  "observables": [
+    {
+      "id": "invasive_count",
+      "label": "Newcomers alive",
+      "unit": "individuals",
+      "display": "series"
+    },
+    {
+      "id": "native_count",
+      "label": "Locals alive",
+      "unit": "individuals",
+      "display": "series"
+    },
+    {
+      "id": "total_population",
+      "label": "Total alive",
+      "unit": "individuals",
+      "display": "series"
+    },
+    {
+      "id": "invasive_fraction",
+      "label": "Newcomer share",
+      "unit": "",
+      "display": "series"
+    },
+    {
+      "id": "invader_look_size",
+      "label": "Newcomer look size",
+      "unit": "",
+      "display": "counter"
+    }
+  ],
+  "entities": [
+    {
+      "id": "invader",
+      "label": "Newcomer",
+      "artPrompt": "small bright green algae clump top-down translucent floating in water",
+      "segmentPrompt": "bright green algae clump"
+    },
+    {
+      "id": "native",
+      "label": "Local",
+      "artPrompt": "small soft blue-green native seagrass clump top-down in water",
+      "segmentPrompt": "blue-green native clump"
+    }
+  ],
+  "rules": {
+    "kind": "js",
+    "source": "exports.init = (params, rng) => {\n  const b_inv = params.invasiveBirthRate ?? 0.6;\n  const m_inv = params.invasiveEnemyMortality ?? 0.05;\n  const b_nat = params.nativeBirthRate ?? 0.3;\n  const m_nat = params.nativeEnemyMortality ?? 0.2;\n  const K = params.carryingCapacity ?? 10000;\n  const N_inv0 = params.initial_invasive ?? 10;\n  const N_nat0 = params.initial_native ?? 1000;\n  const alpha = params.competitionAlpha ?? 1;\n  const agg = params.invasiveAggressiveness ?? 1;\n  return { N_inv: N_inv0, N_nat: N_nat0, K, b_inv, m_inv, b_nat, m_nat, alpha, agg, tick: 0 };\n};\nexports.step = (state, params, rng) => {\n  let { N_inv, N_nat, K, b_inv, m_inv, b_nat, m_nat, alpha, agg, tick } = state;\n  if (params) {\n    if (typeof params.carryingCapacity !== 'undefined') K = params.carryingCapacity;\n    if (typeof params.invasiveBirthRate !== 'undefined') b_inv = params.invasiveBirthRate;\n    if (typeof params.invasiveEnemyMortality !== 'undefined') m_inv = params.invasiveEnemyMortality;\n    if (typeof params.nativeBirthRate !== 'undefined') b_nat = params.nativeBirthRate;\n    if (typeof params.nativeEnemyMortality !== 'undefined') m_nat = params.nativeEnemyMortality;\n    if (typeof params.competitionAlpha !== 'undefined') alpha = params.competitionAlpha;\n    if (typeof params.invasiveAggressiveness !== 'undefined') agg = params.invasiveAggressiveness;\n  }\n  const r_inv = b_inv - m_inv;\n  const r_nat = b_nat - m_nat;\n  const diff_inv = Math.max(0, r_inv - r_nat);\n  const diff_nat = Math.max(0, r_nat - r_inv);\n  const alpha_eff_nat = alpha * (1 + diff_inv * 2);\n  const alpha_eff_inv = alpha * (1 + diff_nat * 2);\n  const total_inv_comp = N_inv + alpha_eff_inv * N_nat;\n  const total_nat_comp = N_nat + alpha_eff_nat * N_inv;\n  let growth_inv = 0;\n  let growth_nat = 0;\n  if (r_inv > 0) {\n    growth_inv = r_inv * N_inv * (1 - total_inv_comp / K);\n  } else {\n    growth_inv = r_inv * N_inv;\n  }\n  if (r_nat > 0) {\n    growth_nat = r_nat * N_nat * (1 - total_nat_comp / K);\n  } else {\n    growth_nat = r_nat * N_nat;\n  }\n  if (N_inv > 0 || N_nat > 0) {\n    const sd_inv = Math.sqrt(Math.max(1, Math.abs(growth_inv) + N_inv * 0.05)) * 0.25;\n    const sd_nat = Math.sqrt(Math.max(1, Math.abs(growth_nat) + N_nat * 0.05)) * 0.25;\n    growth_inv += rng.normal(0, sd_inv);\n    growth_nat += rng.normal(0, sd_nat);\n  }\n  let new_N_inv = N_inv + growth_inv;\n  let new_N_nat = N_nat + growth_nat;\n  new_N_inv = Math.max(0, Math.round(new_N_inv));\n  new_N_nat = Math.max(0, Math.round(new_N_nat));\n  const cap = K * 2;\n  if (new_N_inv > cap) new_N_inv = cap;\n  if (new_N_nat > cap) new_N_nat = cap;\n  tick++;\n  return { N_inv: new_N_inv, N_nat: new_N_nat, K, b_inv, m_inv, b_nat, m_nat, alpha, agg, tick };\n};\nexports.observe = (state, params) => {\n  const total = state.N_inv + state.N_nat;\n  const frac = total > 0 ? state.N_inv / total : 0;\n  return { invasive_count: state.N_inv, native_count: state.N_nat, total_population: total, invasive_fraction: frac, invader_look_size: state.agg };\n};\nexports.view = (state, params) => {\n  const total = state.N_inv + state.N_nat;\n  const maxAgents = 300;\n  let visInv, visNat;\n  if (total === 0) { visInv = 0; visNat = 0; } else if (total <= maxAgents) { visInv = state.N_inv; visNat = state.N_nat; } else { visInv = Math.round((state.N_inv / total) * maxAgents); visNat = maxAgents - visInv; }\n  const agents = [];\n  function pseudoRandom(i) { const x = Math.sin(i * 12.9898 + state.tick * 0.13) * 43758.5453; return x - Math.floor(x); }\n  for (let i = 0; i < visInv; i++) { const x = pseudoRandom(i*2); const y = pseudoRandom(i*2+1); agents.push({ id: `inv-${i}`, x, y, tint: 0.25 + (state.agg - 1) / 9 * 0.5, sprite: \"invader\", bubble: state.agg > 6 ? \"!\" : undefined }); }\n  for (let i = 0; i < visNat; i++) { const x = pseudoRandom(1000 + i*2); const y = pseudoRandom(1000 + i*2+1); agents.push({ id: `nat-${i}`, x, y, tint: 0.65, sprite: \"native\" }); }\n  return { kind: \"population\", agents };\n};\n"
+  },
+  "predictions": [
+    {
+      "id": "pred_aggression",
+      "prompt": "You make newcomers look ten times fiercer but keep their birth and death rates equal to locals, what happens?",
+      "options": [
+        "They take over because they win fights",
+        "They stay rare and locals dominate",
+        "Both populations crash to zero"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "invasiveAggressiveness": 10,
+        "invasiveBirthRate": 0.3,
+        "invasiveEnemyMortality": 0.2,
+        "nativeBirthRate": 0.3,
+        "nativeEnemyMortality": 0.2
+      }
+    },
+    {
+      "id": "pred_enemy_release",
+      "prompt": "What if newcomers face the same enemies as locals and reproduce at same speed?",
+      "options": [
+        "They still take over because they are invaders",
+        "They stay rare and locals dominate",
+        "Habitat instantly fills to limit"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "invasiveBirthRate": 0.3,
+        "invasiveEnemyMortality": 0.2,
+        "nativeBirthRate": 0.3,
+        "nativeEnemyMortality": 0.2
+      }
+    },
+    {
+      "id": "pred_large_initial",
+      "prompt": "You dump 500 newcomers at once but they still die often and breed slowly, what happens?",
+      "options": [
+        "They still take over because numbers matter most",
+        "They fade away and locals recover",
+        "Habitat instantly fills to limit"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "initial_invasive": 500,
+        "invasiveBirthRate": 0.2,
+        "invasiveEnemyMortality": 0.25,
+        "nativeBirthRate": 0.3,
+        "nativeEnemyMortality": 0.2
+      }
+    }
+  ],
+  "transfer": {
+    "setup": "A hospital petri dish holds two bacteria sharing sugar. Strain X makes many copies and ignores antibiotic, Strain Y is killed by it.",
+    "params": {
+      "invasiveBirthRate": 0.6,
+      "invasiveEnemyMortality": 0.05,
+      "nativeBirthRate": 0.3,
+      "nativeEnemyMortality": 0.2,
+      "carryingCapacity": 8000,
+      "initial_invasive": 5,
+      "initial_native": 800,
+      "competitionAlpha": 1
+    },
+    "question": "After a week, which strain fills the dish?",
+    "options": [
+      "Strain X dominates near the limit",
+      "Strain Y stays dominant",
+      "Both stay equal and low"
+    ],
+    "answerKey": 0
+  },
+  "checks": [
+    {
+      "id": "exponential_takeover",
+      "description": "With enemy release (low m_inv) and high birth rate, invasive grows exponentially and competitively excludes native to dominate",
+      "params": {
+        "invasiveBirthRate": 0.6,
+        "invasiveEnemyMortality": 0.05,
+        "nativeBirthRate": 0.3,
+        "nativeEnemyMortality": 0.2,
+        "carryingCapacity": 10000,
+        "initial_invasive": 10,
+        "initial_native": 1000,
+        "competitionAlpha": 1
+      },
+      "steps": 300,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "invasive_fraction",
+        "op": "gt",
+        "value": 0.75
+      }
+    },
+    {
+      "id": "control_enemy_release_removed",
+      "description": "Control: when enemy mortality and birth rates are equalized (cause removed), invasive does not dominate",
+      "params": {
+        "invasiveBirthRate": 0.3,
+        "invasiveEnemyMortality": 0.2,
+        "nativeBirthRate": 0.3,
+        "nativeEnemyMortality": 0.2,
+        "carryingCapacity": 10000,
+        "initial_invasive": 10,
+        "initial_native": 1000,
+        "competitionAlpha": 1
+      },
+      "steps": 300,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "invasive_fraction",
+        "op": "lt",
+        "value": 0.15
+      }
+    },
+    {
+      "id": "misconception_aggression_irrelevant",
+      "description": "Increasing individual aggressiveness/size without changing b or m does not cause takeover",
+      "params": {
+        "invasiveBirthRate": 0.3,
+        "invasiveEnemyMortality": 0.2,
+        "nativeBirthRate": 0.3,
+        "nativeEnemyMortality": 0.2,
+        "carryingCapacity": 10000,
+        "initial_invasive": 10,
+        "initial_native": 1000,
+        "competitionAlpha": 1,
+        "invasiveAggressiveness": 10
+      },
+      "steps": 300,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "invasive_fraction",
+        "op": "lt",
+        "value": 0.15
+      }
+    },
+    {
+      "id": "logistic_plateau_at_K",
+      "description": "After initial exponential phase total population plateaus at shared carrying capacity K",
+      "params": {
+        "invasiveBirthRate": 0.6,
+        "invasiveEnemyMortality": 0.05,
+        "nativeBirthRate": 0.3,
+        "nativeEnemyMortality": 0.2,
+        "carryingCapacity": 5000,
+        "initial_invasive": 10,
+        "initial_native": 1000,
+        "competitionAlpha": 1
+      },
+      "steps": 600,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "total_population",
+        "op": "approx",
+        "value": 5000,
+        "tolerance": 400
+      }
+    }
+  ],
+  "art": {
+    "style": "watercolor top-down cove, soft greens and blues, gentle light, hand-painted texture",
+    "background": "shallow cove water with light ripples and sandy patches",
+    "painted": {
+      "background": "/art/green-tide-cove/background.webp",
+      "sprites": {
+        "invader": "/art/green-tide-cove/invader.webp",
+        "native": "/art/green-tide-cove/native.webp"
+      }
+    }
+  }
+}

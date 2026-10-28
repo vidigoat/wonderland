@@ -1,0 +1,296 @@
+{
+  "id": "seasons-tilt-world",
+  "version": 1,
+  "concept": "Why do we have seasons?",
+  "title": "Tilted Seasons",
+  "tagline": "Why does summer flip across the equator?",
+  "archetype": "bodies",
+  "science": {
+    "hiddenLaw": "Earth's axial tilt ε≈23.5° makes solar declination δ vary annually as δ≈ε·sin(orbital longitude), so daily-mean top-of-atmosphere insolation at latitude φ varies as I ∝ (1/r²)[H₀·sinφ·sinδ + cosφ·cosδ·sinH₀] via solar zenith angle and day-length H₀; r-variation from eccentricity is <7% and globally in-phase, so seasons are opposite in opposite hemispheres and vanish if ε=0.",
+    "plainStatement": "We have seasons because Earth's axis is tilted about 23.5 degrees. The tilt tips the Northern Hemisphere toward the Sun in June and away in December (opposite for the Southern Hemisphere), making sunlight hit more directly and days longer in summer and the opposite in winter. Earth's distance from the Sun changes very little and is not the cause.",
+    "misconceptions": [
+      "Seasons are caused by Earth being closer to the Sun in summer and farther in winter due to an elliptical orbit — predicts both hemispheres have summer at perihelion (January) and winter at aphelion.",
+      "The tilt works by changing Earth's distance to the Sun, or the Sun gets stronger/weaker with seasons — predicts no opposite seasons and no latitude dependence of day length.",
+      "If distance caused seasons, all latitudes would warm and cool together and the equator would have large seasons — predicts no systematic opposite phase between 45°N and 45°S and no polar amplification of seasonality."
+    ],
+    "sources": [
+      {
+        "title": "NASA Space Place – What Causes the Seasons?",
+        "url": "https://spaceplace.nasa.gov/seasons/en/"
+      },
+      {
+        "title": "NOAA National Weather Service – The Seasons, the Equinox, and the Solstices",
+        "url": "https://www.weather.gov/cle/seasons"
+      }
+    ]
+  },
+  "story": {
+    "setting": "You hover above a tiny solar system. A sun glows as Earth circles and spins.",
+    "mystery": "Why is it summer in the north when it's winter in the south?",
+    "goal": "Tilt the world and trace sunlight to uncover the seasons."
+  },
+  "knobs": [
+    {
+      "id": "tiltDeg",
+      "label": "Axis tilt",
+      "kind": "slider",
+      "min": 0,
+      "max": 45,
+      "step": 0.5,
+      "default": 23.5,
+      "hint": "Earth leans 23.5 degrees"
+    },
+    {
+      "id": "eccentricity",
+      "label": "Orbit stretch",
+      "kind": "slider",
+      "min": 0,
+      "max": 0.3,
+      "step": 0.005,
+      "default": 0.0167,
+      "hint": "0 is a perfect circle"
+    },
+    {
+      "id": "latitudeDeg",
+      "label": "Your latitude",
+      "kind": "slider",
+      "min": -90,
+      "max": 90,
+      "step": 5,
+      "default": 45,
+      "hint": "North positive, south negative"
+    }
+  ],
+  "observables": [
+    {
+      "id": "daily_insolation",
+      "label": "Daily sunlight",
+      "unit": "units",
+      "display": "series"
+    },
+    {
+      "id": "ground_temp",
+      "label": "Ground warmth",
+      "unit": "degrees",
+      "display": "series"
+    },
+    {
+      "id": "annual_insolation_range",
+      "label": "Yearly sunlight swing",
+      "unit": "",
+      "display": "counter"
+    },
+    {
+      "id": "summer_winter_insolation_ratio_45N",
+      "label": "Summer winter ratio",
+      "unit": "",
+      "display": "counter"
+    },
+    {
+      "id": "june_minus_dec_insolation",
+      "label": "June minus December",
+      "unit": "units",
+      "display": "counter"
+    },
+    {
+      "id": "july_minus_jan_insolation",
+      "label": "July minus January",
+      "unit": "units",
+      "display": "counter"
+    }
+  ],
+  "entities": [
+    {
+      "id": "sun",
+      "label": "Sun",
+      "artPrompt": "bright yellow glowing sun sphere, simple cartoon space style, soft halo",
+      "segmentPrompt": "glowing yellow sun in center"
+    },
+    {
+      "id": "earth",
+      "label": "Earth",
+      "artPrompt": "small blue-green Earth with white clouds, cartoon planet, clean outline",
+      "segmentPrompt": "small Earth planet orbiting sun"
+    }
+  ],
+  "rules": {
+    "kind": "js",
+    "source": "exports.init = (params, rng) => { return { day: 0, currentInsolation: 0, temp: 15, history: [], maxIns: -Infinity, minIns: Infinity, sumIns: 0, juneIns: null, decIns: null, janIns: null, julyIns: null }; }; exports.step = (state, params, rng) => { const tiltRad = params.tiltDeg * Math.PI / 180; const ecc = params.eccentricity; const latRad = params.latitudeDeg * Math.PI / 180; const day = state.day; const M = 2 * Math.PI * day / 365; const rFactor = Math.pow(1 + ecc * Math.cos(M), 2); const lambda = 2 * Math.PI * (day - 80) / 365; const sinDelta = Math.sin(tiltRad) * Math.sin(lambda); const delta = Math.asin(Math.max(-1, Math.min(1, sinDelta))); let H0; const cosH0 = -Math.tan(latRad) * Math.tan(delta); if (cosH0 <= -1) H0 = Math.PI; else if (cosH0 >= 1) H0 = 0; else H0 = Math.acos(cosH0); let term = 0; if (H0 !== 0) { term = H0 * Math.sin(latRad) * Math.sin(delta) + Math.cos(latRad) * Math.cos(delta) * Math.sin(H0); if (term < 0) term = 0; } const insolation = rFactor * term / Math.PI; let temp = state.temp; temp = temp + (insolation * 80 - temp) * 0.08; const history = state.history.slice(); history.push(insolation); if (history.length > 365) history.shift(); let maxIns = state.maxIns; let minIns = state.minIns; if (insolation > maxIns) maxIns = insolation; if (insolation < minIns) minIns = insolation; const sumIns = state.sumIns + insolation; let juneIns = state.juneIns; let decIns = state.decIns; let janIns = state.janIns; let julyIns = state.julyIns; if (day === 172) juneIns = insolation; if (day === 355) decIns = insolation; if (day === 15) janIns = insolation; if (day === 196) julyIns = insolation; return { day: day + 1, currentInsolation: insolation, temp: temp, history: history, maxIns: maxIns, minIns: minIns, sumIns: sumIns, juneIns: juneIns, decIns: decIns, janIns: janIns, julyIns: julyIns }; }; exports.observe = (state, params) => { const hist = state.history; const n = hist.length || 1; const max = state.maxIns === -Infinity ? 0 : state.maxIns; const min = state.minIns === Infinity ? 0 : state.minIns; const mean = state.sumIns / n; const range = mean > 1e-9 ? (max - min) / mean : 0; const ratio = min > 1e-9 ? max / min : 0; const juneMinusDec = (state.juneIns !== null && state.decIns !== null) ? state.juneIns - state.decIns : 0; const julyMinusJan = (state.julyIns !== null && state.janIns !== null) ? state.julyIns - state.janIns : 0; return { daily_insolation: state.currentInsolation, ground_temp: state.temp, annual_insolation_range: range, summer_winter_insolation_ratio_45N: ratio, june_minus_dec_insolation: juneMinusDec, july_minus_jan_insolation: julyMinusJan }; }; exports.view = (state, params) => { const day = state.day; const angle = 2 * Math.PI * day / 365; const ecc = params.eccentricity; const r = 35 * (1 - ecc * ecc) / (1 + ecc * Math.cos(2 * Math.PI * day / 365)); const cx = 50 + r * Math.cos(angle); const cy = 50 + r * Math.sin(angle); const ins = state.currentInsolation; const tNorm = Math.max(0, Math.min(1, (ins - 0.05) / 0.35)); const rCol = Math.round(40 + tNorm * 200); const gCol = Math.round(120 + tNorm * 80); const bCol = Math.round(255 - tNorm * 180); function toHex(v){ let s=v.toString(16); return s.length===1 ? '0'+s : s; } const earthColor = '#' + toHex(rCol) + toHex(gCol) + toHex(bCol); const sunColor = '#ffcc00'; return { kind: 'bodies', bounds: { x: 0, y: 0, w: 100, h: 100 }, bodies: [ { id: 'sun', x: 50, y: 50, radius: 8, color: sunColor }, { id: 'earth', x: cx, y: cy, radius: 4, color: earthColor } ] }; };"
+  },
+  "predictions": [
+    {
+      "id": "distance_vs_tilt",
+      "prompt": "If the orbit becomes perfectly circular but tilt stays, what happens to seasons at 45°N?",
+      "options": [
+        "Seasons vanish completely",
+        "Summer stays much brighter than winter",
+        "Both hemispheres share summer in January"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "tiltDeg": 23.5,
+        "eccentricity": 0,
+        "latitudeDeg": 45
+      }
+    },
+    {
+      "id": "opposite_hemispheres",
+      "prompt": "If you move from 45°N to 45°S with the same tilt, what happens to June versus December sunlight?",
+      "options": [
+        "June stays brighter in both hemispheres",
+        "June bright in north becomes dim in south",
+        "Sunlight becomes equal everywhere"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "tiltDeg": 23.5,
+        "eccentricity": 0,
+        "latitudeDeg": -45
+      }
+    },
+    {
+      "id": "equator_seasons",
+      "prompt": "If you keep the tilt but move to the equator, what happens to the yearly sunlight swing?",
+      "options": [
+        "Swing grows largest at the equator",
+        "Swing shrinks to almost nothing",
+        "Swing stays the same at all latitudes"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "tiltDeg": 23.5,
+        "eccentricity": 0,
+        "latitudeDeg": 0
+      }
+    }
+  ],
+  "transfer": {
+    "setup": "A distant planet has a circular orbit but its axis is tilted 30°. You compare sunlight at 40°N and 40°S over a year.",
+    "params": {
+      "tiltDeg": 30,
+      "eccentricity": 0,
+      "latitudeDeg": 40
+    },
+    "question": "What will the two hemispheres experience?",
+    "options": [
+      "Both peak together when closest to the sun",
+      "North peaks when south is dimmest, and vice versa",
+      "No seasons anywhere on the planet"
+    ],
+    "answerKey": 1
+  },
+  "checks": [
+    {
+      "id": "control_zero_tilt_no_seasons",
+      "description": "Control: with zero tilt and circular orbit, annual insolation range at 45° latitude vanishes — removing tilt removes seasons",
+      "params": {
+        "tiltDeg": 0,
+        "eccentricity": 0,
+        "latitudeDeg": 45
+      },
+      "steps": 365,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "annual_insolation_range",
+        "op": "approx",
+        "value": 0,
+        "tolerance": 0.02
+      }
+    },
+    {
+      "id": "tilt_creates_large_summer_winter_contrast",
+      "description": "With Earth-like tilt 23.5° and circular orbit, summer insolation at 45°N is >2× winter insolation",
+      "params": {
+        "tiltDeg": 23.5,
+        "eccentricity": 0,
+        "latitudeDeg": 45
+      },
+      "steps": 365,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "summer_winter_insolation_ratio_45N",
+        "op": "gt",
+        "value": 2
+      }
+    },
+    {
+      "id": "hemispheres_opposite_north",
+      "description": "Tilt predicts opposite seasons: at 45°N June insolation exceeds December insolation",
+      "params": {
+        "tiltDeg": 23.5,
+        "eccentricity": 0,
+        "latitudeDeg": 45
+      },
+      "steps": 365,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "june_minus_dec_insolation",
+        "op": "gt",
+        "value": 0
+      }
+    },
+    {
+      "id": "hemispheres_opposite_south",
+      "description": "Tilt predicts opposite seasons: at 45°S June insolation is less than December insolation (June is winter in south)",
+      "params": {
+        "tiltDeg": 23.5,
+        "eccentricity": 0,
+        "latitudeDeg": -45
+      },
+      "steps": 365,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "june_minus_dec_insolation",
+        "op": "lt",
+        "value": 0
+      }
+    },
+    {
+      "id": "distance_not_cause_july_vs_jan",
+      "description": "Refutes distance misconception: at 45°N July insolation exceeds January insolation even though Earth is nearer the Sun in January (perihelion), so tilt dominates over distance",
+      "params": {
+        "tiltDeg": 23.5,
+        "eccentricity": 0.0167,
+        "latitudeDeg": 45
+      },
+      "steps": 365,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "july_minus_jan_insolation",
+        "op": "gt",
+        "value": 0
+      }
+    }
+  ],
+  "art": {
+    "style": "clean diagram, soft watercolor space, warm sunlight, minimal",
+    "background": "#0b1020",
+    "painted": {
+      "background": "/art/seasons-tilt-world/background.webp",
+      "sprites": {
+        "sun": "/art/seasons-tilt-world/sun.webp",
+        "earth": "/art/seasons-tilt-world/earth.webp"
+      }
+    }
+  }
+}

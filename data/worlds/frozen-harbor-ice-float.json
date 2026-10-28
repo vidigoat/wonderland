@@ -1,0 +1,285 @@
+{
+  "id": "frozen-harbor-ice-float",
+  "version": 1,
+  "concept": "Why does ice float on water?",
+  "title": "Frozen Harbor",
+  "tagline": "Heavy ice that refuses to sink",
+  "archetype": "bodies",
+  "science": {
+    "hiddenLaw": "Archimedes' principle: F_buoyant = rho_fluid * V_displaced * g, equal to the weight of displaced fluid. At equilibrium floating, F_buoyant = W_object, so V_submerged/V_total = rho_object/rho_fluid, and an object floats iff rho_object < rho_fluid. For H2O, rho_ice ≈ 917 kg/m³ < rho_water ≈ 1000 kg/m³ at 0-4°C because hydrogen bonding forms an open hexagonal crystal that occupies ~9% more volume than liquid water.",
+    "plainStatement": "Ice floats because the same weight of ice takes up more space than liquid water — it is less dense — so the water it pushes aside weighs enough to hold it up.",
+    "misconceptions": [
+      "Floating/sinking depends on absolute weight or mass (heavier things sink, lighter things float) rather than density relative to the fluid.",
+      "Ice floats because of trapped air bubbles, cold temperature, or surface tension, not because its crystal structure makes it intrinsically less dense than liquid water.",
+      "Colder always means denser, so ice must be denser than liquid water and should sink."
+    ],
+    "sources": [
+      {
+        "title": "USGS Water Science School - Water Density",
+        "url": "https://www.usgs.gov/special-topics/water-science-school/science/water-density"
+      },
+      {
+        "title": "Encyclopaedia Britannica - Archimedes' principle",
+        "url": "https://www.britannica.com/science/Archimedes-principle"
+      },
+      {
+        "title": "NASA Climate Kids - Why does ice float?",
+        "url": "https://climatekids.nasa.gov/ask-climate/"
+      }
+    ]
+  },
+  "story": {
+    "setting": "A quiet harbor in winter. A single clear block bobs at the waterline.",
+    "mystery": "Why does solid ice sit high instead of sinking like a stone?",
+    "goal": "Adjust the block and water to discover what decides floating."
+  },
+  "knobs": [
+    {
+      "id": "objectDensity",
+      "label": "Block density",
+      "kind": "slider",
+      "min": 500,
+      "max": 1200,
+      "step": 10,
+      "default": 917,
+      "hint": "How heavy the block is for its size"
+    },
+    {
+      "id": "fluidDensity",
+      "label": "Water density",
+      "kind": "slider",
+      "min": 600,
+      "max": 1300,
+      "step": 10,
+      "default": 1000,
+      "hint": "How heavy the water is"
+    },
+    {
+      "id": "objectVolume",
+      "label": "Block size",
+      "kind": "slider",
+      "min": 0.0005,
+      "max": 0.01,
+      "step": 0.0005,
+      "default": 0.001,
+      "hint": "How big the block is"
+    },
+    {
+      "id": "gravity",
+      "label": "Gravity",
+      "kind": "slider",
+      "min": 1,
+      "max": 20,
+      "step": 0.5,
+      "default": 9.81,
+      "hint": "Strength of downward pull"
+    }
+  ],
+  "observables": [
+    {
+      "id": "submerged_fraction",
+      "label": "Share below water",
+      "unit": "",
+      "display": "series"
+    },
+    {
+      "id": "is_floating",
+      "label": "Floating or sunk",
+      "unit": "",
+      "display": "counter"
+    },
+    {
+      "id": "buoyant_force_to_displaced_weight_ratio",
+      "label": "Lift to displaced weight",
+      "unit": "",
+      "display": "counter"
+    },
+    {
+      "id": "block_depth",
+      "label": "Block height",
+      "unit": "metres",
+      "display": "series"
+    },
+    {
+      "id": "buoyant_force",
+      "label": "Upward push",
+      "unit": "newtons",
+      "display": "series"
+    }
+  ],
+  "entities": [
+    {
+      "id": "ice_block",
+      "label": "Ice block",
+      "artPrompt": "clear ice cube with soft blue tint floating in water, painterly winter light",
+      "segmentPrompt": "ice block cube"
+    },
+    {
+      "id": "water",
+      "label": "Harbor water",
+      "artPrompt": "calm dark winter harbor water with subtle reflections and ice edge",
+      "segmentPrompt": "harbor water"
+    }
+  ],
+  "rules": {
+    "kind": "js",
+    "source": "exports.init = (params, rng) => {\n  const vol = params.objectVolume ?? 0.001;\n  const H = Math.pow(vol, 1/3) * 8;\n  const SURFACE_Y = 5;\n  // Start centered at the waterline so fluidDensity immediately matters (sub=0.5)\n  const y0 = SURFACE_Y;\n  const sub0 = 0.5;\n  const objRho = params.objectDensity ?? 917;\n  const fluidRho = params.fluidDensity ?? 1000;\n  const g = params.gravity ?? 9.81;\n  const mass = objRho * vol;\n  const Vdisp0 = sub0 * vol;\n  const buoy0 = fluidRho * Vdisp0 * g;\n  const weight0 = mass * g;\n  return {\n    y: y0,\n    vy: 0,\n    H: H,\n    vol: vol,\n    sub: sub0,\n    buoy: buoy0,\n    weight: weight0,\n    dispWeight: buoy0,\n    isFloating: 1,\n    time: 0\n  };\n};\nexports.step = (state, params, rng) => {\n  const dt = 0.04;\n  const SURFACE_Y = 5;\n  const vol = params.objectVolume ?? 0.001;\n  const objRho = params.objectDensity ?? 917;\n  const fluidRho = params.fluidDensity ?? 1000;\n  const g = params.gravity ?? 9.81;\n  const H = Math.pow(vol, 1/3) * 8;\n  let y = state.y;\n  let vy = state.vy;\n  const bottom = y - H/2;\n  const top = y + H/2;\n  let sub = 0;\n  if (bottom >= SURFACE_Y) sub = 0;\n  else if (top <= SURFACE_Y) sub = 1;\n  else sub = (SURFACE_Y - bottom) / H;\n  sub = Math.max(0, Math.min(1, sub));\n  const mass = objRho * vol;\n  const weight = mass * g;\n  const Vdisp = sub * vol;\n  const buoy = fluidRho * Vdisp * g;\n  const net = buoy - weight;\n  const dragCoeff = sub > 0 ? 2.5 : 0.3;\n  const drag = -dragCoeff * vy - (0.8 + sub * 1.2) * vy * Math.abs(vy);\n  const a = (net + drag) / mass;\n  vy += a * dt;\n  if (vy > 8) vy = 8;\n  if (vy < -8) vy = -8;\n  y += vy * dt;\n  if (y - H/2 < 0) {\n    y = H/2;\n    if (vy < 0) vy = 0;\n  }\n  if (y + H/2 > 10) {\n    y = 10 - H/2;\n    if (vy > 0) vy = 0;\n  }\n  const bottom2 = y - H/2;\n  const top2 = y + H/2;\n  let sub2 = 0;\n  if (bottom2 >= SURFACE_Y) sub2 = 0;\n  else if (top2 <= SURFACE_Y) sub2 = 1;\n  else sub2 = (SURFACE_Y - bottom2) / H;\n  sub2 = Math.max(0, Math.min(1, sub2));\n  const Vdisp2 = sub2 * vol;\n  const buoy2 = fluidRho * Vdisp2 * g;\n  const dispWeight2 = fluidRho * Vdisp2 * g;\n  const atBottom = (y - H/2 <= 0.001);\n  let isFloating = 0;\n  if (atBottom) {\n    isFloating = 0;\n  } else if (sub2 >= 0.999) {\n    if (weight <= buoy2 + 1e-6) isFloating = 1;\n    else isFloating = 0;\n  } else if (sub2 > 0.01) {\n    isFloating = 1;\n  } else {\n    isFloating = 0;\n  }\n  return {\n    y: y,\n    vy: vy,\n    H: H,\n    vol: vol,\n    sub: sub2,\n    buoy: buoy2,\n    weight: weight,\n    dispWeight: dispWeight2,\n    isFloating: isFloating,\n    time: state.time + dt\n  };\n};\nexports.observe = (state, params) => {\n  const ratio = state.dispWeight > 1e-9 ? state.buoy / state.dispWeight : 1;\n  return {\n    submerged_fraction: state.sub,\n    is_floating: state.isFloating,\n    buoyant_force_to_displaced_weight_ratio: ratio,\n    block_depth: state.y,\n    buoyant_force: state.buoy\n  };\n};\nexports.view = (state, params) => {\n  const BOUNDS_H = 10;\n  const toScreenY = (physY) => BOUNDS_H - physY;\n  const bounds = { x: 0, y: 0, w: 10, h: 10 };\n  const waterScreenY = 9;\n  const waterRadius = 4;\n  const iceScreenY = toScreenY(state.y);\n  const iceRadius = state.H / 2;\n  const atBottom = (state.y - state.H/2 <= 0.01);\n  let iceColor = '#E0F4FF';\n  if (atBottom) iceColor = '#FF6B6B';\n  else if (state.sub > 0.01) iceColor = '#A0E8FF';\n  else iceColor = '#D0E8FF';\n  const bodies = [\n    { id: 'water', x: 5, y: waterScreenY, radius: waterRadius, color: '#4A90E2' },\n    { id: 'ice', x: 5, y: iceScreenY, radius: iceRadius, color: iceColor }\n  ];\n  return { kind: 'bodies', bounds: bounds, bodies: bodies };\n};\n"
+  },
+  "predictions": [
+    {
+      "id": "mass_vs_density",
+      "prompt": "You make the block ten times bigger but keep its density the same. What happens?",
+      "options": [
+        "It sinks because heavier",
+        "It floats with same share below",
+        "It rises higher out of water"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "objectVolume": 0.01
+      }
+    },
+    {
+      "id": "why_ice_floats",
+      "prompt": "Clear bubble-free ice still floats. Why?",
+      "options": [
+        "Trapped air lifts it",
+        "Cold creates surface tension",
+        "Crystal structure makes it less dense"
+      ],
+      "answerKey": 2,
+      "tryWith": {
+        "objectDensity": 950
+      }
+    },
+    {
+      "id": "colder_denser_myth",
+      "prompt": "Water freezes into ice. What happens to its density?",
+      "options": [
+        "It gets denser and should sink",
+        "It gets less dense and floats",
+        "Density does not change"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "objectDensity": 1050
+      }
+    }
+  ],
+  "transfer": {
+    "setup": "A research balloon cabin on a distant moon must float in a cold methane sea. The cabin averages 850 kg per cubic metre, the methane sea is 1020 kg per cubic metre.",
+    "params": {
+      "objectDensity": 850,
+      "fluidDensity": 1020,
+      "objectVolume": 0.002,
+      "gravity": 9.81
+    },
+    "question": "How will the cabin sit in the methane sea?",
+    "options": [
+      "About 83% submerged and floating",
+      "Fully sunk to the bottom",
+      "Barely touching the surface"
+    ],
+    "answerKey": 0
+  },
+  "checks": [
+    {
+      "id": "ice_floats_at_density_ratio",
+      "description": "Ice density 917 in water 1000 floats with ~91.7% submerged, V_sub/V_total = rho_ice/rho_water",
+      "params": {
+        "objectDensity": 917,
+        "fluidDensity": 1000,
+        "objectVolume": 0.001,
+        "gravity": 9.81
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "submerged_fraction",
+        "op": "approx",
+        "value": 0.917,
+        "tolerance": 0.03
+      }
+    },
+    {
+      "id": "control_sink_when_fluid_less_dense",
+      "description": "Control: remove cause - make fluid less dense than ice (800 kg/m3) -> ice no longer floats, it sinks",
+      "params": {
+        "objectDensity": 917,
+        "fluidDensity": 800,
+        "objectVolume": 0.001,
+        "gravity": 9.81
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "is_floating",
+        "op": "eq",
+        "value": 0
+      }
+    },
+    {
+      "id": "archimedes_buoyancy_equals_displaced_weight",
+      "description": "Buoyant force equals weight of displaced fluid at equilibrium",
+      "params": {
+        "objectDensity": 917,
+        "fluidDensity": 1000,
+        "objectVolume": 0.001,
+        "gravity": 9.81
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "buoyant_force_to_displaced_weight_ratio",
+        "op": "approx",
+        "value": 1,
+        "tolerance": 0.02
+      }
+    },
+    {
+      "id": "mass_independence_same_density_same_fraction",
+      "description": "Misconception test: 10x larger mass but same density (917) still floats at same ~91.7% fraction, disproving absolute-weight theory",
+      "params": {
+        "objectDensity": 917,
+        "fluidDensity": 1000,
+        "objectVolume": 0.01,
+        "gravity": 9.81
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "submerged_fraction",
+        "op": "approx",
+        "value": 0.917,
+        "tolerance": 0.03
+      }
+    }
+  ],
+  "art": {
+    "style": "painterly winter harbor with soft cool light",
+    "background": "pale icy blue harbor under overcast sky",
+    "painted": {
+      "background": "/art/frozen-harbor-ice-float/background.webp",
+      "sprites": {
+        "ice_block": "/art/frozen-harbor-ice-float/ice_block.webp",
+        "water": "/art/frozen-harbor-ice-float/water.webp"
+      }
+    }
+  }
+}

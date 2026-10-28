@@ -51,7 +51,7 @@ export function Gates() {
         </ol>
       </div>
       <p className="pipe-foot">
-        When a gate fails, what it saw goes back to the designer, and the repaired world must pass every gate again. When Spark first watched our worlds it caught three real bugs that all our tests had missed. Since then it has sent two new worlds back for repair; one came back right, and one is held out of the gallery.
+        When a gate fails, what it saw goes back to the designer, and the repaired world must pass every gate again. When Spark first watched our worlds it caught three real bugs that all our tests had missed. On fifteen questions from a school science curriculum, eleven became verified worlds and eight passed all four gates, three of them after an automatic repair. The other three stay out of the gallery.
       </p>
     </div>
   );

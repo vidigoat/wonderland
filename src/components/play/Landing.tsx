@@ -369,7 +369,7 @@ export function Landing({
           </h2>
           <p className="land-sub">
             An AI that writes science can get it wrong, or fake it. Ours did. Every world the models write now passes four checks before it reaches you.
-            Of eight fresh questions we had never tried, six became worlds that passed.
+            Fifteen questions from a school science curriculum went in; eight came out as worlds that passed every check.
           </p>
         </div>
         <Gates />

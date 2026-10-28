@@ -1,0 +1,336 @@
+{
+  "id": "sky-furnace",
+  "version": 1,
+  "concept": "How does the greenhouse effect keep the Earth warm?",
+  "title": "Sky Furnace",
+  "tagline": "Sunshine gets in, but heat can't escape",
+  "archetype": "pipeline",
+  "science": {
+    "hiddenLaw": "Planetary surface temperature is set by top-of-atmosphere radiative equilibrium where absorbed solar shortwave equals outgoing longwave to space; greenhouse gases are largely transparent to shortwave but absorb upwelling longwave and re-emit isotropically (half downward), reducing effective emission to space, so the surface and lower atmosphere must warm until increased thermal emission restores balance.",
+    "plainStatement": "Sunlight passes easily through the air as visible light and warms the ground. The warm ground glows in invisible infrared heat rising upward. Greenhouse gases let sunlight in but catch some of that rising infrared and send part of it back down, so the ground must get warmer until it can push enough heat out to space to balance the sunshine coming in.",
+    "misconceptions": [
+      "The greenhouse effect works like a glass greenhouse or blanket that traps warm air and blocks convection, rather than by absorbing infrared radiation and re-emitting it.",
+      "Greenhouse gases trap incoming heat/sunlight from the Sun, rather than trapping outgoing infrared emitted by the warmed surface.",
+      "Greenhouse gases reflect heat like a mirror or generate new heat, rather than absorbing infrared and re-emitting it in all directions including downward; and that the ozone hole causes the greenhouse effect."
+    ],
+    "sources": [
+      {
+        "title": "NASA Climate - What Is the Greenhouse Effect?",
+        "url": "https://climate.nasa.gov/faq/19/what-is-the-greenhouse-effect/"
+      },
+      {
+        "title": "NOAA Global Monitoring Laboratory - The Greenhouse Effect and Greenhouse Gases",
+        "url": "https://gml.noaa.gov/education/info_activities/pdfs/TBI_greenhouse_effect.pdf"
+      },
+      {
+        "title": "UCAR Center for Science Education - The Greenhouse Effect",
+        "url": "https://scied.ucar.edu/learning-zone/how-climate-works/greenhouse-effect"
+      }
+    ]
+  },
+  "story": {
+    "setting": "You hover above Earth with dials for sun, clouds and air. Below, sunlight streams down and invisible heat rises up.",
+    "mystery": "Why does adding clear air make the ground warmer than sunlight alone should?",
+    "goal": "Find how the sky decides the ground's temperature."
+  },
+  "knobs": [
+    {
+      "id": "solarConstant",
+      "label": "Sun brightness",
+      "kind": "slider",
+      "min": 800,
+      "max": 2000,
+      "step": 10,
+      "default": 1361,
+      "hint": "Stronger sun means more energy"
+    },
+    {
+      "id": "albedo",
+      "label": "Reflectivity",
+      "kind": "slider",
+      "min": 0,
+      "max": 0.8,
+      "step": 0.05,
+      "default": 0.3,
+      "hint": "Ice and clouds reflect"
+    },
+    {
+      "id": "lwOpticalDepth",
+      "label": "Greenhouse gases",
+      "kind": "slider",
+      "min": 0,
+      "max": 4,
+      "step": 0.1,
+      "default": 1.5,
+      "hint": "Infrared thickness"
+    },
+    {
+      "id": "swOpticalDepth",
+      "label": "Haze thickness",
+      "kind": "slider",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "default": 0,
+      "hint": "Blocks sunlight"
+    },
+    {
+      "id": "rampLwOpticalDepth",
+      "label": "Ramp gases over time",
+      "kind": "toggle",
+      "default": false,
+      "hint": "Auto increase gases"
+    }
+  ],
+  "observables": [
+    {
+      "id": "surface_temp_K",
+      "label": "Surface temperature",
+      "unit": "kelvin",
+      "display": "series"
+    },
+    {
+      "id": "downwelling_lw_Wm2",
+      "label": "Heat returning down",
+      "unit": "watts per square metre",
+      "display": "series"
+    },
+    {
+      "id": "toa_net_flux_Wm2",
+      "label": "Net heat at top",
+      "unit": "watts per square metre",
+      "display": "series"
+    },
+    {
+      "id": "surface_down_sw_Wm2",
+      "label": "Sunlight reaching ground",
+      "unit": "watts per square metre",
+      "display": "series"
+    }
+  ],
+  "entities": [
+    {
+      "id": "sun",
+      "label": "Sun",
+      "artPrompt": "bright sun disk in dark space, simple icon, warm yellow",
+      "segmentPrompt": "circular sun disk"
+    },
+    {
+      "id": "atmosphere",
+      "label": "Atmosphere",
+      "artPrompt": "translucent blue sky layer wrapping planet, soft glow",
+      "segmentPrompt": "horizontal sky band"
+    },
+    {
+      "id": "surface",
+      "label": "Surface",
+      "artPrompt": "rocky ground surface seen from space, warm brown tones",
+      "segmentPrompt": "ground strip at bottom"
+    }
+  ],
+  "rules": {
+    "kind": "js",
+    "source": "const SIGMA=5.67e-8;\nconst DT=86400;\nconst CS=1.5e7;\nconst CA=1e7;\nfunction getTau(params, state){\n  if(params.rampLwOpticalDepth){\n    const start=params.lwOpticalDepthStart ?? 0.5;\n    const end=params.lwOpticalDepthEnd ?? 3;\n    const duration=10000;\n    const p=Math.min(state.stepCount/duration,1);\n    return start + (end-start)*p;\n  }\n  if(params.lwOpticalDepth !== undefined) return params.lwOpticalDepth;\n  if(state.current_tau !== undefined) return state.current_tau;\n  return 1.5;\n}\nexports.init=(params,rng)=>{\n  const solar=params.solarConstant ?? 1361;\n  const albedo=params.albedo ?? 0.3;\n  const sw_tau=params.swOpticalDepth ?? 0;\n  const tau=getTau(params,{stepCount:0,current_tau:params.lwOpticalDepth ?? 1.5});\n  const ASR_total=solar/4*(1-albedo);\n  const Teff=Math.pow(ASR_total/SIGMA,0.25);\n  const sw_trans=Math.exp(-sw_tau);\n  const ASR_surface=ASR_total*sw_trans;\n  const epsilon=1-Math.exp(-tau);\n  const Ts=Teff;\n  const Ta=Teff*0.95;\n  const DLW=epsilon*SIGMA*Math.pow(Ta,4);\n  const ULW=SIGMA*Math.pow(Ts,4);\n  const OLR=(1-epsilon)*ULW + epsilon*SIGMA*Math.pow(Ta,4);\n  const toa_net=ASR_total-OLR;\n  return {Ts,Ta,stepCount:0,surface_down_sw:ASR_surface,downwelling_lw:DLW,outgoing_lw:OLR,toa_net_flux:toa_net,upwelling_lw:ULW,current_tau:tau};\n};\nexports.step=(state,params,rng)=>{\n  const solar=params.solarConstant ?? 1361;\n  const albedo=params.albedo ?? 0.3;\n  const sw_tau=params.swOpticalDepth ?? 0;\n  const tau=getTau(params,state);\n  const epsilon=1-Math.exp(-tau);\n  const ASR_total=solar/4*(1-albedo);\n  const sw_trans=Math.exp(-sw_tau);\n  const ASR_surface=ASR_total*sw_trans;\n  const ASR_atm=ASR_total*(1-sw_trans);\n  const Ts=state.Ts;\n  const Ta=state.Ta;\n  const DLW=epsilon*SIGMA*Math.pow(Ta,4);\n  const ULW_surface=SIGMA*Math.pow(Ts,4);\n  const OLR=(1-epsilon)*ULW_surface + epsilon*SIGMA*Math.pow(Ta,4);\n  const net_surface=ASR_surface + DLW - ULW_surface;\n  const net_atm=ASR_atm + epsilon*ULW_surface - 2*DLW;\n  let Ts_new=Ts + net_surface*DT/CS;\n  let Ta_new=Ta + net_atm*DT/CA;\n  if(Ts_new<10) Ts_new=10;\n  if(Ta_new<10) Ta_new=10;\n  const DLW_new=epsilon*SIGMA*Math.pow(Ta_new,4);\n  const ULW_new=SIGMA*Math.pow(Ts_new,4);\n  const OLR_new=(1-epsilon)*ULW_new + epsilon*SIGMA*Math.pow(Ta_new,4);\n  const toa_net_new=ASR_total-OLR_new;\n  return {Ts:Ts_new,Ta:Ta_new,stepCount:state.stepCount+1,surface_down_sw:ASR_surface,downwelling_lw:DLW_new,outgoing_lw:OLR_new,toa_net_flux:toa_net_new,upwelling_lw:ULW_new,current_tau:tau};\n};\nexports.observe=(state,params)=>({\n  surface_temp_K: state.Ts,\n  downwelling_lw_Wm2: state.downwelling_lw,\n  toa_net_flux_Wm2: state.toa_net_flux,\n  surface_down_sw_Wm2: state.surface_down_sw\n});\nexports.view=(state,params)=>{\n  const stages=[\"Sun\",\"Atmosphere\",\"Surface\",\"Space\"];\n  const query=`Ground ${Math.round(state.Ts)}K`;\n  const rows=[\n    {id:\"sun_down\",stage:\"Sun\",label:\"Sunlight down\",flux:Math.round(state.surface_down_sw),color:\"#ffcc33\"},\n    {id:\"heat_up\",stage:\"Surface\",label:\"Heat up\",flux:Math.round(state.upwelling_lw),color:\"#ff5533\"},\n    {id:\"heat_down\",stage:\"Atmosphere\",label:\"Heat back down\",flux:Math.round(state.downwelling_lw),color:\"#ff8866\"},\n    {id:\"heat_out\",stage:\"Space\",label:\"Heat to space\",flux:Math.round(state.outgoing_lw),color:\"#66ccff\"}\n  ];\n  return {kind:\"pipeline\",stages,query,rows,error:null};\n};"
+  },
+  "predictions": [
+    {
+      "id": "spectral_selectivity",
+      "prompt": "You thicken greenhouse gases while sunlight stays the same — what happens to sunlight reaching the ground?",
+      "options": [
+        "It drops sharply because gases block sunlight",
+        "It stays almost the same — gases are clear to sunlight",
+        "It rises because gases focus sunlight"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "lwOpticalDepth": 3,
+        "swOpticalDepth": 0
+      }
+    },
+    {
+      "id": "downwelling_increase",
+      "prompt": "You thicken greenhouse gases — what happens to infrared heat returning down to the surface?",
+      "options": [
+        "It stays near zero — gases only trap incoming heat",
+        "It increases — gases absorb heat and re-emit downward",
+        "It reflects like a mirror in one sharp beam"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "lwOpticalDepth": 2.5,
+        "swOpticalDepth": 0
+      }
+    },
+    {
+      "id": "mechanism_not_blanket",
+      "prompt": "You add greenhouse gases but keep the air perfectly still — what happens to surface warming?",
+      "options": [
+        "Warming vanishes — it needed trapped warm air",
+        "Warming remains — it comes from infrared sent back down",
+        "Warming reverses — still air lets heat escape faster"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "lwOpticalDepth": 2,
+        "swOpticalDepth": 0
+      }
+    }
+  ],
+  "transfer": {
+    "setup": "A lab builds a glass chamber with a heater plate for ground and a cold black ceiling for space. The chamber air is clear to visible light but can be made thicker to infrared.",
+    "params": {
+      "solarConstant": 1361,
+      "albedo": 0.3,
+      "lwOpticalDepth": 2,
+      "swOpticalDepth": 0
+    },
+    "question": "If you make the chamber air thicker to infrared while keeping the lamp brightness the same, what happens to the plate temperature?",
+    "options": [
+      "It stays the same — air only blocks convection",
+      "It gets warmer — air catches infrared and sends some back",
+      "It gets colder — thicker air blocks the lamp"
+    ],
+    "answerKey": 1
+  },
+  "checks": [
+    {
+      "id": "warming_above_effective_temp",
+      "description": "With Earth-like insolation and LW opacity >0, equilibrium surface temperature exceeds bare blackbody effective temperature (~255K)",
+      "params": {
+        "solarConstant": 1361,
+        "albedo": 0.3,
+        "lwOpticalDepth": 2,
+        "swOpticalDepth": 0
+      },
+      "steps": 10000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "surface_temp_K",
+        "op": "gt",
+        "value": 270
+      }
+    },
+    {
+      "id": "control_no_greenhouse_returns_to_effective",
+      "description": "Control: with zero LW opacity (no greenhouse gases) surface temperature relaxes to effective temperature ~255K",
+      "params": {
+        "solarConstant": 1361,
+        "albedo": 0.3,
+        "lwOpticalDepth": 0,
+        "swOpticalDepth": 0
+      },
+      "steps": 10000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "surface_temp_K",
+        "op": "approx",
+        "value": 255,
+        "tolerance": 6
+      }
+    },
+    {
+      "id": "control_downwelling_zero_without_ghg",
+      "description": "Control: without greenhouse gases downward longwave at surface is near zero",
+      "params": {
+        "solarConstant": 1361,
+        "albedo": 0.3,
+        "lwOpticalDepth": 0
+      },
+      "steps": 5000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "downwelling_lw_Wm2",
+        "op": "approx",
+        "value": 0,
+        "tolerance": 8
+      }
+    },
+    {
+      "id": "energy_balance_restored_at_toa",
+      "description": "At equilibrium with strong greenhouse effect, net TOA flux is zero: outgoing LW balances absorbed solar",
+      "params": {
+        "solarConstant": 1361,
+        "albedo": 0.3,
+        "lwOpticalDepth": 2.5,
+        "swOpticalDepth": 0
+      },
+      "steps": 10000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "toa_net_flux_Wm2",
+        "op": "approx",
+        "value": 0,
+        "tolerance": 3
+      }
+    },
+    {
+      "id": "spectral_selectivity_sw_unchanged",
+      "description": "Increasing LW opacity does not attenuate incoming solar; surface downwelling SW remains ~239 W/m2 (S0/4*(1-albedo))",
+      "params": {
+        "solarConstant": 1361,
+        "albedo": 0.3,
+        "lwOpticalDepth": 3,
+        "swOpticalDepth": 0
+      },
+      "steps": 5000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "surface_down_sw_Wm2",
+        "op": "approx",
+        "value": 239,
+        "tolerance": 10
+      }
+    },
+    {
+      "id": "dose_response_more_ghg_warmer",
+      "description": "Ramping LW optical depth upward during run causes surface temperature to trend upward",
+      "params": {
+        "solarConstant": 1361,
+        "albedo": 0.3,
+        "lwOpticalDepthStart": 0.5,
+        "lwOpticalDepthEnd": 3,
+        "rampLwOpticalDepth": true
+      },
+      "steps": 10000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "surface_temp_K",
+        "op": "trendUp"
+      }
+    }
+  ],
+  "art": {
+    "style": "clean diagram with glowing flows, dark space background, warm ground",
+    "background": "#0b1020",
+    "painted": {
+      "background": "/art/sky-furnace/background.webp",
+      "sprites": {
+        "sun": "/art/sky-furnace/sun.webp"
+      }
+    }
+  }
+}

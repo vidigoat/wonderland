@@ -1,0 +1,308 @@
+{
+  "id": "crowded-pond",
+  "version": 1,
+  "concept": "Why does a population grow fast and then level off?",
+  "title": "Crowded Pond",
+  "tagline": "Start small, grow fast, then why does the pond push back?",
+  "archetype": "population",
+  "science": {
+    "hiddenLaw": "Logistic growth with carrying capacity: dN/dt = rN(1 - N/K); the per-capita growth rate declines linearly with density (r*(1-N/K)) due to density-dependent resource limitation, producing exponential growth when N << K and zero net growth (births ≈ deaths) as N → K.",
+    "plainStatement": "When a population is small, resources are abundant and it grows fast; as it gets crowded, each individual gets fewer resources so growth slows, until births balance deaths and the population levels off at the carrying capacity the environment can support.",
+    "misconceptions": [
+      "Populations will keep growing exponentially forever as long as birth rate exceeds death rate — ignoring that resources are finite.",
+      "Leveling off means reproduction stops completely (birth rate goes to zero), rather than births continuing but becoming equal to deaths so net growth is zero.",
+      "Carrying capacity (K) is set by the starting population size or is the same everywhere, rather than by environmental resources and density-dependent competition.",
+      "Growth slows only because individuals get old and die more, not because crowding reduces per-capita resources and lowers birth rates / raises death rates in a density-dependent way."
+    ],
+    "sources": [
+      {
+        "title": "Khan Academy - Exponential and logistic growth",
+        "url": "https://www.khanacademy.org/science/ap-biology/ecology-ap/population-ecology/a/exponential-logistic-growth"
+      },
+      {
+        "title": "Nature Scitable - How Populations Grow: The Exponential and Logistic Equations",
+        "url": "https://www.nature.com/scitable/knowledge/library/how-populations-grow-the-exponential-and-logistic-13229468/"
+      },
+      {
+        "title": "Britannica - Logistic growth",
+        "url": "https://www.britannica.com/science/logistic-growth"
+      }
+    ]
+  },
+  "story": {
+    "setting": "A quiet mountain pond in spring. Dozens of bright fish dart among lily pads.",
+    "mystery": "Why does fast growth always stall at the same crowded number?",
+    "goal": "Adjust the pond and watch how crowding changes growth."
+  },
+  "knobs": [
+    {
+      "id": "initialPopulation",
+      "label": "Starting fish",
+      "kind": "slider",
+      "min": 5,
+      "max": 80,
+      "step": 5,
+      "default": 10,
+      "hint": "How many fish at the start"
+    },
+    {
+      "id": "r",
+      "label": "Growth speed",
+      "kind": "slider",
+      "min": 0.05,
+      "max": 0.5,
+      "step": 0.05,
+      "default": 0.3,
+      "hint": "How fast they breed when uncrowded"
+    },
+    {
+      "id": "k",
+      "label": "Pond size",
+      "kind": "slider",
+      "min": 200,
+      "max": 1200,
+      "step": 100,
+      "default": 500,
+      "hint": "Food and space available"
+    },
+    {
+      "id": "densityDependence",
+      "label": "Crowding matters",
+      "kind": "toggle",
+      "default": true,
+      "hint": "Does crowding affect births and deaths"
+    }
+  ],
+  "observables": [
+    {
+      "id": "population_size",
+      "label": "Fish alive",
+      "unit": "fish",
+      "display": "series"
+    },
+    {
+      "id": "per_capita_growth_rate",
+      "label": "Growth per fish",
+      "unit": "per step",
+      "display": "series"
+    },
+    {
+      "id": "birth_rate",
+      "label": "Births per fish",
+      "unit": "per step",
+      "display": "series"
+    },
+    {
+      "id": "death_rate",
+      "label": "Deaths per fish",
+      "unit": "per step",
+      "display": "series"
+    }
+  ],
+  "entities": [
+    {
+      "id": "fish",
+      "label": "Fish",
+      "artPrompt": "small orange cartoon fish side view, simple flat design, bright colors",
+      "segmentPrompt": "orange fish"
+    }
+  ],
+  "rules": {
+    "kind": "js",
+    "source": "exports.init = (params, rng) => {\n  const ip = params.initialPopulation !== undefined ? params.initialPopulation : (params.initial_population !== undefined ? params.initial_population : 10);\n  const K = params.k !== undefined ? params.k : (params.K !== undefined ? params.K : 500);\n  const r = params.r !== undefined ? params.r : 0.3;\n  const dd = params.densityDependence !== undefined ? params.densityDependence : (params.density_dependence !== undefined ? params.density_dependence : true);\n  const visual = Math.min(ip, 300);\n  let agents = [];\n  for (let i=0;i<visual;i++) {\n    agents.push({id:i, x:rng.range(0,1), y:rng.range(0,1), tint:1, sprite:\"fish\"});\n  }\n  const initPerCapita = dd ? r*(1 - ip/K) : r;\n  const initDensity = ip / K;\n  let initBirthPerCapita, initDeathPerCapita;\n  if (dd) {\n    initBirthPerCapita = (r + 0.08) - (r * 0.6 * initDensity);\n    initDeathPerCapita = 0.08 + (r * 0.4 * initDensity);\n  } else {\n    initBirthPerCapita = r + 0.08;\n    initDeathPerCapita = 0.08;\n  }\n  return {N:ip, agents, births_last: initBirthPerCapita * ip, deaths_last: initDeathPerCapita * ip, perCapitaGrowth:initPerCapita, perCapitaGrowthEarly:initPerCapita, perCapitaSumEarly:initPerCapita, perCapitaCountEarly:1, nextId:visual, stepCount:0};\n};\nexports.step = (state, params, rng) => {\n  const K = params.k !== undefined ? params.k : (params.K !== undefined ? params.K : 500);\n  const r = params.r !== undefined ? params.r : 0.3;\n  const dd = params.densityDependence !== undefined ? params.densityDependence : (params.density_dependence !== undefined ? params.density_dependence : true);\n  let N = state.N;\n  if (N <= 0) {\n    return {...state, births_last:0, deaths_last:0, perCapitaGrowth:0, stepCount:state.stepCount+1};\n  }\n  const density = N / K;\n  let birthPerCapita, deathPerCapita;\n  if (dd) {\n    birthPerCapita = (r + 0.08) - (r * 0.6 * density);\n    deathPerCapita = 0.08 + (r * 0.4 * density);\n  } else {\n    birthPerCapita = r + 0.08;\n    deathPerCapita = 0.08;\n  }\n  birthPerCapita = Math.max(0, Math.min(1, birthPerCapita));\n  deathPerCapita = Math.max(0, Math.min(1, deathPerCapita));\n  const expectedPerCapita = birthPerCapita - deathPerCapita;\n  const births = birthPerCapita * N;\n  const deaths = deathPerCapita * N;\n  let newN = N + births - deaths;\n  if (newN < 0) newN = 0;\n  newN = Math.round(newN);\n  const perCapitaGrowth = expectedPerCapita;\n  let perCapitaSumEarly = state.perCapitaSumEarly;\n  let perCapitaCountEarly = state.perCapitaCountEarly;\n  let perCapitaGrowthEarly = state.perCapitaGrowthEarly;\n  if (density < 0.05) {\n    perCapitaSumEarly += perCapitaGrowth;\n    perCapitaCountEarly += 1;\n    perCapitaGrowthEarly = perCapitaSumEarly / perCapitaCountEarly;\n  }\n  let agents = state.agents.slice();\n  const visualTarget = Math.min(newN, 300);\n  const currentVisual = agents.length;\n  if (visualTarget > currentVisual) {\n    for (let i=0;i<visualTarget - currentVisual;i++) {\n      agents.push({id: state.nextId + i, x: rng.range(0,1), y: rng.range(0,1), tint:1, sprite:\"fish\"});\n    }\n  } else if (visualTarget < currentVisual) {\n    agents = agents.slice(0, visualTarget);\n  }\n  const newDensity = newN / K;\n  const tintVal = Math.max(0.25, Math.min(1, 1 - 0.6 * Math.min(1, newDensity)));\n  for (let a of agents) {\n    a.tint = Math.max(0, Math.min(1, tintVal + rng.range(-0.05, 0.05)));\n  }\n  return {N:newN, agents, births_last:births, deaths_last:deaths, perCapitaGrowth, perCapitaGrowthEarly, perCapitaSumEarly, perCapitaCountEarly, nextId: state.nextId + Math.max(0, visualTarget - currentVisual), stepCount: state.stepCount + 1};\n};\nexports.observe = (state, params) => {\n  const N = state.N;\n  const prevN = N - state.births_last + state.deaths_last;\n  const denom = prevN > 0 ? prevN : (N > 0 ? N : 1);\n  const birth_rate = state.births_last / denom;\n  const death_rate = state.deaths_last / denom;\n  const per_capita_growth_rate = state.perCapitaGrowthEarly !== undefined ? state.perCapitaGrowthEarly : state.perCapitaGrowth;\n  return {population_size:N, per_capita_growth_rate:per_capita_growth_rate, birth_rate:birth_rate, death_rate:death_rate};\n};\nexports.view = (state, params) => {\n  return {kind:\"population\", agents:state.agents};\n};"
+  },
+  "predictions": [
+    {
+      "id": "no_limit_myth",
+      "prompt": "If crowding had no effect, what happens to the pond?",
+      "options": [
+        "Growth keeps exploding",
+        "Growth still levels off",
+        "Growth slows as fish age"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "densityDependence": false,
+        "k": 100000
+      }
+    },
+    {
+      "id": "births_at_plateau",
+      "prompt": "When the pond is full and stable, are new fish still born?",
+      "options": [
+        "No, births stop completely",
+        "Yes, births equal deaths",
+        "Only deaths continue"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "k": 800,
+        "initialPopulation": 10,
+        "r": 0.3,
+        "densityDependence": true
+      }
+    },
+    {
+      "id": "carrying_capacity_source",
+      "prompt": "You double the pond's food and space. What happens to the final count?",
+      "options": [
+        "Stays the same everywhere",
+        "Rises to a higher limit",
+        "Falls from overcrowding"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "k": 1000
+      }
+    },
+    {
+      "id": "why_growth_slows",
+      "prompt": "Why does growth slow as the pond gets crowded?",
+      "options": [
+        "Fish just get old and die",
+        "Less food per fish lowers births and raises deaths",
+        "Water gets tired"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "r": 0.5,
+        "k": 500
+      }
+    }
+  ],
+  "transfer": {
+    "setup": "A bioreactor grows yeast for bread. Sugar is limited, same crowding rule as the pond.",
+    "params": {
+      "initialPopulation": 20,
+      "r": 0.4,
+      "k": 900,
+      "densityDependence": true
+    },
+    "question": "What happens as yeast nears the vat's limit?",
+    "options": [
+      "Divisions stop completely",
+      "Net growth nears zero but divisions continue",
+      "Growth stays exponential forever"
+    ],
+    "answerKey": 1
+  },
+  "checks": [
+    {
+      "id": "early_exponential_per_capita_rate",
+      "description": "At low density (N << K) per-capita growth rate ≈ r, showing initial exponential phase",
+      "params": {
+        "initial_population": 10,
+        "r": 0.3,
+        "K": 1000,
+        "density_dependence": true
+      },
+      "steps": 15,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "per_capita_growth_rate",
+        "op": "approx",
+        "value": 0.3,
+        "tolerance": 0.05
+      }
+    },
+    {
+      "id": "plateau_at_K_500",
+      "description": "Population starting well below K levels off near K=500 and net growth approaches zero",
+      "params": {
+        "initial_population": 10,
+        "r": 0.3,
+        "K": 500,
+        "density_dependence": true
+      },
+      "steps": 200,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "population_size",
+        "op": "approx",
+        "value": 500,
+        "tolerance": 30
+      }
+    },
+    {
+      "id": "plateau_scales_with_K",
+      "description": "Higher carrying capacity produces higher final population - plateau at K=1000 vs 500",
+      "params": {
+        "initial_population": 10,
+        "r": 0.3,
+        "K": 1000,
+        "density_dependence": true
+      },
+      "steps": 200,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "population_size",
+        "op": "approx",
+        "value": 1000,
+        "tolerance": 50
+      }
+    },
+    {
+      "id": "control_no_density_dependence_no_plateau",
+      "description": "Control: remove density dependence → leveling off disappears and population keeps growing exponentially",
+      "params": {
+        "initial_population": 10,
+        "r": 0.3,
+        "K": 100000,
+        "density_dependence": false
+      },
+      "steps": 100,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "population_size",
+        "op": "trendUp"
+      }
+    },
+    {
+      "id": "births_continue_at_K",
+      "description": "At carrying capacity net growth is zero but births continue (births ≈ deaths >0), refuting 'reproduction stops' misconception",
+      "params": {
+        "initial_population": 10,
+        "r": 0.3,
+        "K": 500,
+        "density_dependence": true
+      },
+      "steps": 200,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "birth_rate",
+        "op": "gt",
+        "value": 0.05
+      }
+    }
+  ],
+  "art": {
+    "style": "cozy cartoon pond, soft watercolor, bright daylight",
+    "background": "light blue pond with lily pads and reeds",
+    "painted": {
+      "background": "/art/crowded-pond/background.webp",
+      "sprites": {
+        "fish": "/art/crowded-pond/fish.webp"
+      }
+    }
+  }
+}

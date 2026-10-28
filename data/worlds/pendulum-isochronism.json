@@ -1,0 +1,317 @@
+{
+  "id": "pendulum-isochronism",
+  "version": 1,
+  "concept": "Why does a pendulum take the same time to swing whether you push it gently or hard?",
+  "title": "Clockmaker's Pendulum",
+  "tagline": "Tug it soft or hard — the rhythm won't change",
+  "archetype": "bodies",
+  "science": {
+    "hiddenLaw": "For small angular amplitudes where sinθ≈θ, a simple pendulum executes simple harmonic motion with period T = 2π√(L/g) independent of bob mass and amplitude, because the gravitational restoring torque (≈ -mgLθ) is linear in displacement so larger amplitude means proportionally larger distance and proportionally larger restoring acceleration that cancel.",
+    "plainStatement": "For small swings, a pendulum's back-and-forth time is set only by its length and gravity, not by how heavy the bob is or how hard you push it.",
+    "misconceptions": [
+      "A heavier (more massive) bob swings slower or faster — period depends on mass.",
+      "A harder push / larger amplitude makes the period proportionally longer (farther to travel) or shorter (moves faster) — period scales with amplitude or initial velocity.",
+      "Isochronism holds for any large amplitude (e.g., 60-90°) or is caused by air resistance/friction, not by the linear restoring force at small angles."
+    ],
+    "sources": [
+      {
+        "title": "Pendulum (mechanics) — Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Pendulum_(mechanics)"
+      },
+      {
+        "title": "Simple Pendulum — HyperPhysics",
+        "url": "http://hyperphysics.phy-astr.gsu.edu/hbase/pend.html"
+      },
+      {
+        "title": "Pendulum Motion — The Physics Classroom",
+        "url": "https://www.physicsclassroom.com/class/waves/Lesson-0/Pendulum-Motion"
+      }
+    ]
+  },
+  "story": {
+    "setting": "A brass pendulum hangs in a quiet clock tower. Lantern light catches its slow swing.",
+    "mystery": "Why does a gentle tap and a hard push take the same time to swing back?",
+    "goal": "Tune length, weight and pull to find what truly sets the beat."
+  },
+  "knobs": [
+    {
+      "id": "length",
+      "label": "String length",
+      "kind": "slider",
+      "min": 0.5,
+      "max": 4,
+      "step": 0.1,
+      "default": 1,
+      "hint": "Longer string swings slower"
+    },
+    {
+      "id": "g",
+      "label": "Gravity",
+      "kind": "slider",
+      "min": 0,
+      "max": 20,
+      "step": 0.5,
+      "default": 9.81,
+      "hint": "Stronger pull downwards"
+    },
+    {
+      "id": "mass",
+      "label": "Bob weight",
+      "kind": "slider",
+      "min": 0.5,
+      "max": 5,
+      "step": 0.5,
+      "default": 1,
+      "hint": "Heavier bob"
+    },
+    {
+      "id": "initialAngle",
+      "label": "Release angle",
+      "kind": "slider",
+      "min": 0.02,
+      "max": 1.2,
+      "step": 0.02,
+      "default": 0.1,
+      "hint": "How far you pull back"
+    }
+  ],
+  "observables": [
+    {
+      "id": "period",
+      "label": "Swing period",
+      "unit": "seconds",
+      "display": "counter"
+    },
+    {
+      "id": "oscillationCount",
+      "label": "Swings counted",
+      "unit": "swings",
+      "display": "counter"
+    },
+    {
+      "id": "currentAngle",
+      "label": "Bob angle",
+      "unit": "radians",
+      "display": "series"
+    },
+    {
+      "id": "bobSpeed",
+      "label": "Bob speed",
+      "unit": "metres per second",
+      "display": "series"
+    },
+    {
+      "id": "swingEnergy",
+      "label": "Swing energy",
+      "unit": "joules",
+      "display": "series"
+    }
+  ],
+  "entities": [
+    {
+      "id": "pivot",
+      "label": "Pivot",
+      "artPrompt": "small dark brass pivot at top of clock tower",
+      "segmentPrompt": "small circle pivot"
+    },
+    {
+      "id": "bob",
+      "label": "Bob",
+      "artPrompt": "brass pendulum bob hanging from string, warm metallic shine",
+      "segmentPrompt": "large circle bob"
+    }
+  ],
+  "rules": {
+    "kind": "js",
+    "source": "exports.init = (params, rng) => {\n  const dt = 0.002;\n  const theta = params.initialAngle;\n  const omega = 0;\n  const L = params.length;\n  const g = params.g;\n  const mass = params.mass;\n  const energy = 0.5 * mass * Math.pow(L * omega, 2) + mass * g * L * (1 - Math.cos(theta));\n  return {\n    theta: theta,\n    omega: omega,\n    t: 0,\n    dt: dt,\n    lastTheta: theta,\n    lastCrossTime: null,\n    period: 0,\n    oscillationCount: 0,\n    currentAngle: theta,\n    currentSpeed: 0,\n    energy: energy\n  };\n};\nexports.step = (state, params, rng) => {\n  const dt = state.dt;\n  const L = params.length;\n  const g = params.g;\n  const mass = params.mass;\n  let theta = state.theta;\n  let omega = state.omega;\n  let t = state.t;\n  function accel(th) {\n    if (L === 0) return 0;\n    return -(g / L) * Math.sin(th);\n  }\n  let k1_theta = omega;\n  let k1_omega = accel(theta);\n  let th2 = theta + 0.5 * dt * k1_theta;\n  let om2 = omega + 0.5 * dt * k1_omega;\n  let k2_theta = om2;\n  let k2_omega = accel(th2);\n  let th3 = theta + 0.5 * dt * k2_theta;\n  let om3 = omega + 0.5 * dt * k2_omega;\n  let k3_theta = om3;\n  let k3_omega = accel(th3);\n  let th4 = theta + dt * k3_theta;\n  let om4 = omega + dt * k3_omega;\n  let k4_theta = om4;\n  let k4_omega = accel(th4);\n  let newTheta = theta + dt / 6 * (k1_theta + 2 * k2_theta + 2 * k3_theta + k4_theta);\n  let newOmega = omega + dt / 6 * (k1_omega + 2 * k2_omega + 2 * k3_omega + k4_omega);\n  let newT = t + dt;\n  let lastTheta = state.lastTheta;\n  let lastCrossTime = state.lastCrossTime;\n  let period = state.period;\n  let oscillationCount = state.oscillationCount;\n  if (lastTheta < 0 && newTheta >= 0 && newOmega > 0) {\n    let denom = newTheta - lastTheta;\n    let frac = denom !== 0 ? (0 - lastTheta) / denom : 0;\n    let crossTime = t + dt * frac;\n    if (lastCrossTime !== null) {\n      period = crossTime - lastCrossTime;\n      oscillationCount += 1;\n    }\n    lastCrossTime = crossTime;\n  }\n  let currentAngle = newTheta;\n  let currentSpeed = Math.abs(newOmega * L);\n  let energy = 0.5 * mass * Math.pow(L * newOmega, 2) + mass * g * L * (1 - Math.cos(newTheta));\n  return {\n    theta: newTheta,\n    omega: newOmega,\n    t: newT,\n    dt: dt,\n    lastTheta: newTheta,\n    lastCrossTime: lastCrossTime,\n    period: period,\n    oscillationCount: oscillationCount,\n    currentAngle: currentAngle,\n    currentSpeed: currentSpeed,\n    energy: energy\n  };\n};\nexports.observe = (state, params) => {\n  return {\n    period: state.period,\n    oscillationCount: state.oscillationCount,\n    currentAngle: state.currentAngle,\n    bobSpeed: state.currentSpeed,\n    swingEnergy: state.energy\n  };\n};\nexports.view = (state, params) => {\n  const L = params.length;\n  const pivotX = 5;\n  const pivotY = 8.5;\n  const scale = 1.6;\n  const absT = Math.abs(state.theta);\n  let gain;\n  if (absT <= 0.25) gain = 3.5;\n  else if (absT >= 1.2) gain = 1;\n  else gain = 3.5 - (absT - 0.25) * (2.5 / 0.95);\n  const displayTheta = state.theta * gain;\n  const bobX = pivotX + Math.sin(displayTheta) * L * scale;\n  const bobY = pivotY - Math.cos(displayTheta) * L * scale;\n  const bobRadius = 0.25 + 0.08 * params.mass;\n  const speed = state.currentSpeed;\n  const norm = Math.min(1, speed / 1.6);\n  const r1 = 58, g1 = 123, b1 = 213;\n  const r2 = 231, g2 = 76, b2 = 60;\n  const r = Math.round(r1 + (r2 - r1) * norm);\n  const gcol = Math.round(g1 + (g2 - g1) * norm);\n  const b = Math.round(b1 + (b2 - b1) * norm);\n  const toHex = (v) => v.toString(16).padStart(2, '0');\n  const color = '#' + toHex(r) + toHex(gcol) + toHex(b);\n  const bodies = [];\n  bodies.push({ id: 'pivot', x: pivotX, y: pivotY, radius: 0.14, color: '#2c3e50' });\n  for (let i = 1; i <= 4; i++) {\n    const f = i / 5;\n    const sx = pivotX + Math.sin(displayTheta) * L * scale * f;\n    const sy = pivotY - Math.cos(displayTheta) * L * scale * f;\n    bodies.push({ id: 'string' + i, x: sx, y: sy, radius: 0.06, color: '#b08d57' });\n  }\n  bodies.push({ id: 'bob', x: bobX, y: bobY, radius: bobRadius, color: color });\n  return {\n    kind: 'bodies',\n    bounds: { x: 0, y: 0, w: 10, h: 10 },\n    bodies: bodies\n  };\n};"
+  },
+  "predictions": [
+    {
+      "id": "mass_effect",
+      "prompt": "You double the bob weight but keep length and pull the same. What happens to the swing period?",
+      "options": [
+        "Stays the same",
+        "Gets noticeably longer",
+        "Gets noticeably shorter"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "mass": 2
+      }
+    },
+    {
+      "id": "amplitude_small",
+      "prompt": "You pull the bob twice as far, but still a small angle. What happens to the period?",
+      "options": [
+        "Stays almost the same",
+        "Becomes twice as long",
+        "Becomes half as long"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "initialAngle": 0.2
+      }
+    },
+    {
+      "id": "length_effect",
+      "prompt": "You make the string four times longer. What happens to the period?",
+      "options": [
+        "Period doubles",
+        "Period quadruples",
+        "Period stays same"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "length": 4
+      }
+    },
+    {
+      "id": "large_amplitude",
+      "prompt": "You pull the bob to a very large angle near 70 degrees. What happens?",
+      "options": [
+        "Period stays exactly the same",
+        "Period gets a bit longer",
+        "Period gets much shorter"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "initialAngle": 1.2
+      }
+    }
+  ],
+  "transfer": {
+    "setup": "An astronaut hangs the same pendulum in a lunar habitat where gravity is 1.62 and tests two bobs of different weights with the same length and small pull.",
+    "params": {
+      "length": 1,
+      "g": 1.62,
+      "mass": 3,
+      "initialAngle": 0.1
+    },
+    "question": "How will the lunar swing compare to Earth, and will the heavy bob differ from the light one?",
+    "options": [
+      "Longer period, both bobs same",
+      "Shorter period, heavy is slower",
+      "Same period, heavy is faster"
+    ],
+    "answerKey": 0
+  },
+  "checks": [
+    {
+      "id": "period_small_amplitude",
+      "description": "Small-angle isochronism: length 1.0m, g=9.81, 5° release gives T≈2.01s",
+      "params": {
+        "length": 1,
+        "g": 9.81,
+        "mass": 1,
+        "initialAngle": 0.087
+      },
+      "steps": 20000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "period",
+        "op": "approx",
+        "value": 2.006,
+        "tolerance": 0.08
+      }
+    },
+    {
+      "id": "period_larger_small_amplitude",
+      "description": "Same period for larger small-angle: length 1.0m, g=9.81, 20° release still T≈2.02s, proving period flat vs amplitude",
+      "params": {
+        "length": 1,
+        "g": 9.81,
+        "mass": 1,
+        "initialAngle": 0.349
+      },
+      "steps": 20000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "period",
+        "op": "approx",
+        "value": 2.006,
+        "tolerance": 0.08
+      }
+    },
+    {
+      "id": "period_mass_independence",
+      "description": "Mass does not affect period: 5kg bob, same length 1.0m, g=9.81, 6° release still T≈2.01s",
+      "params": {
+        "length": 1,
+        "g": 9.81,
+        "mass": 5,
+        "initialAngle": 0.1
+      },
+      "steps": 20000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "period",
+        "op": "approx",
+        "value": 2.006,
+        "tolerance": 0.08
+      }
+    },
+    {
+      "id": "period_length_dependence",
+      "description": "Period scales as sqrt(L/g): quadrupling length to 4.0m doubles period to ≈4.01s",
+      "params": {
+        "length": 4,
+        "g": 9.81,
+        "mass": 1,
+        "initialAngle": 0.1
+      },
+      "steps": 20000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "period",
+        "op": "approx",
+        "value": 4.012,
+        "tolerance": 0.1
+      }
+    },
+    {
+      "id": "control_no_gravity_no_oscillation",
+      "description": "Control: remove cause (g=0) → no restoring torque → no oscillation",
+      "params": {
+        "length": 1,
+        "g": 0,
+        "mass": 1,
+        "initialAngle": 0.1
+      },
+      "steps": 20000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "oscillationCount",
+        "op": "eq",
+        "value": 0
+      }
+    }
+  ],
+  "art": {
+    "style": "warm watercolor, brass and wood clock tower interior, soft lantern light",
+    "background": "quiet clock tower with wooden beams and brass gears",
+    "painted": {
+      "background": "/art/pendulum-isochronism/background.webp",
+      "sprites": {}
+    }
+  }
+}

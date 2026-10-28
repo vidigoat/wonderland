@@ -83,7 +83,9 @@ Every screen says where you are: a bar across the top shows **what you're findin
 
 ## The worlds
 
-**Five worlds were built by hand** to set the bar. **The other seven were written and painted by Meta's models** from a single typed question, and saved because their science checks passed on every seed. Six of those seven were later **repaired by hand**: we found the models had faked some readings, and the checks hadn't noticed. [What happened, and the check we added so it can't happen again](#when-the-checks-were-fooled).
+**Twenty-four worlds, five built by hand.** The other nineteen were written and painted by Meta's models from a single typed question.
+- **The first seven** were saved because their science checks passed on every seed. Six of them were later **repaired by hand**: we found the models had faked some readings, and the checks hadn't noticed. [What happened, and the check we added so it can't happen again](#when-the-checks-were-fooled).
+- **The other twelve** come from the fresh-question eval and the Lab. They passed all four gates with no hand repairs; four were fixed by the automatic repair loop.
 
 | World | The question | What's really running |
 |---|---|---|
@@ -100,8 +102,28 @@ Every screen says where you are: a bar across the top shows **what you're findin
 | *Marching Dunes* | Why do sand dunes move? | Wind carries sand up one face and it avalanches down the other (barchan migration). **Written by Muse Spark Open**, then repaired by hand. |
 | *Murmuration Sky* | Why do starlings fly in huge flocks without crashing? | Local flocking rules (separation, alignment, cohesion). **Written live by Muse Spark Open**, then repaired by hand. |
 
+<details>
+<summary><b>The twelve newest worlds</b>: from the eval and the Lab, no hand repairs</summary>
+
+| World | The question |
+|---|---|
+| *Clockmaker's Pendulum* | Why does a pendulum take the same time to swing whether you push it gently or hard? (repaired by the loop) |
+| *Frozen Harbor* | Why does ice float on water? (repaired by the loop) |
+| *Tilted Seasons* | Why do we have seasons? |
+| *Sky River Loop* | How does the water cycle move water around the Earth? (repaired by the loop) |
+| *Sky Furnace* | How does the greenhouse effect keep the Earth warm? |
+| *Crowded Pond* | Why does a population grow fast and then level off? |
+| *The Pea Garden* | How are traits passed from parents to their offspring? |
+| *Green Tide Cove* | Why do invasive species take over a new place so quickly? |
+| *Sugar Cube Mystery* | Why does sugar dissolve faster in hot water? (repaired by the loop) |
+| *Harvest Market* | Why do prices rise when a harvest fails? |
+| *The Locked Moon* | Why does the Moon always show us the same face? |
+| *Shivering Circle* | Why do penguins huddle in a rotating crowd? |
+
+</details>
+
 <p align="center">
-  <img src="docs/readme/worlds.webp" alt="All twelve worlds, as they look in the game" width="100%" />
+  <img src="docs/readme/worlds.webp" alt="Twelve of the worlds, as they look in the game" width="100%" />
 </p>
 
 Every painting and every creature above was made by **Muse Image** and cut out by **SAM 3.1**. The moths and townspeople are painted pale on purpose, so the game can still tint them by darkness or worry: the colour *is* the science.
@@ -199,9 +221,15 @@ We repaired those worlds by hand so each reading comes from the simulation. Othe
 
 We asked eight fresh questions, chosen before the run and unlike any world already built, through the full pipeline with all three gates (`pnpm eval`, 28 Oct). **Six of eight became verified worlds**: sugar dissolving in hot water, sand-pile avalanches, penguin huddles, the Moon's locked face, harvest prices and rumours against corrections. Ant trails and fish schools failed after three repairs. The median verified world took about 4 minutes and $0.28 in model calls. Every row is in [`docs/eval-results.md`](docs/eval-results.md).
 
+### The Lab: a curriculum's worth of questions
+
+We fixed fifteen phenomena from a middle-school science curriculum before running anything ([`scripts/lab-questions.ts`](scripts/lab-questions.ts)): physical, earth and space, and life science, plus one everyday system. Then `pnpm lab` sent every one through the whole pipeline. **11 of 15 became verified worlds, and 8 passed all four gates and joined the gallery**, three of them through the automatic repair loop. The median verified world took about three minutes. The whole Lab, repairs and watching included, cost about $5.40 in model calls. [PhET](https://phet.colorado.edu/), the gold standard, has built about 150 simulations in twenty years. Every row, including the four failures and the three worlds held back, is in [`docs/lab-results.md`](docs/lab-results.md).
+
 ### A model that watches its own worlds
 
-Muse Spark 1.3 watched every world run: six frames, from start to end, with the starting controls and with one control moved. It judged whether the picture shows what the hidden law predicts. On its first pass it flagged three worlds, and all three were real bugs that none of our tests had caught: hares that appeared as blank outlines, fireflies whose flashing couldn't be seen, and dunes sized so that the wind seemed to do nothing. All three are fixed. The whole pass cost under $0.20. Details: [`docs/playtest-results.md`](docs/playtest-results.md).
+Muse Spark 1.3 watched every world run: six frames, from start to end, with the starting controls and with one control moved. It judged whether the picture shows what the hidden law predicts. On its first pass it flagged three worlds, and all three were real bugs that none of our tests had caught: hares that appeared as blank outlines, fireflies whose flashing couldn't be seen, and dunes sized so that the wind seemed to do nothing. All three are fixed. The whole pass cost under $0.20.
+
+Now the loop is closed. When Spark flags a model-written world, its notes go back to the designer on the server (`/api/repair`), the repaired world must pass every gate again, and Spark watches it again, at most twice per world. **SAM 3.1** counts the figures in the picture as a second opinion: on Rumour Town's square it counted 35 where the stage drew 33. Every world in the gallery today, all 24, looks right to Spark. Details: [`docs/playtest-results.md`](docs/playtest-results.md).
 
 ### How a world is painted
 

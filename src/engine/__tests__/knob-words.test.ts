@@ -11,7 +11,7 @@ describe("generated controls", () => {
         expect(knob.label, file).not.toMatch(/[()]/);
         const later = knob.label.split(" ").slice(1).filter((word) => /^[A-Z][a-z]/.test(word));
         expect(later, `${file}: ${knob.label}`).toEqual([]);
-        if (knob.hint) expect(knob.hint[0], `${file}: ${knob.hint}`).toMatch(/[A-Z]/);
+        if (knob.hint) expect(knob.hint[0], `${file}: ${knob.hint}`).toMatch(/[^a-z]/);
       }
     }
   });

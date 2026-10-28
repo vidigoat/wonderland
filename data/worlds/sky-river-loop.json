@@ -1,0 +1,351 @@
+{
+  "id": "sky-river-loop",
+  "version": 1,
+  "concept": "How does the water cycle move water around the Earth?",
+  "title": "Sky River Loop",
+  "tagline": "Water vanishes into air, then falls again",
+  "archetype": "bodies",
+  "science": {
+    "hiddenLaw": "In a closed Earth system total water mass is conserved while solar thermal energy drives evaporation (liquid → invisible water vapor) at a rate that increases with available energy/temperature, and cooling of moist air below its saturation (dew-point) temperature drives condensation to liquid droplets/ice and precipitation (vapor → liquid/solid), cycling water through ocean/land ↔ atmosphere reservoirs.",
+    "plainStatement": "The Sun's heat turns liquid water into invisible vapor that rises; when that moist air cools high up it condenses into cloud droplets and falls as rain or snow. The same water just cycles around — never destroyed or created — powered by heating below and cooling above.",
+    "misconceptions": [
+      "Water disappears when it evaporates and is newly created when it rains — mass is not conserved.",
+      "Evaporation only happens at boiling (100°C); water cannot become vapor at room temperature.",
+      "Clouds are made of water vapor gas and rain falls because clouds get too heavy, get squeezed, or are blown together — not because vapor cools and condenses.",
+      "The water cycle has a start/end or is driven by wind, not by the Sun's energy input and subsequent cooling aloft."
+    ],
+    "sources": [
+      {
+        "title": "USGS - Fundamentals of the Water Cycle",
+        "url": "https://www.usgs.gov/special-topics/water-science-school/science/fundamentals-water-cycle"
+      },
+      {
+        "title": "NASA Earth Observatory - The Water Cycle",
+        "url": "https://earthobservatory.nasa.gov/features/WaterCycle"
+      },
+      {
+        "title": "NOAA JetStream - The Hydrologic Cycle",
+        "url": "https://www.weather.gov/jetstream/hydro"
+      }
+    ]
+  },
+  "story": {
+    "setting": "A bright coastal valley in cross-section with ocean, land and sky. You watch water move between sea, air and clouds.",
+    "mystery": "Where does vanished water go, and why does rain return?",
+    "goal": "Tune sun and temperatures to trace the hidden loop."
+  },
+  "knobs": [
+    {
+      "id": "solarEnergy",
+      "label": "Sun strength",
+      "kind": "slider",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.5,
+      "hint": "Brighter sun adds heat below"
+    },
+    {
+      "id": "surfaceTemp",
+      "label": "Ground warmth",
+      "kind": "slider",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "default": 20,
+      "hint": "Warm ground helps lift water"
+    },
+    {
+      "id": "upperAirTemp",
+      "label": "High air chill",
+      "kind": "slider",
+      "min": -10,
+      "max": 30,
+      "step": 1,
+      "default": 5,
+      "hint": "Colder air high up makes droplets"
+    }
+  ],
+  "observables": [
+    {
+      "id": "evaporationRate",
+      "label": "Water lifting to air",
+      "unit": "units per step",
+      "display": "series"
+    },
+    {
+      "id": "precipitationRate",
+      "label": "Rain falling down",
+      "unit": "units per step",
+      "display": "series"
+    },
+    {
+      "id": "totalWater",
+      "label": "Total water counted",
+      "unit": "units",
+      "display": "counter"
+    },
+    {
+      "id": "oceanWater",
+      "label": "Sea and lakes",
+      "unit": "units",
+      "display": "series"
+    },
+    {
+      "id": "vaporAmount",
+      "label": "Invisible air vapor",
+      "unit": "units",
+      "display": "series"
+    },
+    {
+      "id": "cloudWater",
+      "label": "Cloud droplets",
+      "unit": "units",
+      "display": "series"
+    }
+  ],
+  "entities": [
+    {
+      "id": "ocean",
+      "label": "Ocean",
+      "artPrompt": "wide blue ocean with gentle waves top view",
+      "segmentPrompt": "ocean water area with waves"
+    },
+    {
+      "id": "vapor",
+      "label": "Vapor",
+      "artPrompt": "faint mist swirls in clear air",
+      "segmentPrompt": "invisible vapor region in sky"
+    },
+    {
+      "id": "cloud",
+      "label": "Cloud",
+      "artPrompt": "fluffy white cloud cluster in blue sky",
+      "segmentPrompt": "cloud mass of droplets"
+    },
+    {
+      "id": "rain",
+      "label": "Rain",
+      "artPrompt": "falling blue raindrops streaks",
+      "segmentPrompt": "rain streaks falling down"
+    },
+    {
+      "id": "sun",
+      "label": "Sun",
+      "artPrompt": "bright yellow sun with soft rays",
+      "segmentPrompt": "sun disc with rays"
+    },
+    {
+      "id": "land",
+      "label": "Land",
+      "artPrompt": "green coastal hill with vegetation",
+      "segmentPrompt": "land hill area"
+    }
+  ],
+  "rules": {
+    "kind": "js",
+    "source": "exports.init = (params, rng) => {\n  const total = params.initialTotalWater ?? 1000;\n  const initVapor = params.initialVapor ?? 10;\n  const ocean = Math.max(0, total - initVapor);\n  const vapor = Math.max(0, Math.min(total, initVapor));\n  return { ocean, vapor, cloud: 0, land: 0, total, evapRate: 0, precipRate: 0, time: 0 };\n};\nexports.step = (state, params, rng) => {\n  const solarEnergy = params.solarEnergy ?? 0.5;\n  const surfaceTemp = params.surfaceTemp ?? 20;\n  const upperAirTemp = params.upperAirTemp ?? 5;\n  let { ocean, vapor, cloud, land, total, evapRate, precipRate, time } = state;\n  const tempFactor = Math.max(0.1, 1 + 0.04 * (surfaceTemp - 20));\n  const evapPotential = solarEnergy * 0.35 * tempFactor;\n  let evapAmount = evapPotential;\n  const liquid = ocean + land;\n  if (evapAmount > liquid) evapAmount = liquid;\n  if (evapAmount < 0) evapAmount = 0;\n  let oceanEvap = 0;\n  let landEvap = 0;\n  if (liquid > 1e-9) {\n    oceanEvap = evapAmount * (ocean / liquid);\n    landEvap = evapAmount - oceanEvap;\n  }\n  const sat = 20 * Math.exp(0.07 * upperAirTemp);\n  const excess = Math.max(0, vapor - sat);\n  let condAmount = excess * 0.14;\n  if (condAmount > vapor) condAmount = vapor;\n  let precipFactor = 0.06 + 0.06 * (1 - (upperAirTemp + 10) / 40);\n  if (precipFactor < 0.02) precipFactor = 0.02;\n  if (precipFactor > 0.12) precipFactor = 0.12;\n  let precipAmount = cloud * precipFactor;\n  if (precipAmount > cloud) precipAmount = cloud;\n  let runoffAmount = land * 0.04;\n  if (runoffAmount > land) runoffAmount = land;\n  let newOcean = ocean - oceanEvap + precipAmount * 0.65 + runoffAmount;\n  let newLand = land - landEvap + precipAmount * 0.35 - runoffAmount;\n  let newVapor = vapor + evapAmount - condAmount;\n  let newCloud = cloud + condAmount - precipAmount;\n  newOcean = Math.max(0, newOcean);\n  newLand = Math.max(0, newLand);\n  newVapor = Math.max(0, newVapor);\n  newCloud = Math.max(0, newCloud);\n  const sum = newOcean + newLand + newVapor + newCloud;\n  const diff = total - sum;\n  newOcean += diff;\n  const newEvapRate = evapRate * 0.88 + evapAmount * 0.12;\n  const newPrecipRate = precipRate * 0.88 + precipAmount * 0.12;\n  return { ocean: newOcean, vapor: newVapor, cloud: newCloud, land: newLand, total, evapRate: newEvapRate, precipRate: newPrecipRate, time: time + 1 };\n};\nexports.observe = (state, params) => {\n  return {\n    evaporationRate: state.evapRate,\n    precipitationRate: state.precipRate,\n    totalWater: state.ocean + state.vapor + state.cloud + state.land,\n    oceanWater: state.ocean,\n    vaporAmount: state.vapor,\n    cloudWater: state.cloud\n  };\n};\nexports.view = (state, params) => {\n  const solarEnergy = params.solarEnergy ?? 0.5;\n  const bounds = { x: 0, y: 0, w: 100, h: 60 };\n  const bodies = [];\n  const total = state.total;\n  const oceanProp = (state.ocean + state.land) / total;\n  const oceanHeight = 5 + oceanProp * 15;\n  const nOceanCols = 12;\n  for (let ix = 0; ix < nOceanCols; ix++) {\n    const x = 8 + ix * 6.5;\n    const wave = Math.sin(state.time * 0.12 + ix * 0.9) * 0.6;\n    const y = oceanHeight * 0.55 + wave;\n    bodies.push({ id: 'ocean-' + ix, x, y, radius: 3.4, color: '#1e90ff' });\n    bodies.push({ id: 'ocean2-' + ix, x: x + 2.2, y: y * 0.45, radius: 2.6, color: '#3aa0ff' });\n  }\n  for (let ix = 0; ix < 6; ix++) {\n    const x = 46 + ix * 5.5;\n    const y = oceanHeight + 2.2 + Math.sin(ix * 0.8) * 1.2;\n    bodies.push({ id: 'land-' + ix, x, y, radius: 3.2, color: '#8fbc6b' });\n    bodies.push({ id: 'land2-' + ix, x: x + 1, y: y - 0.8, radius: 2.4, color: '#a8d080' });\n  }\n  const sunX = 84;\n  const sunY = 52;\n  const sunRadius = 4.2 + solarEnergy * 3.8;\n  const sunColor = solarEnergy > 0.65 ? '#ffdd33' : solarEnergy > 0.3 ? '#ffcc44' : '#ffbb66';\n  bodies.push({ id: 'sun', x: sunX, y: sunY, radius: sunRadius, color: sunColor });\n  if (solarEnergy > 0.15) {\n    const rayCount = Math.round(solarEnergy * 6);\n    for (let i = 0; i < rayCount; i++) {\n      const angle = (i / rayCount) * Math.PI * 2 + state.time * 0.06;\n      const rx = sunX + Math.cos(angle) * (sunRadius + 2.8);\n      const ry = sunY + Math.sin(angle) * (sunRadius + 2.8);\n      if (rx > 5 && rx < 95 && ry > 5 && ry < 58) {\n        bodies.push({ id: 'ray-' + i, x: rx, y: ry, radius: 1.1, color: '#ffe680' });\n      }\n    }\n  }\n  const vaporCount = Math.min(28, Math.max(0, Math.round(state.vapor / 10 + state.evapRate * 28)));\n  for (let i = 0; i < vaporCount; i++) {\n    const baseX = 10 + (i * 13.7 % 72);\n    const drift = Math.sin(state.time * 0.08 + i * 1.1) * 1.6;\n    const x = baseX + drift;\n    const cycle = (state.time * 0.45 + i * 7) % 24;\n    const y = oceanHeight + 2 + cycle;\n    if (y < 36 && x > 6 && x < 94) {\n      const col = state.evapRate > 0.02 ? '#b8e6f5' : '#c8dde8';\n      bodies.push({ id: 'vapor-' + i, x, y, radius: 1.5, color: col });\n    }\n  }\n  const nCloudBodies = Math.min(20, Math.max(0, Math.round(state.cloud * 0.9)));\n  for (let i = 0; i < nCloudBodies; i++) {\n    const baseX = 22 + (i * 11.3 % 58);\n    const baseY = 39 + (i % 3) * 2.6;\n    const x = baseX + Math.sin(state.time * 0.025 + i * 0.7) * 2.2;\n    const y = baseY + Math.sin(state.time * 0.03 + i) * 0.8;\n    const r = 2.6 + (state.cloud / 35) * 1.4 + (i % 2) * 0.4;\n    const col = state.cloud > 25 ? '#e8e8e8' : '#ffffff';\n    bodies.push({ id: 'cloud-' + i, x, y, radius: r, color: col });\n    if (i % 2 === 0) {\n      bodies.push({ id: 'cloudpuff-' + i, x: x + 1.4, y: y + 0.9, radius: r * 0.75, color: '#f5f5f5' });\n    }\n  }\n  const rainCount = Math.min(26, Math.round(state.precipRate * 38));\n  for (let i = 0; i < rainCount; i++) {\n    const baseX = 24 + (i * 9.7 % 56);\n    const x = baseX + Math.sin(state.time * 0.12 + i) * 0.9;\n    const cycle = (state.time * 1.3 + i * 5) % 27;\n    const y = 38 - cycle;\n    if (y > oceanHeight + 1 && y < 38 && x > 8 && x < 92) {\n      bodies.push({ id: 'rain-' + i, x, y, radius: 1.3, color: '#0066cc' });\n      bodies.push({ id: 'raintrail-' + i, x, y: y + 1.1, radius: 0.85, color: '#3399ff' });\n    }\n  }\n  return { kind: 'bodies', bounds, bodies };\n};\n"
+  },
+  "predictions": [
+    {
+      "id": "total_conserved",
+      "prompt": "What happens to total water after 1000 steps with strong sun and cold high air?",
+      "options": [
+        "Stays at 1000, just moves around",
+        "Water is lost when it evaporates",
+        "New water is created when it rains"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "solarEnergy": 1,
+        "surfaceTemp": 25,
+        "upperAirTemp": -5
+      }
+    },
+    {
+      "id": "evap_room_temp",
+      "prompt": "Can water become invisible vapor at 20°C without boiling?",
+      "options": [
+        "Yes, sun warmth lifts it slowly",
+        "No, only at 100°C boiling",
+        "Only when wind blows hard"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "solarEnergy": 0.8,
+        "surfaceTemp": 20,
+        "upperAirTemp": 5
+      }
+    },
+    {
+      "id": "cloud_cause",
+      "prompt": "Why does rain fall from clouds?",
+      "options": [
+        "Moist air cooled and condensed into droplets",
+        "Clouds are vapor gas that got too heavy",
+        "Clouds were squeezed together by wind"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "solarEnergy": 0.5,
+        "surfaceTemp": 25,
+        "upperAirTemp": -5
+      }
+    },
+    {
+      "id": "cycle_driver",
+      "prompt": "What powers the whole water loop?",
+      "options": [
+        "Sun heating below and cooling above",
+        "Wind pushing clouds around",
+        "Cycle has a start and end point"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "solarEnergy": 0,
+        "surfaceTemp": 20,
+        "upperAirTemp": 5
+      }
+    }
+  ],
+  "transfer": {
+    "setup": "A sealed glass dome in a desert holds 1000 units of water with bright lamps heating the ground to 30°C and a freezer roof at -10°C.",
+    "params": {
+      "solarEnergy": 1,
+      "surfaceTemp": 30,
+      "upperAirTemp": -10,
+      "initialTotalWater": 1000,
+      "initialVapor": 10
+    },
+    "question": "After many days sealed, what will the water do?",
+    "options": [
+      "Keep cycling, total stays 1000",
+      "Vanish into air, total drops",
+      "All become cloud, no rain falls"
+    ],
+    "answerKey": 0
+  },
+  "checks": [
+    {
+      "id": "no_sun_no_evaporation",
+      "description": "Control: with no solar energy input evaporation stops — remove cause, effect disappears",
+      "params": {
+        "solarEnergy": 0,
+        "surfaceTemp": 20,
+        "upperAirTemp": 5,
+        "initialTotalWater": 1000
+      },
+      "steps": 500,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "evaporationRate",
+        "op": "approx",
+        "value": 0,
+        "tolerance": 0.01
+      }
+    },
+    {
+      "id": "sun_drives_evaporation",
+      "description": "With solar energy, evaporation rate becomes positive and vapor accumulates",
+      "params": {
+        "solarEnergy": 1,
+        "surfaceTemp": 25,
+        "upperAirTemp": 5,
+        "initialTotalWater": 1000
+      },
+      "steps": 500,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "evaporationRate",
+        "op": "gt",
+        "value": 0.05
+      }
+    },
+    {
+      "id": "no_cooling_no_precipitation",
+      "description": "Control: with warm air aloft (no cooling below dew point) precipitation stays near zero even with vapor present",
+      "params": {
+        "solarEnergy": 0.5,
+        "surfaceTemp": 25,
+        "upperAirTemp": 30,
+        "initialVapor": 50,
+        "initialTotalWater": 1000
+      },
+      "steps": 500,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "precipitationRate",
+        "op": "approx",
+        "value": 0,
+        "tolerance": 0.02
+      }
+    },
+    {
+      "id": "cooling_drives_precipitation",
+      "description": "Cooling moist air below saturation drives condensation and precipitation",
+      "params": {
+        "solarEnergy": 0.5,
+        "surfaceTemp": 25,
+        "upperAirTemp": -5,
+        "initialVapor": 50,
+        "initialTotalWater": 1000
+      },
+      "steps": 500,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "precipitationRate",
+        "op": "gt",
+        "value": 0.05
+      }
+    },
+    {
+      "id": "mass_conserved",
+      "description": "Total water mass (ocean + vapor + cloud + land) stays constant — evaporation does not destroy water",
+      "params": {
+        "solarEnergy": 1,
+        "surfaceTemp": 25,
+        "upperAirTemp": 0,
+        "initialTotalWater": 1000
+      },
+      "steps": 1000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "totalWater",
+        "op": "approx",
+        "value": 1000,
+        "tolerance": 1
+      }
+    }
+  ],
+  "art": {
+    "style": "soft watercolor with clear blue sky and warm sun",
+    "background": "coastal valley cross-section with ocean on left, land in middle, sky above",
+    "painted": {
+      "background": "/art/sky-river-loop/background.webp",
+      "sprites": {
+        "cloud": "/art/sky-river-loop/cloud.webp",
+        "sun": "/art/sky-river-loop/sun.webp"
+      }
+    }
+  }
+}

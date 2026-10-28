@@ -1,0 +1,348 @@
+{
+  "id": "mendel-pea-patch",
+  "version": 1,
+  "concept": "How are traits passed from parents to their offspring?",
+  "title": "The Pea Garden",
+  "tagline": "Cross the peas and watch what never blends",
+  "archetype": "population",
+  "science": {
+    "hiddenLaw": "Mendel's Law of Segregation for autosomal genes: each diploid parent carries two alleles per gene which segregate during meiosis so each gamete receives one allele at random; offspring receive one allele from each parent, restoring diploidy; with complete dominance heterozygotes (Aa) show the dominant phenotype, producing predictable discrete phenotype ratios such as ~3:1 dominant:recessive for Aa × Aa and ~1:1 for Aa × aa, not blending inheritance and not inheritance of acquired somatic changes.",
+    "plainStatement": "Children get one copy of each gene from mom and one from dad at random; some versions (dominant) hide others (recessive) so traits appear in predictable ratios, not as a blend.",
+    "misconceptions": [
+      "Blending inheritance: offspring traits are a smooth average or blend of parental traits producing intermediate phenotypes for single-gene traits.",
+      "Lamarckian inheritance of acquired characteristics: traits parents acquire during their lifetime (e.g., muscle, injury, learned behavior) are passed to offspring via genes.",
+      "Single-parent or sex-biased inheritance for autosomal traits and 'dominant means most common/strongest': autosomal traits come from only mother or only father, or dominant alleles always become more frequent or physically stronger."
+    ],
+    "sources": [
+      {
+        "title": "Nature Scitable - Gregor Mendel and the Principles of Inheritance",
+        "url": "https://www.nature.com/scitable/topicpage/gregor-mendel-and-the-principles-of-inheritance-593/"
+      },
+      {
+        "title": "Khan Academy - Mendel's laws and Punnett squares",
+        "url": "https://www.khanacademy.org/science/ap-biology/heredity/mendelian-genetics-ap/a/mendels-laws-and-punnett-squares"
+      },
+      {
+        "title": "NHGRI Genetics Glossary - Mendelian Inheritance",
+        "url": "https://www.genome.gov/genetics-glossary/Mendelian-Inheritance"
+      }
+    ]
+  },
+  "story": {
+    "setting": "It's 1865 in a quiet monastery garden. Rows of pea plants sway, waiting to be crossed.",
+    "mystery": "Why do hidden traits skip a generation then reappear?",
+    "goal": "Breed peas to uncover how traits really travel."
+  },
+  "knobs": [
+    {
+      "id": "parentalGenotype1",
+      "label": "Mom plant genes",
+      "kind": "choice",
+      "options": [
+        "AA",
+        "Aa",
+        "aa"
+      ],
+      "default": "AA",
+      "hint": "First parent gene pair"
+    },
+    {
+      "id": "parentalGenotype2",
+      "label": "Dad plant genes",
+      "kind": "choice",
+      "options": [
+        "AA",
+        "Aa",
+        "aa"
+      ],
+      "default": "aa",
+      "hint": "Second parent gene pair"
+    },
+    {
+      "id": "traitType",
+      "label": "Trait pattern",
+      "kind": "choice",
+      "options": [
+        "Mendelian_complete_dominance",
+        "Blending_incomplete"
+      ],
+      "default": "Mendelian_complete_dominance",
+      "hint": "How genes show as traits"
+    },
+    {
+      "id": "inheritanceEnabled",
+      "label": "Genes passed on",
+      "kind": "toggle",
+      "default": true,
+      "hint": "Whether offspring get genes from parents"
+    },
+    {
+      "id": "parentalAcquiredTrait",
+      "label": "Parent training",
+      "kind": "slider",
+      "min": 0,
+      "max": 1,
+      "step": 1,
+      "default": 0,
+      "hint": "Extra care parents received"
+    }
+  ],
+  "observables": [
+    {
+      "id": "fraction_dominant_phenotype",
+      "label": "Plants with purple flowers",
+      "unit": "",
+      "display": "series"
+    },
+    {
+      "id": "transmission_rate_A_from_Aa_parent",
+      "label": "Offspring getting A from Aa parent",
+      "unit": "",
+      "display": "series"
+    },
+    {
+      "id": "fraction_intermediate_phenotype",
+      "label": "Plants with pink flowers",
+      "unit": "",
+      "display": "series"
+    },
+    {
+      "id": "fraction_dominant_phenotype_in_offspring",
+      "label": "Offspring with purple flowers",
+      "unit": "",
+      "display": "series"
+    },
+    {
+      "id": "trained_parents",
+      "label": "Trained parents",
+      "unit": "plants",
+      "display": "counter"
+    },
+    {
+      "id": "dominant_count",
+      "label": "Purple plants alive",
+      "unit": "plants",
+      "display": "series"
+    }
+  ],
+  "entities": [
+    {
+      "id": "dominant_plant",
+      "label": "Purple flower",
+      "artPrompt": "pea plant with vibrant purple flowers, top-down garden view, flat illustration, warm light",
+      "segmentPrompt": "purple flower pea plant"
+    },
+    {
+      "id": "recessive_plant",
+      "label": "White flower",
+      "artPrompt": "pea plant with small white flowers, top-down garden view, flat illustration, warm light",
+      "segmentPrompt": "white flower pea plant"
+    },
+    {
+      "id": "intermediate_plant",
+      "label": "Pink flower",
+      "artPrompt": "pea plant with light pink intermediate flowers, top-down garden view, flat illustration, warm light",
+      "segmentPrompt": "pink flower pea plant"
+    }
+  ],
+  "rules": {
+    "kind": "js",
+    "source": "function getPhenotype(genotype, trait){\n  if(trait===\"Blending_incomplete\"){\n    if(genotype===\"AA\") return \"dominant\";\n    if(genotype===\"aa\") return \"recessive\";\n    return \"intermediate\";\n  } else {\n    if(genotype===\"AA\" || genotype===\"Aa\") return \"dominant\";\n    return \"recessive\";\n  }\n}\nfunction phenotypeToTint(ph){\n  if(ph===\"dominant\") return 0.9;\n  if(ph===\"recessive\") return 0.1;\n  return 0.5;\n}\nfunction phenotypeToSprite(ph){\n  if(ph===\"dominant\") return \"dominant_plant\";\n  if(ph===\"recessive\") return \"recessive_plant\";\n  return \"intermediate_plant\";\n}\nfunction allelesOf(g){\n  if(g===\"AA\") return [\"A\",\"A\"];\n  if(g===\"aa\") return [\"a\",\"a\"];\n  return [\"A\",\"a\"];\n}\nexports.init = (params, rng) => {\n  const p1 = params.parentalGenotype1 || \"AA\";\n  const p2 = params.parentalGenotype2 || \"aa\";\n  const trait = params.traitType || \"Mendelian_complete_dominance\";\n  const inherit = params.inheritanceEnabled !== undefined ? params.inheritanceEnabled : true;\n  const acquired = params.parentalAcquiredTrait || 0;\n  const agents = [];\n  const mkParent = (genotype, idx) => {\n    const x = idx===0 ? 0.25 : 0.75;\n    const y = 0.5 + rng.range(-0.05,0.05);\n    const phenotype = getPhenotype(genotype, trait);\n    return {id:\"p\"+idx, x, y, genotype, phenotype, isParent:true, trained: acquired===1, tint: phenotypeToTint(phenotype), sprite: phenotypeToSprite(phenotype)};\n  };\n  agents.push(mkParent(p1,0));\n  agents.push(mkParent(p2,1));\n  return {\n    agents,\n    counts:{total:0, dominant:0, recessive:0, intermediate:0},\n    transmission:{totalFromAa:0, countA:0},\n    nextId:2,\n    p1, p2, trait, inherit, acquired\n  };\n};\nexports.step = (state, params, rng) => {\n  const p1 = params.parentalGenotype1 !== undefined ? params.parentalGenotype1 : state.p1;\n  const p2 = params.parentalGenotype2 !== undefined ? params.parentalGenotype2 : state.p2;\n  const trait = params.traitType !== undefined ? params.traitType : state.trait;\n  const inherit = params.inheritanceEnabled !== undefined ? params.inheritanceEnabled : state.inherit;\n  const acquired = params.parentalAcquiredTrait !== undefined ? params.parentalAcquiredTrait : state.acquired;\n  const batch = 8;\n  let agents = state.agents.slice();\n  let counts = {...state.counts};\n  let transmission = {...state.transmission};\n  let nextId = state.nextId;\n  for(let i=0;i<batch;i++){\n    let genotype, phenotype;\n    let alleleFromP1=null, alleleFromP2=null;\n    if(!inherit){\n      const isDom = rng.chance(0.5);\n      phenotype = isDom ? \"dominant\" : \"recessive\";\n      if(phenotype===\"dominant\"){\n        genotype = rng.chance(0.5) ? \"AA\" : \"Aa\";\n      } else {\n        genotype = \"aa\";\n      }\n      if(p1===\"Aa\"){\n        alleleFromP1 = rng.chance(0.5) ? \"A\" : \"a\";\n        transmission.totalFromAa+=1;\n        if(alleleFromP1===\"A\") transmission.countA+=1;\n      }\n      if(p2===\"Aa\"){\n        alleleFromP2 = rng.chance(0.5) ? \"A\" : \"a\";\n        transmission.totalFromAa+=1;\n        if(alleleFromP2===\"A\") transmission.countA+=1;\n      }\n    } else {\n      const a1 = allelesOf(p1);\n      const a2 = allelesOf(p2);\n      alleleFromP1 = rng.pick(a1);\n      alleleFromP2 = rng.pick(a2);\n      if(p1===\"Aa\"){\n        transmission.totalFromAa+=1;\n        if(alleleFromP1===\"A\") transmission.countA+=1;\n      }\n      if(p2===\"Aa\"){\n        transmission.totalFromAa+=1;\n        if(alleleFromP2===\"A\") transmission.countA+=1;\n      }\n      if(alleleFromP1===\"A\" && alleleFromP2===\"A\") genotype=\"AA\";\n      else if(alleleFromP1===\"a\" && alleleFromP2===\"a\") genotype=\"aa\";\n      else genotype=\"Aa\";\n      phenotype = getPhenotype(genotype, trait);\n    }\n    counts.total+=1;\n    if(phenotype===\"dominant\") counts.dominant+=1;\n    else if(phenotype===\"recessive\") counts.recessive+=1;\n    else counts.intermediate+=1;\n    const x = rng.range(0.05,0.95);\n    const y = rng.range(0.1,0.9);\n    const tint = phenotypeToTint(phenotype);\n    const sprite = phenotypeToSprite(phenotype);\n    agents.push({id:\"o\"+nextId, x, y, genotype, phenotype, isParent:false, trained:false, tint, sprite});\n    nextId++;\n    if(agents.length>400){\n      const parents = agents.slice(0,2);\n      const rest = agents.slice(2);\n      const kept = rest.slice(-398);\n      agents = parents.concat(kept);\n    }\n  }\n  return {agents, counts, transmission, nextId, p1, p2, trait, inherit, acquired};\n};\nexports.observe = (state, params) => {\n  const total = state.counts.total;\n  const dom = state.counts.dominant;\n  const inter = state.counts.intermediate;\n  const totalFromAa = state.transmission.totalFromAa;\n  const countA = state.transmission.countA;\n  const fraction_dominant_phenotype = total>0 ? dom/total : 0;\n  const fraction_dominant_phenotype_in_offspring = total>0 ? dom/total : 0;\n  const fraction_intermediate_phenotype = total>0 ? inter/total : 0;\n  const transmission_rate_A_from_Aa_parent = totalFromAa>0 ? countA/totalFromAa : 0;\n  const trained_parents = state.agents.filter(a=>a.isParent && a.trained).length;\n  const dominant_count = dom;\n  return {fraction_dominant_phenotype, transmission_rate_A_from_Aa_parent, fraction_intermediate_phenotype, fraction_dominant_phenotype_in_offspring, trained_parents, dominant_count};\n};\nexports.view = (state, params) => {\n  const agents = state.agents.map(a=>{\n    let bubble;\n    if(a.isParent && a.trained) bubble=\"trained\";\n    return {id:a.id, x:a.x, y:a.y, tint:a.tint, sprite:a.sprite, bubble};\n  });\n  return {kind:\"population\", agents};\n};\n"
+  },
+  "predictions": [
+    {
+      "id": "blend_vs_discrete",
+      "prompt": "Two purple-carrying Aa peas are crossed, what will you see?",
+      "options": [
+        "All light pink in-between",
+        "Three purple to one white",
+        "All white",
+        "Half pink half white"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "parentalGenotype1": "Aa",
+        "parentalGenotype2": "Aa",
+        "traitType": "Mendelian_complete_dominance",
+        "inheritanceEnabled": true
+      }
+    },
+    {
+      "id": "acquired_not_inherited",
+      "prompt": "Two white aa peas are heavily trained, what about their seedlings?",
+      "options": [
+        "All become purple and strong",
+        "Stay white, training not inherited",
+        "Half purple half white",
+        "All light pink"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "parentalGenotype1": "aa",
+        "parentalGenotype2": "aa",
+        "parentalAcquiredTrait": 1,
+        "inheritanceEnabled": true,
+        "traitType": "Mendelian_complete_dominance"
+      }
+    },
+    {
+      "id": "testcross_ratio",
+      "prompt": "Cross Aa purple with aa white, what fraction is purple?",
+      "options": [
+        "All purple, dominant wins",
+        "Half purple half white",
+        "Three purple to one white",
+        "All white"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "parentalGenotype1": "Aa",
+        "parentalGenotype2": "aa",
+        "traitType": "Mendelian_complete_dominance",
+        "inheritanceEnabled": true
+      }
+    }
+  ],
+  "transfer": {
+    "setup": "In a butterfly house, two orange-winged butterflies each carry one orange and one pale allele are paired",
+    "params": {
+      "parentalGenotype1": "Aa",
+      "parentalGenotype2": "Aa",
+      "traitType": "Mendelian_complete_dominance",
+      "inheritanceEnabled": true
+    },
+    "question": "What share of caterpillars will show orange wings?",
+    "options": [
+      "All orange",
+      "About three quarters orange",
+      "About half orange",
+      "About one quarter orange"
+    ],
+    "answerKey": 1
+  },
+  "checks": [
+    {
+      "id": "mendel_3_to_1_segregation",
+      "description": "Aa × Aa monohybrid cross with complete dominance yields ~75% dominant phenotype, falsifying blending which predicts 100% intermediates",
+      "params": {
+        "parentalGenotype1": "Aa",
+        "parentalGenotype2": "Aa",
+        "traitType": "Mendelian_complete_dominance",
+        "inheritanceEnabled": true
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "fraction_dominant_phenotype",
+        "op": "approx",
+        "value": 0.75,
+        "tolerance": 0.05
+      }
+    },
+    {
+      "id": "mendel_testcross_1_to_1",
+      "description": "Test cross Aa × aa yields ~50% dominant phenotype, falsifying single-parent-only inheritance",
+      "params": {
+        "parentalGenotype1": "Aa",
+        "parentalGenotype2": "aa",
+        "traitType": "Mendelian_complete_dominance",
+        "inheritanceEnabled": true
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "fraction_dominant_phenotype",
+        "op": "approx",
+        "value": 0.5,
+        "tolerance": 0.05
+      }
+    },
+    {
+      "id": "segregation_50_percent_transmission",
+      "description": "Heterozygous Aa parent transmits allele A to ~50% of offspring, showing random segregation of homologous chromosomes",
+      "params": {
+        "parentalGenotype1": "Aa",
+        "parentalGenotype2": "aa",
+        "traitType": "Mendelian_complete_dominance",
+        "inheritanceEnabled": true
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "transmission_rate_A_from_Aa_parent",
+        "op": "approx",
+        "value": 0.5,
+        "tolerance": 0.05
+      }
+    },
+    {
+      "id": "no_blending_intermediates",
+      "description": "Discrete inheritance produces no intermediate phenotype class for single-gene complete dominance, falsifying blending",
+      "params": {
+        "parentalGenotype1": "Aa",
+        "parentalGenotype2": "Aa",
+        "traitType": "Mendelian_complete_dominance",
+        "inheritanceEnabled": true
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "fraction_intermediate_phenotype",
+        "op": "approx",
+        "value": 0,
+        "tolerance": 0.05
+      }
+    },
+    {
+      "id": "control_acquired_trait_not_inherited",
+      "description": "Control: environmentally acquired phenotype in aa parents with unchanged genotype is not transmitted; offspring remain ~0% dominant, falsifying Lamarckian inheritance",
+      "params": {
+        "parentalGenotype1": "aa",
+        "parentalGenotype2": "aa",
+        "traitType": "Mendelian_complete_dominance",
+        "parentalAcquiredTrait": 1,
+        "inheritanceEnabled": true
+      },
+      "steps": 1000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "fraction_dominant_phenotype_in_offspring",
+        "op": "approx",
+        "value": 0,
+        "tolerance": 0.05
+      }
+    }
+  ],
+  "art": {
+    "style": "cozy scientific illustration, warm garden palette",
+    "background": "monastery garden with rows of soil and pea plants in soft daylight",
+    "painted": {
+      "background": "/art/mendel-pea-patch/background.webp",
+      "sprites": {
+        "dominant_plant": "/art/mendel-pea-patch/dominant_plant.webp",
+        "recessive_plant": "/art/mendel-pea-patch/recessive_plant.webp",
+        "intermediate_plant": "/art/mendel-pea-patch/intermediate_plant.webp"
+      }
+    }
+  }
+}

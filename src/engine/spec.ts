@@ -69,7 +69,7 @@ export const Check = z.object({
 });
 export type Check = z.infer<typeof Check>;
 
-const ART_URL = /^\/art\/[a-z0-9-]+\/[A-Za-z0-9-]+\.(webp|png|jpg|svg)$/;
+const ART_URL = /^\/art\/[a-z0-9-]+\/[A-Za-z0-9_-]+\.(webp|png|jpg|svg)$/;
 
 export const PaintedArt = z.object({
   background: z.string().regex(ART_URL).optional(),

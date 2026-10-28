@@ -7,7 +7,7 @@ import path from "node:path";
  * served by Next directly; this route only answers for the rest, from the same folder.
  */
 const WORLD = /^[a-z0-9-]+$/;
-const FILE = /^[A-Za-z0-9-]+\.(webp|png|jpg|svg)$/;
+const FILE = /^[A-Za-z0-9_-]+\.(webp|png|jpg|svg)$/;
 const TYPES: Record<string, string> = { webp: "image/webp", png: "image/png", jpg: "image/jpeg", svg: "image/svg+xml" };
 
 export async function GET(_req: Request, { params }: { params: Promise<{ world: string; file: string }> }) {

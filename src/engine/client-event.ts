@@ -32,7 +32,7 @@ type Incoming = {
   notice?: string;
 };
 
-const ART_FILE = /^\/art\/[a-z0-9-]+\/[A-Za-z0-9-]+\.(webp|png|jpg|svg)$/;
+const ART_FILE = /^\/art\/[a-z0-9-]+\/[A-Za-z0-9_-]+\.(webp|png|jpg|svg)$/;
 const SPRITE_ID = /^[A-Za-z][A-Za-z0-9-]*$/;
 
 /** A painting or a cut-out. Anything that is not a local art URL is dropped. */

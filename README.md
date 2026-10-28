@@ -195,6 +195,14 @@ Run on the original model-written worlds, it flags exactly the problems we had f
 
 We repaired those worlds by hand so each reading comes from the simulation. Others got fixes we spotted along the way (the ring road's jam speed is now the jam's measured slope; the hot plate reads in degrees instead of a variance). Every change, world by world, is listed in [`docs/repairs.md`](docs/repairs.md). Today every saved world passes all three gates: `pnpm verify-worlds`.
 
+### Does "ask anything" hold up?
+
+We asked eight fresh questions, chosen before the run and unlike any world already built, through the full pipeline with all three gates (`pnpm eval`, 28 Oct). **Six of eight became verified worlds**: sugar dissolving in hot water, sand-pile avalanches, penguin huddles, the Moon's locked face, harvest prices and rumours against corrections. Ant trails and fish schools failed after three repairs. The median verified world took about 4 minutes and $0.28 in model calls. Every row is in [`docs/eval-results.md`](docs/eval-results.md).
+
+### A model that watches its own worlds
+
+Muse Spark 1.3 watched every world run: six frames, from start to end, with the starting controls and with one control moved. It judged whether the picture shows what the hidden law predicts. On its first pass it flagged three worlds, and all three were real bugs that none of our tests had caught: hares that appeared as blank outlines, fireflies whose flashing couldn't be seen, and dunes sized so that the wind seemed to do nothing. All three are fixed. The whole pass cost under $0.20. Details: [`docs/playtest-results.md`](docs/playtest-results.md).
+
 ### How a world is painted
 
 1. **Muse Image** paints the background and each entity on a flat contrasting background (PNG, 1600px).
@@ -262,7 +270,7 @@ pnpm dev                       # http://localhost:3000
 | `pnpm paint <id> \| --all` | Paint saved worlds with Muse Image + SAM 3.1. |
 | `pnpm smoke` | One live call to each model. |
 | `pnpm spike` | Generate a batch of worlds from scratch and report how many verify. |
-| `pnpm eval` | Eight fresh questions. Writes `docs/eval-results.md`. With no key it records that it did not run. |
+| `pnpm eval` | Eight fresh questions through the full pipeline. Writes `docs/eval-results.md` (last run: 6 of 8 verified). |
 
 No keys? Everything still runs: the hand-built worlds play fully and every model step is visibly marked as a sample.
 

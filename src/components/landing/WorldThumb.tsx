@@ -181,7 +181,9 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
           const jammed = placed.filter((item) => figureTint(spec.id, (item.body as { vx?: number }).vx) !== 0xffffff);
           const moving = placed.filter((item) => figureTint(spec.id, (item.body as { vx?: number }).vx) === 0xffffff);
           for (const item of moving) {
-            const [x, y] = row ? [item.at[0], roadY] : item.at;
+            const size = thumbFigurePx(skyMin, false);
+            const [x, rawY] = row ? [item.at[0], roadY] : item.at;
+            const y = row ? roadY : Math.max(size * 0.55, Math.min(rawY, sky.y + sky.h - size * 0.4));
             drawBody(item.body, x, y, false);
           }
           if (jammed.length > 0) {

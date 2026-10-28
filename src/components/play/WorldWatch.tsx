@@ -79,7 +79,30 @@ export function WorldWatch({ spec }: { spec: PlayableSpec }) {
   const [playing, setPlaying] = useState(true);
   const [steps, setSteps] = useState<WatchStep[]>([{ text: "Spark is watching this world run.", tone: "working" }]);
 
+  // The build streams the world before its painting is finished. Watch the saved, painted world, so Spark
+  // judges the picture a player will actually see.
+  const [painted, setPainted] = useState(spec.rules.kind !== "js" || Boolean(spec.art.painted));
   useEffect(() => {
+    if (painted) return;
+    let cancel = false;
+    void fetch(`/api/worlds?id=${encodeURIComponent(spec.id)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((saved: unknown) => {
+        if (cancel) return;
+        const fresh = readPlayable(saved);
+        if (fresh) setCurrent(fresh);
+        setPainted(true);
+      })
+      .catch(() => {
+        if (!cancel) setPainted(true);
+      });
+    return () => {
+      cancel = true;
+    };
+  }, [painted, spec.id]);
+
+  useEffect(() => {
+    if (!painted) return;
     registerPaintedArt(current.id, current.art.painted);
     const rules = rulesFor(current);
     if (!rules) return;
@@ -145,7 +168,7 @@ export function WorldWatch({ spec }: { spec: PlayableSpec }) {
     };
     // `repairs` is read for wording only; the watch restarts when the world itself changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current]);
+  }, [current, painted]);
 
   return (
     <div className="bw-watch" ref={root} data-capture="yes">

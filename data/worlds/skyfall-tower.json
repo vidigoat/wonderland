@@ -1,0 +1,302 @@
+{
+  "id": "skyfall-tower",
+  "version": 1,
+  "concept": "Why do raindrops fall at a steady speed instead of getting faster and faster?",
+  "title": "Skyfall Tower",
+  "tagline": "Watch raindrops fall and discover why they stop accelerating",
+  "archetype": "bodies",
+  "science": {
+    "hiddenLaw": "Terminal velocity from velocity-dependent drag: a falling drop accelerates under gravity until the upward aerodynamic drag force which grows with speed (F_d = ½ C_d ρ A v² for quadratic drag, ∝ v at low Reynolds number) exactly balances downward weight mg, so net force F_net = mg - F_d → 0 and acceleration → 0, giving steady speed v_t = sqrt(2mg/(C_d ρ A)).",
+    "plainStatement": "Raindrops stop getting faster because the faster they fall the harder the air pushes back; when the upward push of air grows to exactly equal the downward pull of their weight, the forces cancel and they fall at a steady speed.",
+    "misconceptions": [
+      "Gravity alone determines falling speed and air resistance is negligible or constant - so drops should accelerate forever at g.",
+      "Terminal velocity means gravity stops acting, runs out, or is 'used up' at steady speed.",
+      "Heavier objects have greater gravitational acceleration (confusing g with v_t) - so mass changes acceleration rather than just changing the final balanced speed where drag equals weight."
+    ],
+    "sources": [
+      {
+        "title": "NASA Glenn Research Center - Terminal Velocity",
+        "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/terminal-velocity/"
+      },
+      {
+        "title": "HyperPhysics - Air Friction / Drag Force",
+        "url": "http://hyperphysics.phy-astr.gsu.edu/hbase/airfri2.html"
+      },
+      {
+        "title": "The Physics Classroom - Terminal Velocity",
+        "url": "https://www.physicsclassroom.org/class/vectors/Lesson-3/Terminal-Velocity"
+      }
+    ]
+  },
+  "story": {
+    "setting": "You are in a glass rain tower where single drops fall past sensors. You can change the air, the drop, and the pull of gravity itself.",
+    "mystery": "Why does a falling drop settle at a steady speed instead of accelerating forever?",
+    "goal": "Find the hidden balance that sets each drop's final speed."
+  },
+  "knobs": [
+    {
+      "id": "gravity",
+      "label": "Gravity pull",
+      "kind": "slider",
+      "min": 1,
+      "max": 20,
+      "step": 0.5,
+      "default": 9.81,
+      "hint": "Stronger pull downwards"
+    },
+    {
+      "id": "dragCoeff",
+      "label": "Air catch",
+      "kind": "slider",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 0.47,
+      "hint": "How much air catches the drop"
+    },
+    {
+      "id": "mass",
+      "label": "Drop weight",
+      "kind": "slider",
+      "min": 0.000005,
+      "max": 0.00005,
+      "step": 0.000005,
+      "default": 0.00001,
+      "hint": "Heavier drop"
+    },
+    {
+      "id": "radius",
+      "label": "Drop size",
+      "kind": "slider",
+      "min": 0.0005,
+      "max": 0.002,
+      "step": 0.00025,
+      "default": 0.001,
+      "hint": "Bigger cross section"
+    },
+    {
+      "id": "airDensity",
+      "label": "Air thickness",
+      "kind": "slider",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.2,
+      "hint": "Thin mountain air vs thick sea air"
+    }
+  ],
+  "observables": [
+    {
+      "id": "velocity",
+      "label": "Fall speed",
+      "unit": "metres per second",
+      "display": "series"
+    },
+    {
+      "id": "netForce",
+      "label": "Net force",
+      "unit": "newtons",
+      "display": "series"
+    },
+    {
+      "id": "terminalVelocity",
+      "label": "Steady speed",
+      "unit": "metres per second",
+      "display": "counter"
+    },
+    {
+      "id": "height",
+      "label": "Distance fallen",
+      "unit": "metres",
+      "display": "series"
+    },
+    {
+      "id": "acceleration",
+      "label": "Speeding up",
+      "unit": "metres per second squared",
+      "display": "series"
+    }
+  ],
+  "entities": [
+    {
+      "id": "raindrop",
+      "label": "Raindrop",
+      "artPrompt": "small translucent blue raindrop, soft highlight, simple round teardrop shape, clean minimal",
+      "segmentPrompt": "translucent raindrop"
+    }
+  ],
+  "rules": {
+    "kind": "js",
+    "source": "exports.init = (params, rng) => {\n  const gravity = params.gravity ?? 9.81;\n  const dragCoeff = params.dragCoeff ?? 0.47;\n  const mass = params.mass ?? 0.00001;\n  const radius = params.radius ?? 0.001;\n  const airDensity = params.airDensity ?? 1.2;\n  const area = Math.PI * radius * radius;\n  const weight = mass * gravity;\n  return {\n    t: 0,\n    v: 0,\n    yFallen: 0,\n    netForce: weight,\n    acceleration: gravity,\n    drag: 0,\n    gravity,\n    dragCoeff,\n    mass,\n    radius,\n    airDensity,\n    area,\n    weight,\n    dt: 0.05,\n    trail: []\n  };\n};\n\nexports.step = (state, params, rng) => {\n  const gravity = params.gravity ?? state.gravity;\n  const dragCoeff = params.dragCoeff ?? state.dragCoeff;\n  const mass = params.mass ?? state.mass;\n  const radius = params.radius ?? state.radius;\n  const airDensity = params.airDensity ?? state.airDensity;\n  const area = Math.PI * radius * radius;\n  const weight = mass * gravity;\n  const dt = state.dt;\n  const t = state.t + dt;\n  const hasDrag = dragCoeff > 0 && airDensity > 0 && area > 0;\n  let v, yFallen, drag, netForce, acceleration;\n  if (!hasDrag) {\n    v = gravity * t;\n    yFallen = 0.5 * gravity * t * t;\n    drag = 0;\n    netForce = weight;\n    acceleration = gravity;\n  } else {\n    const vt = Math.sqrt((2 * mass * gravity) / (dragCoeff * airDensity * area));\n    const x = gravity * t / vt;\n    if (x > 10) {\n      v = vt;\n      drag = weight;\n      netForce = 0;\n      acceleration = 0;\n      yFallen = vt * t - (vt * vt / gravity) * Math.log(2);\n    } else {\n      const tanhX = Math.tanh(x);\n      v = vt * tanhX;\n      let lnCosh;\n      if (x > 20) {\n        lnCosh = x - Math.log(2);\n      } else {\n        lnCosh = Math.log(Math.cosh(x));\n      }\n      yFallen = (vt * vt / gravity) * lnCosh;\n      drag = 0.5 * dragCoeff * airDensity * area * v * v;\n      netForce = weight - drag;\n      acceleration = netForce / mass;\n      if (Math.abs(netForce) < 1e-12) netForce = 0;\n      if (Math.abs(acceleration) < 1e-12) acceleration = 0;\n    }\n  }\n  const towerH = 70;\n  const topY = 85;\n  const yOffset = yFallen % towerH;\n  const screenY = topY - yOffset;\n  let trail = state.trail ? state.trail.slice() : [];\n  if (trail.length > 0) {\n    const lastY = trail[trail.length - 1];\n    if (screenY > lastY + 40) {\n      trail = [];\n    }\n  }\n  trail.push(screenY);\n  if (trail.length > 7) trail.shift();\n  return {\n    t,\n    v,\n    yFallen,\n    netForce,\n    acceleration,\n    drag,\n    gravity,\n    dragCoeff,\n    mass,\n    radius,\n    airDensity,\n    area,\n    weight,\n    dt,\n    trail\n  };\n};\n\nexports.observe = (state, params) => {\n  return {\n    velocity: state.v,\n    netForce: state.netForce,\n    terminalVelocity: state.v,\n    height: state.yFallen,\n    acceleration: state.acceleration\n  };\n};\n\nexports.view = (state, params) => {\n  const bounds = { x: 0, y: 0, w: 100, h: 100 };\n  const towerH = 70;\n  const topY = 85;\n  const yOffset = state.yFallen % towerH;\n  const y = topY - yOffset;\n  const x = 50;\n  const viewRadius = 4 + state.radius * 6000;\n  const balancedThreshold = state.weight * 0.05;\n  const absNet = Math.abs(state.netForce);\n  let color;\n  if (absNet < balancedThreshold) {\n    color = \"#4CAF50\";\n  } else if (state.netForce > 0) {\n    color = \"#FF9800\";\n  } else {\n    color = \"#2196F3\";\n  }\n  const bodies = [];\n  bodies.push({ id: \"bg\", x: 50, y: 50, radius: 75, color: \"#E3F2FD\" });\n  bodies.push({ id: \"ground\", x: 50, y: 3, radius: 18, color: \"#C8E6C9\" });\n  for (let i = 0; i < 8; i++) {\n    const wy = 12 + i * 10;\n    bodies.push({ id: \"wallL\" + i, x: 32, y: wy, radius: 1.2, color: \"#B0BEC5\" });\n    bodies.push({ id: \"wallR\" + i, x: 68, y: wy, radius: 1.2, color: \"#B0BEC5\" });\n  }\n  for (let i = 0; i < 9; i++) {\n    const sy = 10 + i * 10;\n    bodies.push({ id: \"track\" + i, x: 85, y: sy, radius: 1, color: \"#E0E0E0\" });\n  }\n  const hasDrag = state.dragCoeff > 0 && state.airDensity > 0 && state.area > 0;\n  let vt = 25;\n  if (hasDrag) {\n    vt = Math.sqrt((2 * state.mass * state.gravity) / (state.dragCoeff * state.airDensity * state.area));\n    if (!isFinite(vt) || vt <= 0) vt = 25;\n  }\n  const maxV = hasDrag ? Math.max(vt, 12) : 30;\n  const speedY = 10 + Math.min(1, state.v / maxV) * 80;\n  bodies.push({ id: \"speedMarker\", x: 85, y: speedY, radius: 3.5, color: color });\n  bodies.push({ id: \"speedTop\", x: 85, y: 90, radius: 1.5, color: \"#90A4AE\" });\n  let trailColor;\n  if (color === \"#FF9800\") trailColor = \"#FFCC80\";\n  else if (color === \"#4CAF50\") trailColor = \"#A5D6A7\";\n  else trailColor = \"#90CAF9\";\n  if (state.trail) {\n    for (let i = 0; i < state.trail.length - 1; i++) {\n      const ty = state.trail[i];\n      const age = i / state.trail.length;\n      const r = 1.4 + age * 1.0;\n      bodies.push({ id: \"trail\" + i, x: x, y: ty, radius: r, color: trailColor });\n    }\n  }\n  const weightR = 2.8;\n  const dragRatio = state.weight > 0 ? state.drag / state.weight : 0;\n  const dragR = Math.max(0.5, Math.min(4, 2.8 * dragRatio));\n  if (dragR > 0.6) {\n    bodies.push({ id: \"dragForce\", x: x, y: y + 7, radius: dragR, color: \"#42A5F5\" });\n  }\n  bodies.push({ id: \"weightForce\", x: x, y: y - 7, radius: weightR, color: \"#EF5350\" });\n  bodies.push({ id: \"drop\", x, y, radius: viewRadius, color });\n  return { kind: \"bodies\", bounds, bodies };\n};\n"
+  },
+  "predictions": [
+    {
+      "id": "vacuum_test",
+      "prompt": "What happens if you remove all air from the tower?",
+      "options": [
+        "Drops keep speeding up forever",
+        "Drops still reach same steady speed",
+        "Drops float and stop falling"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "gravity": 9.81,
+        "dragCoeff": 0,
+        "mass": 0.00001,
+        "radius": 0.001,
+        "airDensity": 0
+      }
+    },
+    {
+      "id": "gravity_at_terminal",
+      "prompt": "At steady speed, what is happening to gravity?",
+      "options": [
+        "Gravity still pulls, balanced by air push",
+        "Gravity runs out and becomes zero",
+        "Gravity turns off at steady speed"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "gravity": 12,
+        "dragCoeff": 0.47,
+        "mass": 0.00001,
+        "radius": 0.001,
+        "airDensity": 1.2
+      }
+    },
+    {
+      "id": "heavier_drop",
+      "prompt": "You double the drop's weight without changing its size. What happens?",
+      "options": [
+        "Same start acceleration, higher final speed",
+        "It accelerates faster from the start",
+        "It falls slower because heavier"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "gravity": 9.81,
+        "dragCoeff": 0.47,
+        "mass": 0.00004,
+        "radius": 0.001,
+        "airDensity": 1.2
+      }
+    }
+  ],
+  "transfer": {
+    "setup": "A skydiver opens a parachute that triples her area but keeps her weight the same as she falls through steady air.",
+    "params": {
+      "gravity": 9.81,
+      "dragCoeff": 1.2,
+      "mass": 80,
+      "radius": 2,
+      "airDensity": 1.2
+    },
+    "question": "What happens to her steady falling speed after the parachute opens?",
+    "options": [
+      "It becomes much slower but still steady",
+      "It keeps accelerating until landing",
+      "Gravity stops pulling once parachute opens"
+    ],
+    "answerKey": 0
+  },
+  "checks": [
+    {
+      "id": "terminal_plateau_with_drag",
+      "description": "With air drag present, velocity initially rises then plateaus to flat terminal velocity",
+      "params": {
+        "gravity": 9.81,
+        "dragCoeff": 0.47,
+        "mass": 0.00001,
+        "radius": 0.001,
+        "airDensity": 1.2
+      },
+      "steps": 5000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "velocity",
+        "op": "flat",
+        "tolerance": 0.05
+      }
+    },
+    {
+      "id": "control_no_drag_no_terminal",
+      "description": "Control: in vacuum with no drag (dragCoeff=0, airDensity=0) velocity never plateaus but keeps increasing",
+      "params": {
+        "gravity": 9.81,
+        "dragCoeff": 0,
+        "mass": 0.00001,
+        "radius": 0.001,
+        "airDensity": 0
+      },
+      "steps": 5000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "velocity",
+        "op": "trendUp"
+      }
+    },
+    {
+      "id": "force_balance_at_terminal",
+      "description": "At steady fall drag equals weight so net force approaches zero and acceleration approaches zero",
+      "params": {
+        "gravity": 9.81,
+        "dragCoeff": 0.47,
+        "mass": 0.00001,
+        "radius": 0.001,
+        "airDensity": 1.2
+      },
+      "steps": 5000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "netForce",
+        "op": "approx",
+        "value": 0,
+        "tolerance": 0.0005
+      }
+    },
+    {
+      "id": "mass_increases_terminal_velocity",
+      "description": "Larger mass with same area gives higher terminal velocity (v_t ∝ sqrt(m))",
+      "params": {
+        "gravity": 9.81,
+        "dragCoeff": 0.47,
+        "mass": 0.00004,
+        "radius": 0.001,
+        "airDensity": 1.2
+      },
+      "steps": 5000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "terminalVelocity",
+        "op": "gt",
+        "value": 15
+      }
+    }
+  ],
+  "art": {
+    "style": "soft watercolor sky with glass tower, gentle light, clean minimal",
+    "background": "pale blue sky with faint clouds and tall glass cylinder",
+    "painted": {
+      "background": "/art/skyfall-tower/background.webp",
+      "sprites": {
+        "raindrop": "/art/skyfall-tower/raindrop.webp"
+      }
+    }
+  }
+}

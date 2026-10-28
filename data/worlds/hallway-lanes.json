@@ -36,43 +36,43 @@
   "knobs": [
     {
       "id": "density",
-      "label": "Crowd density",
+      "label": "How crowded the hall is",
       "kind": "slider",
       "min": 0.1,
       "max": 0.9,
       "step": 0.1,
       "default": 0.4,
-      "hint": "More people in hallway"
+      "hint": "More people in the hallway"
     },
     {
       "id": "counterflowRatio",
-      "label": "Westbound share",
+      "label": "Share walking west",
       "kind": "slider",
       "min": 0,
       "max": 1,
       "step": 0.1,
       "default": 0.5,
-      "hint": "Fraction walking opposite direction"
+      "hint": "Of the crowd, the share going west"
     },
     {
       "id": "avoidanceStrength",
-      "label": "Sidestep tendency",
+      "label": "How hard they step aside",
       "kind": "slider",
       "min": 0,
       "max": 1.5,
       "step": 0.1,
       "default": 1,
-      "hint": "How strongly people dodge oncoming walkers"
+      "hint": "How strongly they dodge someone coming toward them"
     },
     {
       "id": "sideBias",
-      "label": "Right-side bias",
+      "label": "Prefer to pass on the right",
       "kind": "slider",
       "min": -1,
       "max": 1,
       "step": 0.2,
       "default": 0,
-      "hint": "Preference to pass on the right"
+      "hint": "Above zero, they pass on the right. Below zero, on the left."
     }
   ],
   "observables": [

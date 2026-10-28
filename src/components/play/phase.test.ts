@@ -107,6 +107,19 @@ describe("phase machine", () => {
     expect(runVerb("murmuration-sky", "population")).toBe("Let them fly");
     expect(runVerb("predator-prey-valley", "population")).toBe("Let a season pass");
     expect(runVerb("heat-diffusion-plate", "field")).toBe("Let it spread");
+    const hall = JSON.parse(readFileSync("data/worlds/hallway-lanes.json", "utf8")) as { knobs: { label: string; hint: string }[] };
+    const labels = hall.knobs.map((knob) => knob.label);
+    expect(labels).toEqual([
+      "How crowded the hall is",
+      "Share walking west",
+      "How hard they step aside",
+      "Prefer to pass on the right",
+    ]);
+    expect(labels.join(" ")).not.toMatch(/density|westbound|tendency|bias/i);
+    expect(hall.knobs.map((knob) => knob.hint).join(" ")).not.toMatch(/fraction|oncoming/i);
+    const flock = JSON.parse(readFileSync("data/worlds/murmuration-sky.json", "utf8")) as { knobs: { label: string }[] };
+    expect(flock.knobs.map((knob) => knob.label)).toContain("How much they wobble");
+    expect(flock.knobs.map((knob) => knob.label).join(" ")).not.toMatch(/jitter/i);
     expect(Math.ceil(2000 / tickBatch(2000, "hallway-lanes"))).toBeLessThanOrEqual(28);
     expect(runDuration(runSteps("bodies"))).toBeGreaterThan(runDuration(1));
     expect(runSteps("population")).toBe(30);

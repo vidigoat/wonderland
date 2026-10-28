@@ -86,7 +86,7 @@
     },
     {
       "id": "noise",
-      "label": "Wind jitter",
+      "label": "How much they wobble",
       "kind": "slider",
       "min": 0,
       "max": 0.3,

@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { compileRules, type RulesModule } from "@/engine/rules";
 import { WorldSession } from "@/engine/runtime";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { bodyFacing, cssHex, figureTint, flockFacing, heightSilhouette, ridgeWindow, softenRidge, thumbFigurePx, thumbJamInk, thumbSample, thumbSky, thumbSpritePx, thumbSteps } from "@/engine/render/helpers";
+import { bodyFacing, cssHex, figureTint, flockFacing, heightSilhouette, ridgeWindow, softenRidge, thumbFigurePx, thumbJamInk, thumbPlace, thumbSample, thumbSky, thumbSpritePx, thumbSteps } from "@/engine/render/helpers";
 import { asWorldView, isParticlesView } from "@/engine/view";
 
 /**
@@ -121,22 +121,19 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
         const at = (x: number, y: number) => [sky.x + x * sky.w, sky.y + y * sky.h] as const;
         if (view.kind === "population") {
           const headed = view.agents.some((agent) => typeof agent.heading === "number" && Number.isFinite(agent.heading));
-          const agents = thumbSample(view.agents, headed);
+          const agents = [...thumbSample(view.agents, headed)].sort((a, b) => a.y - b.y);
+          const airborne = headed || agents.some((agent) => /firefly|starling|bird|moth/i.test(String(agent.sprite ?? "")));
+          const band = thumbPlace(airborne);
+          const place = (x: number, y: number) => [sky.x + x * sky.w, h * (band.y0 + y * (band.y1 - band.y0))] as const;
           const size = thumbSpritePx(Math.min(sky.w, sky.h), agents.length, headed);
           for (const agent of agents) {
-            const [x, y] = at(agent.x, agent.y);
+            const [x, y] = place(agent.x, agent.y);
             const image = sprites.size > 0 ? spriteOf(String(agent.sprite ?? "")) : undefined;
             if (image) {
               const heading = agent.heading;
               const hasHeading = typeof heading === "number" && Number.isFinite(heading);
               const turn = hasHeading ? flockFacing(heading) : 0;
               const alpha = hasHeading ? 0.92 : 0.55 + Math.max(0, Math.min(1, agent.tint)) * 0.45;
-              if (hasHeading) {
-                ctx.fillStyle = "rgba(255, 244, 220, 0.55)";
-                ctx.beginPath();
-                ctx.arc(x, y, size * 0.42, 0, Math.PI * 2);
-                ctx.fill();
-              }
               drawSprite(image, x, y, size, alpha, turn);
               continue;
             }

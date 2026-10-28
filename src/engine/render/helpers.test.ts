@@ -16,6 +16,7 @@ import {
   thumbJamInk,
   thumbCrowd,
   thumbSample,
+  thumbPlace,
   thumbSky,
   thumbSpritePx,
   thumbSteps,
@@ -433,6 +434,12 @@ describe("a shelf card", () => {
   it("keeps the world in the sky above the title", () => {
     const sky = thumbSky(320, 400);
     expect(sky.y + sky.h).toBeLessThanOrEqual(400 * 0.48);
+    const skyBand = thumbPlace(true);
+    const ground = thumbPlace(false);
+    expect(skyBand.y1).toBeLessThanOrEqual(0.48);
+    expect(ground.y0).toBeGreaterThan(skyBand.y0);
+    expect(ground.y1).toBeLessThan(0.7);
+    expect(ground.y1 - ground.y0).toBeGreaterThan(0.2);
     expect(sky.w).toBeGreaterThan(320 * 0.8);
     const flock = thumbSpritePx(Math.min(sky.w, sky.h), 64, true);
     const gap = Math.min(sky.w, sky.h) / Math.sqrt(64);

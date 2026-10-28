@@ -233,6 +233,14 @@ export function thumbSky(width: number, height: number): { x: number; y: number;
 }
 
 /**
+ * Where a shelf card puts a creature, as fractions of the card height.
+ * Birds and fireflies use the open sky. Animals on foot sit on the slope, above the title.
+ */
+export function thumbPlace(airborne: boolean): { y0: number; y1: number } {
+  return airborne ? { y0: 0.04, y1: 0.48 } : { y0: 0.36, y1: 0.62 };
+}
+
+/**
  * How big a painted creature is on a shelf card, in the same pixels as `skyMin`.
  * A flock stays large enough to show a wing, and small enough that the birds stay separate.
  */

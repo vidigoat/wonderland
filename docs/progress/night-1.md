@@ -187,6 +187,8 @@ The shelf title covered the lower half of every card, so the flock, the hares, a
 
 Those hares and lynx were standing in the sky, and each starling wore a white disc, so the flock read as two stickers. Commit `fc5db06`. Animals on foot now sit on the slope. The discs are gone. On the production gallery at 390 wide, the hares and the lynx stand on the hillside around the cabin, and the starlings are two dark flocks in the sunset, wings out, leaning the same way. The meadow still shows the shared flash. `pnpm check` is 252 tests.
 
+The shelf jam was one red disc with a single car in it, and the dune was a gold triangle cut off flat. Commit `a6923fc`. The jam is now a short queue of dark cars at the left of the road, with smaller cars still moving to the right. The sand fades into the desert, and the ridge keeps the longer windward slope and the shorter slip face. Commit `6b649f0` keeps the hallway walkers inside the card. On the production gallery at 390 wide, the first walker starts 32 pixels below the top edge, and both directions are visible. `pnpm check` is 252 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

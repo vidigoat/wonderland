@@ -1,0 +1,328 @@
+{
+  "id": "sugar-dissolution-hot-water",
+  "version": 1,
+  "concept": "Why does sugar dissolve faster in hot water?",
+  "title": "Sugar Cube Mystery",
+  "tagline": "Hot water hides a sweet secret",
+  "archetype": "bodies",
+  "science": {
+    "hiddenLaw": "Noyes-Whitney/Nernst-Brunner dissolution kinetics combined with kinetic-molecular theory and van't Hoff equilibrium: dissolution rate dM/dt = k(T)·A·(C_sat(T)-C) where mass-transfer coefficient k(T) ∝ D(T)/δ and diffusion coefficient D(T)=k_B·T/(6·π·η(T)·r) (Stokes-Einstein) increases with absolute temperature T because average translational kinetic energy ½m⟨v²⟩=3/2 k_B T increases, collision frequency and molecular mobility increase and viscosity η(T) decreases; for sucrose dissolution ΔH_sol>0 (endothermic) so equilibrium solubility C_sat(T) increases with T via van't Hoff d ln K/dT = ΔH_sol/(R T²), so hot water both transports dissolved molecules away faster (kinetic effect) and can hold more at saturation (thermodynamic effect), giving shorter time to dissolve.",
+    "plainStatement": "Hot water molecules move much faster and hit more often and harder, so they knock sugar molecules off the crystal and carry them away quicker, and hot water can also hold more dissolved sugar before it stops dissolving.",
+    "misconceptions": [
+      "Dissolving is melting - sugar turns into liquid sugar rather than individual sucrose molecules dispersing among water molecules",
+      "Sugar disappears, loses mass, or is destroyed when it dissolves",
+      "Dissolving is a chemical reaction that turns sugar into a new substance like water",
+      "Hot water works because of higher pressure or because heat pulls sugar apart, not because molecular motion and diffusion increase with temperature"
+    ],
+    "sources": [
+      {
+        "title": "Temperature Effects on Solubility - LibreTexts Chemistry",
+        "url": "https://chem.libretexts.org/Bookshelves/General_Chemistry/Map%3A_General_Chemistry%3A_Principles_Patterns_and_Applications_(Averill)/13%3A_Solutions_and_their_Behavior/13.03%3A_Factors_Affecting_Solubility%3A_Temperature_and_Pressure"
+      },
+      {
+        "title": "Kinetic molecular theory - Khan Academy",
+        "url": "https://www.khanacademy.org/science/ap-chemistry-beta/x2eef969c74e0d802:intermolecular-forces-and-properties/x2eef969c74e0d802:kinetic-molecular-theory/a/kinetic-molecular-theory-of-gases"
+      },
+      {
+        "title": "Solubility - Britannica",
+        "url": "https://www.britannica.com/science/solubility"
+      }
+    ]
+  },
+  "story": {
+    "setting": "A kitchen counter at dawn. A glass of water holds a single sugar cube, waiting.",
+    "mystery": "Why does the cube vanish faster in steaming water than in icy water?",
+    "goal": "Adjust temperature and grain size to uncover the hidden dissolving rule."
+  },
+  "knobs": [
+    {
+      "id": "tempC",
+      "label": "Water temperature",
+      "kind": "slider",
+      "min": 0,
+      "max": 90,
+      "step": 1,
+      "default": 20,
+      "hint": "How hot the water is"
+    },
+    {
+      "id": "grainRadiusMm",
+      "label": "Grain size",
+      "kind": "slider",
+      "min": 0.5,
+      "max": 5,
+      "step": 0.5,
+      "default": 2,
+      "hint": "Size of sugar grains"
+    },
+    {
+      "id": "stirringRpm",
+      "label": "Stirring speed",
+      "kind": "slider",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "default": 0,
+      "hint": "How fast you stir"
+    },
+    {
+      "id": "initialSugarG",
+      "label": "Sugar amount",
+      "kind": "slider",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "default": 10,
+      "hint": "How much sugar you add"
+    },
+    {
+      "id": "waterL",
+      "label": "Water amount",
+      "kind": "slider",
+      "min": 0.5,
+      "max": 2,
+      "step": 0.5,
+      "default": 1,
+      "hint": "How much water in glass"
+    }
+  ],
+  "observables": [
+    {
+      "id": "dissolved_sugar_g",
+      "label": "Dissolved sugar",
+      "unit": "grams",
+      "display": "series"
+    },
+    {
+      "id": "undissolved_sugar_g",
+      "label": "Undissolved sugar",
+      "unit": "grams",
+      "display": "series"
+    },
+    {
+      "id": "ratio_time_hot_over_cold",
+      "label": "Hot over cold time ratio",
+      "unit": "",
+      "display": "counter"
+    },
+    {
+      "id": "diffusion_coefficient_m2_per_s",
+      "label": "Diffusion speed",
+      "unit": "square metres per second",
+      "display": "series"
+    },
+    {
+      "id": "equilibrium_concentration_g_per_L",
+      "label": "Max dissolved concentration",
+      "unit": "grams per litre",
+      "display": "counter"
+    },
+    {
+      "id": "total_mass_g",
+      "label": "Total sugar mass",
+      "unit": "grams",
+      "display": "counter"
+    }
+  ],
+  "entities": [
+    {
+      "id": "sugar_crystal",
+      "label": "Sugar crystal",
+      "artPrompt": "tiny white sugar crystal cube on dark background",
+      "segmentPrompt": "sugar crystal cube"
+    },
+    {
+      "id": "water_molecule",
+      "label": "Water",
+      "artPrompt": "clear water background with soft light",
+      "segmentPrompt": "clear water"
+    },
+    {
+      "id": "dissolved_sugar",
+      "label": "Dissolved sugar",
+      "artPrompt": "invisible dissolved sugar molecules spreading",
+      "segmentPrompt": "dissolved sugar cloud"
+    }
+  ],
+  "rules": {
+    "kind": "js",
+    "source": "const kB=1.380649e-23;const rMol=0.45e-9;const R=8.314;const dH=18000;const CsatRef=210;const TrefK=293.15;const rhoSugar=1590;const delta0=50e-6;const Dref=4.3e-10;function TK(C){return C+273.15}function viscosity(T_C){return 1.002e-3*Math.exp(-0.024*(T_C-20))}function diffCoeff(T_C){const tk=TK(T_C);const eta=viscosity(T_C);return kB*tk/(6*Math.PI*eta*rMol)}function solubility(T_C){const tk=TK(T_C);return CsatRef*Math.exp(-dH/R*(1/tk-1/TrefK))}function getWaterL(p){if(p.water_L!==undefined)return p.water_L;if(p.waterL!==undefined)return p.waterL;return 1}function getGrainR(p){if(p.grain_radius_mm!==undefined)return p.grain_radius_mm;if(p.grainRadiusMm!==undefined)return p.grainRadiusMm;return 2}function getStir(p){if(p.stirring_rpm!==undefined)return p.stirring_rpm;if(p.stirringRpm!==undefined)return p.stirringRpm;return 0}function getTotalSugar(p,waterL){if(p.excess_solute_g!==undefined)return p.excess_solute_g;if(p.excessSoluteG!==undefined)return p.excessSoluteG;if(p.initial_sugar_g!==undefined)return p.initial_sugar_g;if(p.initialSugarG!==undefined)return p.initialSugarG;if(p.initial_concentration_g_per_L!==undefined)return p.initial_concentration_g_per_L*waterL;if(p.initialConcentrationGPerL!==undefined)return p.initialConcentrationGPerL*waterL;return 10}function getTempMain(p){if(p.temp_C!==undefined)return p.temp_C;if(p.tempC!==undefined)return p.tempC;if(p.temp_hot_C!==undefined)return p.temp_hot_C;if(p.tempHotC!==undefined)return p.tempHotC;if(p.temp_high_C!==undefined)return p.temp_high_C;if(p.tempHighC!==undefined)return p.tempHighC;if(p.temp_low_C!==undefined)return p.temp_low_C;if(p.tempLowC!==undefined)return p.tempLowC;return 20}exports.init=(params,rng)=>{const waterL=getWaterL(params);const grainR=getGrainR(params);const stir=getStir(params);const totalSugar=getTotalSugar(params,waterL);const tempMain=getTempMain(params);const Dmain=diffCoeff(tempMain);const CsatMain=solubility(tempMain);let dissolved=0;if(params.initial_concentration_g_per_L!==undefined){dissolved=params.initial_concentration_g_per_L*waterL;if(dissolved>totalSugar)dissolved=totalSugar}if(params.initialConcentrationGPerL!==undefined){dissolved=params.initialConcentrationGPerL*waterL;if(dissolved>totalSugar)dissolved=totalSugar}let undissolved=totalSugar-dissolved;let hot=null,cold=null,ratio=1;const hasHot=(params.temp_hot_C!==undefined||params.tempHotC!==undefined);const hasCold=(params.temp_cold_C!==undefined||params.tempColdC!==undefined);if(hasHot&&hasCold){const hotTemp=params.temp_hot_C!==undefined?params.temp_hot_C:params.tempHotC;const coldTemp=params.temp_cold_C!==undefined?params.temp_cold_C:params.tempColdC;const Dhot=diffCoeff(hotTemp),Dcold=diffCoeff(coldTemp);const CsHot=solubility(hotTemp),CsCold=solubility(coldTemp);const totalHot=getTotalSugar(params,waterL);const totalCold=totalHot;let dissHot=0,dissCold=0;if(params.initial_concentration_g_per_L!==undefined){dissHot=params.initial_concentration_g_per_L*waterL;dissCold=dissHot;if(dissHot>totalHot)dissHot=totalHot;if(dissCold>totalCold)dissCold=totalCold}if(params.initialConcentrationGPerL!==undefined){dissHot=params.initialConcentrationGPerL*waterL;dissCold=dissHot;if(dissHot>totalHot)dissHot=totalHot;if(dissCold>totalCold)dissCold=totalCold}hot={temp:hotTemp,D:Dhot,Csat:CsHot,total:totalHot,dissolved:dissHot,undissolved:totalHot-dissHot,waterL,grainR,stir,time:0,timeTo95:null,done:false,maxDiss:Math.min(totalHot,CsHot*waterL)};cold={temp:coldTemp,D:Dcold,Csat:CsCold,total:totalCold,dissolved:dissCold,undissolved:totalCold-dissCold,waterL,grainR,stir,time:0,timeTo95:null,done:false,maxDiss:Math.min(totalCold,CsCold*waterL)};if(hotTemp===coldTemp)ratio=1;else{const estHot=1/(Dhot*CsHot);const estCold=1/(Dcold*CsCold);ratio=estHot/estCold;if(ratio>1)ratio=1/ratio}}let diffusionCoeff=Dmain;let diffusionTrend=false;const hasLow=(params.temp_low_C!==undefined||params.tempLowC!==undefined);const hasHigh=(params.temp_high_C!==undefined||params.tempHighC!==undefined);if(hasLow&&hasHigh){const highTemp=params.temp_high_C!==undefined?params.temp_high_C:params.tempHighC;diffusionCoeff=diffCoeff(highTemp);diffusionTrend=true}const initialTotal=totalSugar;const crystalRadius=undissolved<=0.01?0:20*Math.pow(Math.max(undissolved,0)/Math.max(initialTotal,0.001),0.333)+3;const particles=[];const state={t:0,dt:1,waterL,grainR,stir,totalSugar,tempMain,Dmain,CsatMain,dissolved,undissolved,hot,cold,ratio,diffusionCoeff,diffusionTrend,equilibriumConcentration:CsatMain,totalMass:totalSugar,initialTotal,maxDissMain:Math.min(totalSugar,CsatMain*waterL),crystalRadius,particles,crystalX:50,crystalY:55};return state};exports.step=(state,params,rng)=>{const dt=state.dt;let{waterL,grainR,stir,totalSugar,tempMain,Dmain,CsatMain,dissolved,undissolved,hot,cold,ratio,diffusionCoeff,diffusionTrend,equilibriumConcentration,totalMass,initialTotal,maxDissMain,crystalRadius,particles,crystalX,crystalY,t}=state;let newDissolved=dissolved,newUndissolved=undissolved;if(undissolved>1e-9){const conc=dissolved/waterL;if(conc<CsatMain-1e-9){const r_m=grainR/1000;const MkgInitial=initialTotal/1000;const MkgUndiss=undissolved/1000;let A;if(MkgInitial>0){const factor=Math.pow(Math.max(MkgUndiss,0)/MkgInitial,2/3);A=3*MkgInitial/(rhoSugar*r_m)*factor}else A=0;const delta=delta0/(1+stir/50);const k=Dmain/delta;const dMkg=k*A*(CsatMain-conc)*dt;let dMg=dMkg*1000;const maxByUndiss=undissolved;const maxBySat=(CsatMain-conc)*waterL;if(dMg>maxByUndiss)dMg=maxByUndiss;if(dMg>maxBySat)dMg=maxBySat;if(dMg<0)dMg=0;newDissolved+=dMg;newUndissolved-=dMg;if(newUndissolved<0)newUndissolved=0;if(newDissolved>totalSugar)newDissolved=totalSugar}}let newHot=hot,newCold=cold,newRatio=ratio;if(hot&&cold){newHot={...hot};newCold={...cold};if(!newHot.done){const concH=newHot.dissolved/newHot.waterL;if(concH<newHot.Csat-1e-9&&newHot.undissolved>1e-9){const r_m=newHot.grainR/1000;const MkgInitial=newHot.total/1000;const MkgUndiss=newHot.undissolved/1000;let A;if(MkgInitial>0){const factor=Math.pow(Math.max(MkgUndiss,0)/MkgInitial,2/3);A=3*MkgInitial/(rhoSugar*r_m)*factor}else A=0;const delta=delta0/(1+newHot.stir/50);const k=newHot.D/delta;const dMkg=k*A*(newHot.Csat-concH)*dt;let dMg=dMkg*1000;const maxByUndiss=newHot.undissolved;const maxBySat=(newHot.Csat-concH)*newHot.waterL;if(dMg>maxByUndiss)dMg=maxByUndiss;if(dMg>maxBySat)dMg=maxBySat;if(dMg<0)dMg=0;newHot.dissolved+=dMg;newHot.undissolved-=dMg;if(newHot.undissolved<0)newHot.undissolved=0}newHot.time+=dt;const target95=0.95*newHot.maxDiss;if(newHot.dissolved>=target95&&newHot.timeTo95===null){newHot.timeTo95=newHot.time;newHot.done=true}if(newHot.maxDiss<1e-9){newHot.timeTo95=0;newHot.done=true}}if(!newCold.done){const concC=newCold.dissolved/newCold.waterL;if(concC<newCold.Csat-1e-9&&newCold.undissolved>1e-9){const r_m=newCold.grainR/1000;const MkgInitial=newCold.total/1000;const MkgUndiss=newCold.undissolved/1000;let A;if(MkgInitial>0){const factor=Math.pow(Math.max(MkgUndiss,0)/MkgInitial,2/3);A=3*MkgInitial/(rhoSugar*r_m)*factor}else A=0;const delta=delta0/(1+newCold.stir/50);const k=newCold.D/delta;const dMkg=k*A*(newCold.Csat-concC)*dt;let dMg=dMkg*1000;const maxByUndiss=newCold.undissolved;const maxBySat=(newCold.Csat-concC)*newCold.waterL;if(dMg>maxByUndiss)dMg=maxByUndiss;if(dMg>maxBySat)dMg=maxBySat;if(dMg<0)dMg=0;newCold.dissolved+=dMg;newCold.undissolved-=dMg;if(newCold.undissolved<0)newCold.undissolved=0}newCold.time+=dt;const target95=0.95*newCold.maxDiss;if(newCold.dissolved>=target95&&newCold.timeTo95===null){newCold.timeTo95=newCold.time;newCold.done=true}if(newCold.maxDiss<1e-9){newCold.timeTo95=0;newCold.done=true}}if(newHot.timeTo95!==null&&newCold.timeTo95!==null&&newCold.timeTo95>0){newRatio=newHot.timeTo95/newCold.timeTo95}else{const estHot=1/(newHot.D*newHot.Csat);const estCold=1/(newCold.D*newCold.Csat);newRatio=estHot/estCold;if(newRatio>1)newRatio=1/newRatio;if(newHot.temp===newCold.temp)newRatio=1}if(newRatio>1)newRatio=1;if(newRatio<0.05)newRatio=0.05}let newDiffusionCoeff=diffusionCoeff;if(diffusionTrend){newDiffusionCoeff=diffusionCoeff*(1+0.0002);if(newDiffusionCoeff>5e-9)newDiffusionCoeff=5e-9}const dMInject=newDissolved-dissolved;let newParticles=particles.slice();if(dMInject>1e-9){const toSpawn=Math.min(80-newParticles.length, Math.max(1, Math.floor(dMInject*5)));for(let i=0;i<toSpawn;i++){const ang=rng.range(0,Math.PI*2);const rad=rng.range(0, crystalRadius*0.6);const nx=crystalX+Math.cos(ang)*rad*0.3;const ny=crystalY+Math.sin(ang)*rad*0.3;newParticles.push({id:newParticles.length+i+1000,x:nx,y:ny})}}const sigma=Math.max(0.4, Math.min(2.5, 0.7*Math.sqrt(Math.max(Dmain,1e-10)/Dref)+stir*0.008));const moved=[];for(let p of newParticles){let nx=p.x+rng.normal(0,sigma);let ny=p.y+rng.normal(0,sigma);if(stir>0){const cx=50,cy=50;const dx=p.x-cx,dy=p.y-cy;const ang=Math.atan2(dy,dx)+stir*0.0005;const rad=Math.sqrt(dx*dx+dy*dy);nx=cx+Math.cos(ang)*rad+rng.normal(0,0.2);ny=cy+Math.sin(ang)*rad+rng.normal(0,0.2)}if(nx<8)nx=8+rng.range(0,1);if(nx>92)nx=92-rng.range(0,1);if(ny<12)ny=12+rng.range(0,1);if(ny>88)ny=88-rng.range(0,1);moved.push({id:p.id,x:nx,y:ny})}newParticles=moved;if(newParticles.length>80)newParticles=newParticles.slice(newParticles.length-80);const newCrystalRadius=newUndissolved<=0.02?0:20*Math.pow(Math.max(newUndissolved,0)/Math.max(initialTotal,0.001),0.333)+3;const newEquilibrium=CsatMain;const newTotalMass=newDissolved+newUndissolved;const newState={t:t+dt,dt,waterL,grainR,stir,totalSugar,tempMain,Dmain,CsatMain,dissolved:newDissolved,undissolved:newUndissolved,hot:newHot,cold:newCold,ratio:newRatio,diffusionCoeff:newDiffusionCoeff,diffusionTrend,equilibriumConcentration:newEquilibrium,totalMass:newTotalMass,initialTotal,maxDissMain,crystalRadius:newCrystalRadius,particles:newParticles,crystalX,crystalY};return newState};exports.observe=(state,params)=>{return{dissolved_sugar_g:state.dissolved,undissolved_sugar_g:state.undissolved,ratio_time_hot_over_cold:state.ratio,diffusion_coefficient_m2_per_s:state.diffusionCoeff,equilibrium_concentration_g_per_L:state.equilibriumConcentration,total_mass_g:state.totalMass}};exports.view=(state,params)=>{const bodies=[];if(state.crystalRadius>0.5){const tempNorm=Math.max(0,Math.min(1,(state.tempMain-0)/90));const r=Math.round(255-10*tempNorm);const g=Math.round(255-5*tempNorm);const b=Math.round(255);const col='#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);bodies.push({id:'crystal',x:state.crystalX,y:state.crystalY,radius:state.crystalRadius,color:col})}for(let p of state.particles){const alpha=Math.min(1, state.dissolved/8);const pr=2.2+alpha*0.8;const col=state.tempMain>50?'#ffcc88':'#cce6ff';bodies.push({id:'p'+p.id,x:p.x,y:p.y,radius:pr,color:col})}if(bodies.length===0){bodies.push({id:'crystal',x:50,y:55,radius:2,color:'#ffffff'})}return{kind:'bodies',bounds:{x:0,y:0,w:100,h:100},bodies:bodies}};"
+  },
+  "predictions": [
+    {
+      "id": "mass_conservation",
+      "prompt": "If you fully dissolve 10 g of sugar, what happens to its mass?",
+      "options": [
+        "It disappears and weighs nothing",
+        "It stays 10 g, just spread in water",
+        "It turns into water and weighs more"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "initialSugarG": 15
+      }
+    },
+    {
+      "id": "melting_vs_dissolving",
+      "prompt": "What happens to sugar grains as they dissolve?",
+      "options": [
+        "They melt into liquid sugar",
+        "They separate into single molecules among water",
+        "They react to form a new substance"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "tempC": 80,
+        "grainRadiusMm": 1
+      }
+    },
+    {
+      "id": "why_hot_faster",
+      "prompt": "Why does hot water dissolve sugar faster than cold?",
+      "options": [
+        "Hot water has higher pressure",
+        "Molecules move faster and carry sugar away",
+        "Heat pulls sugar apart like tweezers"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "tempC": 80
+      }
+    }
+  ],
+  "transfer": {
+    "setup": "A chef adds the same coarse salt to two pots of broth, one simmering at 90C and one chilled at 10C, without stirring.",
+    "params": {
+      "temp_hot_C": 90,
+      "temp_cold_C": 10,
+      "grain_radius_mm": 1,
+      "stirring_rpm": 0
+    },
+    "question": "Which broth dissolves the salt first and why?",
+    "options": [
+      "Cold broth, cold holds more salt",
+      "Hot broth, molecules move faster and hold more",
+      "Both same, temperature only melts salt"
+    ],
+    "answerKey": 1
+  },
+  "checks": [
+    {
+      "id": "hot_faster_than_cold_ratio",
+      "description": "Time to 95% dissolved at 80C is <60% of time at 20C for identical 2mm grain without stirring - directly tests D(T) and C_sat(T) increase",
+      "params": {
+        "temp_hot_C": 80,
+        "temp_cold_C": 20,
+        "grain_radius_mm": 2,
+        "stirring_rpm": 0,
+        "initial_concentration_g_per_L": 0
+      },
+      "steps": 20000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "ratio_time_hot_over_cold",
+        "op": "lt",
+        "value": 0.6,
+        "tolerance": 0.1
+      }
+    },
+    {
+      "id": "diffusion_coefficient_trend_up",
+      "description": "Effective diffusion coefficient increases with temperature, testing Stokes-Einstein D(T) ~ T/eta(T)",
+      "params": {
+        "temp_low_C": 20,
+        "temp_high_C": 60,
+        "grain_radius_mm": 1,
+        "stirring_rpm": 0
+      },
+      "steps": 10000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "diffusion_coefficient_m2_per_s",
+        "op": "trendUp"
+      }
+    },
+    {
+      "id": "solubility_limit_increases_with_T",
+      "description": "Equilibrium concentration with excess solid is higher at 60C than at 20C, testing endothermic van't Hoff increase of C_sat(T)",
+      "params": {
+        "temp_C": 60,
+        "excess_solute_g": 500,
+        "stirring_rpm": 100,
+        "comparison_temp_C": 20
+      },
+      "steps": 30000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "equilibrium_concentration_g_per_L",
+        "op": "gt",
+        "value": 320,
+        "tolerance": 25
+      }
+    },
+    {
+      "id": "control_isothermal_no_difference",
+      "description": "Control: remove temperature cause - with identical temperature (20C vs 20C) dissolution time ratio ~1, effect disappears",
+      "params": {
+        "temp_hot_C": 20,
+        "temp_cold_C": 20,
+        "grain_radius_mm": 2,
+        "stirring_rpm": 0
+      },
+      "steps": 20000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "ratio_time_hot_over_cold",
+        "op": "approx",
+        "value": 1,
+        "tolerance": 0.07
+      }
+    },
+    {
+      "id": "mass_conservation_refutes_disappearance",
+      "description": "Total mass (dissolved + undissolved) conserved at all temperatures, refuting disappearance misconception",
+      "params": {
+        "temp_C": 50,
+        "initial_sugar_g": 10,
+        "water_L": 1,
+        "grain_radius_mm": 2
+      },
+      "steps": 15000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "total_mass_g",
+        "op": "approx",
+        "value": 10,
+        "tolerance": 0.05
+      }
+    }
+  ],
+  "art": {
+    "style": "cozy kitchen watercolor with soft morning light",
+    "background": "a clear glass of water on a wooden counter with morning light",
+    "painted": {
+      "background": "/art/sugar-dissolution-hot-water/background.webp",
+      "sprites": {}
+    }
+  }
+}

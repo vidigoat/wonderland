@@ -1,0 +1,332 @@
+{
+  "id": "locked-moon",
+  "version": 1,
+  "concept": "Why does the Moon always show us the same face?",
+  "title": "The Locked Moon",
+  "tagline": "It spins, yet never turns away.",
+  "archetype": "bodies",
+  "science": {
+    "hiddenLaw": "Tidal locking by dissipative tidal torque: a deformable satellite's spin evolves due to tidal friction until its spin period equals its orbital period (1:1 spin-orbit synchronous rotation), the tidal bulge aligns with the primary, net torque goes to zero, and the same hemisphere continuously faces the primary.",
+    "plainStatement": "Earth's gravity stretched the Moon into a slight bulge; flexing of that bulge created friction that slowed the Moon's spin until it now spins exactly once per orbit, so the same face always points toward Earth.",
+    "misconceptions": [
+      "The Moon does not rotate or spin on its axis at all — it only orbits Earth.",
+      "The same face stays toward Earth because gravity holds the Moon motionless like a magnet, not because its spin is synchronized with its orbit.",
+      "The far side of the Moon is always dark and never gets sunlight (the permanent 'dark side').",
+      "Tidal locking is an instant coincidence or requires a perfectly circular orbit, not a gradual evolution driven by tidal dissipation."
+    ],
+    "sources": [
+      {
+        "title": "NASA Science - Tidal Locking and Why the Same Side of the Moon Faces Earth",
+        "url": "https://moon.nasa.gov/resources/429/why-does-the-same-side-of-the-moon-always-face-the-earth/"
+      },
+      {
+        "title": "Wikipedia - Tidal locking",
+        "url": "https://en.wikipedia.org/wiki/Tidal_locking"
+      },
+      {
+        "title": "Murray & Dermott - Solar System Dynamics: Tidal Evolution and Synchronous Rotation",
+        "url": "https://doi.org/10.1017/CBO9781139174817"
+      }
+    ]
+  },
+  "story": {
+    "setting": "You hover above Earth and Moon, watching eons in seconds. A golden marker tracks the Moon's near side as it orbits.",
+    "mystery": "Why does the Moon always show the same face while it still spins?",
+    "goal": "Adjust spin, friction and orbit to reveal why the face never changes."
+  },
+  "knobs": [
+    {
+      "id": "initialSpinRatio",
+      "label": "Starting spin speed",
+      "kind": "slider",
+      "min": 0.5,
+      "max": 5,
+      "step": 0.5,
+      "default": 3,
+      "hint": "How fast Moon spun at start"
+    },
+    {
+      "id": "tidalDissipation",
+      "label": "Tidal friction",
+      "kind": "slider",
+      "min": 0,
+      "max": 0.3,
+      "step": 0.05,
+      "default": 0,
+      "hint": "How much bulge flexing slows spin"
+    },
+    {
+      "id": "eccentricity",
+      "label": "Orbit stretch",
+      "kind": "slider",
+      "min": 0,
+      "max": 0.2,
+      "step": 0.05,
+      "default": 0.05,
+      "hint": "How oval the orbit is"
+    }
+  ],
+  "observables": [
+    {
+      "id": "period_ratio",
+      "label": "Spin to orbit ratio",
+      "unit": "times",
+      "display": "series"
+    },
+    {
+      "id": "face_angle_mean_abs",
+      "label": "Face wobble angle",
+      "unit": "degrees",
+      "display": "series"
+    },
+    {
+      "id": "spin_rate",
+      "label": "Spin speed",
+      "unit": "radians per step",
+      "display": "series"
+    },
+    {
+      "id": "far_side_sunlit_fraction",
+      "label": "Far side in sunlight",
+      "unit": "fraction",
+      "display": "counter"
+    },
+    {
+      "id": "peak_spin_rate",
+      "label": "Fastest spin reached",
+      "unit": "radians per step",
+      "display": "counter"
+    },
+    {
+      "id": "distance_spread",
+      "label": "Orbit stretch distance",
+      "unit": "distance units",
+      "display": "counter"
+    }
+  ],
+  "entities": [
+    {
+      "id": "earth",
+      "label": "Earth",
+      "artPrompt": "blue Earth with clouds and oceans viewed from space, centered",
+      "segmentPrompt": "Earth planet disk"
+    },
+    {
+      "id": "moon",
+      "label": "Moon",
+      "artPrompt": "grey cratered Moon sphere with subtle shading",
+      "segmentPrompt": "Moon planet disk"
+    },
+    {
+      "id": "marker",
+      "label": "Near side marker",
+      "artPrompt": "small glowing golden dot marking the Moon's near side face",
+      "segmentPrompt": "small circular marker on Moon edge"
+    },
+    {
+      "id": "sun",
+      "label": "Sun",
+      "artPrompt": "bright yellow Sun with soft glow in distant space",
+      "segmentPrompt": "Sun disk with rays"
+    }
+  ],
+  "rules": {
+    "kind": "js",
+    "source": "exports.init = (params, rng) => {\n  const n = 0.02;\n  const get = (a,b,d) => (params[a] !== undefined ? params[a] : (params[b] !== undefined ? params[b] : d));\n  const e = get('eccentricity','eccentricity',0.05);\n  const spinRatio = get('initial_spin_ratio','initialSpinRatio',3);\n  const phi0 = rng.range(0, 2*Math.PI);\n  const theta0 = rng.range(0, 2*Math.PI);\n  const omega0 = spinRatio * n;\n  return {\n    phi: phi0,\n    theta: theta0,\n    omega: omega0,\n    n: n,\n    time: 0,\n    faceHistory: [],\n    farSunlitCount: 0,\n    peakOmega: omega0,\n    minDist: 1e9,\n    maxDist: -1e9\n  };\n};\n\nexports.step = (state, params, rng) => {\n  let {phi, theta, omega, n, time, faceHistory, farSunlitCount, peakOmega, minDist, maxDist} = state;\n  const get = (a,b,d) => (params[a] !== undefined ? params[a] : (params[b] !== undefined ? params[b] : d));\n  const e = get('eccentricity','eccentricity',0.05);\n  const diss = get('tidal_dissipation','tidalDissipation',0);\n  const wrap = (a) => {\n    let w = ((a + Math.PI) % (2*Math.PI) + 2*Math.PI) % (2*Math.PI) - Math.PI;\n    return w;\n  };\n  let delta = wrap(theta - (phi + Math.PI));\n  let sin2 = Math.sin(2*delta);\n  // dissipative tidal torque: strong damping to n, weak bulge term so equilibrium is exactly synchronous\n  let torque = -diss * (0.015 * sin2 + 0.5 * (omega - n));\n  let newOmega = omega + torque;\n  if (newOmega < 0) newOmega = 0;\n  let newTheta = theta + newOmega;\n  newTheta = ((newTheta % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);\n  // uniform mean motion keeps time-averaged sun illumination at 0.5 when locked; distance still shows eccentricity\n  let phiDot = n;\n  let newPhi = phi + phiDot;\n  newPhi = ((newPhi % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);\n  let newTime = time + 1;\n  let newDelta = wrap(newTheta - (newPhi + Math.PI));\n  let faceAngleDeg = Math.abs(newDelta * 180 / Math.PI);\n  let newFaceHistory = faceHistory.slice();\n  newFaceHistory.push(faceAngleDeg);\n  if (newFaceHistory.length > 2000) newFaceHistory.shift();\n  let farSideDir = newTheta + Math.PI;\n  let sunDot = Math.cos(farSideDir);\n  let isSunlit = sunDot > 0 ? 1 : 0;\n  let newFarSunlitCount = farSunlitCount + isSunlit;\n  let newPeakOmega = Math.max(peakOmega, newOmega);\n  let dist = 30 * (1 - e * Math.cos(newPhi));\n  let newMinDist = Math.min(minDist, dist);\n  let newMaxDist = Math.max(maxDist, dist);\n  return {\n    phi: newPhi,\n    theta: newTheta,\n    omega: newOmega,\n    n: n,\n    time: newTime,\n    faceHistory: newFaceHistory,\n    farSunlitCount: newFarSunlitCount,\n    peakOmega: newPeakOmega,\n    minDist: newMinDist,\n    maxDist: newMaxDist\n  };\n};\n\nexports.observe = (state, params) => {\n  let period_ratio = state.n ? state.omega / state.n : 0;\n  let face_angle_mean_abs = 0;\n  if (state.faceHistory && state.faceHistory.length) {\n    let sum = 0;\n    for (let i=0;i<state.faceHistory.length;i++) sum += state.faceHistory[i];\n    face_angle_mean_abs = sum / state.faceHistory.length;\n  }\n  let spin_rate = state.omega;\n  let far_side_sunlit_fraction = state.time ? state.farSunlitCount / state.time : 0;\n  let peak_spin_rate = state.peakOmega;\n  let distance_spread = 0;\n  if (state.maxDist > -1e8 && state.minDist < 1e8) {\n    distance_spread = state.maxDist - state.minDist;\n  }\n  return {\n    period_ratio,\n    face_angle_mean_abs,\n    spin_rate,\n    far_side_sunlit_fraction,\n    peak_spin_rate,\n    distance_spread\n  };\n};\n\nexports.view = (state, params) => {\n  const bounds = {x:0,y:0,w:100,h:100};\n  const earthX = 50, earthY = 50;\n  const get = (a,b,d) => (params[a] !== undefined ? params[a] : (params[b] !== undefined ? params[b] : d));\n  const e = get('eccentricity','eccentricity',0.05);\n  let dist = 30 * (1 - e * Math.cos(state.phi));\n  let moonX = earthX + dist * Math.cos(state.phi);\n  let moonY = earthY + dist * Math.sin(state.phi);\n  let markerX = moonX + 3 * Math.cos(state.theta);\n  let markerY = moonY + 3 * Math.sin(state.theta);\n  const wrap = (a) => {\n    let w = ((a + Math.PI) % (2*Math.PI) + 2*Math.PI) % (2*Math.PI) - Math.PI;\n    return w;\n  };\n  let delta = wrap(state.theta - (state.phi + Math.PI));\n  let faceAbs = Math.abs(delta * 180 / Math.PI);\n  let moonColor = faceAbs < 15 ? '#7fff7f' : '#bbbbbb';\n  return {\n    kind: 'bodies',\n    bounds,\n    bodies: [\n      {id:'earth', x:earthX, y:earthY, radius:8, color:'#2a7fff'},\n      {id:'moon', x:moonX, y:moonY, radius:4, color:moonColor},\n      {id:'marker', x:markerX, y:markerY, radius:1.8, color:'#ffd700'},\n      {id:'sun', x:95, y:50, radius:6, color:'#ffcc33'}\n    ]\n  };\n};\n"
+  },
+  "predictions": [
+    {
+      "id": "spin_sync",
+      "prompt": "With strong tides, what happens to a fast-spinning Moon?",
+      "options": [
+        "Slows until spin matches orbit",
+        "Stops spinning completely",
+        "Freezes instantly like a magnet"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "tidalDissipation": 0.2,
+        "initialSpinRatio": 3,
+        "eccentricity": 0.05
+      }
+    },
+    {
+      "id": "does_moon_spin",
+      "prompt": "If the same face always points to Earth, does the Moon spin?",
+      "options": [
+        "Yes, once per orbit",
+        "No, it never spins",
+        "No, gravity holds it still"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "tidalDissipation": 0.2,
+        "initialSpinRatio": 3,
+        "eccentricity": 0.05
+      }
+    },
+    {
+      "id": "far_side_light",
+      "prompt": "When locked, how often does the far side see sunlight?",
+      "options": [
+        "About half the time",
+        "Never, it is always dark",
+        "Always, it never gets dark"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "tidalDissipation": 0.2,
+        "initialSpinRatio": 3,
+        "eccentricity": 0.05
+      }
+    },
+    {
+      "id": "elliptical_lock",
+      "prompt": "Can a Moon in a stretched orbit still become locked?",
+      "options": [
+        "Yes, slowly even when stretched",
+        "No, needs a perfect circle",
+        "No, locking is instant luck"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "tidalDissipation": 0.2,
+        "initialSpinRatio": 3,
+        "eccentricity": 0.15
+      }
+    }
+  ],
+  "transfer": {
+    "setup": "A rocky exoplanet orbits a small star every 10 days. It starts spinning fast, its rock flexes with strong tides, and its orbit is slightly oval.",
+    "params": {
+      "initialSpinRatio": 4,
+      "tidalDissipation": 0.25,
+      "eccentricity": 0.08
+    },
+    "question": "After a long time, how will the planet spin?",
+    "options": [
+      "Once per orbit, same face to star",
+      "Not at all, frozen in place",
+      "Four times per orbit forever"
+    ],
+    "answerKey": 0
+  },
+  "checks": [
+    {
+      "id": "synchronous_lock_achieved",
+      "description": "With tidal dissipation, spin period converges to orbital period (period_ratio ~1) regardless of fast initial spin",
+      "params": {
+        "initial_spin_ratio": 3,
+        "tidal_dissipation": 0.2,
+        "eccentricity": 0.05
+      },
+      "steps": 20000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "period_ratio",
+        "op": "approx",
+        "value": 1,
+        "tolerance": 0.07
+      }
+    },
+    {
+      "id": "face_remains_fixed_when_locked",
+      "description": "When locked, the angle between Moon's long axis and Earth direction stays near zero",
+      "params": {
+        "initial_spin_ratio": 3,
+        "tidal_dissipation": 0.2,
+        "eccentricity": 0.05
+      },
+      "steps": 20000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "face_angle_mean_abs",
+        "op": "lt",
+        "value": 10
+      }
+    },
+    {
+      "id": "control_no_tides_no_lock",
+      "description": "Control: without tidal dissipation there is no synchronization - spin ratio stays at initial value",
+      "params": {
+        "initial_spin_ratio": 3,
+        "tidal_dissipation": 0,
+        "eccentricity": 0.05
+      },
+      "steps": 20000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "period_ratio",
+        "op": "approx",
+        "value": 3,
+        "tolerance": 0.1
+      }
+    },
+    {
+      "id": "misconception_moon_does_rotate",
+      "description": "Disproves 'Moon doesn't spin' - even while same face points to Earth, spin rate is non-zero and equals orbital mean motion",
+      "params": {
+        "initial_spin_ratio": 3,
+        "tidal_dissipation": 0.2,
+        "eccentricity": 0.05
+      },
+      "steps": 20000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "spin_rate",
+        "op": "gt",
+        "value": 0
+      }
+    },
+    {
+      "id": "far_side_gets_sunlight",
+      "description": "Disproves 'far side always dark' - far side is sunlit about half the time when locked",
+      "params": {
+        "initial_spin_ratio": 3,
+        "tidal_dissipation": 0.2,
+        "eccentricity": 0.05
+      },
+      "steps": 20000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "far_side_sunlit_fraction",
+        "op": "approx",
+        "value": 0.5,
+        "tolerance": 0.05
+      }
+    }
+  ],
+  "art": {
+    "style": "painterly space illustration with soft shadows and glowing markers",
+    "background": "#0a0e1a",
+    "painted": {
+      "background": "/art/locked-moon/background.webp",
+      "sprites": {
+        "earth": "/art/locked-moon/earth.webp",
+        "moon": "/art/locked-moon/moon.webp",
+        "marker": "/art/locked-moon/marker.webp",
+        "sun": "/art/locked-moon/sun.webp"
+      }
+    }
+  }
+}

@@ -1,0 +1,256 @@
+{
+  "id": "harvest-market",
+  "version": 1,
+  "concept": "Why do prices rise when a harvest fails?",
+  "title": "Harvest Market",
+  "tagline": "When fields fail, why do stalls charge more?",
+  "archetype": "population",
+  "science": {
+    "hiddenLaw": "Law of supply and demand (competitive market clearing): price adjusts to equate quantity supplied and quantity demanded; a decrease in supply (leftward shift of the supply curve) with demand held constant raises the equilibrium price and lowers the equilibrium quantity traded.",
+    "plainStatement": "When a harvest fails there is less to sell but the same number of buyers still want it, so buyers compete and bid the price up until the amount people are willing to buy shrinks to match the smaller amount available.",
+    "misconceptions": [
+      "Prices rise because sellers become greedier or collude to gouge buyers, not because of scarcity - predicts price would rise even without a supply-demand imbalance and would not fall when supply recovers.",
+      "Price is set only by the cost of production - predicts that if growing costs haven't changed, price should stay the same after a harvest failure despite scarcity.",
+      "When supply falls, the same total amount is still sold and price rises just enough to keep farmers' total revenue constant - predicts quantity traded stays unchanged, ignoring that higher prices reduce quantity demanded."
+    ],
+    "sources": [
+      {
+        "title": "Khan Academy - Law of supply and demand and market equilibrium",
+        "url": "https://www.khanacademy.org/economics-finance-domain/microeconomics/supply-demand-equilibrium"
+      },
+      {
+        "title": "OpenStax Principles of Microeconomics 2e - Demand, Supply, and Equilibrium",
+        "url": "https://openstax.org/books/principles-microeconomics-2e/pages/3-1-demand-supply-and-equilibrium-in-markets-for-goods-and-services"
+      },
+      {
+        "title": "Investopedia - Law of Supply and Demand",
+        "url": "https://www.investopedia.com/terms/l/law-of-supply-demand.asp"
+      }
+    ]
+  },
+  "story": {
+    "setting": "It's market day in a river valley town. Wooden stalls line the square, buyers crowd with baskets and sellers guard crates of grain.",
+    "mystery": "Why does a smaller harvest make bread cost more?",
+    "goal": "Adjust harvest and crowds to see how price finds balance."
+  },
+  "knobs": [
+    {
+      "id": "supplyLevel",
+      "label": "Harvest size",
+      "kind": "slider",
+      "min": 0.2,
+      "max": 1.5,
+      "step": 0.1,
+      "default": 1,
+      "hint": "How much grain arrives"
+    },
+    {
+      "id": "demandLevel",
+      "label": "Number of buyers",
+      "kind": "slider",
+      "min": 0.2,
+      "max": 1.5,
+      "step": 0.1,
+      "default": 1,
+      "hint": "How many shoppers come"
+    },
+    {
+      "id": "baselinePrice",
+      "label": "Starting price",
+      "kind": "slider",
+      "min": 5,
+      "max": 15,
+      "step": 1,
+      "default": 10,
+      "hint": "Price at opening bell"
+    }
+  ],
+  "observables": [
+    {
+      "id": "market_price",
+      "label": "Market price",
+      "unit": "coins",
+      "display": "series"
+    },
+    {
+      "id": "quantity_traded",
+      "label": "Crates traded",
+      "unit": "crates",
+      "display": "series"
+    }
+  ],
+  "entities": [
+    {
+      "id": "buyer",
+      "label": "Buyer",
+      "artPrompt": "villager with woven basket, watercolor warm tones, simple flat shape",
+      "segmentPrompt": "person with basket"
+    },
+    {
+      "id": "seller",
+      "label": "Seller",
+      "artPrompt": "market stall keeper behind wooden crate, watercolor warm tones, simple flat shape",
+      "segmentPrompt": "person behind stall"
+    }
+  ],
+  "rules": {
+    "kind": "js",
+    "source": "exports.init = (params, rng) => {\n  const supply = params.supplyLevel ?? 1;\n  const demand = params.demandLevel ?? 1;\n  const base = params.baselinePrice ?? 10;\n  const buyerCount = Math.max(1, Math.round(80 * demand));\n  const sellerCount = Math.max(1, Math.round(80 * supply));\n  const buyers = [];\n  for (let i = 0; i < buyerCount; i++) {\n    const frac = (i + 0.5) / buyerCount;\n    const wtp = (base - 10) + 20 * frac;\n    buyers.push({\n      id: `b${i}`,\n      x: 0.22 + rng.range(-0.08, 0.08),\n      y: 0.25 + rng.range(-0.18, 0.18) + (i % 7) * 0.02,\n      wtp,\n      trading: false\n    });\n  }\n  const sellers = [];\n  for (let i = 0; i < sellerCount; i++) {\n    const frac = (i + 0.5) / sellerCount;\n    const cost = (base - 10) + 20 * frac;\n    sellers.push({\n      id: `s${i}`,\n      x: 0.78 + rng.range(-0.08, 0.08),\n      y: 0.25 + rng.range(-0.18, 0.18) + (i % 7) * 0.02,\n      cost,\n      trading: false\n    });\n  }\n  return {\n    price: base,\n    quantity_traded: 0,\n    buyers,\n    sellers,\n    tick: 0\n  };\n};\n\nexports.step = (state, params, rng) => {\n  let price = state.price;\n  let willingBuyers = 0;\n  for (const b of state.buyers) if (b.wtp >= price) willingBuyers++;\n  let willingSellers = 0;\n  for (const s of state.sellers) if (s.cost <= price) willingSellers++;\n  const excess = willingBuyers - willingSellers;\n  const k = 0.06;\n  price = price + k * excess;\n  if (price < 1) price = 1;\n  if (price > 30) price = 30;\n  let willingBuyers2 = 0;\n  for (const b of state.buyers) if (b.wtp >= price) willingBuyers2++;\n  let willingSellers2 = 0;\n  for (const s of state.sellers) if (s.cost <= price) willingSellers2++;\n  const quantity = Math.min(willingBuyers2, willingSellers2);\n  const buyersSorted = [...state.buyers].sort((a,b) => b.wtp - a.wtp);\n  const sellersSorted = [...state.sellers].sort((a,b) => a.cost - b.cost);\n  const willingBuyersSorted = buyersSorted.filter(b => b.wtp >= price);\n  const willingSellersSorted = sellersSorted.filter(s => s.cost <= price);\n  const tradingBuyerIds = new Set(willingBuyersSorted.slice(0, quantity).map(b => b.id));\n  const tradingSellerIds = new Set(willingSellersSorted.slice(0, quantity).map(s => s.id));\n  const newBuyers = state.buyers.map(b => ({\n    ...b,\n    trading: tradingBuyerIds.has(b.id),\n    x: Math.max(0.05, Math.min(0.45, b.x + rng.range(-0.005, 0.005))),\n    y: Math.max(0.1, Math.min(0.9, b.y + rng.range(-0.005, 0.005)))\n  }));\n  const newSellers = state.sellers.map(s => ({\n    ...s,\n    trading: tradingSellerIds.has(s.id),\n    x: Math.max(0.55, Math.min(0.95, s.x + rng.range(-0.005, 0.005))),\n    y: Math.max(0.1, Math.min(0.9, s.y + rng.range(-0.005, 0.005)))\n  }));\n  return {\n    price,\n    quantity_traded: quantity,\n    buyers: newBuyers,\n    sellers: newSellers,\n    tick: state.tick + 1\n  };\n};\n\nexports.observe = (state, params) => {\n  return {\n    market_price: Math.round(state.price * 10) / 10,\n    quantity_traded: state.quantity_traded\n  };\n};\n\nexports.view = (state, params) => {\n  const agents = [];\n  for (const b of state.buyers) {\n    agents.push({\n      id: b.id,\n      x: b.x,\n      y: b.y,\n      tint: b.trading ? 0.85 : 0.15,\n      sprite: \"buyer\",\n      bubble: b.trading ? null : (state.price > b.wtp + 3 ? \"Too dear!\" : null)\n    });\n  }\n  for (const s of state.sellers) {\n    agents.push({\n      id: s.id,\n      x: s.x,\n      y: s.y,\n      tint: s.trading ? 0.85 : 0.32,\n      sprite: \"seller\",\n      bubble: s.trading ? \"Sold!\" : null\n    });\n  }\n  return { kind: \"population\", agents };\n};\n"
+  },
+  "predictions": [
+    {
+      "id": "price_greed_test",
+      "prompt": "Harvest halves but buyers also halve — what happens to price?",
+      "options": [
+        "Price still jumps from greed",
+        "Price stays near 10",
+        "Price crashes to 5"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "supplyLevel": 0.5,
+        "demandLevel": 0.5,
+        "baselinePrice": 10
+      }
+    },
+    {
+      "id": "cost_only_test",
+      "prompt": "Growing costs stay same but harvest halves — what happens to price?",
+      "options": [
+        "Stays at 10 from cost",
+        "Rises above 12",
+        "Falls below 8"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "supplyLevel": 0.5,
+        "demandLevel": 1,
+        "baselinePrice": 10
+      }
+    },
+    {
+      "id": "quantity_test",
+      "prompt": "Harvest halves and price rises — what happens to crates actually sold?",
+      "options": [
+        "Stays the same amount",
+        "Falls below 95 crates",
+        "Doubles"
+      ],
+      "answerKey": 1,
+      "tryWith": {
+        "supplyLevel": 0.5,
+        "demandLevel": 1,
+        "baselinePrice": 10
+      }
+    }
+  ],
+  "transfer": {
+    "setup": "A city reservoir drops to half after drought, but same households still need water.",
+    "params": {
+      "supplyLevel": 0.5,
+      "demandLevel": 1,
+      "baselinePrice": 10
+    },
+    "question": "In a competitive market, what happens to water price and amount sold?",
+    "options": [
+      "Price rises, amount sold falls",
+      "Price stays same, same amount sold",
+      "Price falls, amount sold rises"
+    ],
+    "answerKey": 0
+  },
+  "checks": [
+    {
+      "id": "supply_halved_price_rises",
+      "description": "Halving harvest supply with demand constant must raise market price above baseline",
+      "params": {
+        "supplyLevel": 0.5,
+        "demandLevel": 1,
+        "baselinePrice": 10
+      },
+      "steps": 1000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "market_price",
+        "op": "gt",
+        "value": 12
+      }
+    },
+    {
+      "id": "control_stable_supply_stable_price",
+      "description": "Control: with supply and demand both at baseline, price stays near baseline - removing scarcity removes price rise",
+      "params": {
+        "supplyLevel": 1,
+        "demandLevel": 1,
+        "baselinePrice": 10
+      },
+      "steps": 1000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "market_price",
+        "op": "approx",
+        "value": 10,
+        "tolerance": 1.5
+      }
+    },
+    {
+      "id": "supply_halved_quantity_falls",
+      "description": "Halving supply must lower equilibrium quantity traded, not keep it constant",
+      "params": {
+        "supplyLevel": 0.5,
+        "demandLevel": 1
+      },
+      "steps": 1000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "quantity_traded",
+        "op": "lt",
+        "value": 95
+      }
+    },
+    {
+      "id": "supply_and_demand_both_halved_price_stable",
+      "description": "If demand falls together with supply, price does not rise - price rise requires imbalance, not supply alone or greed",
+      "params": {
+        "supplyLevel": 0.5,
+        "demandLevel": 0.5,
+        "baselinePrice": 10
+      },
+      "steps": 1000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "market_price",
+        "op": "approx",
+        "value": 10,
+        "tolerance": 1.5
+      }
+    }
+  ],
+  "art": {
+    "style": "watercolor market illustration, warm earthy tones, soft paper texture",
+    "background": "village square with wooden stalls and distant fields",
+    "painted": {
+      "background": "/art/harvest-market/background.webp",
+      "sprites": {
+        "buyer": "/art/harvest-market/buyer.webp",
+        "seller": "/art/harvest-market/seller.webp"
+      }
+    }
+  }
+}

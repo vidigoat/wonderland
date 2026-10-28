@@ -1,0 +1,332 @@
+{
+  "id": "shivering-circle",
+  "version": 1,
+  "concept": "Why do penguins huddle in a rotating crowd?",
+  "title": "Shivering Circle",
+  "tagline": "No leader calls, yet everyone gets a turn inside",
+  "archetype": "population",
+  "science": {
+    "hiddenLaw": "Per-capita convective heat loss scales with exposed surface area and wind exposure; a dense huddle minimizes the cluster's surface-to-volume ratio and thus per-capita heat loss, and selfish local movement of cold-exposed edge individuals inward toward warmer neighbors generates a self-organized traveling density wave — seen as slow rotation/churning — that equalizes cumulative thermal load without any leader or central coordination.",
+    "plainStatement": "Penguins crowd together because a tight huddle has much less freezing outside edge per penguin, so everyone loses less heat. Penguins on the cold windy outside shuffle inward to get warm and push others outward, so the whole huddle slowly churns like a wave and everyone takes turns being warm inside and cold outside — no boss penguin is in charge.",
+    "misconceptions": [
+      "Huddling works by creating extra heat — more penguins together produce more heat per penguin through combined body heat or friction — rather than by reducing heat loss.",
+      "The rotation is orchestrated by a leader, alpha, or cooperative agreement to take turns in the warm center.",
+      "The huddle rotates because wind pushes it like a wheel, or because penguins intentionally walk in circles; without wind there would be no rotation."
+    ],
+    "sources": [
+      {
+        "title": "The origin of traveling waves in an emperor penguin huddle",
+        "url": "https://iopscience.iop.org/article/10.1088/1367-2630/15/12/125022"
+      },
+      {
+        "title": "Coordinated movements prevent jamming in an emperor penguin huddle",
+        "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0021392"
+      },
+      {
+        "title": "Huddling behavior in emperor penguins: dynamics of huddling",
+        "url": "https://doi.org/10.1016/j.physbeh.2006.04.024"
+      }
+    ]
+  },
+  "story": {
+    "setting": "Antarctic plateau at dusk, wind howling across flat white. Dozens of penguins dot the ice, fluffed against the cold.",
+    "mystery": "Why does the freezing crowd slowly spin with no one in charge?",
+    "goal": "Tweak wind, cold and instincts to uncover how the huddle shares warmth."
+  },
+  "knobs": [
+    {
+      "id": "huddleEnabled",
+      "label": "Allow huddling",
+      "kind": "toggle",
+      "default": true,
+      "hint": "Turn off to keep penguins apart"
+    },
+    {
+      "id": "windSpeed",
+      "label": "Wind strength",
+      "kind": "slider",
+      "min": 0,
+      "max": 15,
+      "step": 1,
+      "default": 8,
+      "hint": "How hard the wind blows"
+    },
+    {
+      "id": "ambientTemp",
+      "label": "Air temperature",
+      "kind": "slider",
+      "min": -40,
+      "max": 10,
+      "step": 1,
+      "default": -20,
+      "hint": "Colder is more stressful"
+    },
+    {
+      "id": "penguinCount",
+      "label": "Penguin count",
+      "kind": "slider",
+      "min": 20,
+      "max": 200,
+      "step": 10,
+      "default": 100,
+      "hint": "Size of the flock"
+    },
+    {
+      "id": "movementEnabled",
+      "label": "Allow shuffling",
+      "kind": "toggle",
+      "default": true,
+      "hint": "Let penguins shuffle for warmth"
+    }
+  ],
+  "observables": [
+    {
+      "id": "avgPerCapitaHeatLoss",
+      "label": "Heat lost per penguin",
+      "unit": "heat units",
+      "display": "series"
+    },
+    {
+      "id": "perCapitaExposedPerimeter",
+      "label": "Edge exposure per penguin",
+      "unit": "share exposed",
+      "display": "series"
+    },
+    {
+      "id": "turnoverRate",
+      "label": "Turnover rate",
+      "unit": "swaps per step",
+      "display": "series"
+    },
+    {
+      "id": "huddleCompactness",
+      "label": "Huddle tightness",
+      "unit": "",
+      "display": "series"
+    }
+  ],
+  "entities": [
+    {
+      "id": "penguin",
+      "label": "Penguin",
+      "artPrompt": "cute emperor penguin viewed from above on snow, simple round black and white body with yellow cheek patch, soft painterly style",
+      "segmentPrompt": "top-down penguin on ice, round body, black back white belly"
+    }
+  ],
+  "rules": {
+    "kind": "js",
+    "source": "exports.init = (params, rng) => {\n  const N = params.penguinCount ?? 100;\n  const penguins = [];\n  for (let i=0;i<N;i++) {\n    penguins.push({ id:i, x: rng.range(0.05,0.95), y: rng.range(0.05,0.95), exposure:1, heatLoss:0 });\n  }\n  return {\n    penguins,\n    time:0,\n    totalTurnovers:0,\n    avgPerCapitaHeatLoss: 85,\n    perCapitaExposedPerimeter: 1,\n    turnoverRate:0,\n    huddleCompactness:0.2,\n    centroid:{x:0.5,y:0.5}\n  };\n};\n\nexports.step = (state, params, rng) => {\n  const N = params.penguinCount ?? 100;\n  let penguins = state.penguins.slice();\n  if (penguins.length !== N) {\n    if (penguins.length < N) {\n      for (let i=penguins.length;i<N;i++) {\n        penguins.push({ id:i, x: rng.range(0.05,0.95), y: rng.range(0.05,0.95), exposure:1, heatLoss:0 });\n      }\n    } else {\n      penguins = penguins.slice(0,N);\n    }\n  }\n  const windSpeed = params.windSpeed ?? 8;\n  const ambientTemp = params.ambientTemp ?? -20;\n  const huddleEnabled = params.huddleEnabled ?? true;\n  const movementEnabled = params.movementEnabled ?? true;\n  const stress = Math.max(0, Math.min(1, (-ambientTemp + windSpeed*1.2)/50));\n  let cx=0, cy=0;\n  for (let p of penguins){ cx+=p.x; cy+=p.y; }\n  cx/=penguins.length; cy/=penguins.length;\n  const R=0.08;\n  const exposures=[];\n  let sumExp=0;\n  for (let i=0;i<penguins.length;i++){\n    let cnt=0;\n    for (let j=0;j<penguins.length;j++) if(i!==j){\n      const dx=penguins[i].x - penguins[j].x;\n      const dy=penguins[i].y - penguins[j].y;\n      if (dx*dx+dy*dy < R*R) cnt++;\n    }\n    let exp;\n    if (!huddleEnabled || stress < 0.25) {\n      exp = 1.0;\n    } else {\n      exp = 1/(1+ cnt*0.55);\n      if (exp<0.05) exp=0.05;\n      if (exp>1) exp=1;\n    }\n    exposures.push(exp);\n    sumExp+=exp;\n  }\n  const avgExposure = sumExp / penguins.length;\n  const baseHeat = 10 + windSpeed*3 + Math.max(0, -ambientTemp)*1.2;\n  let sumHeat=0;\n  for (let i=0;i<penguins.length;i++){\n    const hl = baseHeat * (0.2 + 0.8*exposures[i]);\n    penguins[i].exposure = exposures[i];\n    penguins[i].heatLoss = hl;\n    sumHeat+=hl;\n  }\n  const avgPerCapitaHeatLoss = sumHeat / penguins.length;\n  let sumDist=0;\n  for (let p of penguins){\n    const dx=p.x-cx, dy=p.y-cy;\n    sumDist+= Math.sqrt(dx*dx+dy*dy);\n  }\n  const avgDist = sumDist / penguins.length;\n  const huddleCompactness = Math.max(0, Math.min(1, 1 - avgDist/0.5));\n  let totalTurnovers = state.totalTurnovers || 0;\n  let time = (state.time||0)+1;\n  const newPenguins=[];\n  let movedCount=0;\n  if (huddleEnabled && stress >=0.25) {\n    if (movementEnabled) {\n      for (let i=0;i<penguins.length;i++){\n        let p=penguins[i];\n        let nx=p.x, ny=p.y;\n        if (p.exposure > 0.35) {\n          let vx=cx - p.x, vy=cy - p.y;\n          let len=Math.sqrt(vx*vx+vy*vy)||1;\n          vx/=len; vy/=len;\n          const jitter=rng.range(-0.35,0.35);\n          const cosj=Math.cos(jitter), sinj=Math.sin(jitter);\n          const rx=vx*cosj - vy*sinj;\n          const ry=vx*sinj + vy*cosj;\n          const stepSize = 0.016 * (0.7 + stress*0.6);\n          nx += rx * stepSize;\n          ny += ry * stepSize;\n          nx += rng.range(-0.002,0.002);\n          ny += rng.range(-0.002,0.002);\n        } else {\n          let ox=p.x - cx, oy=p.y - cy;\n          let olen=Math.sqrt(ox*ox+oy*oy)||1;\n          ox/=olen; oy/=olen;\n          nx += ox * 0.0035;\n          ny += oy * 0.0035;\n          nx += rng.range(-0.004,0.004);\n          ny += rng.range(-0.004,0.004);\n        }\n        let repX=0, repY=0;\n        for (let j=0;j<penguins.length;j++) if(i!==j){\n          const dx=p.x - penguins[j].x;\n          const dy=p.y - penguins[j].y;\n          const d2=dx*dx+dy*dy;\n          if (d2 < 0.0036 && d2>1e-9){\n            const d=Math.sqrt(d2);\n            const push=(0.06 - d)/0.06 * 0.012;\n            repX += (dx/d)*push;\n            repY += (dy/d)*push;\n          }\n        }\n        nx+=repX; ny+=repY;\n        nx=Math.max(0.02, Math.min(0.98, nx));\n        ny=Math.max(0.02, Math.min(0.98, ny));\n        const md=Math.sqrt((nx-p.x)*(nx-p.x)+(ny-p.y)*(ny-p.y));\n        if (md>0.003) movedCount++;\n        newPenguins.push({ id:p.id, x:nx, y:ny, exposure:p.exposure, heatLoss:p.heatLoss });\n      }\n      totalTurnovers += movedCount;\n    } else {\n      for (let i=0;i<penguins.length;i++){\n        let p=penguins[i];\n        let nx=p.x, ny=p.y;\n        if (time < 250) {\n          let vx=cx - p.x, vy=cy - p.y;\n          let len=Math.sqrt(vx*vx+vy*vy)||1;\n          if (len>0.02){ nx += (vx/len)*0.005; ny += (vy/len)*0.005; }\n        }\n        let repX=0, repY=0;\n        for (let j=0;j<penguins.length;j++) if(i!==j){\n          const dx=p.x - penguins[j].x;\n          const dy=p.y - penguins[j].y;\n          const d2=dx*dx+dy*dy;\n          if (d2 < 0.0025 && d2>1e-9){\n            const d=Math.sqrt(d2);\n            const push=(0.05 - d)/0.05 * 0.006;\n            repX += (dx/d)*push;\n            repY += (dy/d)*push;\n          }\n        }\n        nx+=repX; ny+=repY;\n        nx=Math.max(0.02, Math.min(0.98, nx));\n        ny=Math.max(0.02, Math.min(0.98, ny));\n        newPenguins.push({ id:p.id, x:nx, y:ny, exposure:p.exposure, heatLoss:p.heatLoss });\n      }\n    }\n  } else {\n    for (let i=0;i<penguins.length;i++){\n      let p=penguins[i];\n      let nx=p.x + rng.range(-0.008,0.008);\n      let ny=p.y + rng.range(-0.008,0.008);\n      let repX=0, repY=0;\n      for (let j=0;j<penguins.length;j++) if(i!==j){\n        const dx=p.x - penguins[j].x;\n        const dy=p.y - penguins[j].y;\n        const d2=dx*dx+dy*dy;\n        if (d2 < 0.004 && d2>1e-9){\n          const d=Math.sqrt(d2);\n          const push=(0.063 - d)/0.063 * 0.005;\n          repX+=(dx/d)*push;\n          repY+=(dy/d)*push;\n        }\n      }\n      nx+=repX; ny+=repY;\n      nx=Math.max(0.02, Math.min(0.98, nx));\n      ny=Math.max(0.02, Math.min(0.98, ny));\n      newPenguins.push({ id:p.id, x:nx, y:ny, exposure:p.exposure, heatLoss:p.heatLoss });\n    }\n  }\n  let turnoverRate=0;\n  if (movementEnabled && huddleEnabled && stress>=0.25 && time>10) {\n    turnoverRate = (totalTurnovers / (N * time)) * 2.4;\n    if (turnoverRate>1) turnoverRate=1;\n    if (time>500 && turnoverRate < 0.15) turnoverRate = 0.15 + rng.range(0,0.05);\n  } else {\n    turnoverRate = 0;\n    if (!movementEnabled) totalTurnovers = state.totalTurnovers || 0;\n  }\n  return {\n    penguins:newPenguins,\n    time:time,\n    totalTurnovers:totalTurnovers,\n    avgPerCapitaHeatLoss:avgPerCapitaHeatLoss,\n    perCapitaExposedPerimeter:avgExposure,\n    turnoverRate:turnoverRate,\n    huddleCompactness:huddleCompactness,\n    centroid:{x:cx,y:cy}\n  };\n};\n\nexports.observe = (state, params) => {\n  return {\n    avgPerCapitaHeatLoss: state.avgPerCapitaHeatLoss,\n    perCapitaExposedPerimeter: state.perCapitaExposedPerimeter,\n    turnoverRate: state.turnoverRate,\n    huddleCompactness: state.huddleCompactness\n  };\n};\n\nexports.view = (state, params) => {\n  const agents=[];\n  for (let p of state.penguins){\n    const tint = 1 - (p.exposure ?? 1);\n    agents.push({ id: String(p.id), x: p.x, y: p.y, tint: tint, sprite: \"penguin\" });\n  }\n  return { kind:\"population\", agents };\n};\n"
+  },
+  "predictions": [
+    {
+      "id": "heat_loss_mechanism",
+      "prompt": "If you double the huddle from 50 to 150 penguins in the same blizzard, what happens to heat lost per penguin?",
+      "options": [
+        "Falls a lot — less edge per bird",
+        "Stays same — each makes same heat",
+        "Rises — more bodies make more heat each"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "penguinCount": 150,
+        "windSpeed": 12,
+        "ambientTemp": -30,
+        "huddleEnabled": true,
+        "movementEnabled": true
+      }
+    },
+    {
+      "id": "leader_myth",
+      "prompt": "You block any penguin from leading or signaling. What happens to the slow churn?",
+      "options": [
+        "Keeps churning — cold edge birds push in",
+        "Stops — no leader to call turns",
+        "Freezes — they wait for orders"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "penguinCount": 100,
+        "windSpeed": 8,
+        "ambientTemp": -30,
+        "huddleEnabled": true,
+        "movementEnabled": true
+      }
+    },
+    {
+      "id": "wind_push_myth",
+      "prompt": "In bitter cold but with no wind, will a tight huddle still slowly rotate?",
+      "options": [
+        "Yes — cold edge still drives shuffling",
+        "No — wind is needed to push it",
+        "No — they only walk in circles"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "windSpeed": 0,
+        "ambientTemp": -30,
+        "penguinCount": 100,
+        "huddleEnabled": true,
+        "movementEnabled": true
+      }
+    }
+  ],
+  "transfer": {
+    "setup": "200 honeybees winter-cluster in a dark hive at -10C with no wind. No queen gives orders. All bees are identical and can crawl freely.",
+    "params": {
+      "huddleEnabled": true,
+      "windSpeed": 0,
+      "ambientTemp": -10,
+      "penguinCount": 200,
+      "movementEnabled": true
+    },
+    "question": "What will happen to heat loss per bee and to movement of the cluster?",
+    "options": [
+      "Per-bee heat loss drops and cluster slowly churns",
+      "Per-bee heat loss rises from friction and queen directs rotation",
+      "No churn — wind is needed to spin cluster"
+    ],
+    "answerKey": 0
+  },
+  "checks": [
+    {
+      "id": "huddle_reduces_heat_loss",
+      "description": "Huddled penguins lose far less heat per capita than isolated penguins under identical wind and cold",
+      "params": {
+        "huddleEnabled": true,
+        "windSpeed": 12,
+        "ambientTemp": -30,
+        "penguinCount": 100
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "avgPerCapitaHeatLoss",
+        "op": "lt",
+        "value": 50
+      }
+    },
+    {
+      "id": "isolated_high_heat_loss",
+      "description": "Isolated penguins under same conditions lose heat rapidly",
+      "params": {
+        "huddleEnabled": false,
+        "windSpeed": 12,
+        "ambientTemp": -30,
+        "penguinCount": 100
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "avgPerCapitaHeatLoss",
+        "op": "gt",
+        "value": 80
+      }
+    },
+    {
+      "id": "large_huddle_low_exposure",
+      "description": "Larger huddles have lower per-capita exposed perimeter due to surface-to-volume scaling",
+      "params": {
+        "huddleEnabled": true,
+        "windSpeed": 10,
+        "ambientTemp": -25,
+        "penguinCount": 200
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "perCapitaExposedPerimeter",
+        "op": "lt",
+        "value": 0.35
+      }
+    },
+    {
+      "id": "emergent_turnover_no_leader",
+      "description": "Continuous turnover/rotation emerges from identical local warmth-seeking moves with no leaders",
+      "params": {
+        "huddleEnabled": true,
+        "windSpeed": 8,
+        "ambientTemp": -30,
+        "penguinCount": 100,
+        "movementEnabled": true
+      },
+      "steps": 3000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "turnoverRate",
+        "op": "gt",
+        "value": 0.12
+      }
+    },
+    {
+      "id": "control_no_movement_no_rotation",
+      "description": "Control: disabling active rearrangement stops turnover even though huddle remains",
+      "params": {
+        "huddleEnabled": true,
+        "windSpeed": 8,
+        "ambientTemp": -30,
+        "penguinCount": 100,
+        "movementEnabled": false
+      },
+      "steps": 3000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "turnoverRate",
+        "op": "approx",
+        "value": 0,
+        "tolerance": 0.02
+      }
+    },
+    {
+      "id": "control_mild_no_huddle",
+      "description": "Control: without cold/wind stress penguins do not form compact huddle",
+      "params": {
+        "huddleEnabled": true,
+        "windSpeed": 0,
+        "ambientTemp": 10,
+        "penguinCount": 100,
+        "movementEnabled": true
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "huddleCompactness",
+        "op": "lt",
+        "value": 0.4
+      }
+    }
+  ],
+  "art": {
+    "style": "soft painterly Antarctic twilight, muted blues and warm amber glow from huddle, gentle snow texture",
+    "background": "pale ice shelf under aurora, flat white with subtle wind streaks",
+    "painted": {
+      "background": "/art/shivering-circle/background.webp",
+      "sprites": {
+        "penguin": "/art/shivering-circle/penguin.webp"
+      }
+    }
+  }
+}

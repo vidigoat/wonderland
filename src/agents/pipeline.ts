@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { lintHonestReadings, type HonestyIssue } from "@/agents/honesty";
 import { lintPlayability, type PlayabilityIssue } from "@/agents/playability";
+import { tidyControls } from "@/agents/wording";
 import { generateSample } from "@/agents/sample-match";
 import { jsonSchemaFor, ScientistBrief, type ScientistBrief as ScientistBriefT } from "@/agents/structured";
 import { runAllChecks, type CheckResult } from "@/engine/checks";
@@ -237,7 +238,7 @@ async function* generateLiveBody(
       spec = WorldSpec.parse(parseJson(raw));
       // Models write ids like "counterflowCorridor"; storage needs kebab-case. Normalise rather than lose a verified world.
       // Painted art is only ever recorded by the artist, never taken from model output.
-      spec = { ...spec, id: worldId(spec.id, spec.title), art: { style: spec.art.style, background: spec.art.background } };
+      spec = tidyControls({ ...spec, id: worldId(spec.id, spec.title), art: { style: spec.art.style, background: spec.art.background } });
     } catch (error) {
       if (round === maxRepairs) break;
       yield stage("repair", "Spec didn't validate — repairing. The law stays ███.", undefined, brief);
@@ -426,7 +427,7 @@ export async function* repairFromPlaytest(original: WorldSpecT, notes: string[],
       let note: string | null;
       try {
         const parsed = WorldSpec.parse(parseJson(raw));
-        spec = { ...parsed, id: original.id, art: original.art };
+        spec = tidyControls({ ...parsed, id: original.id, art: original.art });
         yield stage("checker", `Re-running every gate on the repair: ${spec.checks.length} science checks on every seed, the playability lint, honest readings…`, spec);
         note = await gateNotes(spec);
       } catch (error) {

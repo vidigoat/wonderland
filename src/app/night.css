@@ -833,6 +833,16 @@
 .play .race-label {
   color: var(--wl-muted);
 }
+/* A reading with its unit ("0.99 of their average") wraps instead of being cut to "0.99 of th…". */
+.play .race-row span {
+  white-space: normal;
+  overflow: visible;
+  overflow-wrap: anywhere;
+}
+.play .race .num {
+  font-size: 1.05rem;
+  line-height: 1.25;
+}
 .play .tool-line {
   letter-spacing: 0;
   text-transform: none;
@@ -1741,13 +1751,9 @@
   margin-top: 8px;
 }
 /* The run button stays in reach: pinned to the foot of the panel while the controls scroll. */
+/* The run button follows the controls. Pinned to the panel's foot, it sat on top of the last slider. */
 .play .notebook .instruments .instrument-actions {
-  position: sticky;
-  bottom: -18px;
-  z-index: 2;
-  margin: 4px -22px -20px;
-  padding: 14px 22px 16px;
-  background: linear-gradient(to bottom, rgba(10, 10, 10, 0), #0a0a0a 18px);
+  margin-top: 12px;
 }
 .hud {
   align-items: flex-start;
@@ -1778,15 +1784,21 @@
   font-weight: 500;
 }
 
+/* The study wears the app's night, not a cream page of its own. */
+body:has(main.study) {
+  background: #0a0a0a;
+}
 .study {
   max-width: 880px;
   margin: 0 auto;
   padding: 32px 20px 64px;
-  color: var(--ink, #14110e);
+  color: #fafafa;
 }
 .study h1 {
   margin: 8px 0 16px;
-  color: var(--ink, #14110e);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 650;
+  color: #fafafa;
   font-size: clamp(32px, 5vw, 48px);
   letter-spacing: -0.04em;
 }
@@ -1795,7 +1807,7 @@
 .study-questions label {
   font-size: 17px;
   line-height: 1.55;
-  color: var(--ink, #14110e);
+  color: #fafafa;
 }
 .study-frame {
   width: 100%;
@@ -1826,12 +1838,12 @@
 .study-table th,
 .study-table td {
   padding: 8px 10px;
-  border-bottom: 1px solid rgba(20, 17, 14, 0.12);
-  color: var(--ink, #14110e);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fafafa;
   text-align: left;
 }
 .study a {
-  color: var(--ink, #14110e);
+  color: #fafafa;
 }
 
 /* The run, under the stage. The stage keeps the picture; the chart keeps the comparison. */
@@ -1995,4 +2007,24 @@
   margin: 10px 0 8px;
   color: #a3a3a3;
   font-size: 13px;
+}
+.study .kicker {
+  color: #a3a3a3;
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.study .press {
+  margin: 8px 0 16px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: #fafafa;
+  color: #0a0a0a;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.study .press:disabled {
+  opacity: 0.4;
 }

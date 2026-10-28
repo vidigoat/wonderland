@@ -63,7 +63,8 @@ export function bindingView(items: readonly MontageItem[]): BindingView {
   };
 
   if (checks && checks.total > 0 && checks.passed === checks.total && world) {
-    messages.set("checker", `All ${checks.total} passed, on every seed.`);
+    // A world event only comes after every gate: the checks, the playability lint and the honest-readings check.
+    messages.set("checker", `All ${checks.total} science checks passed on every seed. Every control changes something, and every reading measures the world itself.`);
   }
 
   return {

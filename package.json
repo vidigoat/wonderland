@@ -14,6 +14,7 @@
     "spike": "tsx --conditions=react-server --env-file=.env.local scripts/spike-generate.ts",
     "eval": "tsx --conditions=react-server --env-file=.env.local scripts/eval-generate.ts",
     "check": "pnpm typecheck && pnpm lint && pnpm test",
+    "lab": "tsx --conditions=react-server --env-file=.env.local scripts/eval-generate.ts --lab",
     "verify-worlds": "tsx --conditions=react-server scripts/verify-worlds.mts",
     "paint": "tsx --conditions=react-server --env-file=.env.local scripts/paint-world.mts"
   },

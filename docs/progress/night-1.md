@@ -189,6 +189,8 @@ Those hares and lynx were standing in the sky, and each starling wore a white di
 
 The shelf jam was one red disc with a single car in it, and the dune was a gold triangle cut off flat. Commit `a6923fc`. The jam is now a short queue of dark cars at the left of the road, with smaller cars still moving to the right. The sand fades into the desert, and the ridge keeps the longer windward slope and the shorter slip face. Commit `6b649f0` keeps the hallway walkers inside the card. On the production gallery at 390 wide, the first walker starts 32 pixels below the top edge, and both directions are visible. `pnpm check` is 252 tests.
 
+The hallway still named its controls "Crowd density", "Westbound share", "Sidestep tendency", and "Right-side bias". The flock said "Wind jitter". Commit `d83adc5`. They now say "How crowded the hall is", "Share walking west", "How hard they step aside", and "Prefer to pass on the right". The flock says "How much they wobble". On the production server, at 390 wide and at 1440, the hallway shows those four controls, the west share reads 50%, and the hidden law is not on the page. `pnpm check` is 252 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

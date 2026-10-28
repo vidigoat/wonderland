@@ -157,23 +157,10 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
             at: at((body.x - bx) / bw, (body.y - by) / bh),
           }));
           const row = placed.length > 1 && Math.max(...placed.map((item) => item.at[1])) - Math.min(...placed.map((item) => item.at[1])) < 2;
-          if (row) {
-            const y = placed[0]!.at[1];
-            const band = Math.min(sky.w, sky.h) * 0.14;
-            ctx.fillStyle = "rgba(42, 42, 48, 0.9)";
-            ctx.fillRect(sky.x, y - band / 2, sky.w, band);
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.75)";
-            ctx.lineWidth = Math.max(1.5, band * 0.08);
-            ctx.setLineDash([band * 0.35, band * 0.28]);
-            ctx.beginPath();
-            ctx.moveTo(sky.x + band, y);
-            ctx.lineTo(sky.x + sky.w - band, y);
-            ctx.stroke();
-            ctx.setLineDash([]);
-          }
           for (const item of placed) {
             const body = item.body;
-            const [x, y] = item.at;
+            // A single file of cars belongs on the painted road, which sits in the middle of the card, still above the title.
+            const [x, y] = row ? [item.at[0], h * 0.5] : item.at;
             const speed = (body as { vx?: number }).vx;
             const tint = figureTint(spec.id, speed);
             const stopped = tint !== 0xffffff;

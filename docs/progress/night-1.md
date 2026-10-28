@@ -193,6 +193,8 @@ The hallway still named its controls "Crowd density", "Westbound share", "Sidest
 
 The meadow's first question was a paragraph about synchrony, and it asked what the model predicted. The valley called a conversion "Hares turned into lynx". The flock's new situation was about drones and headings. The plate said "Sealed edges". Commit `e313640`. The meadow now asks what happens a minute after you take away the brightest firefly. The valley says "How well a meal makes a lynx". The flock asks what happens if the birds stop copying the way their neighbors are facing. The plate says "Edges hold the heat". On the production server at 390 wide, that meadow question and its three choices fit on the phone, and the hidden law is not on the page. `pnpm check` is 252 tests.
 
+The jam's first question was a line of metres per second, and it talked about throughput and a bottleneck. The valley's new situation named phytoplankton and zooplankton. Commit `9678e77`, then `e888056`. The jam now asks what you see two minutes after one driver taps the brake on an open loop. The valley's tank holds tiny drifting plants and the animals that eat them. The opening line says nothing is blocking the road. On the production server at 390 wide, that jam question and its two choices fit on the phone. The page does not say bottleneck, and the hidden law is not on it. `pnpm check` is 252 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

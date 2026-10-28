@@ -1,5 +1,5 @@
 import { Container, Graphics, Sprite, Texture, BufferImageSource } from "pixi.js";
-import { FIELD_COLORS, clearedStrip, duneRise, fieldColor, fieldScale, heightSilhouette, phaseOffset, smoothField, softenRidge, type FieldScale } from "./helpers";
+import { FIELD_COLORS, clearedStrip, duneRise, fieldColor, fieldScale, heightSilhouette, phaseOffset, smoothField, softenPlate, softenRidge, type FieldScale } from "./helpers";
 import type { Frame, Scene } from "./scene";
 import { createBackdrop } from "./backdrop";
 import { isPaintedWorld } from "./sprites";
@@ -52,7 +52,7 @@ export function createFieldScene(): Scene {
     relief.clear();
     sprite.visible = true;
     // Over a Muse Image painting the field glows where it is strong and lets the painting show where it is empty.
-    const texture = paintGrid(smoothField(grid), scale, isPaintedWorld(next.worldId));
+    const texture = paintGrid(softenPlate(smoothField(grid)), scale, isPaintedWorld(next.worldId));
     sprite.texture = texture;
     owned?.destroy(true);
     owned = texture;

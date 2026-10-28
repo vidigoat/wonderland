@@ -390,6 +390,30 @@ export function bilinearSample(grid: number[][], x: number, y: number): number {
  * A taller copy of a continuous field. Each output cell is a bilinear sample, so a heat
  * spot fades instead of stepping from cell to cell.
  */
+/** A few passes so a coarse hot spot reads as a glow, not a stack of blocks. */
+export function softenPlate(grid: number[][], passes = 6): number[][] {
+  let current = grid;
+  for (let pass = 0; pass < passes; pass++) {
+    const rows = current.length;
+    const cols = current[0]?.length ?? 0;
+    const next: number[][] = [];
+    for (let y = 0; y < rows; y++) {
+      const row: number[] = [];
+      for (let x = 0; x < cols; x++) {
+        const center = current[y]?.[x] ?? 0;
+        const left = current[y]?.[x - 1] ?? center;
+        const right = current[y]?.[x + 1] ?? center;
+        const up = current[y - 1]?.[x] ?? center;
+        const down = current[y + 1]?.[x] ?? center;
+        row.push((center * 4 + left + right + up + down) / 8);
+      }
+      next.push(row);
+    }
+    current = next;
+  }
+  return current;
+}
+
 export function smoothField(grid: number[][], longest = 320): number[][] {
   const rows = grid.length;
   const cols = grid[0]?.length ?? 0;

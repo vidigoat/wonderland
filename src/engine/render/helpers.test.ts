@@ -30,6 +30,7 @@ import {
   splitSealedSpell,
   heightSilhouette,
   smoothField,
+  softenPlate,
   landedApart,
   injectionHighlightRange,
   phaseOffset,
@@ -270,6 +271,14 @@ describe("fieldColor", () => {
     expect(smoothed[0]?.[0]).toBeCloseTo(0);
     const plate = Array.from({ length: 32 }, () => Array<number>(32).fill(0));
     expect(smoothField(plate)[0]?.length).toBeGreaterThanOrEqual(200);
+    const hard = [
+      [0, 0, 0],
+      [0, 1, 0],
+      [0, 0, 0],
+    ];
+    const glow = softenPlate(hard, 2);
+    expect(glow[1]?.[1] ?? 1).toBeLessThan(1);
+    expect(glow[1]?.[0] ?? 0).toBeGreaterThan(0);
     const dune = Array.from({ length: 8 }, (_, y) =>
       Array.from({ length: 10 }, (_, x) => (y >= 7 - (5 - Math.abs(x - 4)) ? 1 : 0)),
     );

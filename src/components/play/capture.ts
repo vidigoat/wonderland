@@ -1,7 +1,7 @@
 import type { Params, RulesModule } from "@/engine/rules";
 import type { PublicWorldSpec } from "@/engine/spec";
 import { WorldSession } from "@/engine/runtime";
-import { defaultParams } from "./readings";
+import { defaultParams, runSteps } from "./readings";
 
 export type Shot = { dataUrl: string; caption: string };
 
@@ -56,6 +56,8 @@ function nextPaint(): Promise<void> {
   });
 }
 
+const PAINT_GRACE_MS = 2500;
+
 export async function collectShots(
   spec: PublicWorldSpec,
   rules: RulesModule,
@@ -69,10 +71,14 @@ export async function collectShots(
     { params: changedParams(spec, defaultParams(spec)), label: "One control moved" },
   ];
   await waitForCanvas(canvas);
+  // The painting arrives after the canvas; a frame taken before it shows the drawn stand-in, not the world.
+  await new Promise((resolve) => window.setTimeout(resolve, PAINT_GRACE_MS));
   for (const run of runs) {
     const session = await new WorldSession(rules, { ...run.params }, seed).start();
+    // Watch one whole run, as a player's press would play it: start, halfway, end.
+    const half = Math.max(1, Math.ceil(runSteps(spec.archetype, spec.id, run.params) / 2));
     for (let index = 0; index < 3; index++) {
-      if (index > 0) await session.tick(6);
+      if (index > 0) await session.tick(half);
       onView?.(session.view(), { ...session.params });
       await nextPaint();
       const picture = canvas();

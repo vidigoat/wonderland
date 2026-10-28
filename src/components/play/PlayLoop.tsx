@@ -267,7 +267,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
           setPlaytestNote(notes[0] ?? "Spark did not watch this world.");
           return;
         }
-        setPlaytestNote(body.verdict === "looks-right" ? "Looked right." : `Spotted something: ${notes[0] ?? "the picture needs another look."}`);
+        setPlaytestNote(body.verdict === "looks-right" ? "Spark watched it run: looked right." : "Spark watched it run and flagged the picture for another look.");
       })
       .catch(() => {
         if (!cancel) setPlaytestNote("The playtester could not watch.");

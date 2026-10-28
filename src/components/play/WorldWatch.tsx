@@ -63,7 +63,7 @@ export function WorldWatch({ spec }: { spec: PlayableSpec }) {
           setNote(notes[0] ?? "Spark did not watch this world.");
           return;
         }
-        setNote(body.verdict === "looks-right" ? "Looked right." : `Spotted something: ${notes[0] ?? "the picture needs another look."}`);
+        setNote(body.verdict === "looks-right" ? "Looked right." : "Flagged the picture for another look.");
       })
       .catch(() => {
         if (!cancel) setNote("The playtester could not watch.");

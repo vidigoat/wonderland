@@ -136,8 +136,11 @@ export async function look(opts: {
     text: {
       format: { type: "json_schema", name: opts.jsonSchema.name, schema: opts.jsonSchema.schema, strict: true },
     } as never,
-    max_output_tokens: 800,
+    // Spark reasons before it answers, and reasoning counts toward this budget; 800 ran out on six frames.
+    reasoning: { effort: "low" } as never,
+    max_output_tokens: 4000,
   });
+  if (!res.output_text) throw new Error("Spark ran out of room before it answered.");
   return res.output_text;
 }
 

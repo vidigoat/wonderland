@@ -195,6 +195,10 @@ The meadow's first question was a paragraph about synchrony, and it asked what t
 
 The jam's first question was a line of metres per second, and it talked about throughput and a bottleneck. The valley's new situation named phytoplankton and zooplankton. Commit `9678e77`, then `e888056`. The jam now asks what you see two minutes after one driver taps the brake on an open loop. The valley's tank holds tiny drifting plants and the animals that eat them. The opening line says nothing is blocking the road. On the production server at 390 wide, that jam question and its two choices fit on the phone. The page does not say bottleneck, and the hidden law is not on it. `pnpm check` is 252 tests.
 
+The dune's opening called it a barchan and named the stoss and the slip face. The plate's opening was an infrared camera in a lab. Commit `b970366`. The dune now says you can see a long gentle slope facing the wind, and a short steep face where the sand slips. The plate says the picture is bright where it is hot. On the production server the dune page does not say barchan, stoss, or slip face.
+
+On the stage that dune was a gold triangle cut off in a straight line. Commit `607e303`. The sand now fades into the desert, and the slip face is the steeper side. Checked at 1440 wide and at 390. `pnpm check` is 252 tests.
+
 ## Still blocked on a key
 
 The playtester batch of 12 worlds, capped at $0.60 of Meta, was not run. There is no `MODEL_API_KEY` and no ledger in this checkout. A live `pnpm eval` would stop if the Baseten total reached $4.30. Painting new worlds stays capped at $1.00 of Meta, and was not started.

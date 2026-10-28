@@ -1,4 +1,4 @@
-import { Container, Graphics, Sprite, Texture, BufferImageSource } from "pixi.js";
+import { Container, FillGradient, Graphics, Sprite, Texture, BufferImageSource } from "pixi.js";
 import { FIELD_COLORS, clearedStrip, duneRise, fieldColor, fieldScale, heightSilhouette, phaseOffset, smoothField, softenRidge, type FieldScale } from "./helpers";
 import type { Frame, Scene } from "./scene";
 import { createBackdrop } from "./backdrop";
@@ -151,10 +151,20 @@ function drawDune(g: Graphics, heights: number[], box: Box, painted: boolean): v
   }
   const left = ridge[0] ?? box.x;
   const right = ridge[ridge.length - 2] ?? box.x + box.w;
-  g.poly([...ridge, right, box.y + box.h, left, box.y + box.h]).fill({
-    color: FIELD_COLORS.gold,
-    alpha: painted ? 0.78 : 0.92,
+  const bottom = box.y + box.h;
+  const crest = box.y + box.h * (1 - duneRise(1));
+  const sand = new FillGradient({
+    type: "linear",
+    textureSpace: "global",
+    start: { x: box.x, y: crest },
+    end: { x: box.x, y: bottom },
+    colorStops: [
+      { offset: 0, color: "rgba(224, 177, 90, 0.95)" },
+      { offset: 0.62, color: "rgba(224, 177, 90, 0.72)" },
+      { offset: 1, color: "rgba(224, 177, 90, 0)" },
+    ],
   });
+  g.poly([...ridge, right, bottom, left, bottom]).fill(sand);
   g.poly(ridge).stroke({ width: Math.max(1.5, box.h * 0.008), color: painted ? 0x6e4a28 : 0xf3ddb0, alpha: painted ? 0.4 : 0.95, cap: "round", join: "round" });
 }
 

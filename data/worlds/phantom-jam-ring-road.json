@@ -3,7 +3,7 @@
   "version": 1,
   "concept": "Why do traffic jams appear out of nowhere?",
   "title": "Ghost Jam Circuit",
-  "tagline": "A flawless loop with no bottleneck \u2014 yet traffic still snarls",
+  "tagline": "A flawless loop with nothing in the way \u2014 yet traffic still snarls",
   "archetype": "bodies",
   "science": {
     "hiddenLaw": "On a uniform road with no bottleneck, phantom jams arise by string instability: above a critical vehicle density, finite driver reaction delay combined with safe-distance car-following causes any small braking perturbation to amplify upstream into a backward-propagating stop-and-go wave that lowers mean flow; below critical density or with zero delay the same perturbation decays and no jam forms.",
@@ -35,7 +35,7 @@
   },
   "story": {
     "setting": "A pristine circular test track in the desert, filmed from above. No intersections, no accidents, no lane closures \u2014 just a perfect loop of asphalt and a fleet of identical test cars driving autonomously. You control the fleet size, the track length, how drivers react, and you can tap one car's brakes.",
-    "mystery": "Engineers swear the road has no bottleneck, yet at certain times a cluster of stopped cars appears out of nowhere, crawls backwards against traffic, and chokes the flow. Other times the same tiny brake tap vanishes without a trace. The jam seems to have a life of its own.",
+    "mystery": "Engineers swear nothing is blocking the road, yet at certain times a cluster of stopped cars appears out of nowhere, crawls backwards against the traffic, and chokes the flow. Other times the same tiny brake tap vanishes without a trace. The jam seems to have a life of its own.",
     "goal": "Find the hidden rule that decides when a whisper of braking becomes a ghost jam. Learn to predict when the wave will form, which way it moves, and why packing cars tighter can make fewer cars get through."
   },
   "knobs": [

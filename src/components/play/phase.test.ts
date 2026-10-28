@@ -149,6 +149,8 @@ describe("phase machine", () => {
     const jam = spoken("data/worlds/phantom-jam-ring-road.json");
     expect(jam).toContain("The loop has no accident");
     expect(jam).not.toMatch(/m\/s|throughput|bottleneck/i);
+    const jamStory = JSON.parse(readFileSync("data/worlds/phantom-jam-ring-road.json", "utf8")) as { tagline: string; story: { mystery: string } };
+    expect(`${jamStory.tagline} ${jamStory.story.mystery}`).not.toMatch(/bottleneck/i);
     const chase = spoken("data/worlds/predator-prey-valley.json");
     expect(chase).toContain("tiny drifting plants");
     expect(chase).not.toMatch(/phytoplankton|zooplankton/);

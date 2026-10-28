@@ -334,7 +334,7 @@ async function* generateLiveBody(
 
   yield {
     type: "error",
-    message: "Couldn't produce a world that passes its science checks and playability lint. Try rephrasing the concept.",
+    message: "Couldn't produce a world that passes its science checks, playability lint and honest-readings check. Try rephrasing the concept.",
     source: "live",
   };
 }
@@ -363,4 +363,89 @@ function repairNotes(issues: PlayabilityIssue[], spec: WorldSpecT): string {
     "",
     "Fix the rules, knobs, or predictions and return the full corrected WorldSpec JSON only.",
   ].join("\n");
+}
+
+/** Every gate a world must pass before it ships. Returns repair notes for the designer, or null when all pass. */
+async function gateNotes(spec: WorldSpecT): Promise<string | null> {
+  let results: CheckResult[];
+  try {
+    results = await runAllChecks(await loadJsRules(spec), spec);
+  } catch (error) {
+    return `The sandboxed rules crashed:\n${cause(error)}\n\nCurrent spec:\n${JSON.stringify(spec)}\n\nFix the rules and return the full corrected WorldSpec JSON only.`;
+  }
+  const failed = results.filter((result) => !result.passed);
+  if (failed.length > 0) {
+    return `These checks failed:\n${JSON.stringify(failed, null, 2)}\n\nCurrent spec:\n${JSON.stringify(spec)}\n\nFix the rules and return the full corrected WorldSpec JSON only.`;
+  }
+  const rules = await loadJsRules(spec);
+  const issues = await lintPlayability(rules, spec);
+  if (issues.length > 0) return repairNotes(issues, spec);
+  const faked = await lintHonestReadings(rules, spec);
+  if (faked.length > 0) return honestyNotes(faked, spec);
+  return null;
+}
+
+function watchedNotes(notes: string[], spec: WorldSpecT): string {
+  return [
+    "A playtester (Muse Spark 1.3, vision) watched this world run: start, middle and end of one run with the starting controls, then the same with one control moved. The science checks pass, but the PICTURE does not show what the law predicts, or something looks broken. What it saw:",
+    "",
+    ...notes.map((note) => `- ${note}`),
+    "",
+    "Fix view (and step, if the state lacks what the picture needs) so that what the player must notice is visible: it should change colour, size, position or count as the law predicts, within one run of the default length. Keep the id, title, knob ids and observable ids. The checks must still pass.",
+    "",
+    "Current spec:",
+    JSON.stringify(spec),
+    "",
+    "Return the full corrected WorldSpec JSON only.",
+  ].join("\n");
+}
+
+/**
+ * The playtester saw a problem: send its notes to the designer, re-run every gate, and save the repair.
+ * The world keeps its id and its paintings. If no repair passes every gate, the original stays.
+ */
+export async function* repairFromPlaytest(original: WorldSpecT, notes: string[], maxRounds = 2): AsyncGenerator<PipelineEvent> {
+  if (reasoningSource() === "sample" || original.rules.kind !== "js") {
+    yield { type: "error", message: "Only a model-written world with a live key can be repaired.", source: "sample" };
+    return;
+  }
+  const designerPrompt = await prompt("designer");
+  const worldSchema = jsonSchemaFor("WorldSpec", WorldSpec);
+  try {
+    yield stage("repair", "Spark saw something the numbers didn't. Sending what it saw to the designer. The law stays ███.", original);
+    let raw = await think({
+      model: MODELS.wonder,
+      system: designerPrompt,
+      input: watchedNotes(notes, original),
+      effort: "high",
+      maxOutputTokens: 20000,
+      jsonSchema: worldSchema,
+    });
+    for (let round = 1; round <= maxRounds; round++) {
+      let spec: WorldSpecT;
+      let note: string | null;
+      try {
+        const parsed = WorldSpec.parse(parseJson(raw));
+        spec = { ...parsed, id: original.id, art: original.art };
+        yield stage("checker", `Re-running every gate on the repair: ${spec.checks.length} science checks on every seed, the playability lint, honest readings…`, spec);
+        note = await gateNotes(spec);
+      } catch (error) {
+        note = `Your previous output failed validation:\n${cause(error)}\n\nPrevious output:\n${raw}\n\nReturn the corrected WorldSpec JSON only.`;
+        spec = original;
+      }
+      if (note === null) {
+        yield { type: "world", spec, source: "live" };
+        const storage = await import("@/lib/storage/worlds");
+        await storage.saveWorld(spec);
+        yield stage("done", "Repaired and saved. Every gate passed again.", spec);
+        return;
+      }
+      if (round === maxRounds) break;
+      yield stage("repair", "The repair broke a gate. Sending it back once more. The law stays ███.", original);
+      raw = await think({ model: MODELS.wonder, system: designerPrompt, input: note, effort: "high", maxOutputTokens: 20000, jsonSchema: worldSchema });
+    }
+    yield stage("playtester", "No repair passed every gate, so the world stays as it was.", original);
+  } catch (error) {
+    yield { type: "error", message: cleanError(error, original), source: "live" };
+  }
 }

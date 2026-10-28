@@ -37,4 +37,15 @@ All three flags were real bugs, and none of the 256 tests had caught them:
 | Marching Dunes | looked right |
 | The Meadow That Blinks As One | flagged |
 
-The meadow is still flagged. Its last note says the swarm "ends with a single bright insect". Once the fireflies are in step, they flash together and go dark together, and a single still frame catches them between flashes. Six stills can't show flashing in step. Watching a short clip, which Spark also accepts, is the next step for worlds like this. We record it as flagged rather than overrule it.
+The meadow was still flagged: once the fireflies are in step they flash and go dark together, and the capture had raised coupling on a swarm that already syncs, so the two runs looked alike.
+
+## The loop, closed
+
+Spark's flags now go back to the designer automatically (`/api/repair`, at most two rounds per world). The repaired world must pass every gate again (science checks on every seed, playability, honest readings) before it's saved, and then Spark watches it again. The build screen shows each step.
+
+The meadow was the first world through it, on 28 Oct:
+1. Spark's notes went to the designer (Muse Spark Open). It rewrote one thing, the view: each firefly's brightness now follows its own cycle, so a swarm in step glows as one and a scattered swarm looks mixed. All five checks, the playability lint and the honest-readings check passed. Cost: $0.05.
+2. The capture now films the change that matters most: it tries each control's far ends headlessly and keeps the one that moves the readings furthest from the starting run. For the meadow that's the swarm size (100 → 20), not coupling.
+3. Spark watched again: **looked right.**
+
+All twelve worlds now look right to Spark.

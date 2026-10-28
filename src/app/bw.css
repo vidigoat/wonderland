@@ -342,6 +342,28 @@
   color: #a3a3a3;
   font-size: 13px;
 }
+.bw-watch-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+}
+.bw-watch-note[data-tone="good"] {
+  color: #b8e6c1;
+}
+.bw-watch-note[data-tone="flag"] {
+  color: #f3c77a;
+}
+.bw-watch-note[data-tone="working"]::before,
+.bw-watch-note[data-tone="good"]::before,
+.bw-watch-note[data-tone="flag"]::before {
+  display: inline-block;
+  width: 16px;
+}
+.bw-watch-note[data-tone="working"]::before { content: "·"; }
+.bw-watch-note[data-tone="good"]::before { content: "✓"; }
+.bw-watch-note[data-tone="flag"]::before { content: "!"; }
 .bw-watch-stage {
   position: relative;
   height: 240px;

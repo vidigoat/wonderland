@@ -1,6 +1,6 @@
 import "server-only";
 import { connection } from "next/server";
-import { readFrames, savePlaytest, watchWorld } from "@/agents/playtest";
+import { readFrames, readPlaytest, savePlaytest, watchWorld } from "@/agents/playtest";
 import { ModelCallError, redactMessage } from "@/agents/judge";
 import { findWorld } from "@/worlds/find.server";
 
@@ -24,7 +24,9 @@ export async function POST(req: Request) {
   if (!spec) return Response.json({ error: "unknown world" }, { status: 404 });
   try {
     const result = await watchWorld(spec, frames);
-    await savePlaytest(spec.id, result);
+    // Keep the repair count across watches, so the repair loop stays bounded.
+    const before = await readPlaytest(spec.id);
+    await savePlaytest(spec.id, { ...result, repairs: before?.repairs ?? 0 });
     // What Spark saw can describe the law ("the dark moths outlast the pale ones"), and this reply reaches a
     // player who hasn't found it yet. The notes stay in data/playtests; the page gets the verdict only.
     if (result.source !== "live") return Response.json(result);

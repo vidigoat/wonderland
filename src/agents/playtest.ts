@@ -1,5 +1,5 @@
 import "server-only";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { scrubReply } from "@/agents/judge";
 import type { WorldSpec } from "@/engine/spec";
@@ -16,6 +16,8 @@ export type PlaytestResult = {
   notes: string[];
   source: DataSource;
   notice?: string;
+  /** How many times Spark's notes have been sent back to the designer for this world. */
+  repairs?: number;
 };
 
 const MAX_FRAMES = 6;
@@ -101,4 +103,17 @@ export async function savePlaytest(worldId: string, result: PlaytestResult, dir 
   if (!/^[a-z0-9-]+$/.test(worldId)) throw new Error(`Invalid world id "${worldId}".`);
   await mkdir(dir, { recursive: true });
   await writeFile(path.join(dir, `${worldId}.json`), `${JSON.stringify({ worldId, ...result }, null, 2)}\n`, "utf8");
+}
+
+/** The last thing Spark saw on this world, or null if it has not watched it. */
+export async function readPlaytest(worldId: string, dir = path.join(process.cwd(), "data", "playtests")): Promise<PlaytestResult | null> {
+  if (!/^[a-z0-9-]+$/.test(worldId)) return null;
+  try {
+    const parsed = JSON.parse(await readFile(path.join(dir, `${worldId}.json`), "utf8")) as Partial<PlaytestResult>;
+    if (parsed.verdict !== "looks-right" && parsed.verdict !== "concern") return null;
+    const notes = Array.isArray(parsed.notes) ? parsed.notes.filter((note): note is string => typeof note === "string") : [];
+    return { verdict: parsed.verdict, notes, source: parsed.source === "live" ? "live" : "sample", repairs: Number(parsed.repairs ?? 0) || 0 };
+  } catch {
+    return null;
+  }
 }

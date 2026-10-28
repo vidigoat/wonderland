@@ -1,6 +1,6 @@
 import type { Params, RulesModule } from "@/engine/rules";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { WorldSession } from "@/engine/runtime";
+import { runHeadless, WorldSession } from "@/engine/runtime";
 import { defaultParams, runSteps } from "./readings";
 
 export type Shot = { dataUrl: string; caption: string };
@@ -21,6 +21,56 @@ export function movedLabel(spec: Pick<PublicWorldSpec, "knobs">, before: Params,
   const knob = spec.knobs.find((item) => before[item.id] !== after[item.id]);
   if (!knob) return "One control moved";
   return `${knob.label} moved from ${String(before[knob.id])} to ${String(after[knob.id])}`;
+}
+
+/** How far apart two final readings are, scale-free, summed over every numeric reading. */
+export function readingDistance(a: Record<string, unknown>, b: Record<string, unknown>): number {
+  let total = 0;
+  for (const key of Object.keys(a)) {
+    const x = Number(a[key]);
+    const y = Number(b[key]);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+    total += Math.abs(x - y) / Math.max(Math.abs(x), Math.abs(y), 1e-9);
+  }
+  return total;
+}
+
+/** Each control's far ends, and the other side of each toggle: the changes a curious player would try. */
+export function candidateChanges(spec: Pick<PublicWorldSpec, "knobs">, base: Params): Params[] {
+  const out: Params[] = [];
+  for (const knob of spec.knobs) {
+    if (knob.kind === "slider" && typeof knob.min === "number" && typeof knob.max === "number" && knob.max !== knob.min) {
+      for (const value of [knob.min, knob.max]) if (value !== base[knob.id]) out.push({ ...base, [knob.id]: value });
+    } else if (knob.kind === "toggle") {
+      out.push({ ...base, [knob.id]: !base[knob.id] });
+    }
+  }
+  return out.slice(0, 8);
+}
+
+/**
+ * The change worth filming: the one, among each control's far ends, that moves the readings furthest from the
+ * starting run. Moving the first slider blindly can pick a change that does nothing visible (more coupling on
+ * fireflies that already sync), and then the watcher rightly says the two runs look the same.
+ */
+export async function tellingChange(spec: PublicWorldSpec, rules: RulesModule, seed: number): Promise<Params> {
+  const base = defaultParams(spec);
+  const steps = (params: Params) => Math.min(2000, runSteps(spec.archetype, spec.id, params));
+  const start = (await runHeadless(rules, base, steps(base), seed)).final;
+  let best = changedParams(spec, base);
+  let bestScore = -1;
+  for (const params of candidateChanges(spec, base)) {
+    try {
+      const score = readingDistance(start, (await runHeadless(rules, params, steps(params), seed)).final);
+      if (score > bestScore) {
+        bestScore = score;
+        best = params;
+      }
+    } catch {
+      continue;
+    }
+  }
+  return best;
 }
 
 async function waitForCanvas(canvas: () => HTMLCanvasElement | null): Promise<HTMLCanvasElement> {
@@ -75,7 +125,7 @@ export async function collectShots(
 ): Promise<Shot[]> {
   const shots: Shot[] = [];
   const start = defaultParams(spec);
-  const changed = changedParams(spec, start);
+  const changed = await tellingChange(spec, rules, seed);
   const runs: { params: Params; label: string }[] = [
     { params: start, label: "Starting controls" },
     { params: changed, label: movedLabel(spec, start, changed) },

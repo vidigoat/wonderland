@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { PublicWorldSpec } from "@/engine/spec";
-import { changedParams, movedLabel, shotCaption } from "./capture";
+import { candidateChanges, changedParams, movedLabel, readingDistance, shotCaption } from "./capture";
 
 const spec = {
   knobs: [
@@ -23,5 +23,18 @@ describe("playtest shots", () => {
   it("says which control moved, so the watcher knows what to expect", () => {
     expect(movedLabel(spec, { wind: 2, strip: false }, { wind: 8, strip: false })).toBe("Wind moved from 2 to 8");
     expect(movedLabel(spec, { wind: 2 }, { wind: 2 })).toBe("One control moved");
+  });
+
+  it("tries each control's far ends and flips each toggle", () => {
+    expect(candidateChanges(spec, { wind: 2, strip: false })).toEqual([
+      { wind: 0, strip: false },
+      { wind: 8, strip: false },
+      { wind: 2, strip: true },
+    ]);
+  });
+
+  it("measures how far two runs ended apart, ignoring words", () => {
+    expect(readingDistance({ a: 10, b: "x" }, { a: 10, b: "y" })).toBe(0);
+    expect(readingDistance({ a: 10 }, { a: 5 })).toBeCloseTo(0.5);
   });
 });

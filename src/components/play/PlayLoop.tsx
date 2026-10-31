@@ -98,6 +98,9 @@ function ChoiceList({
   );
 }
 
+/** Ada's model calls per visit to a world. */
+const ADA_MAX_TURNS = 6;
+
 export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const [play, setPlay] = useState<PlaySnapshot>(initialPlay);
   const [params, setParams] = useState<Params>(() => defaultParams(spec));
@@ -167,6 +170,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const originRef = useRef<Observation | null>(null);
   const runStart = useRef(0);
   const playtestRan = useRef(false);
+  const adaTurns = useRef(0);
   const playLogged = useRef(false);
   const worldStamp = `${spec.id}:${retry}`;
   const [stamp, setStamp] = useState(worldStamp);
@@ -414,8 +418,11 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
 
   const adaTurn = useCallback(async () => {
     if (adaBusy.current || adaGaveUp.current) return;
+    // Each turn is a model call on real credit; six experiments is enough for her to race you.
+    if (adaTurns.current >= ADA_MAX_TURNS) return;
     const seed = seedRef.current;
     if (seed == null) return;
+    adaTurns.current += 1;
     adaBusy.current = true;
     setAdaStatus("thinking");
     try {

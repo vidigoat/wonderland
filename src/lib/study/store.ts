@@ -2,19 +2,37 @@ import "server-only";
 import { appendFile, mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { scoreStudy, type StudyAnswers, type StudyLine } from "./score";
+import { blobGetText, blobUpdateJson, blobStorage } from "@/lib/storage/blob";
+
+/** On Vercel, one JSON array per file in the Blob store; locally, one line per entry. */
+async function appendBlob(pathname: string, entry: unknown): Promise<void> {
+  await blobUpdateJson<unknown[]>(pathname, [], (rows) => [...rows, entry]);
+}
+
+async function readBlobRows(pathname: string): Promise<unknown[]> {
+  const text = await blobGetText(pathname);
+  return text ? (JSON.parse(text) as unknown[]) : [];
+}
 
 function fileFor(test: boolean, dir: string): string {
   return path.join(dir, test ? "test.jsonl" : "responses.jsonl");
 }
 
-export async function saveStudy(answers: StudyAnswers, dir = path.join(process.cwd(), "data", "study")): Promise<StudyLine> {
+export async function saveStudy(answers: StudyAnswers, dir?: string): Promise<StudyLine> {
   const line: StudyLine = { ...answers, correct: scoreStudy(answers.choices), at: new Date().toISOString() };
+  if (!dir && blobStorage()) {
+    await appendBlob(answers.test ? "study/test.json" : "study/responses.json", line);
+    return line;
+  }
+  dir ??= path.join(process.cwd(), "data", "study");
   await mkdir(dir, { recursive: true });
   await appendFile(fileFor(answers.test, dir), `${JSON.stringify(line)}\n`, "utf8");
   return line;
 }
 
-export async function readStudy(dir = path.join(process.cwd(), "data", "study")): Promise<StudyLine[]> {
+export async function readStudy(dir?: string): Promise<StudyLine[]> {
+  if (!dir && blobStorage()) return (await readBlobRows("study/responses.json")) as StudyLine[];
+  dir ??= path.join(process.cwd(), "data", "study");
   try {
     const text = await readFile(fileFor(false, dir), "utf8");
     return text
@@ -45,13 +63,17 @@ export type PlayLine = {
   at: string;
 };
 
-export async function savePlay(line: Omit<PlayLine, "at">, dir = path.join(process.cwd(), "data", "plays")): Promise<void> {
+export async function savePlay(line: Omit<PlayLine, "at">, dir?: string): Promise<void> {
   if (!/^[a-z0-9-]+$/.test(line.worldId)) throw new Error("Invalid world id.");
+  if (!dir && blobStorage()) return appendBlob("plays/plays.json", { ...line, at: new Date().toISOString() });
+  dir ??= path.join(process.cwd(), "data", "plays");
   await mkdir(dir, { recursive: true });
   await appendFile(path.join(dir, "plays.jsonl"), `${JSON.stringify({ ...line, at: new Date().toISOString() })}\n`, "utf8");
 }
 
-export async function countPlays(dir = path.join(process.cwd(), "data", "plays")): Promise<number> {
+export async function countPlays(dir?: string): Promise<number> {
+  if (!dir && blobStorage()) return (await readBlobRows("plays/plays.json")).length;
+  dir ??= path.join(process.cwd(), "data", "plays");
   try {
     const text = await readFile(path.join(dir, "plays.jsonl"), "utf8");
     return text.split("\n").filter((row) => row.trim()).length;

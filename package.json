@@ -19,6 +19,7 @@
     "paint": "tsx --conditions=react-server --env-file=.env.local scripts/paint-world.mts"
   },
   "dependencies": {
+    "@vercel/blob": "^2.8.2",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.0",
     "lucide-react": "^1.61.0",

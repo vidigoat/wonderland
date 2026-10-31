@@ -8,6 +8,7 @@ import { parseSamOutput } from "@/lib/ai/sam-parse";
 import { segmentPrompts } from "@/agents/artist";
 import { metaSource } from "@/lib/ai/mode";
 import { SAMPLE_NOTICE, type DataSource } from "@/lib/samples/mark";
+import { blobGetText, blobPut, blobStorage } from "@/lib/storage/blob";
 
 export type PlayFrame = { dataUrl: string; caption: string; drawn?: Record<string, number> };
 
@@ -169,17 +170,22 @@ export async function watchWorld(spec: WorldSpec, frames: PlayFrame[]): Promise<
   return { verdict, notes: scrubNotes(notes, spec), source: "live", ...(counts.length ? { counts } : {}) };
 }
 
-export async function savePlaytest(worldId: string, result: PlaytestResult, dir = path.join(process.cwd(), "data", "playtests")): Promise<void> {
+export async function savePlaytest(worldId: string, result: PlaytestResult, dir?: string): Promise<void> {
   if (!/^[a-z0-9-]+$/.test(worldId)) throw new Error(`Invalid world id "${worldId}".`);
+  const text = `${JSON.stringify({ worldId, ...result }, null, 2)}\n`;
+  if (!dir && blobStorage()) return blobPut(`playtests/${worldId}.json`, text, "application/json");
+  dir ??= path.join(process.cwd(), "data", "playtests");
   await mkdir(dir, { recursive: true });
-  await writeFile(path.join(dir, `${worldId}.json`), `${JSON.stringify({ worldId, ...result }, null, 2)}\n`, "utf8");
+  await writeFile(path.join(dir, `${worldId}.json`), text, "utf8");
 }
 
 /** The last thing Spark saw on this world, or null if it has not watched it. */
-export async function readPlaytest(worldId: string, dir = path.join(process.cwd(), "data", "playtests")): Promise<PlaytestResult | null> {
+export async function readPlaytest(worldId: string, dir?: string): Promise<PlaytestResult | null> {
   if (!/^[a-z0-9-]+$/.test(worldId)) return null;
   try {
-    const parsed = JSON.parse(await readFile(path.join(dir, `${worldId}.json`), "utf8")) as Partial<PlaytestResult>;
+    const text = !dir && blobStorage() ? await blobGetText(`playtests/${worldId}.json`) : await readFile(path.join(dir ?? path.join(process.cwd(), "data", "playtests"), `${worldId}.json`), "utf8");
+    if (!text) return null;
+    const parsed = JSON.parse(text) as Partial<PlaytestResult>;
     if (parsed.verdict !== "looks-right" && parsed.verdict !== "concern") return null;
     const notes = Array.isArray(parsed.notes) ? parsed.notes.filter((note): note is string => typeof note === "string") : [];
     return { verdict: parsed.verdict, notes, source: parsed.source === "live" ? "live" : "sample", repairs: Number(parsed.repairs ?? 0) || 0 };

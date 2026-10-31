@@ -97,6 +97,14 @@ function cleanError(error: unknown, spec?: WorldSpecT, brief?: ScientistBriefT):
 
 async function* finishVerified(spec: WorldSpecT): AsyncGenerator<PipelineEvent> {
   yield { type: "world", spec, source: "live" };
+  // Save the verified world before painting it: if the host stops the function mid-painting, the world
+  // still plays, unpainted, instead of being lost with the minutes of model work behind it.
+  try {
+    const storage = await import("@/lib/storage/worlds");
+    await storage.saveWorld(spec);
+  } catch {
+    // The save after painting reports a failure; this early one is only insurance.
+  }
   // The science already passed, so a failed painting never throws the world away: it plays unpainted.
   try {
     const art = await import("./artist");
@@ -132,8 +140,8 @@ async function* finishVerified(spec: WorldSpecT): AsyncGenerator<PipelineEvent> 
       if (failure) throw failure;
       if (illustration?.source === "live") {
         const { finishIllustration } = await import("./art-finish");
-        const path = await import("node:path");
-        spec.art.painted = await finishIllustration(spec.id, illustration, path.join(process.cwd(), "public", "art"));
+        const { writableDir } = await import("@/lib/storage/blob");
+        spec.art.painted = await finishIllustration(spec.id, illustration, writableDir("public", "art"));
         yield { type: "stage", stage: "artist", message: "Painted with Muse Image, cut out with SAM 3.1.", source: "live" };
       }
     }

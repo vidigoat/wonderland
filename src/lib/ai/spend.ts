@@ -8,7 +8,8 @@ import path from "node:path";
  * provider's ledger total reaches its cap, and records the real cost from the response's usage.
  *
  * Caps: SPEND_CAP_META_USD (default 6.5), SPEND_CAP_BASETEN_USD (default 4.5).
- * Ledger: .spend/ledger.json locally (gitignored); /tmp on Vercel, where it is per-instance only.
+ * Ledger: .spend/ledger.json locally (gitignored). On Vercel (WONDERLAND_STORAGE=blob) the totals are shared
+ * through the private Blob store and pulled before every call, so the cap holds across server instances.
  */
 
 export type Provider = "meta" | "baseten";
@@ -51,6 +52,8 @@ function ledgerPath(): string {
 let memory: Ledger | null = null;
 
 function load(): Ledger {
+  // On Vercel the shared total lives in the Blob store and is pulled into `memory` before every call.
+  if (process.env.WONDERLAND_STORAGE === "blob") return (memory ??= { totals: { meta: 0, baseten: 0 }, entries: [] });
   try {
     memory = JSON.parse(fs.readFileSync(/* turbopackIgnore: true */ ledgerPath(), "utf8")) as Ledger;
   } catch {
@@ -124,9 +127,33 @@ export function costOf(url: string, requestModel: string | undefined, body: Reco
   return { model, usd: (input * pin + output * pout) / 1_000_000, input, output };
 }
 
+const SHARED_LEDGER = "ledger.json";
+
+/** Pull the shared totals, so a cap counts every server instance's spend, not just this one's. */
+async function pullShared(): Promise<void> {
+  if (process.env.WONDERLAND_STORAGE !== "blob") return;
+  const { blobGetText } = await import("@/lib/storage/blob");
+  const text = await blobGetText(SHARED_LEDGER);
+  const totals = text ? (JSON.parse(text) as Record<Provider, number>) : { meta: 0, baseten: 0 };
+  load().totals = { meta: Number(totals.meta) || 0, baseten: Number(totals.baseten) || 0 };
+}
+
+/** Add one call's cost to the shared totals, without losing a concurrent instance's write. */
+async function pushShared(provider: Provider, usd: number): Promise<void> {
+  if (process.env.WONDERLAND_STORAGE !== "blob") return;
+  const { blobUpdateJson } = await import("@/lib/storage/blob");
+  const next = await blobUpdateJson<Record<Provider, number>>(SHARED_LEDGER, { meta: 0, baseten: 0 }, (totals) => ({
+    meta: Number(totals.meta) || 0,
+    baseten: Number(totals.baseten) || 0,
+    [provider]: (Number(totals[provider]) || 0) + usd,
+  }));
+  load().totals = next;
+}
+
 /** A fetch for the OpenAI SDK that enforces the cap before the call and records cost after it. */
 export function guardedFetch(provider: Provider): typeof fetch {
   return async (input, init) => {
+    await pullShared();
     assertBudget(provider);
     let requestModel: string | undefined;
     if (typeof init?.body === "string") {
@@ -144,12 +171,16 @@ export function guardedFetch(provider: Provider): typeof fetch {
         const body = (await res.clone().json()) as Record<string, unknown>;
         const c = costOf(url, requestModel, body);
         recordSpend(provider, c.model, c.usd, c.input, c.output);
+        await pushShared(provider, c.usd);
       } catch {
         recordSpend(provider, requestModel ?? "unknown", 0.01);
+        await pushShared(provider, 0.01);
       }
     } else if (res.ok) {
       // Streams and audio: no usage to read; record a small ceiling so they still count.
-      recordSpend(provider, requestModel ?? "unknown", url.includes("/audio/") ? TRANSCRIBE_CLIP_USD : 0.01);
+      const usd = url.includes("/audio/") ? TRANSCRIBE_CLIP_USD : 0.01;
+      recordSpend(provider, requestModel ?? "unknown", usd);
+      await pushShared(provider, usd);
     }
     return res;
   };

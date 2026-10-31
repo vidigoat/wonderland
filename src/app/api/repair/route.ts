@@ -1,6 +1,8 @@
 import "server-only";
 import { revalidateTag } from "next/cache";
 import { connection } from "next/server";
+
+export const maxDuration = 300;
 import { repairFromPlaytest } from "@/agents/pipeline";
 import { readPlaytest, savePlaytest } from "@/agents/playtest";
 import { toClientPipelineEvent } from "@/engine/client-event";

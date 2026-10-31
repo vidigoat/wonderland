@@ -1,5 +1,7 @@
 import "server-only";
 import { connection } from "next/server";
+
+export const maxDuration = 300;
 import { readFrames, readPlaytest, savePlaytest, watchWorld } from "@/agents/playtest";
 import { ModelCallError, redactMessage } from "@/agents/judge";
 import { findWorld } from "@/worlds/find.server";

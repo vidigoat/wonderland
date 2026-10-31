@@ -2,12 +2,18 @@ import { revalidateTag } from "next/cache";
 import { connection } from "next/server";
 import { generateWorld } from "@/agents/pipeline";
 import { toClientPipelineEvent } from "@/engine/client-event";
+import { takeBuild } from "@/lib/storage/limits";
+
+/** A build with repairs and painting can take most of five minutes. */
+export const maxDuration = 300;
 
 /** POST { concept } → Server-Sent Events of client-safe pipeline events (no hidden law, no answer keys). */
 export async function POST(req: Request) {
   await connection();
   const { concept } = (await req.json()) as { concept?: string };
   if (!concept || concept.length > 300) return Response.json({ error: "concept required (≤ 300 chars)" }, { status: 400 });
+  const refusal = await takeBuild(req);
+  if (refusal) return Response.json({ error: refusal }, { status: 429 });
 
   const encoder = new TextEncoder();
   // A world that already cost model calls is always finished and saved, even if the visitor closes the tab mid-build.

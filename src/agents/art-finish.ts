@@ -4,6 +4,7 @@ import path from "node:path";
 import sharp from "sharp";
 import type { PaintedArt } from "@/engine/spec";
 import type { Illustration } from "./artist";
+import { blobPut, blobStorage } from "@/lib/storage/blob";
 
 const BACKGROUND_WIDTH = 1280;
 const SPRITE_SIZE = 192;
@@ -23,7 +24,10 @@ export async function finishIllustration(worldId: string, art: Illustration, art
       kind === "background"
         ? sharp(input).resize({ width: BACKGROUND_WIDTH, withoutEnlargement: true }).webp({ quality: 78 })
         : sharp(input).trim({ threshold: 1 }).resize({ width: SPRITE_SIZE, height: SPRITE_SIZE, fit: "inside", withoutEnlargement: true }).webp({ quality: 86, alphaQuality: 90 });
-    await writeFile(path.join(folder, `${name}.webp`), await image.toBuffer());
+    const webp = await image.toBuffer();
+    await writeFile(path.join(folder, `${name}.webp`), webp);
+    // On a read-only host the folder is /tmp; the Blob store is where the art route finds it later.
+    if (blobStorage()) await blobPut(`art/${worldId}/${name}.webp`, webp, "image/webp");
     if (source.endsWith(".png") || source.endsWith(".jpg")) await rm(source, { force: true });
     return `/art/${worldId}/${name}.webp`;
   };

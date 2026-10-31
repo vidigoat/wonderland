@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { ImageResponse } from "next/og";
 import sharp from "sharp";
+import { blobGet, blobStorage } from "@/lib/storage/blob";
 import { notFound } from "next/navigation";
 import { PosterCard } from "@/components/play/PosterCard";
 import { posterCopy } from "@/components/play/poster";
@@ -25,8 +26,16 @@ export default async function Image({ params }: { params: Promise<{ id: string }
 async function paintingFor(url: string | undefined): Promise<string | undefined> {
   if (!url) return undefined;
   try {
-    const file = path.join(/* turbopackIgnore: true */ process.cwd(), "public", url);
-    const jpeg = await sharp(await readFile(file)).resize(680, 680, { fit: "cover" }).jpeg({ quality: 82 }).toBuffer();
+    // Art that shipped with the app is on disk; art painted on Vercel lives in the Blob store.
+    let bytes: Buffer;
+    try {
+      bytes = await readFile(path.join(/* turbopackIgnore: true */ process.cwd(), "public", url));
+    } catch {
+      const stored = blobStorage() ? await blobGet(url.replace(/^\//, "")) : null;
+      if (!stored) return undefined;
+      bytes = stored.bytes;
+    }
+    const jpeg = await sharp(bytes).resize(680, 680, { fit: "cover" }).jpeg({ quality: 82 }).toBuffer();
     return `data:image/jpeg;base64,${jpeg.toString("base64")}`;
   } catch {
     return undefined;

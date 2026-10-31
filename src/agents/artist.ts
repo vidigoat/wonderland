@@ -1,5 +1,6 @@
 import "server-only";
 import { mkdir, writeFile } from "node:fs/promises";
+import { writableDir } from "@/lib/storage/blob";
 import path from "node:path";
 import type { WorldSpec } from "@/engine/spec";
 import { decodeMaskToRaster, parseSamOutput, type SamRecord } from "@/lib/ai/sam-parse";
@@ -205,5 +206,5 @@ export async function illustrate(spec: WorldSpec, artDir?: string, onPiece?: (pi
     for (const [id, url] of Object.entries(art.sprites)) onPiece?.({ sprite: { id, url } });
     return art;
   }
-  return liveIllustration(spec, artDir ?? path.join(process.cwd(), "public", "art"), onPiece);
+  return liveIllustration(spec, artDir ?? writableDir("public", "art"), onPiece);
 }

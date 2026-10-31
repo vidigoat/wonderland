@@ -1,0 +1,14 @@
+# Never upload local secrets, spend records, scratch files, or worlds held out of the gallery.
+.env*
+!.env.example
+.spend
+.smoke
+.next
+node_modules
+data/*
+!data/worlds
+public/art/clinging-balloon-world
+public/art/dune-edge
+public/art/moon-phase-geometry
+public/art/whisper-town
+public/art/whispering-field

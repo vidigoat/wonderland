@@ -1,6 +1,6 @@
 # Demo video: 3 minutes
 
-A suggested shot list. Everything here is in the app as built. Record on the production build in a fresh 1440×900 window. Build one new world the night before (a build takes 2–5 minutes) so you can show it in full and cut it down.
+A suggested shot list. Everything here is in the app as built. Record on the live site (https://wonderland-omega-fawn.vercel.app) or the local production build, in a fresh 1440×900 window. Build one new world the night before (a build takes 2–5 minutes) so you can show it in full and cut it down.
 
 **The story in one line:** AI builds the world, not the answer, and checks its own work before you ever see it.
 
@@ -12,7 +12,7 @@ A suggested shot list. Everything here is in the app as built. Record on the pro
 | 1:05 | **It checks its own work** | Build screen: *"All N science checks passed on every seed… every reading measures the world itself."* Then the playtester: Spark watching the world run, SAM's count, *"Looked right"*, or a flag, a repair, and *"Watched again"*. | "Then it checks itself. The science runs on every seed. A check makes sure no number is faked; our models did that once. Then Spark actually watches the world run, and if the picture is wrong it sends it back to be fixed." |
 | 1:35 | **Inside a world** | Enter it (or Peppered Forest). Predict, move a control, run; the chart keeps the last run so you can compare. | "The world tells me what to do, not what's true." |
 | 1:55 | **The race and the proof** | Ada's card; *I can say it*, hold to speak (Muse Voice Transcribe); the judge's reply; the new situation; the card you keep. | "Ada races me on Meta's open weights. I say the law in my own words, and the judge never gives it away. Then a situation I've never seen: if I understood it, I can predict it." |
-| 2:30 | **At scale** | The Worlds page, then the Lab numbers from the README. | "We gave it fifteen phenomena from a middle-school science curriculum. N became verified worlds, at about thirty cents each. PhET built 150 simulations in 20 years." |
+| 2:30 | **At scale** | The Worlds page, then the Lab numbers from the README. | "We gave it fifteen phenomena from a middle-school science curriculum. Eleven became verified worlds and eight passed every check, at about thirty cents each. PhET built 150 simulations in 20 years." |
 | 2:50 | **Close** | The hero, or the door logo. | "The AI does the building. You do the thinking. Wonderland." |
 
 ## Models on screen
@@ -21,4 +21,4 @@ A suggested shot list. Everything here is in the app as built. Record on the pro
 - **Muse Image 1.0 + SAM 3.1**: every painting and cut-out; SAM also counts figures in the picture.
 - **Muse Voice Transcribe**: spoken hypotheses.
 
-Fill in N from `docs/lab-results.md` before recording.
+N is 8: of 15 curriculum questions, 11 became verified worlds and 8 passed all four gates (`docs/lab-results.md`).

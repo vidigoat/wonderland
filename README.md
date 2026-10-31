@@ -12,10 +12,15 @@
 </p>
 
 <p align="center">
+  <a href="https://wonderland-omega-fawn.vercel.app"><b>▶ Play it live: wonderland-omega-fawn.vercel.app</b></a>
+</p>
+
+<p align="center">
   <img alt="Meta Muse Spark Open" src="https://img.shields.io/badge/Muse%20Spark%20Open-reasoning%20%C2%B7%20Ada%20%C2%B7%20judge%20%C2%B7%2040%20citizens-0866FF?style=flat-square&logo=meta&logoColor=white" />
   <img alt="Muse Image + SAM 3.1" src="https://img.shields.io/badge/Muse%20Image%20%2B%20SAM%203.1-every%20world%20painted-0866FF?style=flat-square&logo=meta&logoColor=white" />
+  <img alt="Muse Spark 1.3 vision" src="https://img.shields.io/badge/Muse%20Spark%201.3-watches%20every%20world-0866FF?style=flat-square&logo=meta&logoColor=white" />
   <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000?style=flat-square&logo=nextdotjs" />
-  <img alt="Tests" src="https://img.shields.io/badge/tests-229%20passing-2ea44f?style=flat-square" />
+  <img alt="Tests" src="https://img.shields.io/badge/tests-273%20passing-2ea44f?style=flat-square" />
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178C6?style=flat-square&logo=typescript&logoColor=white" />
 </p>
 
@@ -275,6 +280,10 @@ The designer writes each world's rules as code, so that code is treated as untru
 
 Every request to Meta or Baseten passes through [`guardedFetch`](src/lib/ai/spend.ts). It refuses the call once a provider's ledger reaches its cap (`SPEND_CAP_META_USD`, `SPEND_CAP_BASETEN_USD`), records the real cost from each response's `usage`, and re-reads the ledger on every check so parallel processes can't overspend. With no keys at all, every model call takes a clearly labelled sample path and all five hand-built worlds still play.
 
+### Running in public
+
+The live site runs on Vercel, whose disk is read-only. With `WONDERLAND_STORAGE=blob`, everything the app writes at run time (new and repaired worlds, their paintings, playtests, plays) goes to a **private** Vercel Blob store, private because a world holds its hidden law; worlds that ship with the repo are read from disk, and a stored copy overrides them ([`src/lib/storage/blob.ts`](src/lib/storage/blob.ts)). The spend ledger is shared through the same store with conditional writes (ETag `ifMatch`, retried on conflict), so the caps hold across every server instance. Each visitor can build three worlds a day and the whole site thirty ([`src/lib/storage/limits.ts`](src/lib/storage/limits.ts)); visitor addresses are only ever stored as a salted hash. A verified world is saved before it is painted, so a host timeout can't lose it, and Ada makes at most six model calls per visit.
+
 ## Run it yourself
 
 ```bash
@@ -290,6 +299,8 @@ pnpm dev                       # http://localhost:3000
 | `REASONING_BACKEND` | `open-weights` keeps reasoning on Muse Spark Open even when a Meta key is present. |
 | `SPEND_CAP_META_USD`, `SPEND_CAP_BASETEN_USD` | Hard caps; calls are refused beyond them. |
 | `OPEN_WEIGHTS_PROVIDER` | `baseten` (default) or `fireworks`. |
+| `WONDERLAND_STORAGE` | `blob` on a read-only host (Vercel): run-time writes go to a private Vercel Blob store. Leave unset locally. |
+| `BUILDS_PER_VISITOR`, `BUILDS_PER_DAY` | Fair use on the public site (defaults 3 and 30). |
 
 | Command | |
 |---|---|

@@ -264,7 +264,8 @@ function shownAgents(frame: Frame): PopulationAgent[] {
   const view = frame.view;
   if (view && view.kind === "population") return view.agents;
   if (frame.worldId === "rumour-town") return IDLE_TOWN;
-  return IDLE_MOTHS;
+  // Waiting moths belong to the forest; another world shows its painting until its first frame arrives.
+  return frame.worldId === "peppered-forest" ? IDLE_MOTHS : [];
 }
 
 function place(x: number, y: number, width: number, height: number): { x: number; y: number } {

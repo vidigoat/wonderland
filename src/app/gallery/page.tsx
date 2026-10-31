@@ -6,6 +6,7 @@ import { PlaceScene } from "@/components/play/Scenes";
 import { shelfWorlds } from "@/worlds/shelf.server";
 import { heroWorlds } from "@/worlds";
 import { LogoMark } from "@/components/brand/Logo";
+import { SUBJECTS, subjectOf } from "@/worlds/subjects";
 
 export const metadata: Metadata = {
   title: "Worlds",
@@ -25,22 +26,7 @@ export default function GalleryPage() {
         </nav>
       </header>
       <section className="bw-section bw-gallery-body">
-        <h1 className="bw-h2">Every world</h1>
-        <p className="bw-sub">Each one hides a real law. Nobody will tell you what it is.</p>
-        <ul className="bw-grid">
-          {heroWorlds.map((world) => (
-            <li key={world.id}>
-              <Link href={`/w/${world.id}`} className="bw-world">
-                <PlaceScene id={world.id} />
-                <span className="bw-world-copy">
-                  <span className="bw-world-q">{world.concept}</span>
-                  <span className="bw-world-t">{world.title}</span>
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <WrittenShelf />
+        <Shelves />
       </section>
       <footer className="bw-foot">
         <span className="bw-logo">
@@ -53,32 +39,49 @@ export default function GalleryPage() {
   );
 }
 
-/** Worlds the generator wrote and verified (data/worlds). Cached; a newly saved world refreshes the "worlds" tag. */
-async function WrittenShelf() {
+/**
+ * Every world on one shelf per subject. The five built by hand are marked; the rest began as one typed question.
+ * Cached; a newly saved or repaired world refreshes the "worlds" tag.
+ */
+async function Shelves() {
   "use cache";
   cacheTag("worlds");
   const heroIds = new Set(heroWorlds.map((world) => world.id));
   const written = (await shelfWorlds()).filter((world) => !heroIds.has(world.id));
-  if (written.length === 0) return null;
+  const all = [
+    ...heroWorlds.map((world) => ({ id: world.id, concept: world.concept, title: world.title, hero: true as const, spec: null })),
+    ...written.map((world) => ({ id: world.id, concept: world.concept, title: world.title, hero: false as const, spec: world })),
+  ];
   return (
     <>
-      <h2 className="bw-h2 bw-gallery-sub">Written by Muse Spark Open</h2>
+      <h1 className="bw-h2">Every world</h1>
       <p className="bw-sub">
-        Each began as one typed question. Meta&apos;s open-weights model found the law, built the world, and it passed every science check before it was saved.
+        {all.length} worlds. Each hides a real law, and nobody will tell you what it is. {written.length} of them began as one typed question: Meta&apos;s
+        models found the law and built the world, and it passed every check before it reached this shelf.
       </p>
-      <ul className="bw-grid">
-        {written.map((world) => (
-          <li key={world.id}>
-            <Link href={`/w/${world.id}`} className="bw-world bw-world-written">
-              <WorldThumb spec={world} />
-              <span className="bw-world-copy">
-                <span className="bw-world-q">{world.concept}</span>
-                <span className="bw-world-t">{world.title}</span>
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {SUBJECTS.map((subject) => {
+        const shelf = all.filter((world) => subjectOf(world.id, world.concept) === subject);
+        if (shelf.length === 0) return null;
+        return (
+          <div key={subject} className="bw-shelf">
+            <h2 className="bw-h2 bw-gallery-sub">{subject}</h2>
+            <ul className="bw-grid">
+              {shelf.map((world) => (
+                <li key={world.id}>
+                  <Link href={`/w/${world.id}`} className={world.hero ? "bw-world" : "bw-world bw-world-written"}>
+                    {world.spec ? <WorldThumb spec={world.spec} /> : <PlaceScene id={world.id} />}
+                    <span className="bw-world-copy">
+                      {world.hero ? <span className="bw-world-tag">Built by hand</span> : null}
+                      <span className="bw-world-q">{world.concept}</span>
+                      <span className="bw-world-t">{world.title}</span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })}
     </>
   );
 }

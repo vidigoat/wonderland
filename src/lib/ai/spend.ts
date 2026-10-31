@@ -171,16 +171,16 @@ export function guardedFetch(provider: Provider): typeof fetch {
         const body = (await res.clone().json()) as Record<string, unknown>;
         const c = costOf(url, requestModel, body);
         recordSpend(provider, c.model, c.usd, c.input, c.output);
-        await pushShared(provider, c.usd);
+        await pushShared(provider, c.usd).catch(() => undefined);
       } catch {
         recordSpend(provider, requestModel ?? "unknown", 0.01);
-        await pushShared(provider, 0.01);
+        await pushShared(provider, 0.01).catch(() => undefined);
       }
     } else if (res.ok) {
       // Streams and audio: no usage to read; record a small ceiling so they still count.
       const usd = url.includes("/audio/") ? TRANSCRIBE_CLIP_USD : 0.01;
       recordSpend(provider, requestModel ?? "unknown", usd);
-      await pushShared(provider, usd);
+      await pushShared(provider, usd).catch(() => undefined);
     }
     return res;
   };

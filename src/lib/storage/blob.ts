@@ -61,7 +61,7 @@ export async function blobList(prefix: string): Promise<string[]> {
  * blob is still the version that was read (its ETag), otherwise it reads again and retries.
  */
 export async function blobUpdateJson<T>(pathname: string, empty: T, change: (current: T) => T): Promise<T> {
-  for (let attempt = 0; attempt < 6; attempt++) {
+  for (let attempt = 0; attempt < 10; attempt++) {
     const found = await blobGet(pathname);
     const current = found ? (JSON.parse(found.bytes.toString("utf8")) as T) : empty;
     const next = change(current);
@@ -69,8 +69,10 @@ export async function blobUpdateJson<T>(pathname: string, empty: T, change: (cur
       await blobPut(pathname, JSON.stringify(next), "application/json", found?.etag || undefined);
       return next;
     } catch (error) {
-      const name = (error as { name?: string }).name ?? "";
-      if (name !== "BlobPreconditionFailedError" && !/already exists/i.test(String((error as Error).message))) throw error;
+      const said = `${(error as { name?: string }).name ?? ""} ${String((error as Error).message)}`;
+      if (!/precondition|etag mismatch|already exists/i.test(said)) throw error;
+      // Someone else wrote first: back off a little, at random, and read again.
+      await new Promise((resolve) => setTimeout(resolve, 40 + Math.random() * 120 * (attempt + 1)));
     }
   }
   throw new Error(`Could not update ${pathname}: too many writers at once.`);

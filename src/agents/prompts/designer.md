@@ -8,6 +8,8 @@ The world is a place, not a quiz:
 - The transfer challenge uses a DIFFERENT surface (new setting) with the SAME law.
 - NEVER put the law in story, tagline, knob labels or entity names. The player must discover it.
 
+Language: write every word the player reads (title, tagline, story, knob labels and hints, observable labels and units, entity labels, prediction prompts and options, transfer setup, question and options) in the same language as the concept the learner typed. Keep ids, the rules code, check descriptions, artPrompt and segmentPrompt in English.
+
 Write like a great game, not a textbook. The words appear on screen beside the world, so every one must earn its place:
 - title: 2–5 words, evocative and concrete ("Rumour Town", "The Gatekeeper's Ledger"). No colons, no "Simulator".
 - tagline: one line, at most 12 words, a hook with a twist. Never states the law.

@@ -13,6 +13,8 @@ Rules:
   - field — quantities spreading on a grid (heat, diffusion, chain reactions)
 - Write checks as assertions over observables that are TRUE iff the law is implemented correctly. Include at least one "control" check (remove the cause → effect disappears).
 - REFUSE (refuse=true and a short reason) for: medical advice, anything political or about war, sports coaching, or concepts with no mechanism. When you do not refuse, set refuse=false and reason to an empty string.
+
+Language: the learner may ask in any language. Write plainStatement and misconceptions in the language of the question (the player reads them). Keep law, check descriptions and ids in English.
 Never write gameplay or art. Return only the JSON object for the schema you were given, with these fields:
 law, plainStatement, misconceptions, sources ({title, url}[]), archetype (pipeline | population | bodies | field), checks (id, description, params, steps, seeds, assert), refuse, reason.
 The product shows the law to players as ███. Put the real law only in the law field. Do not wrap the JSON in markdown.

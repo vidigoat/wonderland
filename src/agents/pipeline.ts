@@ -83,7 +83,10 @@ export function worldId(id: string, title: string): string {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "")
       .slice(0, 60);
-  return slug(id) || slug(title) || "world";
+  // A title in another script (हिन्दी) leaves no Latin letters to slug; keep it unique with a short hash.
+  let hash = 5381;
+  for (const char of `${id}|${title}`) hash = ((hash << 5) + hash + char.charCodeAt(0)) >>> 0;
+  return slug(id) || slug(title) || `world-${hash.toString(36)}`;
 }
 
 function cause(error: unknown): string {

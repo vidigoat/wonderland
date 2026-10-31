@@ -195,5 +195,7 @@ describe("worldId", () => {
     expect(worldId("counterflowCorridor", "x")).toBe("counterflow-corridor");
     expect(worldId("Ghost Jam Circuit!", "x")).toBe("ghost-jam-circuit");
     expect(worldId("", "The Meadow")).toBe("the-meadow");
+    expect(worldId("", "पतझड़ का जंगल")).toMatch(/^world-[a-z0-9]+$/);
+    expect(worldId("", "पतझड़ का जंगल")).not.toBe(worldId("", "बारिश का शहर"));
   });
 });

@@ -25,7 +25,9 @@ People who learn with an AI assistant score 17 points lower on understanding ([S
 - **Fresh questions:** 6 of 8 became verified worlds (`docs/eval-results.md`).
 - **The playtester** (Muse Spark 1.3 vision) caught three real visual bugs that 256 tests had missed, and now sends what it sees back to the designer automatically (`docs/playtest-results.md`).
 - **Honest readings:** we caught our own models writing readings as formulas of the sliders, a fake the science checks couldn't see. We built a check for it, and we repaired and labelled every affected world (`docs/repairs.md`).
-- **27 worlds live,** 22 of them written by the models from one typed question.
+- **28 worlds live,** 23 of them written by the models from one typed question, one of them asked in Hindi. The live site grows as visitors build.
+- **Ask in any language:** the world answers in the language of the question.
+- **For teachers:** class links with no accounts or names, and a results page showing how many students found the law and got the new case right.
 
 ## How we use Meta's models
 | Model | Job |

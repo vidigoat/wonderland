@@ -280,6 +280,10 @@ The designer writes each world's rules as code, so that code is treated as untru
 
 Every request to Meta or Baseten passes through [`guardedFetch`](src/lib/ai/spend.ts). It refuses the call once a provider's ledger reaches its cap (`SPEND_CAP_META_USD`, `SPEND_CAP_BASETEN_USD`), records the real cost from each response's `usage`, and re-reads the ledger on every check so parallel processes can't overspend. With no keys at all, every model call takes a clearly labelled sample path and all five hand-built worlds still play.
 
+### For teachers
+
+[`/teach`](https://wonderland-omega-fawn.vercel.app/teach) makes a class link for any world, with no accounts and no names: students play by the link, and each finished play is logged with the class code only. The results page (`/class/<code>`) shows, per world, how many finished, how many found the law, how many got the new case right, how many got the first prediction right before experimenting, and the typical time ([`src/lib/classes/summary.ts`](src/lib/classes/summary.ts)).
+
 ### Running in public
 
 The live site runs on Vercel, whose disk is read-only. With `WONDERLAND_STORAGE=blob`, everything the app writes at run time (new and repaired worlds, their paintings, playtests, plays) goes to a **private** Vercel Blob store, private because a world holds its hidden law; worlds that ship with the repo are read from disk, and a stored copy overrides them ([`src/lib/storage/blob.ts`](src/lib/storage/blob.ts)). The spend ledger is shared through the same store with conditional writes (ETag `ifMatch`, retried on conflict), so the caps hold across every server instance. Each visitor can build three worlds a day and the whole site thirty ([`src/lib/storage/limits.ts`](src/lib/storage/limits.ts)); visitor addresses are only ever stored as a salted hash. A verified world is saved before it is painted, so a host timeout can't lose it, and Ada makes at most six model calls per visit.

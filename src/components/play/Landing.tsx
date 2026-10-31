@@ -67,7 +67,9 @@ const WHO = [
   {
     icon: Presentation,
     title: "Teachers",
-    body: "Send a class a world instead of a worksheet. Everyone gets the same link and the same law to find, and each student keeps a card showing how long it took them.",
+    body: "Send a class a world instead of a worksheet. No accounts, no names: one class link, and afterwards you see how many found the law and got the new case right.",
+    href: "/teach",
+    cta: "Make a class link",
   },
   {
     icon: Sparkles,
@@ -391,7 +393,14 @@ export function Landing({
                   <Icon aria-hidden="true" className="land-who-icon" />
                   <CardTitle className="land-who-title">{who.title}</CardTitle>
                 </CardHeader>
-                <CardContent className="land-who-body">{who.body}</CardContent>
+                <CardContent className="land-who-body">
+                  {who.body}
+                  {"href" in who && who.href ? (
+                    <Link href={who.href} className="land-who-link">
+                      {who.cta} <ArrowRight aria-hidden="true" />
+                    </Link>
+                  ) : null}
+                </CardContent>
               </Card>
             );
           })}
@@ -404,7 +413,7 @@ export function Landing({
             <h2 id="worlds-title" className="land-h2">
               Step into a world
             </h2>
-            <p className="land-sub">Five built by hand. The rest written, checked and painted by Meta&apos;s models on their own.</p>
+            <p className="land-sub">Five built by hand. The rest written, checked and painted by Meta&apos;s models, each from one typed question.</p>
           </div>
           <Button asChild variant="outline">
             <Link href="/gallery">

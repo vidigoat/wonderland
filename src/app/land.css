@@ -705,3 +705,17 @@
   font-size: 15px;
   line-height: 1.55;
 }
+.land-who-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  color: #fafafa;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.land-who-link svg {
+  width: 16px;
+  height: 16px;
+}

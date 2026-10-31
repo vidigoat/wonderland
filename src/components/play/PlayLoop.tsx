@@ -229,6 +229,8 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
         verdict: said,
         transferCorrect: play.transferCorrect === true,
         minutes,
+        // A teacher's class link carries ?class=…; the server keeps it only if it is a plain code.
+        classCode: new URLSearchParams(window.location.search).get("class") ?? undefined,
       }),
     }).catch(() => undefined);
   }, [play.phase, play.startedAtMs, play.beforeCorrect, play.transferCorrect, spec.id, verdict]);

@@ -1,5 +1,6 @@
 import "server-only";
 import { connection } from "next/server";
+import { readClassCode } from "@/lib/classes/summary";
 import { savePlay } from "@/lib/study/store";
 
 /** POST one anonymous finished play. Nothing from this file is shown until there are at least 10 lines. */
@@ -28,6 +29,7 @@ export async function POST(req: Request) {
       verdict: raw.verdict,
       transferCorrect: raw.transferCorrect === true,
       minutes: Math.round(raw.minutes * 10) / 10,
+      ...(readClassCode(raw.classCode) ? { classCode: readClassCode(raw.classCode)! } : {}),
     });
   } catch {
     return Response.json({ error: "invalid play" }, { status: 400 });

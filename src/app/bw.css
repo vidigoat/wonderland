@@ -840,3 +840,94 @@
   margin-top: clamp(40px, 5vw, 64px);
   margin-bottom: 18px;
 }
+/* Teach with it */
+.teach .bw-sub {
+  max-width: 62ch;
+}
+.teach-steps {
+  margin: 20px 0 28px;
+  padding-left: 22px;
+  color: #d4d4d4;
+  line-height: 1.7;
+}
+.teach-form {
+  display: grid;
+  gap: 18px;
+  max-width: 720px;
+}
+.teach-field {
+  display: grid;
+  gap: 6px;
+  color: #fafafa;
+  font-weight: 600;
+}
+.teach-field select,
+.teach-field input {
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  background: #0a0a0a;
+  color: #fafafa;
+  font: inherit;
+  font-weight: 400;
+}
+.teach-field small,
+.teach-hint {
+  color: #a3a3a3;
+  font-size: 13px;
+  font-weight: 400;
+}
+.teach-links {
+  display: grid;
+  gap: 16px;
+}
+.teach-links > div {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.teach-label {
+  margin: 0;
+  color: #fafafa;
+  font-weight: 600;
+}
+.teach-links code {
+  overflow-wrap: anywhere;
+  color: #d4d4d4;
+  font-size: 13px;
+}
+.teach-links button {
+  justify-self: start;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #fafafa;
+  color: #0a0a0a;
+  font-weight: 600;
+}
+.teach-table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.teach-table th,
+.teach-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #d4d4d4;
+  text-align: left;
+}
+.teach-table th {
+  color: #a3a3a3;
+  font-weight: 500;
+}
+.teach-table a {
+  color: #fafafa;
+}
+.teach-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}

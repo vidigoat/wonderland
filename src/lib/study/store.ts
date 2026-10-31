@@ -60,6 +60,8 @@ export type PlayLine = {
   verdict: string;
   transferCorrect: boolean;
   minutes: number;
+  /** A class code a teacher chose, when the student came by a class link. Never a name. */
+  classCode?: string;
   at: string;
 };
 
@@ -79,6 +81,28 @@ export async function countPlays(dir?: string): Promise<number> {
     return text.split("\n").filter((row) => row.trim()).length;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return 0;
+    throw error;
+  }
+}
+
+/** Every finished play, oldest first. */
+export async function readPlays(dir?: string): Promise<PlayLine[]> {
+  if (!dir && blobStorage()) return (await readBlobRows("plays/plays.json")) as PlayLine[];
+  dir ??= path.join(process.cwd(), "data", "plays");
+  try {
+    const text = await readFile(path.join(dir, "plays.jsonl"), "utf8");
+    return text
+      .split("\n")
+      .filter((row) => row.trim())
+      .flatMap((row) => {
+        try {
+          return [JSON.parse(row) as PlayLine];
+        } catch {
+          return [];
+        }
+      });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
     throw error;
   }
 }

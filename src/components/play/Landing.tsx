@@ -208,6 +208,7 @@ export function Landing({
           <a href="#how">How it plays</a>
           <a href="#inside">Under the hood</a>
           <Link href="/gallery">Worlds</Link>
+          <Link href="/teach">Teach</Link>
         </nav>
         <Button asChild size="sm" className="bw-nav-cta">
           <a href="#ask">Ask a question</a>

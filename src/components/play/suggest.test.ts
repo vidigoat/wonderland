@@ -28,6 +28,9 @@ describe("suggested questions", () => {
     expect(missKind("No verified world matched. The model did not write a new one.")).toBe("shelf");
     expect(missSentence("shelf")).toBe("The model did not write a new world. These questions already have one.");
     expect(missKind("3 checks failed")).toBe("failed");
+    expect(missKind("Couldn't produce a world that passes its science checks, playability lint and honest-readings check.")).toBe("failed");
+    expect(missKind("401 Unauthorized")).toBe("trouble");
+    expect(missKind("You've built 3 worlds today, which is the daily share for each visitor.")).toBe("limit");
     expect(missSentence("banned")).toBe("Wonderland does not build that. It stays with how things work.");
     expect(missSentence("failed")).not.toMatch(/hiddenLaw|answer/i);
   });

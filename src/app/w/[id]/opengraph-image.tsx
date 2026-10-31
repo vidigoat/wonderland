@@ -7,7 +7,7 @@ import { notFound } from "next/navigation";
 import { PosterCard } from "@/components/play/PosterCard";
 import { posterCopy } from "@/components/play/poster";
 import { toPublic } from "@/engine/spec";
-import { findWorld } from "@/worlds/find.server";
+import { findWorldCached as findWorld } from "@/worlds/find.server";
 
 export const alt = "A Wonderland world. The law is still hidden.";
 export const size = { width: 1200, height: 630 };

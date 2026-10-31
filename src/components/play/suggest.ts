@@ -47,19 +47,23 @@ export function wordOverlap(question: string, concept: string): number {
   return score;
 }
 
-export type MissKind = "banned" | "not-a-mechanism" | "failed" | "shelf";
+export type MissKind = "banned" | "not-a-mechanism" | "failed" | "shelf" | "limit" | "trouble";
 
 export function missKind(message: string): MissKind {
+  if (/daily share|budget is used up|spend cap/i.test(message)) return "limit";
   if (/medical|politic|war|sport/i.test(message)) return "banned";
   if (/no verified world matched/i.test(message)) return "shelf";
   if (/mechanism|did not write|not a world/i.test(message)) return "not-a-mechanism";
-  return "failed";
+  if (/passes its science checks|checks? failed|science/i.test(message)) return "failed";
+  return "trouble";
 }
 
 export function missSentence(kind: MissKind): string {
   if (kind === "banned") return "Wonderland does not build that. It stays with how things work.";
   if (kind === "shelf") return "The model did not write a new world. These questions already have one.";
   if (kind === "not-a-mechanism") return "That question does not name a mechanism you can poke.";
+  if (kind === "limit") return "Building is paused for now: the day's model budget is shared by every visitor.";
+  if (kind === "trouble") return "The build hit a problem before the science could be checked. Try again in a moment.";
   return "The build tried, and the science did not hold.";
 }
 

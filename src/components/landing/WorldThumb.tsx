@@ -249,15 +249,27 @@ export function WorldThumb({ spec }: { spec: PublicWorldSpec }) {
           plate.height = rows;
           const bits = plate.getContext("2d");
           if (!bits) return;
+          // On a painting, glow only where the field stands out from the rest of itself, and fade toward the
+          // edges: an even field drawn by raw value became a flat tan box over the picture.
+          let low = 1;
+          let high = 0;
+          for (const line of view.grid) for (const cell of line) {
+            const value = Math.max(0, Math.min(1, cell ?? 0));
+            low = Math.min(low, value);
+            high = Math.max(high, value);
+          }
+          if (painting && high - low < 0.08) return;
           const pixels = bits.createImageData(cols, rows);
           for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
               const value = Math.max(0, Math.min(1, view.grid[r]?.[c] ?? 0));
               const index = (r * cols + c) * 4;
+              const lift = (value - low) / Math.max(high - low, 1e-6);
+              const edge = Math.min(1, (Math.min(r, rows - 1 - r, c, cols - 1 - c) + 1) / Math.max(2, Math.min(rows, cols) * 0.18));
               pixels.data[index] = painting ? 242 : Math.round(60 + value * 195);
               pixels.data[index + 1] = painting ? 180 : Math.round(60 + value * 195);
               pixels.data[index + 2] = painting ? 90 : Math.round(60 + value * 195);
-              pixels.data[index + 3] = painting ? Math.round(Math.pow(value, 0.7) * 230) : Math.round(30 + value * 225);
+              pixels.data[index + 3] = painting ? Math.round(Math.pow(lift, 1.2) * 210 * edge) : Math.round(30 + value * 225);
             }
           }
           bits.putImageData(pixels, 0, 0);

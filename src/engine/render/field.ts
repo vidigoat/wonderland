@@ -211,7 +211,10 @@ function paintGrid(grid: number[][], scale: FieldScale, translucent = false): Te
       data[index] = (color >> 16) & 255;
       data[index + 1] = (color >> 8) & 255;
       data[index + 2] = color & 255;
-      data[index + 3] = translucent ? Math.round(Math.pow(Math.max(0, Math.min(1, value)), 0.7) * 235) : 255;
+      // Over a painting the level still reads absolutely (oxygen falling evenly in a jar is the law), but the
+      // field fades out toward its edges so it sits in the picture instead of on it like a pasted box.
+      const edge = translucent ? Math.min(1, (Math.min(x, width - 1 - x, y, height - 1 - y) + 1) / Math.max(2, Math.min(width, height) * 0.15)) : 1;
+      data[index + 3] = translucent ? Math.round(Math.pow(Math.max(0, Math.min(1, value)), 0.7) * 235 * edge) : 255;
     }
   }
   const source = new BufferImageSource({

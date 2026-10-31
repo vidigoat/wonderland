@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Observable } from "@/engine/spec";
-import { chartLines, chartSeries } from "./chart";
+import { chartLines, chartSeries, isClock } from "./chart";
 import { formatHudValue, formatReading, isShareReading, plainUnit, shotSettled, showWithdrawingKey, vaultCoinCount } from "./readings";
 
 describe("reading numbers", () => {
@@ -127,5 +127,12 @@ describe("the reading chart", () => {
     expect(hares?.current).toContain("M");
     expect(hares?.current).toContain("L");
     expect(hares?.current).not.toBe(hares?.previous);
+  });
+
+  it("leaves a clock off the chart", () => {
+    expect(isClock("generation", "Generation", [0, 1, 2, 3])).toBe(true);
+    expect(isClock("elapsed", "Weeks gone by", [0, 5, 10, 15])).toBe(true);
+    expect(isClock("hares", "Hares alive", [40, 52, 61, 50])).toBe(false);
+    expect(isClock("eaten", "Moths eaten", [3, 3, 3])).toBe(false);
   });
 });

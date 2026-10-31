@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { WorldThumb } from "@/components/landing/WorldThumb";
 import { PlaceScene } from "@/components/play/Scenes";
-import { listPublic } from "@/lib/storage/worlds";
+import { shelfWorlds } from "@/worlds/shelf.server";
 import { heroWorlds } from "@/worlds";
 import { LogoMark } from "@/components/brand/Logo";
 
@@ -58,7 +58,7 @@ async function WrittenShelf() {
   "use cache";
   cacheTag("worlds");
   const heroIds = new Set(heroWorlds.map((world) => world.id));
-  const written = (await listPublic()).filter((world) => !heroIds.has(world.id));
+  const written = (await shelfWorlds()).filter((world) => !heroIds.has(world.id));
   if (written.length === 0) return null;
   return (
     <>

@@ -1,6 +1,6 @@
 import { connection } from "next/server";
 import { metaSource, openWeightsProvider, openWeightsSource, reasoningBackend, reasoningSource } from "@/lib/ai/mode";
-import { spendSummary } from "@/lib/ai/spend";
+import { pullShared, spendSummary } from "@/lib/ai/spend";
 import { SAMPLE_NOTICE } from "@/lib/samples/mark";
 
 /**
@@ -10,6 +10,8 @@ import { SAMPLE_NOTICE } from "@/lib/samples/mark";
  */
 export async function GET() {
   await connection();
+  // On Vercel, report the totals every instance shares, not this instance's last copy.
+  await pullShared().catch(() => undefined);
   const models = reasoningSource();
   const openWeights = openWeightsSource();
   const sample = models === "sample" || openWeights === "sample";

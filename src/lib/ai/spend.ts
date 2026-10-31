@@ -130,7 +130,7 @@ export function costOf(url: string, requestModel: string | undefined, body: Reco
 const SHARED_LEDGER = "ledger.json";
 
 /** Pull the shared totals, so a cap counts every server instance's spend, not just this one's. */
-async function pullShared(): Promise<void> {
+export async function pullShared(): Promise<void> {
   if (process.env.WONDERLAND_STORAGE !== "blob") return;
   const { blobGetText } = await import("@/lib/storage/blob");
   const text = await blobGetText(SHARED_LEDGER);

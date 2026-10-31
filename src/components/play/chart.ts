@@ -8,7 +8,19 @@ function changes(points: number[]): boolean {
   return points.some((point) => point !== first);
 }
 
-/** Up to three numeric readings. Ones that move during the run come first. */
+/**
+ * A clock, not a reading: time itself ("Generation", "Day", "Step"), or a count that only ever goes up by the
+ * same amount each sample. On a chart against time it is a straight diagonal that says nothing.
+ */
+export function isClock(id: string, label: string, points: number[]): boolean {
+  if (/^(generation|gen|day|days|step|steps|tick|ticks|round|rounds|time|t|year|years|hour|hours|week|weeks)$/i.test(id)) return true;
+  if (/^(generation|day|step|tick|round|time|year|hour|week)s?$/i.test(label.trim())) return true;
+  if (points.length < 3) return false;
+  const step = points[1]! - points[0]!;
+  return step > 0 && points.every((point, index) => index === 0 || Math.abs(point - points[index - 1]! - step) < 1e-9);
+}
+
+/** Up to three numeric readings. Ones that move during the run come first; clocks are left off. */
 export function chartSeries(observables: Observable[], history: Observation[]): ChartSeries[] {
   const built: ChartSeries[] = [];
   for (const item of observables) {
@@ -23,7 +35,7 @@ export function chartSeries(observables: Observable[], history: Observation[]): 
       }
       points.push(value);
     }
-    if (numeric && points.length > 0) built.push({ id: item.id, label: item.label, points });
+    if (numeric && points.length > 0 && !isClock(item.id, item.label, points)) built.push({ id: item.id, label: item.label, points });
   }
   const order = new Map(observables.map((item, index) => [item.id, index]));
   const kind = new Map(observables.map((item) => [item.id, item.display]));

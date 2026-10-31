@@ -88,9 +88,9 @@ Every screen says where you are: a bar across the top shows **what you're findin
 
 ## The worlds
 
-**Twenty-five worlds, five built by hand.** The other twenty were written and painted by Meta's models from a single typed question.
+**Twenty-six worlds in this repository, five built by hand.** The other twenty-one were written and painted by Meta's models from a single typed question.
 - **The first seven** were saved because their science checks passed on every seed. Six of them were later **repaired by hand**: we found the models had faked some readings, and the checks hadn't noticed. [What happened, and the check we added so it can't happen again](#when-the-checks-were-fooled).
-- **The other thirteen** come from the fresh-question eval, the Lab and one live build from the landing page. They passed all four gates with no hand repairs; five were fixed by the automatic repair loop.
+- **The other fourteen** come from the fresh-question eval, the Lab, a live build from the landing page and a question asked in Hindi. They passed all four gates with no hand repairs; six were fixed by the automatic repair loop. The live site grows as visitors build.
 
 | World | The question | What's really running |
 |---|---|---|
@@ -108,7 +108,7 @@ Every screen says where you are: a bar across the top shows **what you're findin
 | *Murmuration Sky* | Why do starlings fly in huge flocks without crashing? | Local flocking rules (separation, alignment, cohesion). **Written live by Muse Spark Open**, then repaired by hand. |
 
 <details>
-<summary><b>The thirteen newest worlds</b>: from the eval, the Lab and a live build, no hand repairs</summary>
+<summary><b>The fourteen newest worlds</b>: from the eval, the Lab, a live build and a Hindi question, no hand repairs</summary>
 
 | World | The question |
 |---|---|
@@ -125,6 +125,7 @@ Every screen says where you are: a bar across the top shows **what you're findin
 | *The Locked Moon* | Why does the Moon always show us the same face? |
 | *Shivering Circle* | Why do penguins huddle in a rotating crowd? |
 | *Skyfall Tower* | Why do raindrops fall at a steady speed instead of getting faster and faster? (built live from the landing page; repaired by the loop) |
+| *जमी हुई झील* (Frozen Lake) | पानी में बर्फ़ क्यों तैरती है? (asked in Hindi; repaired by the loop) |
 
 </details>
 
@@ -235,7 +236,7 @@ We fixed fifteen phenomena from a middle-school science curriculum before runnin
 
 Muse Spark 1.3 watched every world run: six frames, from start to end, with the starting controls and with one control moved. It judged whether the picture shows what the hidden law predicts. On its first pass it flagged three worlds, and all three were real bugs that none of our tests had caught: hares that appeared as blank outlines, fireflies whose flashing couldn't be seen, and dunes sized so that the wind seemed to do nothing. All three are fixed. The whole pass cost under $0.20.
 
-Now the loop is closed. When Spark flags a model-written world, its notes go back to the designer on the server (`/api/repair`), the repaired world must pass every gate again, and Spark watches it again, at most twice per world. **SAM 3.1** counts the figures in the picture as a second opinion: on Rumour Town's square it counted 35 where the stage drew 33. Every world in the gallery today, all 25, looks right to Spark. Details: [`docs/playtest-results.md`](docs/playtest-results.md).
+Now the loop is closed. When Spark flags a model-written world, its notes go back to the designer on the server (`/api/repair`), the repaired world must pass every gate again, and Spark watches it again, at most twice per world. **SAM 3.1** counts the figures in the picture as a second opinion: on Rumour Town's square it counted 35 where the stage drew 33. Every world in the gallery today looks right to Spark. Details: [`docs/playtest-results.md`](docs/playtest-results.md).
 
 ### How a world is painted
 
@@ -279,6 +280,12 @@ The designer writes each world's rules as code, so that code is treated as untru
 ### A hard ceiling on spend
 
 Every request to Meta or Baseten passes through [`guardedFetch`](src/lib/ai/spend.ts). It refuses the call once a provider's ledger reaches its cap (`SPEND_CAP_META_USD`, `SPEND_CAP_BASETEN_USD`), records the real cost from each response's `usage`, and re-reads the ledger on every check so parallel processes can't overspend. With no keys at all, every model call takes a clearly labelled sample path and all five hand-built worlds still play.
+
+### Ask in any language
+
+Ask in Hindi and the world answers in Hindi: its title, story, controls, readings, predictions, the judge's replies and the law you discover at the end follow the language of the question, while ids, code and checks stay English. "पानी में बर्फ़ क्यों तैरती है?" (why does ice float on water?) became *जमी हुई झील* (Frozen Lake), passed every gate after two automatic repairs, and is in the gallery. The surrounding interface is still in English.
+
+<p align="center"><img src="docs/readme/hindi.webp" alt="A world built from a Hindi question: जमी हुई झील, a frozen lake where ice blocks float, with Hindi controls and readings" width="100%" /></p>
 
 ### For teachers
 

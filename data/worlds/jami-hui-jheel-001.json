@@ -1,0 +1,258 @@
+{
+  "id": "jami-hui-jheel-001",
+  "version": 1,
+  "concept": "पानी में बर्फ़ क्यों तैरती है?",
+  "title": "जमी हुई झील",
+  "tagline": "बर्फ़ भारी है, फिर भी डूबती क्यों नहीं?",
+  "archetype": "bodies",
+  "science": {
+    "hiddenLaw": "Archimedes' principle with water's density anomaly: buoyant force equals weight of displaced fluid, so an object floats iff its average density < fluid density; ice floats because hydrogen bonding creates an open hexagonal crystal on freezing that increases volume, making ice density (~0.917 g/cm³) < liquid water density (~1.0 g/cm³), so its weight is balanced by displaced water with ~91.7% of its volume submerged.",
+    "plainStatement": "बर्फ़ पानी पर इसलिए तैरती है क्योंकि बर्फ़ का घनत्व पानी से कम होता है — लगभग 0.92 ग्राम/सेमी³ बनाम 1.0 ग्राम/सेमी³। जमते समय पानी के अणुओं के बीच हाइड्रोजन बंधों से एक खुली षट्कोणीय जाली बनती है जिससे बर्फ़ का आयतन बढ़ जाता है। आर्किमिडीज़ के सिद्धांत के अनुसार बर्फ़ पर लगने वाला उत्प्लावन बल उसके द्वारा हटाए गए पानी के वज़न के बराबर होता है, इसलिए बर्फ़ का वज़न संतुलित हो जाता है और वह लगभग 92% डूबी हुई तैरती रहती है।",
+    "misconceptions": [
+      "बर्फ़ इसलिए तैरती है क्योंकि उसके अंदर हवा के बुलबुले फँसे होते हैं — बिना हवा के बनी बर्फ़ डूब जाएगी।",
+      "बर्फ़ इसलिए तैरती है क्योंकि वह निरपेक्ष रूप से 'हल्की' है — घनत्व (प्रति आयतन द्रव्यमान) की तुलना से कोई फर्क नहीं पड़ता, सिर्फ वज़न मायने रखता है।",
+      "बर्फ़ पानी के पृष्ठ-तनाव (surface tension) के कारण तैरती है, जैसे सुई या पत्ता पानी पर तैरता है।"
+    ],
+    "sources": [
+      {
+        "title": "USGS Water Science School - Water Density",
+        "url": "https://www.usgs.gov/special-topics/water-science-school/science/water-density"
+      },
+      {
+        "title": "Khan Academy - Buoyant force and Archimedes' principle",
+        "url": "https://www.khanacademy.org/science/physics/fluids/buoyant-force-and-archimedes-principle/a/buoyant-force-and-archimedes-principle-article"
+      },
+      {
+        "title": "LibreTexts Chemistry - Hydrogen Bonding and Structure of Ice",
+        "url": "https://chem.libretexts.org/Bookshelves/General_Chemistry/Map%3A_Chemistry_-_The_Central_Science_(Brown_et_al.)/11%3A_Liquids_and_Intermolecular_Forces/11.08%3A_Hydrogen_Bonding"
+      }
+    ]
+  },
+  "story": {
+    "setting": "सर्दियों की सुबह, पहाड़ी झील पूरी जमी है। किनारे बर्फ़ के टुकड़े पानी में तैर रहे हैं।",
+    "mystery": "बर्फ़ पानी से बनी है, फिर पानी पर तैरती कैसे है?",
+    "goal": "बदलो घनत्व और देखो बर्फ़ कितनी डूबती है।"
+  },
+  "knobs": [
+    {
+      "id": "iceDensity",
+      "label": "बर्फ़ का घनत्व",
+      "kind": "slider",
+      "min": 0.7,
+      "max": 1.2,
+      "step": 0.01,
+      "default": 0.917,
+      "hint": "बर्फ़ कितनी सघन है"
+    },
+    {
+      "id": "waterDensity",
+      "label": "पानी का घनत्व",
+      "kind": "slider",
+      "min": 0.8,
+      "max": 1.2,
+      "step": 0.01,
+      "default": 1,
+      "hint": "पानी कितना भारी है"
+    },
+    {
+      "id": "hasAirBubbles",
+      "label": "हवा के बुलबुले",
+      "kind": "toggle",
+      "default": false,
+      "hint": "बर्फ़ में हवा फँसी है या नहीं"
+    }
+  ],
+  "observables": [
+    {
+      "id": "fraction_floating",
+      "label": "तैरते टुकड़ों का अनुपात",
+      "unit": "",
+      "display": "series"
+    },
+    {
+      "id": "submerged_volume_fraction",
+      "label": "डूबा हुआ आयतन",
+      "unit": "",
+      "display": "series"
+    },
+    {
+      "id": "buoyant_force_over_weight_ratio",
+      "label": "उत्प्लावन वज़न अनुपात",
+      "unit": "",
+      "display": "series"
+    }
+  ],
+  "entities": [
+    {
+      "id": "ice_block",
+      "label": "बर्फ़ का टुकड़ा",
+      "artPrompt": "translucent ice cube with hexagonal crystal pattern, light blue tint, soft edges",
+      "segmentPrompt": "ice block cube"
+    },
+    {
+      "id": "water",
+      "label": "पानी",
+      "artPrompt": "calm lake water surface deep blue with subtle reflection",
+      "segmentPrompt": "water area"
+    }
+  ],
+  "rules": {
+    "kind": "js",
+    "source": "exports.init = (params, rng) => {\n  const N=5;\n  const blocks=[];\n  for(let i=0;i<N;i++){\n    blocks.push({\n      id:i,\n      x: rng.range(1.5,8.5),\n      y: rng.range(6.5,9),\n      vy:0,\n      h:1,\n      w:1,\n      submergedFrac:0,\n      buoyant:0,\n      weight:0\n    });\n  }\n  return {\n    blocks,\n    waterLevel:5,\n    iceDensity: params.iceDensity ?? 0.917,\n    waterDensity: params.waterDensity ?? 1,\n    hasAirBubbles: params.hasAirBubbles ?? false,\n    time:0\n  };\n};\nexports.step = (state, params, rng) => {\n  const dt=0.05;\n  const g=9.8;\n  const drag=3.5;\n  const iceDensity = params.iceDensity ?? state.iceDensity;\n  const waterDensity = params.waterDensity ?? state.waterDensity;\n  const hasAirBubbles = params.hasAirBubbles ?? state.hasAirBubbles;\n  const effectiveDensity = iceDensity - (hasAirBubbles ? 0.05 : 0);\n  const newBlocks = state.blocks.map(b=>{\n    let y=b.y;\n    let vy=b.vy;\n    const h=b.h;\n    const w=b.w;\n    const volume=h*w*1;\n    const mass=effectiveDensity*volume;\n    const bottom=y-h/2;\n    const top=y+h/2;\n    let submergedH=0;\n    if(bottom < state.waterLevel){\n      if(top <= state.waterLevel) submergedH=h;\n      else submergedH=state.waterLevel-bottom;\n    }\n    if(submergedH<0) submergedH=0;\n    if(submergedH>h) submergedH=h;\n    const submergedVol=submergedH*w*1;\n    const buoyant=waterDensity*submergedVol*g;\n    const weight=effectiveDensity*volume*g;\n    let net=buoyant-weight-drag*vy;\n    const ay=net/mass;\n    vy+=ay*dt;\n    if(vy>5) vy=5;\n    if(vy<-5) vy=-5;\n    y+=vy*dt;\n    if(y-h/2 < 0){ y=h/2; vy=0; }\n    if(y+h/2 > 10){ y=10-h/2; vy=0; }\n    const bottom2=y-h/2;\n    const top2=y+h/2;\n    let submergedH2=0;\n    if(bottom2 < state.waterLevel){\n      if(top2 <= state.waterLevel) submergedH2=h;\n      else submergedH2=state.waterLevel-bottom2;\n    }\n    if(submergedH2<0) submergedH2=0;\n    if(submergedH2>h) submergedH2=h;\n    return {\n      id:b.id,\n      x:b.x,\n      y:y,\n      vy:vy,\n      h:h,\n      w:w,\n      submergedFrac:submergedH2/h,\n      buoyant:waterDensity*submergedH2*w*g,\n      weight:weight\n    };\n  });\n  return {\n    blocks:newBlocks,\n    waterLevel:state.waterLevel,\n    iceDensity:iceDensity,\n    waterDensity:waterDensity,\n    hasAirBubbles:hasAirBubbles,\n    time:state.time+dt\n  };\n};\nexports.observe = (state, params) => {\n  const n=state.blocks.length;\n  let floating=0;\n  let sumSub=0;\n  let sumRatio=0;\n  for(const b of state.blocks){\n    if(b.y > 1.0) floating+=1;\n    sumSub+=b.submergedFrac;\n    const ratio=b.weight>0 ? b.buoyant/b.weight : 0;\n    sumRatio+=ratio;\n  }\n  return {\n    fraction_floating: floating/n,\n    submerged_volume_fraction: sumSub/n,\n    buoyant_force_over_weight_ratio: sumRatio/n\n  };\n};\nexports.view = (state, params) => {\n  const bodies=[];\n  const waterYView = 10 - state.waterLevel;\n  for(let i=0;i<=10;i++){\n    bodies.push({ id:`water-${i}`, x:i, y:waterYView, radius:0.14, color:\"#4a9fe3\" });\n  }\n  for(let i=0;i<=10;i++){\n    bodies.push({ id:`bottom-${i}`, x:i, y:9.6, radius:0.08, color:\"#2c3e50\" });\n  }\n  state.blocks.forEach(b=>{\n    const isSinking = b.y <= 1.2;\n    let bob=0;\n    if(!isSinking){\n      bob = Math.sin(state.time*2.5 + b.id*1.3)*0.12;\n    }\n    const yView = 10 - b.y + bob;\n    let color;\n    if(isSinking){\n      color=\"#1e3a5f\";\n    } else {\n      const t = Math.max(0, Math.min(1, (b.submergedFrac-0.7)/0.3));\n      const r = Math.round(200 - t*60);\n      const g = Math.round(232 - t*40);\n      const bcol = Math.round(255 - t*30);\n      color = \"#\" + [r,g,bcol].map(v=>v.toString(16).padStart(2,\"0\")).join(\"\");\n    }\n    const radius = isSinking ? 0.42 : 0.52 + b.submergedFrac*0.08;\n    bodies.push({ id:String(b.id), x:b.x, y:yView, radius:radius, color:color });\n    if(!isSinking){\n      bodies.push({ id:`sub-${b.id}`, x:b.x, y:yView+0.18, radius:radius*0.55, color:\"#6fb7e8\" });\n    }\n  });\n  return { kind:\"bodies\", bounds:{x:0,y:0,w:10,h:10}, bodies };\n};\n"
+  },
+  "predictions": [
+    {
+      "id": "air_bubble_test",
+      "prompt": "बर्फ़ में हवा के बुलबुले भर दें तो तैरने पर क्या असर होगा?",
+      "options": [
+        "लगभग वैसी ही तैरेगी, थोड़ी कम डूबी",
+        "पहले डूबती थी अब तैरेगी",
+        "बुलबुले फूटते ही डूब जाएगी"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "hasAirBubbles": true,
+        "iceDensity": 0.917,
+        "waterDensity": 1
+      }
+    },
+    {
+      "id": "weight_vs_density",
+      "prompt": "बर्फ़ का घनत्व 0.95 कर दें, पानी 1.0 रहे तो क्या होगा?",
+      "options": [
+        "तैरेगी, लगभग 95% डूबी हुई",
+        "डूब जाएगी क्योंकि भारी है",
+        "आधी डूबेगी आधी सतह तनाव से टिकेगी"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "iceDensity": 0.95,
+        "waterDensity": 1,
+        "hasAirBubbles": false
+      }
+    },
+    {
+      "id": "surface_tension_test",
+      "prompt": "पानी का घनत्व 0.85 कर दें, बर्फ़ 0.917 रहे तो क्या होगा?",
+      "options": [
+        "डूब जाएगी, घनत्व पानी से ज़्यादा है",
+        "तैरेगी, पृष्ठ-तनाव संभालेगा",
+        "ऊपर-नीचे उछलेगी"
+      ],
+      "answerKey": 0,
+      "tryWith": {
+        "iceDensity": 0.917,
+        "waterDensity": 0.85,
+        "hasAirBubbles": false
+      }
+    }
+  ],
+  "transfer": {
+    "setup": "समुद्र में तेल रिस गया है। तेल का घनत्व 0.85 है और खारे पानी का 1.02। हवा या सतह तनाव का खेल नहीं है।",
+    "params": {
+      "iceDensity": 0.85,
+      "waterDensity": 1.02,
+      "hasAirBubbles": false
+    },
+    "question": "तेल क्या करेगा?",
+    "options": [
+      "सतह पर तैरेगा, लगभग 83% डूबा",
+      "डूब जाएगा क्योंकि चिपचिपा है",
+      "पृष्ठ-तनाव से तैरेगा"
+    ],
+    "answerKey": 0
+  },
+  "checks": [
+    {
+      "id": "normal_ice_floats",
+      "description": "Normal ice with density 0.917 floats on water with density 1.0",
+      "params": {
+        "iceDensity": 0.917,
+        "waterDensity": 1,
+        "hasAirBubbles": false
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "fraction_floating",
+        "op": "gt",
+        "value": 0.9
+      }
+    },
+    {
+      "id": "dense_ice_sinks_control",
+      "description": "Control: if ice density is made greater than water density, floating disappears and ice sinks",
+      "params": {
+        "iceDensity": 1.1,
+        "waterDensity": 1,
+        "hasAirBubbles": false
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "fraction_floating",
+        "op": "lt",
+        "value": 0.1
+      }
+    },
+    {
+      "id": "archimedes_equilibrium",
+      "description": "Floating ice reaches force equilibrium where buoyant force equals ice weight",
+      "params": {
+        "iceDensity": 0.917,
+        "waterDensity": 1
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "buoyant_force_over_weight_ratio",
+        "op": "approx",
+        "value": 1,
+        "tolerance": 0.05
+      }
+    },
+    {
+      "id": "submerged_fraction_matches_density_ratio",
+      "description": "Submerged volume fraction equals ice_density/water_density (~0.917)",
+      "params": {
+        "iceDensity": 0.917,
+        "waterDensity": 1
+      },
+      "steps": 2000,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "assert": {
+        "observable": "submerged_volume_fraction",
+        "op": "approx",
+        "value": 0.917,
+        "tolerance": 0.03
+      }
+    }
+  ],
+  "art": {
+    "style": "cozy winter illustration, soft pastel, clear ice blocks on calm lake",
+    "background": "snowy mountain lake at dawn, pale sky, still water",
+    "painted": {
+      "background": "/art/jami-hui-jheel-001/background.webp",
+      "sprites": {
+        "ice_block": "/art/jami-hui-jheel-001/ice_block.webp",
+        "water": "/art/jami-hui-jheel-001/water.webp"
+      }
+    }
+  }
+}

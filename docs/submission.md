@@ -26,7 +26,7 @@ People who learn with an AI assistant score 17 points lower on understanding ([S
 - **The playtester** (Muse Spark 1.3 vision) caught three real visual bugs that 256 tests had missed, and now sends what it sees back to the designer automatically (`docs/playtest-results.md`).
 - **Honest readings:** we caught our own models writing readings as formulas of the sliders, a fake the science checks couldn't see. We built a check for it, and we repaired and labelled every affected world (`docs/repairs.md`).
 - **28 worlds live,** 23 of them written by the models from one typed question, one of them asked in Hindi. The live site grows as visitors build.
-- **Ask in any language:** the world answers in the language of the question.
+- **Ask in any language:** the world answers in the language of the question. Asked in Hindi, the whole play, every step, button and the card you keep, is in Hindi too.
 - **For teachers:** every world has a printable lesson guide matched to an NGSS middle-school standard, with the wrong ideas to listen for and questions for afterwards. A class link with a QR code needs no accounts or names, and the results page shows how many students predicted wrong at first and still got the new case right at the end.
 
 ## How we use Meta's models

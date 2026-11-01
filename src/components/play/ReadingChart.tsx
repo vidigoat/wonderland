@@ -3,6 +3,7 @@
 import type { Observation } from "@/engine/rules";
 import type { PublicWorldSpec } from "@/engine/spec";
 import { chartLines, chartSeries } from "./chart";
+import { useUiText } from "./ui-text";
 
 const COLORS = ["#ffd27a", "#9ecbff", "#f0a08a"];
 
@@ -16,6 +17,7 @@ export function ReadingChart({
   history: Observation[];
   previous: Observation[] | null;
 }) {
+  const t = useUiText();
   const current = chartSeries(spec.observables, history);
   const prior = previous && previous.length > 1 ? chartSeries(spec.observables, previous) : null;
   const lines = chartLines(current, prior, 320, 96);
@@ -23,9 +25,9 @@ export function ReadingChart({
 
   return (
     <figure className="reading-chart">
-      <figcaption>{prior ? "This run, with the previous run faded behind it" : "This run"}</figcaption>
+      <figcaption>{prior ? t.thisRunPrior : t.thisRun}</figcaption>
       {ready ? (
-        <svg viewBox="0 0 320 96" role="img" aria-label="How the readings changed during this run">
+        <svg viewBox="0 0 320 96" role="img" aria-label={t.chartLabel}>
           {lines.map((line, index) => (
             <g key={line.id}>
               {line.previous ? (
@@ -36,7 +38,7 @@ export function ReadingChart({
           ))}
         </svg>
       ) : (
-        <p className="reading-chart-wait">Run the world. The lines show what changed.</p>
+        <p className="reading-chart-wait">{t.chartWait}</p>
       )}
       {lines.length > 0 ? (
         <ul>

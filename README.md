@@ -283,7 +283,7 @@ Every request to Meta or Baseten passes through [`guardedFetch`](src/lib/ai/spen
 
 ### Ask in any language
 
-Ask in Hindi and the world answers in Hindi: its title, story, controls, readings, predictions, the judge's replies and the law you discover at the end follow the language of the question, while ids, code and checks stay English. "पानी में बर्फ़ क्यों तैरती है?" (why does ice float on water?) became *जमी हुई झील* (Frozen Lake), passed every gate after two automatic repairs, and is in the gallery. The surrounding interface is still in English.
+Ask in Hindi and the world answers in Hindi: its title, story, controls, readings, predictions, the judge's replies and the law you discover at the end follow the language of the question, while ids, code and checks stay English. "पानी में बर्फ़ क्यों तैरती है?" (why does ice float on water?) became *जमी हुई झील* (Frozen Lake), passed every gate after two automatic repairs, and is in the gallery. A world asked in Hindi is also framed in Hindi: every step, button, prompt, Ada's panel and the card you keep ([`src/components/play/ui-text.ts`](src/components/play/ui-text.ts)), so a student in a Hindi-medium school plays from the first word to the last without English. In other languages the world itself follows the question and the frame around it is English for now; adding a language means one more table of about ninety phrases. Error messages stay in English.
 
 <p align="center"><img src="docs/readme/hindi.webp" alt="A world built from a Hindi question: जमी हुई झील, a frozen lake where ice blocks float, with Hindi controls and readings" width="100%" /></p>
 

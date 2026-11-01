@@ -1331,6 +1331,9 @@
   color: #a3a3a3;
   animation: wl-loading 1.6s ease-in-out infinite;
 }
+.play[lang="hi"] .stage-pane .stage-fallback::after {
+  content: "दुनिया खुल रही है…";
+}
 .stage-pane .stage-fallback .scene-wait,
 .stage-pane .stage-fallback .stage-caption {
   display: none;

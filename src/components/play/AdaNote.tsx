@@ -5,6 +5,7 @@ import type { PublicWorldSpec } from "@/engine/spec";
 import { ADA_WIRING } from "./http";
 import { describeParams, raceRows, speakTool } from "./readings";
 import { SampleNote } from "./Scenes";
+import { useUiText } from "./ui-text";
 
 export type AdaEntry = {
   thought: string;
@@ -38,6 +39,7 @@ export function AdaNote({
   /** Her reasoning and her exact moves would give the law away, so they stay folded until you have proved it yourself. */
   reveal?: boolean;
 }) {
+  const t = useUiText();
   const bench = describeParams(spec, params);
   // Two rows are enough to show where you and she differ; more turns the card into a table.
   const race = raceRows(spec, yours, rival).slice(0, 2);
@@ -47,17 +49,17 @@ export function AdaNote({
         <h2>Ada</h2>
         {canTurn ? (
           <button type="button" className="quiet" onClick={onTurn} disabled={status === "thinking"}>
-            {status === "thinking" ? "Thinking…" : "Let her try"}
+            {status === "thinking" ? t.thinking : t.letHerTry}
           </button>
         ) : null}
       </header>
       <div className="ada-scroll">
       {race.length ? (
-        <div className="race" aria-label="Where you and Ada differ">
-          <p className="kicker">Your readings and hers</p>
+        <div className="race" aria-label={t.raceLabel}>
+          <p className="kicker">{t.race}</p>
           <div className="race-head">
             <span />
-            <span>You</span>
+            <span>{t.you}</span>
             <span>Ada</span>
           </div>
           {race.map((row) => (
@@ -74,10 +76,10 @@ export function AdaNote({
         </div>
       ) : null}
       {status === "wiring" ? <p className="wiring">{ADA_WIRING}</p> : null}
-      {status === "quiet" ? <p className="aside">An AI scientist racing you on this same world. She moves after you do.</p> : null}
+      {status === "quiet" ? <p className="aside">{t.adaQuiet}</p> : null}
       {entries.length > 0 && !reveal ? (
         <p className="ada-progress">
-          She has run {entries.length} {entries.length === 1 ? "experiment" : "experiments"}. Her notes open once you have proved the law yourself, so they can&apos;t give it away.
+          {t.adaProgress(entries.length)}
         </p>
       ) : null}
       {reveal ? (
@@ -96,7 +98,7 @@ export function AdaNote({
       {/* Her bench (her exact settings) appears only with her notes. */}
       {reveal && bench.length && entries.length ? (
         <p className="bench">
-          <span>Her bench</span>
+          <span>{t.herBench}</span>
           {bench.map((item) => (
             <span key={item.id}>
               {item.label} <span className="num">{item.value}</span>

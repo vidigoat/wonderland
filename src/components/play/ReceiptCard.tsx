@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { paintReceipt, paletteFor, receiptArtPaths, receiptCanvasSize, receiptSummary, type ReceiptModel, type ReceiptPicture } from "./receipt";
+import { useUiText } from "./ui-text";
 
 function fontStack(variable: string, fallback: string): string {
   const value = getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
@@ -36,7 +37,8 @@ function downloadCanvas(canvas: HTMLCanvasElement, filename: string) {
 
 export function ReceiptCard({ model, worldId }: { model: ReceiptModel; worldId: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
-  const { title, tagline, concept, before, after, afterKind, elapsedMs, seen, beforeWords, afterWords } = model;
+  const { title, tagline, concept, before, after, afterKind, elapsedMs, seen, beforeWords, afterWords, labels } = model;
+  const t = useUiText();
   const summary = receiptSummary(model);
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export function ReceiptCard({ model, worldId }: { model: ReceiptModel; worldId: 
     canvas.height = size.height;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const current = { title, tagline, concept, before, after, afterKind, elapsedMs, seen, beforeWords, afterWords };
+    const current = { title, tagline, concept, before, after, afterKind, elapsedMs, seen, beforeWords, afterWords, labels };
     let cancel = false;
     const draw = (art: ReceiptPicture | null) => {
       if (cancel) return;
@@ -65,15 +67,15 @@ export function ReceiptCard({ model, worldId }: { model: ReceiptModel; worldId: 
     return () => {
       cancel = true;
     };
-  }, [worldId, title, tagline, concept, before, after, afterKind, elapsedMs, seen, beforeWords, afterWords]);
+  }, [worldId, title, tagline, concept, before, after, afterKind, elapsedMs, seen, beforeWords, afterWords, labels]);
 
   return (
     <figure className="receipt">
       <figcaption className="receipt-caption">
         <button type="button" className="press" onClick={() => ref.current && downloadCanvas(ref.current, `${worldId}-receipt.png`)}>
-          Keep this card
+          {t.keepCard}
         </button>
-        <p className="receipt-kept">The law is not printed on this card.</p>
+        <p className="receipt-kept">{t.card.lawAbsent}</p>
         <p className="sr">{summary}</p>
       </figcaption>
       <canvas ref={ref} width={1200} height={640} role="img" aria-label={summary} />

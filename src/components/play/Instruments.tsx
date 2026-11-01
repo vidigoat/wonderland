@@ -3,6 +3,7 @@
 import type { Params } from "@/engine/rules";
 import type { PublicWorldSpec } from "@/engine/spec";
 import { formatParam, runVerb } from "./readings";
+import { genericRunVerb, useUiText } from "./ui-text";
 
 /** A share of something (cash kept, how closely trees are planted) reads better as a percentage. */
 function asPercent(knob: { kind: string; label: string; min?: number; max?: number }): boolean {
@@ -30,9 +31,10 @@ export function Instruments({
   onRun: () => void;
   onReset: () => void;
 }) {
+  const t = useUiText();
   return (
     <div className="instruments">
-      <p className="kicker">Controls</p>
+      <p className="kicker">{t.controls}</p>
       {locked && lockedNote ? <p className="slip">{lockedNote}</p> : null}
       <div className="knob-rack" aria-disabled={locked}>
         {spec.knobs.map((knob) => {
@@ -57,7 +59,7 @@ export function Instruments({
               {knob.kind === "toggle" ? (
                 <span className="seal-toggle">
                   <input type="checkbox" disabled={locked} checked={Boolean(value)} onChange={(event) => onChange(knob.id, event.target.checked)} />
-                  <span>{value ? "on" : "off"}</span>
+                  <span>{value ? t.on : t.off}</span>
                 </span>
               ) : null}
               {knob.kind === "text" ? (
@@ -79,10 +81,10 @@ export function Instruments({
       </div>
       <div className="instrument-actions">
         <button type="button" className="press" disabled={locked || playing || !ready} onClick={onRun}>
-          {playing ? "In motion" : runVerb(spec.id, spec.archetype)}
+          {playing ? t.inMotion : t.lang === "en" ? runVerb(spec.id, spec.archetype) : genericRunVerb(t, spec.archetype)}
         </button>
         <button type="button" className="quiet" disabled={locked || playing || !ready} onClick={onReset}>
-          Set the scene again
+          {t.resetScene}
         </button>
       </div>
     </div>

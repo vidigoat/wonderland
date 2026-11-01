@@ -15,7 +15,8 @@ import { PhaseTrail } from "./PhaseTrail";
 import { Instruments } from "./Instruments";
 import { ReadingChart } from "./ReadingChart";
 import { StageHud, StageLegend } from "./StageHud";
-import { experimentHint, stepLabel } from "./guide";
+import { experimentHint, stepIndex, STEPS } from "./guide";
+import { genericRunVerb, UI_TEXT, UiTextProvider, worldLanguage } from "./ui-text";
 import { ReceiptCard } from "./ReceiptCard";
 import { SampleNote } from "./Scenes";
 import { StageSlot } from "./StageSlot";
@@ -42,7 +43,6 @@ import {
   knobsLocked,
   leaveIntro,
   toHypothesise,
-  verdictKicker,
   type PlaySnapshot,
 } from "./phase";
 import { collectShots } from "./capture";
@@ -102,6 +102,8 @@ function ChoiceList({
 const ADA_MAX_TURNS = 6;
 
 export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
+  // The frame's words, in the language the world was asked in.
+  const t = UI_TEXT[worldLanguage(spec)];
   const [play, setPlay] = useState<PlaySnapshot>(initialPlay);
   const [params, setParams] = useState<Params>(() => defaultParams(spec));
   const [obs, setObs] = useState<Observation | null>(null);
@@ -247,7 +249,8 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
     const seed = seedRef.current;
     if (!rules || seed == null) return;
     playtestRan.current = true;
-    setPlaytestNote("Spark is watching this world run.");
+    const words = UI_TEXT[worldLanguage(spec)];
+    setPlaytestNote(words.watching);
     let cancel = false;
     void collectShots(spec, rules, () => document.querySelector(".world-stage canvas"), seed, (next, nextParams) => {
       if (cancel) return;
@@ -273,7 +276,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
           setPlaytestNote(notes[0] ?? "Spark did not watch this world.");
           return;
         }
-        setPlaytestNote(body.verdict === "looks-right" ? "Spark watched it run: looked right." : "Spark watched it run and flagged the picture for another look.");
+        setPlaytestNote(body.verdict === "looks-right" ? words.lookedRight : words.flagged);
       })
       .catch(() => {
         if (!cancel) setPlaytestNote("The playtester could not watch.");
@@ -810,21 +813,28 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
   const locked = knobsLocked(play);
   const lockedNote =
     play.phase === "predict"
-      ? "These stay still until the first guess is written down."
+      ? t.lockedPredict
       : play.phase === "transfer" && play.askingPrediction == null && Object.keys(spec.transfer.params).length > 0
-        ? "These belong to the new situation."
+        ? t.lockedTransfer
         : play.phase === "transfer" && play.askingPrediction === 1 && Object.keys(spec.transfer.params).length > 0
-          ? "These are the knobs from the trial you left."
+          ? t.lockedLeft
           : play.phase === "transfer" || play.phase === "receipt"
-            ? "The bench is still."
+            ? t.lockedStill
             : null;
   const opening = spec.predictions[0];
   const second = spec.predictions[1];
   const showBench = play.phase !== "intro" && play.phase !== "receipt";
   const newSituation = play.phase === "transfer" && play.askingPrediction == null;
+  const verb = t.lang === "en" ? runVerb(spec.id, spec.archetype) : genericRunVerb(t, spec.archetype);
+  const stepText = (phase: typeof play.phase): string | null => {
+    const index = stepIndex(phase);
+    return index < 0 || index >= STEPS.length ? null : t.stepLabel(index + 1, STEPS.length, t.steps[index] ?? "");
+  };
+  const kicker = verdict === "warmer" ? t.closer : verdict === "colder" ? t.further : t.yourSentence;
 
   return (
-    <div className="play" data-world={spec.id} data-archetype={spec.archetype} data-phase={play.phase} data-margin={suggestion ? "yes" : undefined}>
+    <UiTextProvider value={t}>
+    <div className="play" lang={t.lang} data-world={spec.id} data-archetype={spec.archetype} data-phase={play.phase} data-margin={suggestion ? "yes" : undefined}>
       <header className="play-bar">
         <Link href="/" className="bw-logo">
           <LogoMark className="bw-logo-svg" />
@@ -833,10 +843,10 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
         <h1>{spec.title}</h1>
         <span className="play-links">
           <Button type="button" variant="outline" size="sm" disabled={!ready} onClick={() => void copyWorld()}>
-            {copied ? "Copied" : "Copy link"}
+            {copied ? t.copied : t.copyLink}
           </Button>
           <Button asChild variant="ghost" size="sm">
-            <Link href="/gallery">All worlds</Link>
+            <Link href="/gallery">{t.allWorlds}</Link>
           </Button>
         </span>
       </header>
@@ -875,7 +885,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
           ) : null}
           {newSituation ? (
             <div className="situation">
-              <p className="kicker">A new situation</p>
+              <p className="kicker">{t.newSituation}</p>
               <p>{spec.transfer.setup}</p>
             </div>
           ) : null}
@@ -899,43 +909,33 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
 
           {play.phase === "intro" ? (
             <section className="phase">
-              <p className="kicker">The mystery</p>
+              <p className="kicker">{t.mystery}</p>
               <p className="voice">{spec.story.mystery}</p>
               <div className="mission">
-                <p className="mission-title">Something in this world follows a hidden rule. Your job is to find it.</p>
+                <p className="mission-title">{t.missionTitle}</p>
                 <ol className="mission-steps">
-                  <li>
-                    <b>Predict</b> what will happen, before you touch anything.
-                  </li>
-                  <li>
-                    <b>Experiment.</b> Change the controls, run the world, watch the readings.
-                  </li>
-                  <li>
-                    <b>Say it</b> in one sentence, typed or spoken. A judge tells you how close you are.
-                  </li>
-                  <li>
-                    <b>Prove it</b> on a situation you haven&apos;t seen.
-                  </li>
+                  {t.mission.map(([lead, rest]) => (
+                    <li key={lead}>
+                      <b>{lead}</b>
+                      {rest}
+                    </li>
+                  ))}
                 </ol>
-                <p className="mission-race">Ada, an AI scientist, is racing you on this same world. She moves after you do.</p>
+                <p className="mission-race">{t.missionRace}</p>
               </div>
               <button type="button" className="press" onClick={() => setPlay((state) => leaveIntro(state, performance.now()))}>
-                Start: make a prediction
+                {t.start}
               </button>
               <p className="setting">{spec.story.setting}</p>
               <p className="goal">{spec.story.goal}</p>
-              <p className="provenance">
-                {isHeroWorld(spec.id) ? "Built by hand" : "Written by Muse Spark Open"}
-                {spec.art.painted ? ", painted by Muse Image and SAM 3.1" : ""}. Its rules passed {spec.checkCount} science{" "}
-                {spec.checkCount === 1 ? "check" : "checks"} on every seed before you could enter. The rule itself is never sent to your browser.
-              </p>
+              <p className="provenance">{t.provenance(isHeroWorld(spec.id), Boolean(spec.art.painted), spec.checkCount)}</p>
             </section>
           ) : null}
 
           {play.phase === "predict" && opening ? (
             <section className="phase">
-              <p className="step-label">{stepLabel(play.phase)}</p>
-              <p className="step-lede">Before you touch anything, say what you think will happen.</p>
+              <p className="step-label">{stepText(play.phase)}</p>
+              <p className="step-lede">{t.predictLede}</p>
               {opening.options ? (
                 <ChoiceList name={opening.id} prompt={opening.prompt} options={opening.options} selected={selected} onSelect={setSelected} />
               ) : (
@@ -956,35 +956,35 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
                   void gradePrediction(opening.id, choice, "first");
                 }}
               >
-                {grading ? "Writing" : "Write it down"}
+                {grading ? t.writing : t.writeItDown}
               </button>
-              <p className="aside">You&apos;ll find out whether you were right at the end. For now, just commit to a guess.</p>
+              <p className="aside">{t.predictAside}</p>
             </section>
           ) : null}
 
           {play.beforeWords && (play.phase === "experiment" || play.phase === "hypothesise" || play.phase === "loop") ? (
             <p className="sealed">
-              <span className="kicker">Your prediction · checked at the end</span>
+              <span className="kicker">{t.sealed}</span>
               {play.beforeWords}
             </p>
           ) : null}
 
           {play.phase === "experiment" ? (
             <section className="phase">
-              <p className="step-label">{stepLabel(play.phase)}</p>
-              <p className="step-lede">{experimentHint(spec, runVerb(spec.id, spec.archetype))}</p>
+              <p className="step-label">{stepText(play.phase)}</p>
+              <p className="step-lede">{t.lang === "en" ? experimentHint(spec, verb) : t.experimentHint(spec.knobs.slice(0, 2).map((knob) => knob.label), verb)}</p>
             </section>
           ) : null}
 
           {play.phase === "hypothesise" || play.phase === "loop" ? (
             <section className="phase">
-              <p className="step-label">{stepLabel(play.phase)}</p>
-              {play.phase === "loop" ? <p className="kicker">{verdictKicker(verdict)}</p> : <p className="step-lede">What rule makes this world behave the way it does? Put it in your own words.</p>}
+              <p className="step-label">{stepText(play.phase)}</p>
+              {play.phase === "loop" ? <p className="kicker">{kicker}</p> : <p className="step-lede">{t.hypothesiseLede}</p>}
               {reply ? <p className="voice reply">{reply}</p> : null}
               <SampleNote notice={judgeNotice} />
               {suggestion ? (
                 <div className="suggestion">
-                  <p className="kicker">Penciled in the margin</p>
+                  <p className="kicker">{t.margin}</p>
                   <ul>
                     {spec.knobs
                       .filter((knob) => knob.id in suggestion)
@@ -1003,13 +1003,13 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
                       if (next) applyParams(next);
                     }}
                   >
-                    Set those knobs
+                    {t.setKnobs}
                   </button>
                 </div>
               ) : null}
               {judgeError ? <p className="slip">{judgeError}</p> : null}
               <label className="free-guess">
-                <span>Say the law in one sentence.</span>
+                <span>{t.sayLaw}</span>
                 <textarea value={hypothesis} onChange={(event) => setHypothesis(event.target.value)} rows={4} />
               </label>
               <div className="instrument-actions">
@@ -1036,17 +1036,17 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
                   }}
                 >
                   <Mic aria-hidden="true" className="speak-icon" />
-                  {listening ? "Listening" : "Hold to speak"}
+                  {listening ? t.listening : t.holdToSpeak}
                 </button>
                 <button type="button" className="press" disabled={judging || hypothesis.trim() === ""} onClick={() => void offerHypothesis()}>
-                  {judging ? "Offered" : "Offer this sentence"}
+                  {judging ? t.offered : t.offer}
                 </button>
               </div>
               {voiceNote ? <p className="aside">{voiceNote}</p> : null}
               <SampleNote notice={voiceNotice} />
               {play.phase === "hypothesise" ? (
                 <button type="button" className="quiet" onClick={() => setPlay(backToExperiment)}>
-                  Run another trial first
+                  {t.anotherTrial}
                 </button>
               ) : null}
             </section>
@@ -1055,8 +1055,8 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
           {play.phase === "transfer" && play.askingPrediction == null ? (
             <section className="phase">
               {reply ? <p className="voice reply">{reply}</p> : null}
-              <p className="step-label">{stepLabel(play.phase)}</p>
-              <p className="step-lede">If you really understood the rule, you can predict a situation you haven&apos;t seen.</p>
+              <p className="step-label">{stepText(play.phase)}</p>
+              <p className="step-lede">{t.transferLede}</p>
               <p className="voice">{spec.transfer.setup}</p>
               {spec.transfer.options ? (
                 <ChoiceList
@@ -1088,15 +1088,15 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
                   }
                 }}
               >
-                {grading ? "Writing" : "Offer the proof"}
+                {grading ? t.writing : t.offerProof}
               </button>
             </section>
           ) : null}
 
           {play.phase === "transfer" && play.askingPrediction === 1 && second ? (
             <section className="phase">
-              <p className="kicker">Once more, at the end</p>
-              {Object.keys(spec.transfer.params).length > 0 ? <p className="aside">The trial you left is on the stage again.</p> : null}
+              <p className="kicker">{t.onceMore}</p>
+              {Object.keys(spec.transfer.params).length > 0 ? <p className="aside">{t.trialAgain}</p> : null}
               {second.options ? (
                 <ChoiceList name={second.id} prompt={second.prompt} options={second.options} selected={selected} onSelect={setSelected} />
               ) : (
@@ -1116,7 +1116,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
                   void gradePrediction(second.id, choice, "second");
                 }}
               >
-                {grading ? "Writing" : "Write this one down"}
+                {grading ? t.writing : t.writeThis}
               </button>
             </section>
           ) : null}
@@ -1125,14 +1125,14 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
             <section className="phase">
               {law ? (
                 <div className="learned">
-                  <p className="learned-label">What you discovered</p>
+                  <p className="learned-label">{t.discovered}</p>
                   <p className="learned-law">{law}</p>
-                  <p className="aside">Nobody told you this. You found it by experimenting, then proved it on a situation you hadn&apos;t seen.</p>
+                  <p className="aside">{t.discoveredAside}</p>
                 </div>
               ) : (
-                <p className="aside">The law stays hidden until the judge agrees you&apos;ve found it. Play again and say it in your own words.</p>
+                <p className="aside">{t.lawHidden}</p>
               )}
-              <p className="kicker">What you kept</p>
+              <p className="kicker">{t.kept}</p>
               <ReceiptCard
                 worldId={spec.id}
                 model={{
@@ -1146,6 +1146,7 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
                   seen: seenOnCard(seen),
                   beforeWords: play.beforeWords,
                   afterWords: play.afterWords,
+                  labels: t.card,
                 }}
               />
             </section>
@@ -1168,9 +1169,9 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
           ) : null}
           {play.phase === "experiment" ? (
             <div className="next-step">
-              <p className="aside">Seen enough to name the rule?</p>
+              <p className="aside">{t.seenEnough}</p>
               <button type="button" className="press press-secondary" onClick={() => setPlay(toHypothesise)}>
-                I think I see the rule
+                {t.iSee}
               </button>
             </div>
           ) : null}
@@ -1191,5 +1192,6 @@ export function PlayLoop({ spec }: { spec: PublicWorldSpec }) {
         </aside>
       </div>
     </div>
+    </UiTextProvider>
   );
 }

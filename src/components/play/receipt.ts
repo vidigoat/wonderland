@@ -1,4 +1,5 @@
 import { formatElapsed } from "./phase";
+import type { CardLabels } from "./ui-text";
 import { heroArtUrl } from "@/worlds/hero-art";
 
 export type ReceiptModel = {
@@ -14,6 +15,19 @@ export type ReceiptModel = {
   /** What the player themselves wrote beside each mark. */
   beforeWords?: string | null;
   afterWords?: string | null;
+  /** The card's own words, in the world's language. English when unset. */
+  labels?: CardLabels;
+};
+
+const CARD_EN: CardLabels = {
+  before: "Before",
+  after: "After",
+  held: "Held",
+  missed: "Missed",
+  secondPrediction: "Second prediction",
+  transfer: "Transfer",
+  time: "Time you spent",
+  lawAbsent: "The law is not printed on this card.",
 };
 
 export type ReceiptPalette = {
@@ -81,11 +95,13 @@ export function pictureFrame(
 }
 
 export function receiptCopy(model: ReceiptModel) {
+  const labels = model.labels ?? CARD_EN;
   return {
-    before: model.before ? "Held" : "Missed",
-    after: model.after ? "Held" : "Missed",
-    afterKind: model.afterKind === "prediction" ? "Second prediction" : "Transfer",
+    before: model.before ? labels.held : labels.missed,
+    after: model.after ? labels.held : labels.missed,
+    afterKind: model.afterKind === "prediction" ? labels.secondPrediction : labels.transfer,
     elapsed: model.elapsedMs == null ? "—" : formatElapsed(model.elapsedMs),
+    labels,
   };
 }
 
@@ -216,8 +232,8 @@ function paintWideReceipt(
   const columnY = titleBottom + 48;
   ctx.font = `500 20px ${uiFont}`;
   ctx.fillStyle = palette.accent;
-  ctx.fillText("Before", x, columnY);
-  ctx.fillText("After", x + max * 0.48, columnY);
+  ctx.fillText(copy.labels.before, x, columnY);
+  ctx.fillText(copy.labels.after, x + max * 0.48, columnY);
 
   ctx.font = `600 42px ${displayFont}`;
   ctx.fillStyle = palette.ink;
@@ -232,12 +248,12 @@ function paintWideReceipt(
 
   ctx.font = `500 20px ${uiFont}`;
   ctx.fillStyle = palette.accent;
-  ctx.fillText("Time you spent", x, height - 118);
+  ctx.fillText(copy.labels.time, x, height - 118);
   ctx.font = `600 40px ${displayFont}`;
   ctx.fillStyle = palette.ink;
   ctx.fillText(copy.elapsed, x + 250, height - 118);
   ctx.font = `400 22px ${uiFont}`;
-  ctx.fillText("The law is not printed on this card.", x, height - 64);
+  ctx.fillText(copy.labels.lawAbsent, x, height - 64);
 }
 
 /** A narrow column. The painting sits on top and the words use the full width at a size you can read. */
@@ -291,8 +307,8 @@ function paintCompactReceipt(
 
   ctx.font = `500 ${px(0.032)}px ${uiFont}`;
   ctx.fillStyle = palette.accent;
-  ctx.fillText("Before", pad, y);
-  ctx.fillText("After", pad + textW * 0.52, y);
+  ctx.fillText(copy.labels.before, pad, y);
+  ctx.fillText(copy.labels.after, pad + textW * 0.52, y);
   y += px(0.075);
 
   ctx.font = `600 ${px(0.056)}px ${displayFont}`;
@@ -311,14 +327,14 @@ function paintCompactReceipt(
 
   ctx.font = `500 ${px(0.032)}px ${uiFont}`;
   ctx.fillStyle = palette.accent;
-  ctx.fillText("Time you spent", pad, y);
+  ctx.fillText(copy.labels.time, pad, y);
   ctx.font = `600 ${px(0.05)}px ${displayFont}`;
   ctx.fillStyle = palette.ink;
   ctx.fillText(copy.elapsed, pad + textW * 0.58, y);
   y += px(0.08);
 
   ctx.font = `400 ${px(0.038)}px ${uiFont}`;
-  wrap(ctx, "The law is not printed on this card.", pad, y, textW, px(0.048), 2);
+  wrap(ctx, copy.labels.lawAbsent, pad, y, textW, px(0.048), 2);
 }
 
 export function paintReceipt(
@@ -380,8 +396,8 @@ export function paintReceipt(
   tracking.letterSpacing = "0px";
   ctx.font = `500 26px ${uiFont}`;
   ctx.fillStyle = palette.accent;
-  ctx.fillText("Before", 92, columnY);
-  ctx.fillText("After", width / 2 + 20, columnY);
+  ctx.fillText(copy.labels.before, 92, columnY);
+  ctx.fillText(copy.labels.after, width / 2 + 20, columnY);
 
   ctx.font = `600 ${tight ? 68 : 84}px ${displayFont}`;
   ctx.fillStyle = palette.ink;
@@ -400,7 +416,7 @@ export function paintReceipt(
   const timeLabelY = wordsY + (model.beforeWords || model.afterWords ? 108 : 70);
   ctx.font = `500 26px ${uiFont}`;
   ctx.fillStyle = palette.accent;
-  ctx.fillText("Time you spent", 92, timeLabelY);
+  ctx.fillText(copy.labels.time, 92, timeLabelY);
   ctx.font = `600 ${tight ? 72 : 92}px ${displayFont}`;
   ctx.fillStyle = palette.ink;
   ctx.fillText(copy.elapsed, 92, timeLabelY + (tight ? 78 : 100));
@@ -420,5 +436,5 @@ export function paintReceipt(
   ctx.fillStyle = palette.ink;
   wrap(ctx, model.concept, 92, height - 220, width - 184, 34, 2);
   ctx.font = `400 22px ${uiFont}`;
-  ctx.fillText("The law is not printed on this card.", 92, height - 130);
+  ctx.fillText(copy.labels.lawAbsent, 92, height - 130);
 }

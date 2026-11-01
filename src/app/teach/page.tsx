@@ -5,6 +5,8 @@ import { LogoMark } from "@/components/brand/Logo";
 import { ClassLinks } from "@/components/teach/ClassLinks";
 import { heroWorlds } from "@/worlds";
 import { shelfWorlds } from "@/worlds/shelf.server";
+import { standardOf } from "@/worlds/standards";
+import { SUBJECTS, subjectOf } from "@/worlds/subjects";
 
 export const metadata: Metadata = {
   title: "Teach with it",
@@ -41,9 +43,34 @@ export default async function TeachPage() {
         <ol className="teach-steps">
           <li>Pick a world, or build one from your own question on the home page.</li>
           <li>Choose a class code. Students need no account and give no name.</li>
-          <li>Share the student link. Open the results link after the lesson.</li>
+          <li>Share the student link, or put its QR code on the board. Open the results link after the lesson.</li>
         </ol>
         <ClassLinks worlds={worlds} />
+        <h2 className="guide-h">Lesson guides</h2>
+        <p className="teach-hint">
+          One printable page per world: the standard it fits, how the lesson runs, the wrong ideas to listen for and questions for afterwards.
+        </p>
+        {SUBJECTS.map((subject) => {
+          const here = worlds.filter((world) => subjectOf(world.id, world.concept) === subject);
+          if (here.length === 0) return null;
+          return (
+            <div key={subject} className="guide-shelf">
+              <h3>{subject}</h3>
+              <ul>
+                {here.map((world) => {
+                  const standard = standardOf(world.id);
+                  return (
+                    <li key={world.id}>
+                      <Link href={`/teach/${world.id}`}>{world.title}</Link>
+                      <span>{world.concept}</span>
+                      {standard?.code ? <em>{standard.code}</em> : null}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          );
+        })}
       </section>
     </div>
   );

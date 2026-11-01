@@ -67,7 +67,7 @@ const WHO = [
   {
     icon: Presentation,
     title: "Teachers",
-    body: "Send a class a world instead of a worksheet. No accounts, no names: one class link, and afterwards you see how many found the law and got the new case right.",
+    body: "Send a class a world instead of a worksheet. Every world has a printable lesson guide matched to a science standard, and a class link with a QR code for the board. No accounts, no names. Afterwards you see who found the law, and how many started wrong and got there by experimenting.",
     href: "/teach",
     cta: "Make a class link",
   },

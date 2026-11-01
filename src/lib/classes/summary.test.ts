@@ -16,8 +16,8 @@ describe("class results", () => {
       { worldId: "rumour-town", firstCorrect: false, verdict: "discovered", transferCorrect: true, minutes: 5, classCode: "7b" },
     ];
     expect(classSummary(plays, "7b")).toEqual([
-      { worldId: "peppered-forest", finished: 2, discovered: 1, firstRight: 1, newCaseRight: 1, medianMinutes: 5 },
-      { worldId: "rumour-town", finished: 1, discovered: 1, firstRight: 0, newCaseRight: 1, medianMinutes: 5 },
+      { worldId: "peppered-forest", finished: 2, discovered: 1, firstRight: 1, newCaseRight: 1, learned: 1, medianMinutes: 5 },
+      { worldId: "rumour-town", finished: 1, discovered: 1, firstRight: 0, newCaseRight: 1, learned: 1, medianMinutes: 5 },
     ]);
   });
 });

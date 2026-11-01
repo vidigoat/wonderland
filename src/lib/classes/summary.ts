@@ -18,6 +18,8 @@ export type WorldTally = {
   firstRight: number;
   /** Got the new situation right at the end: the proof they understood. */
   newCaseRight: number;
+  /** Predicted wrong before experimenting, then got the new situation right: what the world itself taught. */
+  learned: number;
   medianMinutes: number;
 };
 
@@ -40,6 +42,7 @@ export function classSummary(plays: ClassPlay[], code: string): WorldTally[] {
       discovered: rows.filter((row) => row.verdict === "discovered").length,
       firstRight: rows.filter((row) => row.firstCorrect).length,
       newCaseRight: rows.filter((row) => row.transferCorrect).length,
+      learned: rows.filter((row) => !row.firstCorrect && row.transferCorrect).length,
       medianMinutes: Math.round(median(rows.map((row) => row.minutes)) * 10) / 10,
     }))
     .sort((a, b) => b.finished - a.finished);

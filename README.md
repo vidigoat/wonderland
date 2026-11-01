@@ -289,7 +289,11 @@ Ask in Hindi and the world answers in Hindi: its title, story, controls, reading
 
 ### For teachers
 
-[`/teach`](https://wonderland-omega-fawn.vercel.app/teach) makes a class link for any world, with no accounts and no names: students play by the link, and each finished play is logged with the class code only. The results page (`/class/<code>`) shows, per world, how many finished, how many found the law, how many got the new case right, how many got the first prediction right before experimenting, and the typical time ([`src/lib/classes/summary.ts`](src/lib/classes/summary.ts)).
+[`/teach`](https://wonderland-omega-fawn.vercel.app/teach) makes a class link for any world, with no accounts and no names: students play by the link (or scan its QR code off the board), and each finished play is logged with the class code only.
+
+Every world has a **printable lesson guide** at `/teach/<world>` ([`src/app/teach/[world]/page.tsx`](src/app/teach/[world]/page.tsx)): the question, the closest NGSS middle-school standard ([`src/worlds/standards.ts`](src/worlds/standards.ts); a world with no honest fit gets its crosscutting concept instead of a forced code), what students do, the wrong ideas to listen for, and questions for the discussion afterwards. The guide never shows the hidden law or the new situation, and the wrong ideas start folded away because a model sometimes names the right idea while describing the wrong one.
+
+The results page (`/class/<code>`) shows, per world, how many finished, how many found the law, how many got the new case right, and the number a teacher cares about most: **how many predicted wrong before experimenting and still got the new case right at the end**, which is what the world itself taught ([`src/lib/classes/summary.ts`](src/lib/classes/summary.ts)).
 
 ### Running in public
 

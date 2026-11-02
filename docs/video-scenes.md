@@ -41,3 +41,9 @@ Nine lines, recorded in six takes. Scenes 3–5 are one take, and so are scenes 
 
 - **If the build offers an existing world instead of building a new one,** use a different question: **Why does mould spread across a slice of bread?**
 - **If a world fails a check,** keep recording. A repair followed by "Watched again" makes an even better scene 5.
+
+## Clips received (trim notes for the stitch)
+
+- **Take A, `~/meta-1.mp4`** (19.7s): line at 0.6–6.7s. Keep **0.3–7.4s**. Everything after 8s is the desktop and System Settings, so cut it.
+- **Take B, `~/meta-2.mp4`** (25.2s): line at 1.5–7.6s. Keep **0–12.5s** (pick, collapse, guarantee deposits, run again), then **19.8–21.0s** ("The bank held"), held as a still for about 2s. Crop off the bottom of the frame after 13s, where the Dock shows. Cut everything after 21s.
+- The two clips are 1622 and 1612 pixels wide, so scale both to the same size when stitching.

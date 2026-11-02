@@ -59,5 +59,5 @@ Nine lines, recorded in seven takes. Scenes 3–5 are one take.
 ## Final cut
 
 - `~/wonderland-final.mp4`: 1:31, 1920×1080 at 60fps, -15.6 LUFS. Opens on a wall of world paintings with the title landing on the music's first hit, then takes A to G with subtitles and callouts, then an end card with the live URL and the Meta models.
-- Music: "Cyberpunk City" by Alejandro Magaña, from Mixkit under the free Mixkit licence (fine for YouTube, no credit required). It sits about 10 dB under the voice and ducks while he speaks. There's one hidden jump of exactly one bar inside take C, so the song's own ending lands on the end card.
+- Music: "Valley Sunset" by Alejandro Magaña, a calm ambient track from Mixkit under the free Mixkit licence (fine for YouTube, no credit required). It plays at one steady level the whole way through, about 11 dB under the voice, with no ducking, no swells and no auto-levelling. Only a 1.5s fade-in and a 2.5s fade-out.
 - The edit script, fonts and music are in `~/titan-studio/projects/wonderland/` (`python3 edit.py` rebuilds everything).

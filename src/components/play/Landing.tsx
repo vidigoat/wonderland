@@ -232,7 +232,7 @@ export function Landing({
                 Ask it for a world.
               </h1>
               <p className="land-lede">
-                Type any &ldquo;why&rdquo; question. Wonderland builds a small living world where the answer is secretly at work, checks it against real science, and lets you
+                Type any &ldquo;why&rdquo; question, in any language. Wonderland builds a small living world where the answer is secretly at work, checks it against real science, and lets you
                 discover it yourself, by experimenting, while an AI scientist races you to it.
               </p>
             </>

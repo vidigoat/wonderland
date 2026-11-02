@@ -43,7 +43,7 @@ People who learn with an AI assistant score 17 points lower on understanding ([S
 - **Four gates** before a world ships: science checks on every seed, a playability lint, the honest-readings check, and Spark's eyes. Any failure goes back to the designer with notes.
 - The hidden law never reaches the browser until the judge agrees you've found it.
 - A shared, conditional-write spend ledger enforces hard caps across serverless instances. Fair-use limits apply on the public site.
-- 273 tests. `pnpm verify-worlds`, `pnpm eval` and `pnpm lab` reproduce every claim.
+- 283 tests. `pnpm verify-worlds`, `pnpm eval` and `pnpm lab` reproduce every claim.
 
 ## Bonus prizes this fits
 - **Best Build on Meta Open Weights:** all reasoning, the judge, Ada and the citizens run on Muse Spark Open.

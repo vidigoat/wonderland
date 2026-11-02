@@ -55,3 +55,9 @@ Nine lines, recorded in seven takes. Scenes 3–5 are one take.
 - **Take D, `~/meta-8.mp4`** (16.1s, 1602 wide): clean start. Line at 0–7.4s: "I make a guess, then I test it. And Ada, an AI, races me to the answer." (subtitle "Ada, an AI"; Whisper hears "Ida"). Keep **0–14.5s**: prediction, middle answer, soot to full, the run turning the moths dark, Ada's card. Birds stayed on and there is one run, which is enough for take E. Cut after 14.5s (the Dock, then Screen Studio). Caption over the Ada card: *"Ada runs on Muse Spark Open, Meta's open weights"*.
 - **Take E, `~/meta-9.mp4`** (16.8s, 1630 wide): clean start. Line at 0–7.0s. Keep **0–13.5s**: paste the rule, Offered, then the snowy-tundra new situation. No answer gets picked, so it ends on the question, which fits "test it on something new". Cut after 14s (the Dock, Screen Studio). Caption: *"A case it has never seen"*.
 - **Take F, `~/take-10.mp4`** (12.4s, 1622 wide): clean start. Line at 0.3–8.1s: "Teachers get a lesson plan for every world." Keep **0–10.3s**: guide, then the class code typed, then the links and the QR code. Cut after 10.5s (the Screen Studio window). Caption over the QR code: *"Class link + QR code. No accounts."*
+
+## Final cut
+
+- `~/wonderland-final.mp4`: 1:31, 1920×1080 at 60fps, -15.6 LUFS. Opens on a wall of world paintings with the title landing on the music's first hit, then takes A to G with subtitles and callouts, then an end card with the live URL and the Meta models.
+- Music: "Cyberpunk City" by Alejandro Magaña, from Mixkit under the free Mixkit licence (fine for YouTube, no credit required). It sits about 10 dB under the voice and ducks while he speaks. There's one hidden jump of exactly one bar inside take C, so the song's own ending lands on the end card.
+- The edit script, fonts and music are in `~/titan-studio/projects/wonderland/` (`python3 edit.py` rebuilds everything).

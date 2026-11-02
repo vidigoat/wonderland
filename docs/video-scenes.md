@@ -48,3 +48,7 @@ Nine lines, recorded in seven takes. Scenes 3–5 are one take.
 - **Take A, `~/meta-1.mp4`** (19.7s): line at 0.6–6.7s. Keep **0.3–7.4s**. Everything after 8s is the desktop and System Settings, so cut it.
 - **Take B, `~/meta-2.mp4`** (25.2s): line at 1.5–7.6s. Keep **0–12.5s** (pick, collapse, guarantee deposits, run again), then **19.8–21.0s** ("The bank held"), held as a still for about 2s. Crop off the bottom of the frame after 13s, where the Dock shows. Cut everything after 21s.
 - The two clips are 1622 and 1612 pixels wide, so scale both to the same size when stitching.
+- **Take C, `~/meta-3.mp4`** (16.7s): line at 0–4.0s. Keep **0–7.5s** (paste, Building…, the build steps). Cut everything after 8s (the switch to another window). Over 4–7.5s, add the caption *"Muse Spark Open finds the law and writes the world as code"*.
+- **Take C2, `~/meta-4.mp4`** (10.3s): starts mid-sentence, with "Muse Spark" lost. Start the audio at **2.29s** ("Muse Image paints it…") and keep it to about **7.6s**. The build screen behind it is fine.
+- **Take C3, `~/meta-6.mp4`** (8.1s): starts mid-sentence. Start at **0.85s** ("and Spark 1.3 watches it run") and keep it to about **5.3s**. Add the caption *"Science checked on every random seed"*. The four check cards on screen carry the rest.
+- **Subtitles throughout,** burned in.

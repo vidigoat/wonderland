@@ -14,7 +14,7 @@ Each take is one recording, made in one Chrome window with the face cam on the s
 
 ## Scenes
 
-Nine lines, recorded in six takes. Scenes 3–5 are one take, and so are scenes 6–7.
+Nine lines, recorded in seven takes. Scenes 3–5 are one take.
 
 | # | Take | Tab | Where | Do | Say | Time |
 |---|---|---|---|---|---|---|
@@ -23,17 +23,18 @@ Nine lines, recorded in six takes. Scenes 3–5 are one take, and so are scenes 
 | 3 | C | 1 | Top | Type *Why do ants find the shortest path to food?* and click **Build my world** | "Any 'why' question, in any language, becomes a world." | 6s |
 | 4 | C | 1 | Build screen | The law shows as ███, then the painting and cut-outs arrive | "Muse Spark Open writes the world as code, Muse Image paints it, and SAM 3.1 cuts out every creature." | 12s |
 | 5 | C | 1 | Build screen, end | The checks pass and Spark watches the world run | "Then it checks its own science on every seed, and Spark 1.3 watches it run." | 10s |
-| 6 | D | 2 | Peppered Forest | **Start**, pick the middle option, drag **Soot on the bark** right, **Let time pass**, then **Let her try** | "I predict, I experiment, and Ada, an AI on Meta's open weights, races me." | 25s |
-| 7 | D | 2 | Same | **I think I see the rule**, **Hold to speak**, the judge's reply, **A new situation**, **Keep this card** | "I say the rule out loud, then prove it on a case I've never seen." | 25s |
-| 8 | E | 3 | Lesson guide | Scroll from MS-LS4-4 down to the QR code | "Teachers get a lesson guide and a QR code for every world." | 6s |
-| 9 | F | 1 | Hero | Nothing | "The AI does the building. You do the thinking." | 4s |
+| 6 | D | 2 | Peppered Forest | **Start: make a prediction**, pick the middle option, drag **Soot on the bark** right, **Let time pass**. Then turn **Birds present** off and **Let time pass** again. Ada's card updates on its own, so no clicks are needed for her | "I predict, I experiment, and Ada, an AI on Meta's open weights, races me." | 20s |
+| 7 | E | 2 | Same world, continue | **I think I see the rule**, **Hold to speak**, say the sentence, show the judge's reply, then **A new situation**: pick the middle option and show **Keep this card** | "I say the rule out loud, then prove it on a case I've never seen." | 20s |
+| 8 | F | 3 | Lesson guide | Scroll from MS-LS4-4 down to the QR code | "Teachers get a lesson guide and a QR code for every world." | 6s |
+| 9 | G | 1 | Hero | Nothing | "The AI does the building. You do the thinking." | 4s |
 
 **Total: about 2:05.** Take C runs long because of the build wait, which I'll cut.
 
 ## Answers, so the takes go smoothly (keep them off camera)
 
 - **Scene 6:** the middle option ("Dark moths become common…").
-- **Before scene 7,** run at least two trials, or the button will ask for another one first. Do one with soot high, then one with **Birds present** turned off.
+- **Take D ends after two runs,** which is exactly what take E needs before **I think I see the rule** will work. Don't reload the page between D and E.
+- **If the microphone gives you trouble in take E,** type the sentence instead and click **Offer this sentence**.
 - **Scene 7 sentence:** "Birds eat the moths that stand out, so the ones that match the bark survive and pass on their colour."
 - **Scene 7, the new situation:** the middle option ("White hares become common…").
 

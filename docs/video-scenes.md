@@ -17,7 +17,7 @@ Each scene is its own short recording, made in one Chrome window with the face c
 
 | # | Tab | Where on the page | What you do | Line | Time |
 |---|---|---|---|---|---|
-| 1 | 1 | Top of the page (the hero) | Nothing; just the page | "People who learn with an AI assistant score seventeen points lower on understanding. So I built the opposite: Wonderland." | 8s |
+| 1 | 1 | Top of the page (the hero) | Nothing; just the page | "People who learn with an AI assistant score seventeen points lower on understanding, because the AI does the thinking for them. So I flipped it. In Wonderland, the AI builds you a world, and you do the thinking." | 10s |
 | 2 | 1 | Scroll down to **Try it in thirty seconds** | Pick **"The bank collapses."** and watch the town | "A healthy bank, forty neighbours, one false rumour. I guess what happens, then I watch." | 14s |
 | 3 | 1 | Same section | Tick **Guarantee everyone's deposits**, run it, and land on **"You found it"** | "Now I go looking for what would have saved it. Nobody tells me." | 12s |
 | 4 | 1 | Scroll back to the top | Type **Why do ants find the shortest path to food?** and click **Build my world** | "Any 'why' question becomes a world." | 7s |

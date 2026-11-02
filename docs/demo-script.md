@@ -6,7 +6,7 @@ A suggested shot list. Everything here is in the app as built. Record on the liv
 
 | Time | Beat | On screen | Say (roughly) |
 |---|---|---|---|
-| 0:00 | **Hook** | Landing hero: *"Don't ask AI for the answer. Ask it for a world."* | "People who learn with an AI assistant score 17 points lower on understanding. So I built the opposite." |
+| 0:00 | **Hook** | Landing hero: *"Don't ask AI for the answer. Ask it for a world."* | "People who learn with an AI assistant score 17 points lower on understanding, because the AI does the thinking for them. So I flipped it: the AI builds you a world, and you do the thinking." |
 | 0:10 | **Thirty seconds of it** | *Try it*: pick *"The bank collapses"*, watch Rumour Town fall, *Find what saves it*, guarantee deposits, *"You found it."* | "One false rumour, a healthy bank. I predict, I watch, then I go looking for what saves it. Nobody tells me." |
 | 0:40 | **Ask anything** | Type a fresh question, *Build my world*. Steps light up; the law shows as `███`; the painting arrives and SAM's cut-outs glow. | "Any 'why' becomes a world. Muse Spark Open finds the law and writes the world as code. Muse Image paints it, and SAM 3.1 cuts out every creature." |
 | 1:05 | **It checks its own work** | Build screen: *"All N science checks passed on every seed… every reading measures the world itself."* Then the playtester: Spark watching the world run, SAM's count, *"Looked right"*, or a flag, a repair, and *"Watched again"*. | "Then it checks itself. The science runs on every seed. A check makes sure no number is faked; our models did that once. Then Spark actually watches the world run, and if the picture is wrong it sends it back to be fixed." |
